@@ -4,6 +4,8 @@
 // site's games.json, refreshed from ESPN in the browser when it can be
 // reached), so this loads after home.js. Sports with more networks than fit
 // across (MLB and NBA local TV) list each time slot's games as cards instead.
+// The TV Guide view lays the same games out like a cable guide: a row per
+// network, times across the top, each game a block as long as a typical game.
 const SCHED_SPORTS = [
   { key: "nfl", sport: "NFL", pickLabel: "Our pick", empty: "No NFL games on this week's schedule yet." },
   { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
@@ -14,6 +16,18 @@ const SCHED_SPORTS = [
     empty: "No NBA games on the schedule yet. The 2026-27 season tips off in late October." },
 ];
 const SCHED_MAX_NETWORKS = 6;
+// Typical game length in minutes, for the width of a guide block.
+const GUIDE_MINUTES = { nfl: 180, cfb: 210, mlb: 180, nba: 150 };
+const GUIDE_SLOT = 30;
+const GUIDE_VIEW_KEY = "edge-schedule-view";
+
+function schedView() {
+  try { return localStorage.getItem(GUIDE_VIEW_KEY) === "guide" ? "guide" : "cards"; } catch (e) { return "cards"; }
+}
+
+function schedSetView(view) {
+  try { localStorage.setItem(GUIDE_VIEW_KEY, view); } catch (e) { /* the choice just won't be remembered */ }
+}
 const SCHED_TZ = { timeZone: "America/New_York" };
 
 function schedStartEt(g) {
@@ -23,6 +37,7 @@ function schedStartEt(g) {
   new Intl.DateTimeFormat("en-US", { ...SCHED_TZ, hour: "numeric", minute: "numeric", hourCycle: "h23" })
     .formatToParts(d).forEach(p => { parts[p.type] = Number(p.value); });
   return {
+    minutes: (parts.hour || 0) * 60 + (parts.minute || 0),
     day: d.toLocaleDateString("en-US", { ...SCHED_TZ, weekday: "long", month: "long", day: "numeric" }),
     // ESPN lists games without a set time at midnight Eastern.
     slot: parts.hour || parts.minute
@@ -114,6 +129,140 @@ function schedDay(day, games, cfg, subtitle) {
   return card;
 }
 
+// ── TV Guide view ────────────────────────────────────────────────────────────
+function guideClock(minutes) {
+  const h = Math.floor(minutes / 60) % 24;
+  const m = minutes % 60;
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}
+
+function guideTeam(t, showScore) {
+  const row = edgeNode("span", "guide-team" + (showScore && t.winner ? " is-winner" : ""));
+  const name = edgeNode("span", "guide-team-name");
+  if (t.logo) {
+    const img = edgeNode("img", "guide-logo");
+    img.src = t.logo;
+    img.alt = "";
+    img.loading = "lazy";
+    name.append(img);
+  }
+  if (t.rank) name.append(edgeNode("span", "guide-rank", String(t.rank)));
+  name.append(edgeNode("span", null, t.abbr || t.short));
+  row.append(name);
+  if (showScore && t.score != null) row.append(edgeNode("span", "guide-score", String(t.score)));
+  return row;
+}
+
+function guideBlock(g, cfg) {
+  const block = edgeNode("article", "guide-show" + (g.state === "in" ? " is-live" : g.state === "post" ? " is-final" : ""));
+  const status = g.state === "pre" ? g._et.slot : g.detail || "Final";
+  block.append(edgeNode("span", "guide-status", status));
+  const matchup = edgeNode("span", "guide-matchup");
+  matchup.append(guideTeam(g.away, g.state !== "pre"), edgeNode("span", "guide-at", g.neutral ? "vs" : "@"),
+                 guideTeam(g.home, g.state !== "pre"));
+  block.append(matchup);
+  if (g.pick) {
+    const pick = edgeNode("span", "guide-pick");
+    pick.append(edgeNode("span", null, g.pick.text));
+    const pill = edgeResultPill(g.pick.result);
+    if (pill) pick.append(pill);
+    block.append(pick);
+  }
+  block.title = `${g.away.short || g.away.abbr} ${g.neutral ? "vs" : "at"} ${g.home.short || g.home.abbr}, ${status}` +
+                (g.tv ? `, ${g.tv}` : "") + (g.pick ? `. ${cfg.pickLabel}: ${g.pick.text}` : "");
+  return block;
+}
+
+// One day as a cable-style guide: a row per network, half-hour columns.
+function schedGuideDay(day, games, cfg, subtitle, isToday) {
+  const card = edgeNode("section", "card guide-card");
+  const header = edgeNode("div", "card-header");
+  header.append(edgeNode("h2", null, day), edgeNode("div", "subtitle", subtitle));
+  card.append(header);
+
+  const timed = games.filter(g => g._et.slot !== "Time TBA");
+  const tba = games.filter(g => g._et.slot === "Time TBA");
+  const length = GUIDE_MINUTES[cfg.key] || 180;
+  if (timed.length) {
+    const first = Math.floor(Math.min(...timed.map(g => g._et.minutes)) / GUIDE_SLOT) * GUIDE_SLOT;
+    const last = Math.max(...timed.map(g => g._et.minutes + length));
+    const slots = Math.ceil((last - first) / GUIDE_SLOT);
+
+    // Networks with the most games first, like the big channels at the top of a guide.
+    const byNet = new Map();
+    timed.forEach(g => {
+      const n = schedNetwork(g);
+      if (!byNet.has(n)) byNet.set(n, []);
+      byNet.get(n).push(g);
+    });
+    const networks = [...byNet.keys()].sort((a, b) =>
+      byNet.get(b).length - byNet.get(a).length || byNet.get(a)[0]._et.minutes - byNet.get(b)[0]._et.minutes);
+
+    const scroll = edgeNode("div", "guide-scroll");
+    const grid = edgeNode("div", "guide-grid");
+    grid.style.setProperty("--guide-slots", slots);
+    const head = edgeNode("div", "guide-row guide-head");
+    head.append(edgeNode("div", "guide-net guide-corner", "ET"));
+    for (let i = 0; i < slots; i++) {
+      const at = first + i * GUIDE_SLOT;
+      const tick = edgeNode("div", "guide-tick" + (at % 60 ? " is-half" : ""), at % 60 ? "" : guideClock(at));
+      tick.style.gridColumn = `${i + 2} / span 1`;
+      head.append(tick);
+    }
+    grid.append(head);
+
+    networks.forEach(n => {
+      // Overlapping games on one network (regional TV) get their own lane.
+      const lanes = [];
+      const placed = byNet.get(n).map(g => {
+        const start = g._et.minutes;
+        let lane = lanes.findIndex(end => end <= start);
+        if (lane === -1) { lane = lanes.length; lanes.push(0); }
+        lanes[lane] = start + length;
+        return { g, lane };
+      });
+      const row = edgeNode("div", "guide-row");
+      const label = edgeNode("div", "guide-net", n);
+      label.style.gridRow = `1 / span ${lanes.length}`;
+      row.append(label);
+      placed.forEach(({ g, lane }) => {
+        const block = guideBlock(g, cfg);
+        const col = Math.round((g._et.minutes - first) / GUIDE_SLOT * 2) / 2;  // half-slot precision
+        const startCol = Math.floor(col) + 2;
+        const span = Math.max(1, Math.round(length / GUIDE_SLOT));
+        block.style.gridColumn = `${startCol} / span ${span}`;
+        block.style.gridRow = `${lane + 1}`;
+        // Starts on the quarter hour: nudge it half a column (margins resolve against its grid area).
+        if (col % 1) block.style.marginLeft = `calc(50% / ${span})`;
+        row.append(block);
+      });
+      grid.append(row);
+    });
+
+    // A red line at the current time when this day is today.
+    if (isToday) {
+      const p = {};
+      new Intl.DateTimeFormat("en-US", { ...SCHED_TZ, hour: "numeric", minute: "numeric", hourCycle: "h23" })
+        .formatToParts(new Date()).forEach(x => { p[x.type] = Number(x.value); });
+      const now = (p.hour || 0) * 60 + (p.minute || 0);
+      if (now >= first && now <= first + slots * GUIDE_SLOT) {
+        const line = edgeNode("div", "guide-now");
+        line.style.setProperty("--guide-now", (now - first) / (slots * GUIDE_SLOT));
+        grid.append(line);
+      }
+    }
+    scroll.append(grid);
+    card.append(scroll);
+  }
+  if (tba.length) {
+    card.append(edgeNode("div", "section-label", "Time TBA"));
+    const list = edgeNode("div", "sched-grid");
+    tba.forEach(g => list.append(schedGame(g, cfg.pickLabel)));
+    card.append(list);
+  }
+  return card;
+}
+
 function schedRender(main, cfg, slate) {
   const games = (slate ? slate.games : [])
     .map(g => ({ ...g, _et: schedStartEt(g) }))
@@ -131,10 +280,13 @@ function schedRender(main, cfg, slate) {
     if (!days.has(g._et.day)) days.set(g._et.day, []);
     days.get(g._et.day).push(g);
   });
+  const guide = schedView() === "guide";
+  const today = new Date().toLocaleDateString("en-US", { ...SCHED_TZ, weekday: "long", month: "long", day: "numeric" });
   let first = true;
   days.forEach((dayGames, day) => {
     const n = `${dayGames.length} game${dayGames.length === 1 ? "" : "s"}`;
-    main.append(schedDay(day, dayGames, cfg, first && slate.label && !/^\w{3}, /.test(slate.label) ? `${slate.label} · ${n}` : n));
+    const subtitle = first && slate.label && !/^\w{3}, /.test(slate.label) ? `${slate.label} · ${n}` : n;
+    main.append(guide ? schedGuideDay(day, dayGames, cfg, subtitle, day === today) : schedDay(day, dayGames, cfg, subtitle));
     first = false;
   });
   const note = [cfg.note, "Times and TV from ESPN" + (slate.live ? ", with live scores." : ".")].filter(Boolean).join(" ");
@@ -175,6 +327,16 @@ async function initSchedule() {
     schedRender(main, SCHED_SPORTS[i], slates[i]);
   };
   window.addEventListener("hashchange", show);
+
+  // Cards / TV Guide toggle, remembered on this device.
+  const buttons = document.querySelectorAll(".view-toggle button");
+  const markView = () => buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === schedView())));
+  buttons.forEach(b => b.addEventListener("click", () => {
+    schedSetView(b.dataset.view);
+    markView();
+    show();
+  }));
+  markView();
   show();
 }
 initSchedule();
