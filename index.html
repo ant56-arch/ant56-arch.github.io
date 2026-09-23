@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Edge | NFL, CFB and MLB picks</title>
+<meta name="description" content="Model-driven picks for the NFL, college football and MLB, each graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div class="wrap">
+  <header class="masthead">
+    <h1 class="wordmark">Sports <span>Edge</span></h1>
+    <div class="tagline">Model-driven picks for the NFL, college football and MLB, each graded against every final score.</div>
+  </header>
+
+  <main id="main-content">
+    <div class="site-grid">
+      <section class="site-card" data-summary="/nfl-edge/nfl/summary.json" aria-labelledby="nfl-title">
+        <div class="site-head">
+          <h2 id="nfl-title" class="site-name">NFL <span>Edge</span></h2>
+          <p class="site-desc">Spreads, totals and player props, graded against the closing line every week.</p>
+        </div>
+        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
+        <a class="site-link" href="/nfl-edge/nfl/index.html">Open NFL Edge</a>
+      </section>
+
+      <section class="site-card" data-summary="/nfl-edge/cfb/summary.json" aria-labelledby="cfb-title">
+        <div class="site-head">
+          <h2 id="cfb-title" class="site-name">CFB <span>Edge</span></h2>
+          <p class="site-desc">Spreads and totals for Power-conference college football, graded every week.</p>
+        </div>
+        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
+        <a class="site-link" href="/nfl-edge/cfb/index.html">Open CFB Edge</a>
+      </section>
+
+      <section class="site-card" data-summary="/mlb-hit-predictor/summary.json" aria-labelledby="mlb-title">
+        <div class="site-head">
+          <h2 id="mlb-title" class="site-name">MLB <span>Edge</span></h2>
+          <p class="site-desc">The chance each hitter gets at least one hit today, graded against every box score.</p>
+        </div>
+        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
+        <a class="site-link" href="/mlb-hit-predictor/">Open MLB Edge</a>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
+      predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="/nfl-edge/terms.html">Terms of Use</a>
+      <a href="/nfl-edge/privacy.html">Privacy Policy</a>
+      <a href="https://github.com/ant56-arch">Source code</a>
+    </nav>
+  </footer>
+</div>
+<script src="home.js"></script>
+</body>
+</html>
