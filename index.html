@@ -8,49 +8,71 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
-<div class="wrap">
-  <header class="masthead">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport">
+      <a class="sport-tab active" href="/" aria-current="page">All</a>
+      <a class="sport-tab" href="/nfl-edge/nfl/index.html">NFL</a>
+      <a class="sport-tab" href="/nfl-edge/cfb/index.html">CFB</a>
+      <a class="sport-tab" href="/mlb-hit-predictor/">MLB</a>
+      <a class="sport-tab" href="/mlb-hit-predictor/nba/index.html">NBA</a>
+    </nav>
+  </div>
+</header>
+<aside class="scoreboard" aria-label="Latest top picks" hidden></aside>
+
+<header class="masthead home-hero">
+  <div class="masthead-inner">
+    <div class="hero-kicker">Daily model picks</div>
     <h1 class="wordmark">Sports <span>Edge</span></h1>
     <div class="tagline">Model-driven picks for the NFL, college football, MLB and the NBA, each graded against every final score.</div>
-  </header>
+    <dl class="hero-stats" aria-live="polite"></dl>
+  </div>
+</header>
 
+<div class="wrap">
   <main id="main-content">
+    <div class="board-head">
+      <h2 class="board-title">The Board</h2>
+      <p class="board-sub">Every site's latest top picks and its record.</p>
+    </div>
     <div class="site-grid">
-      <section class="site-card" data-summary="/nfl-edge/nfl/summary.json" aria-labelledby="nfl-title">
+      <section class="site-card" data-sport="NFL" data-summary="/nfl-edge/nfl/summary.json" aria-labelledby="nfl-title">
         <div class="site-head">
-          <h2 id="nfl-title" class="site-name">NFL <span>Edge</span></h2>
+          <h3 id="nfl-title" class="site-name">NFL <span>Edge</span></h3>
           <p class="site-desc">Spreads, totals and player props, graded against the closing line every week.</p>
         </div>
         <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
         <a class="site-link" href="/nfl-edge/nfl/index.html">Open NFL Edge</a>
       </section>
 
-      <section class="site-card" data-summary="/nfl-edge/cfb/summary.json" aria-labelledby="cfb-title">
+      <section class="site-card" data-sport="CFB" data-summary="/nfl-edge/cfb/summary.json" aria-labelledby="cfb-title">
         <div class="site-head">
-          <h2 id="cfb-title" class="site-name">CFB <span>Edge</span></h2>
+          <h3 id="cfb-title" class="site-name">CFB <span>Edge</span></h3>
           <p class="site-desc">Spreads and totals for Power-conference college football, graded every week.</p>
         </div>
         <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
         <a class="site-link" href="/nfl-edge/cfb/index.html">Open CFB Edge</a>
       </section>
 
-      <section class="site-card" data-summary="/mlb-hit-predictor/summary.json" aria-labelledby="mlb-title">
+      <section class="site-card" data-sport="MLB" data-summary="/mlb-hit-predictor/summary.json" aria-labelledby="mlb-title">
         <div class="site-head">
-          <h2 id="mlb-title" class="site-name">MLB <span>Edge</span></h2>
+          <h3 id="mlb-title" class="site-name">MLB <span>Edge</span></h3>
           <p class="site-desc">The chance each hitter gets at least one hit today, graded against every box score.</p>
         </div>
         <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
         <a class="site-link" href="/mlb-hit-predictor/">Open MLB Edge</a>
       </section>
 
-      <section class="site-card" data-summary="/mlb-hit-predictor/nba/summary.json" aria-labelledby="nba-title">
+      <section class="site-card" data-sport="NBA" data-summary="/mlb-hit-predictor/nba/summary.json" aria-labelledby="nba-title">
         <div class="site-head">
-          <h2 id="nba-title" class="site-name">NBA <span>Edge</span></h2>
+          <h3 id="nba-title" class="site-name">NBA <span>Edge</span></h3>
           <p class="site-desc">A pick and win chance for every NBA game, graded against every final score.</p>
         </div>
         <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
@@ -60,6 +82,7 @@
   </main>
 
   <footer class="site-footer">
+    <div class="footer-brand">Sports <span>Edge</span></div>
     <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
       predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
@@ -69,6 +92,6 @@
     </nav>
   </footer>
 </div>
-<script src="home.js"></script>
+<script src="home.js?v=2"></script>
 </body>
 </html>
