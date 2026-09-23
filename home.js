@@ -92,7 +92,13 @@ function formatUpdated(iso) {
   }) + " ET";
 }
 
-function renderCard(box, s) {
+function formatRetrained(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return "Model retrained " + d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
+}
+
+function renderCard(box, s, summaryUrl) {
   box.replaceChildren();
 
   const meta = edgeNode("div", "picks-meta");
@@ -131,6 +137,15 @@ function renderCard(box, s) {
     // this season's live record, never a backtest, so say that plainly.
     box.append(edgeNode("div", "picks-status record-pending", "No results yet this season. The record starts once these games are played."));
   }
+
+  // When the model last retrained itself, linking to that site's Model tab.
+  const retrained = s.retrained ? formatRetrained(s.retrained) : "";
+  if (retrained) {
+    const link = edgeNode("a", "model-link", retrained);
+    link.href = new URL(s.model_url || "model.html", new URL(summaryUrl, location.href)).pathname;
+    link.append(edgeNode("span", "model-link-more", "See how it learns"));
+    box.append(link);
+  }
 }
 
 async function initHome() {
@@ -140,7 +155,7 @@ async function initHome() {
   document.querySelectorAll(".site-card[data-summary]").forEach(card => {
     const box = card.querySelector(".site-picks");
     const s = bySummary.get(card.dataset.summary);
-    if (s) renderCard(box, s);
+    if (s) renderCard(box, s, card.dataset.summary);
     else box.replaceChildren(edgeNode("div", "picks-status", "Picks couldn't load here. Open the site to see them."));
   });
 
