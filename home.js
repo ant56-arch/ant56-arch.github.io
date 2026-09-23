@@ -126,6 +126,10 @@ function renderCard(box, s) {
     rec.append(edgeNode("span", "record-value", s.record.value), edgeNode("span", "record-label", s.record.label));
     if (s.record.sub) rec.append(edgeNode("span", "record-sub", s.record.sub));
     box.append(rec);
+  } else if (s.picks && s.picks.length) {
+    // Picks are out but none graded yet this season. Summaries only carry
+    // this season's live record, never a backtest, so say that plainly.
+    box.append(edgeNode("div", "picks-status record-pending", "No results yet this season. The record starts once these games are played."));
   }
 }
 

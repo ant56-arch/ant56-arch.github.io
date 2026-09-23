@@ -1112,3 +1112,4 @@ footer.site-footer {
   .site-card { padding: 20px 16px; }
   .site-name { font-size: 34px; }
 }
+.picks-status.record-pending { border-bottom: 0; padding-bottom: 4px; }
