@@ -1271,9 +1271,10 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .view-toggle button[aria-pressed="true"] { color: #121314; background: var(--ours); }
 .view-toggle button:focus-visible { outline: 2px solid var(--ours); outline-offset: 2px; }
 
-.guide-card { --guide-net-w: 104px; --guide-slot-w: 44px; }
+.guide-card { --guide-net-w: 104px; --guide-slot-w: 42px; }
 .guide-scroll { overflow-x: auto; margin: 0 -4px; padding: 0 4px 6px 4px; scrollbar-color: var(--rule-strong) transparent; }
-.guide-grid { position: relative; display: flex; flex-direction: column; width: max-content; min-width: 100%;
+.guide-grid { position: relative; display: flex; flex-direction: column; width: 100%;
+  min-width: calc(var(--guide-net-w) + var(--guide-slots) * var(--guide-slot-w)); box-sizing: border-box;
   border: 1px solid var(--rule); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg); }
 .guide-row { display: grid; grid-template-columns: var(--guide-net-w) repeat(var(--guide-slots), minmax(var(--guide-slot-w), 1fr));
   grid-auto-rows: minmax(76px, auto); border-top: 1px solid var(--rule); }
@@ -1299,7 +1300,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 }
 .guide-corner { font-size: 13px; font-style: normal; color: var(--text-faint); }
 .guide-tick { display: flex; align-items: center; padding-left: 8px; font-size: 12px; font-weight: 700; color: var(--text-muted);
-  border-left: 1px solid var(--rule); white-space: nowrap; overflow: visible; grid-row: 1; }
+  border-left: 1px solid var(--rule); white-space: nowrap; overflow: visible; min-width: 0; grid-row: 1; }
 .guide-tick.is-half { border-left-color: transparent; }
 .guide-show {
   display: flex;
