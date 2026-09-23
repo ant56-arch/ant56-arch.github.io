@@ -19,10 +19,11 @@ const SCHED_MAX_NETWORKS = 6;
 // Typical game length in minutes, for the width of a guide block.
 const GUIDE_MINUTES = { nfl: 180, cfb: 210, mlb: 180, nba: 150 };
 const GUIDE_SLOT = 30;
-const GUIDE_VIEW_KEY = "edge-schedule-view";
+const GUIDE_VIEW_KEY = "edge-schedule-view-2";  // new key so everyone starts on TV Guide
 
 function schedView() {
-  try { return localStorage.getItem(GUIDE_VIEW_KEY) === "guide" ? "guide" : "cards"; } catch (e) { return "cards"; }
+  // TV Guide unless this device picked Cards.
+  try { return localStorage.getItem(GUIDE_VIEW_KEY) === "cards" ? "cards" : "guide"; } catch (e) { return "guide"; }
 }
 
 function schedSetView(view) {
