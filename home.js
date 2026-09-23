@@ -1,6 +1,6 @@
 // Fills each site card from that site's summary.json, which its own build
 // publishes next to its pages (nfl-edge: <sport>/summary.json,
-// mlb-hit-predictor: summary.json). Everything is on ant56-arch.github.io, so
+// mlb-hit-predictor: summary.json and nba/summary.json). Everything is on ant56-arch.github.io, so
 // these are same-origin fetches. If one fails, the card keeps its link.
 
 function el(tag, className, text) {
@@ -18,9 +18,11 @@ function formatUpdated(iso) {
   }) + " ET";
 }
 
-function resultPill(result) {
-  if (result === true) return el("span", "pill pill-positive", "HIT");
-  if (result === false) return el("span", "pill pill-danger", "MISS");
+// A summary can name its own result labels (NBA Edge: ["WIN", "LOSS"]).
+function resultPill(result, labels) {
+  const [yes, no] = labels || ["HIT", "MISS"];
+  if (result === true) return el("span", "pill pill-positive", yes);
+  if (result === false) return el("span", "pill pill-danger", no);
   return null;
 }
 
@@ -42,7 +44,7 @@ function render(box, s) {
       if (p.sub) who.append(el("div", "pick-sub", p.sub));
       const val = el("div", "pick-value");
       val.append(el("span", "pick-number", p.value));
-      const pill = resultPill(p.result);
+      const pill = resultPill(p.result, s.result_labels);
       if (pill) val.append(pill);
       row.append(who, val);
       list.append(row);
