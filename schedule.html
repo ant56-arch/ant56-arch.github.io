@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule | Sports Edge</title>
+<meta name="description" content="This week's NFL, college football Top 25, MLB and NBA games with start times, TV networks and our pick for each.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport">
+      <a class="sport-tab" href="/">All</a>
+      <a class="sport-tab" href="/nfl-edge/nfl/index.html">NFL</a>
+      <a class="sport-tab" href="/nfl-edge/cfb/index.html">CFB</a>
+      <a class="sport-tab" href="/mlb-hit-predictor/">MLB</a>
+      <a class="sport-tab" href="/mlb-hit-predictor/nba/index.html">NBA</a>
+      <a class="sport-tab active" href="/schedule.html" aria-current="page">Schedule</a>
+    </nav>
+  </div>
+</header>
+<aside class="scoreboard" aria-label="Latest top picks" hidden></aside>
+
+<header class="masthead schedule-hero" data-sport="TV">
+  <div class="masthead-inner">
+    <div class="hero-kicker">Where to watch</div>
+    <h1 class="wordmark">TV <span>Schedule</span></h1>
+    <div class="tagline">Every game with its start time, TV network and our pick. College football shows games with a Top 25 team.</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sport"><div class="tabs-inner sched-tabs">
+  <a href="#nfl" data-sport="nfl">NFL</a>
+  <a href="#cfb" data-sport="cfb">CFB Top 25</a>
+  <a href="#mlb" data-sport="mlb">MLB</a>
+  <a href="#nba" data-sport="nba">NBA</a>
+</div></nav>
+
+<div class="wrap">
+  <main id="main-content" class="schedule-main" aria-live="polite">
+    <section class="card"><div class="empty-state">Loading the schedule</div></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">Sports <span>Edge</span></div>
+    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
+      predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="/nfl-edge/terms.html">Terms of Use</a>
+      <a href="/nfl-edge/privacy.html">Privacy Policy</a>
+      <a href="https://github.com/ant56-arch">Source code</a>
+    </nav>
+  </footer>
+</div>
+<script src="home.js?v=3"></script>
+<script src="schedule.js?v=1"></script>
+</body>
+</html>
