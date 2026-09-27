@@ -3095,8 +3095,10 @@
     "away_ml": 100,
     "book": "DraftKings",
     "won": null,
-    "units": null
-   }
+    "units": 0.0,
+    "void": true
+   },
+   "void": true
   },
   {
    "date": "2026-09-27",
