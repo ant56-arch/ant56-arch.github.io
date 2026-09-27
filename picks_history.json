@@ -14150,9 +14150,9 @@
       "reason": "Batting 2nd \u00b7 Faces Justin Verlander (12.27 ERA, 2.18 WHIP)",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -14198,9 +14198,9 @@
       "reason": "Batting 4th \u00b7 Faces Justin Verlander (12.27 ERA, 2.18 WHIP)",
       "hit_streak": 2,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 1,
       "void": false
     },
     {
@@ -14246,9 +14246,9 @@
       "reason": "Batting 1st \u00b7 Faces Rhett Lowder (6.01 ERA, 1.55 WHIP)",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -14294,9 +14294,9 @@
       "reason": "Batting 1st \u00b7 .304 season average",
       "hit_streak": 4,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 5,
       "void": false
     },
     {
@@ -14342,9 +14342,9 @@
       "reason": "Batting 4th \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 3,
+      "at_bats": 5,
       "void": false
     },
     {
@@ -14390,9 +14390,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 3,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -14438,9 +14438,9 @@
       "reason": "Batting 5th \u00b7 Platoon edge (SHB vs. RHP)",
       "hit_streak": 1,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -14486,9 +14486,9 @@
       "reason": "Batting 2nd \u00b7 Platoon edge (SHB vs. RHP)",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 5,
       "void": false
     },
     {
@@ -14534,9 +14534,9 @@
       "reason": "Faces Jose Quintana (5.40 ERA, 1.51 WHIP) \u00b7 Batting 1st",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 2,
       "void": false
     },
     {
@@ -14582,9 +14582,9 @@
       "reason": "Batting 5th \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 0,
       "model": "2026-09-23T03:26:43+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     }
   ]
