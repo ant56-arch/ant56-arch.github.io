@@ -3030,7 +3030,7 @@
     "starters": -0.023
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "WSH",
     "side": "home",
@@ -3042,9 +3042,12 @@
     "home_ml": -107,
     "away_ml": -112,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.935
+   },
+   "home_runs": 6,
+   "away_runs": 4,
+   "winner": "WSH"
   },
   {
    "date": "2026-09-27",
@@ -3136,7 +3139,7 @@
     "starters": 0.133
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "PHI",
     "side": "home",
@@ -3148,9 +3151,12 @@
     "home_ml": -173,
     "away_ml": 142,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.578
+   },
+   "home_runs": 7,
+   "away_runs": 3,
+   "winner": "PHI"
   },
   {
    "date": "2026-09-27",
@@ -3188,7 +3194,7 @@
     "starters": -0.058
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "LAD",
     "side": "away",
@@ -3200,9 +3206,12 @@
     "home_ml": 202,
     "away_ml": -250,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.4
+   },
+   "home_runs": 1,
+   "away_runs": 5,
+   "winner": "LAD"
   },
   {
    "date": "2026-09-27",
@@ -3240,7 +3249,7 @@
     "starters": -0.083
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": false,
    "ml": {
     "team": "BOS",
     "side": "home",
@@ -3252,9 +3261,12 @@
     "home_ml": 102,
     "away_ml": -123,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 2,
+   "away_runs": 6,
+   "winner": "CHC"
   },
   {
    "date": "2026-09-27",
@@ -3292,7 +3304,7 @@
     "starters": -0.083
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "HOU",
     "side": "away",
@@ -3304,9 +3316,12 @@
     "home_ml": 158,
     "away_ml": -193,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.518
+   },
+   "home_runs": 0,
+   "away_runs": 9,
+   "winner": "HOU"
   },
   {
    "date": "2026-09-27",
@@ -3344,7 +3359,7 @@
     "starters": -0.049
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "TOR",
     "side": "home",
@@ -3356,9 +3371,12 @@
     "home_ml": -176,
     "away_ml": 145,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.568
+   },
+   "home_runs": 5,
+   "away_runs": 1,
+   "winner": "TOR"
   },
   {
    "date": "2026-09-27",
@@ -3396,7 +3414,7 @@
     "starters": 0.087
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "SEA",
     "side": "home",
@@ -3408,9 +3426,12 @@
     "home_ml": -163,
     "away_ml": 135,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.613
+   },
+   "home_runs": 7,
+   "away_runs": 3,
+   "winner": "SEA"
   },
   {
    "date": "2026-09-27",
@@ -3448,7 +3469,7 @@
     "starters": -0.066
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "SD",
     "side": "home",
@@ -3460,9 +3481,12 @@
     "home_ml": 119,
     "away_ml": -144,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 1.19
+   },
+   "home_runs": 9,
+   "away_runs": 4,
+   "winner": "SD"
   },
   {
    "date": "2026-09-27",
@@ -3500,7 +3524,7 @@
     "starters": -0.061
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": false,
    "ml": {
     "team": "TEX",
     "side": "away",
@@ -3512,9 +3536,12 @@
     "home_ml": -105,
     "away_ml": -114,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 6,
+   "away_runs": 4,
+   "winner": "MIN"
   },
   {
    "date": "2026-09-27",
@@ -3552,7 +3579,7 @@
     "starters": 0.267
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "MIL",
     "side": "home",
@@ -3564,9 +3591,12 @@
     "home_ml": -204,
     "away_ml": 167,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.49
+   },
+   "home_runs": 6,
+   "away_runs": 4,
+   "winner": "MIL"
   },
   {
    "date": "2026-09-27",
@@ -3604,7 +3634,7 @@
     "starters": 0.159
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "MIA",
     "side": "home",
@@ -3616,9 +3646,12 @@
     "home_ml": -120,
     "away_ml": 100,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.833
+   },
+   "home_runs": 5,
+   "away_runs": 3,
+   "winner": "MIA"
   },
   {
    "date": "2026-09-27",
@@ -3656,7 +3689,7 @@
     "starters": -0.402
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": false,
    "ml": {
     "team": "CLE",
     "side": "away",
@@ -3668,9 +3701,12 @@
     "home_ml": -108,
     "away_ml": -112,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 3,
+   "away_runs": 2,
+   "winner": "KC"
   },
   {
    "date": "2026-09-27",
@@ -3708,7 +3744,7 @@
     "starters": -0.047
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": false,
    "ml": {
     "team": "DET",
     "side": "home",
@@ -3720,9 +3756,12 @@
     "home_ml": -103,
     "away_ml": -117,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 2,
+   "away_runs": 4,
+   "winner": "PIT"
   },
   {
    "date": "2026-09-27",
@@ -3760,7 +3799,7 @@
     "starters": 0.124
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "ml": {
     "team": "CWS",
     "side": "home",
@@ -3772,9 +3811,12 @@
     "home_ml": -164,
     "away_ml": 135,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.61
+   },
+   "home_runs": 4,
+   "away_runs": 2,
+   "winner": "CWS"
   }
  ]
 }
