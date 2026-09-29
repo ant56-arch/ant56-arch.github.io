@@ -3914,21 +3914,21 @@
    },
    "model": "2026-09-23T16:14:07+00:00",
    "correct": null,
+   "set_at": "2026-09-29T15:31:57Z",
    "ml": {
     "team": "ATL",
     "side": "home",
-    "price": -205,
+    "price": -192,
     "prob": 56.9,
-    "book_prob": 64.3,
-    "edge": -7.4,
+    "book_prob": 62.9,
+    "edge": -6.0,
     "value": false,
-    "home_ml": -205,
-    "away_ml": 168,
+    "home_ml": -192,
+    "away_ml": 158,
     "book": "DraftKings",
     "won": null,
     "units": null
-   },
-   "set_at": "2026-09-29T11:49:02Z"
+   }
   },
   {
    "date": "2026-09-29",
@@ -3967,6 +3967,7 @@
    },
    "model": "2026-09-23T16:14:07+00:00",
    "correct": null,
+   "set_at": "2026-09-29T15:31:57Z",
    "ml": {
     "team": "HOU",
     "side": "home",
@@ -3980,8 +3981,7 @@
     "book": "DraftKings",
     "won": null,
     "units": null
-   },
-   "set_at": "2026-09-29T11:49:02Z"
+   }
   },
   {
    "date": "2026-09-29",
@@ -4020,21 +4020,21 @@
    },
    "model": "2026-09-23T16:14:07+00:00",
    "correct": null,
+   "set_at": "2026-09-29T15:31:57Z",
    "ml": {
     "team": "NYY",
     "side": "home",
-    "price": -145,
+    "price": -135,
     "prob": 58.9,
-    "book_prob": 56.6,
-    "edge": 2.3,
+    "book_prob": 54.9,
+    "edge": 4.0,
     "value": false,
-    "home_ml": -145,
-    "away_ml": 120,
+    "home_ml": -135,
+    "away_ml": 112,
     "book": "DraftKings",
     "won": null,
     "units": null
-   },
-   "set_at": "2026-09-29T11:49:02Z"
+   }
   },
   {
    "date": "2026-09-29",
@@ -4073,21 +4073,21 @@
    },
    "model": "2026-09-23T16:14:07+00:00",
    "correct": null,
+   "set_at": "2026-09-29T15:31:57Z",
    "ml": {
     "team": "SD",
     "side": "home",
-    "price": -130,
+    "price": -131,
     "prob": 53.7,
-    "book_prob": 54.0,
-    "edge": -0.3,
+    "book_prob": 54.1,
+    "edge": -0.4,
     "value": false,
-    "home_ml": -130,
+    "home_ml": -131,
     "away_ml": 108,
     "book": "DraftKings",
     "won": null,
     "units": null
-   },
-   "set_at": "2026-09-29T11:49:02Z"
+   }
   }
  ]
 }
