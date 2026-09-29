@@ -3817,6 +3817,214 @@
    "home_runs": 4,
    "away_runs": 2,
    "winner": "CWS"
+  },
+  {
+   "date": "2026-09-29",
+   "game_id": "849845",
+   "start": "2026-09-29T14:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "ATL",
+   "away": "PHI",
+   "home_name": "Atlanta Braves",
+   "away_name": "Philadelphia Phillies",
+   "home_id": 144,
+   "away_id": 143,
+   "home_record": "94-68",
+   "away_record": "88-74",
+   "home_sp": {
+    "id": 519242,
+    "name": "Chris Sale",
+    "era": 2.16,
+    "ip": 162.7
+   },
+   "away_sp": {
+    "id": 666200,
+    "name": "Jes\u00fas Luzardo",
+    "era": 2.87,
+    "ip": 178.7
+   },
+   "pick": "ATL",
+   "prob": 56.9,
+   "home_prob": 56.9,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.008,
+    "starters": 0.131
+   },
+   "model": "2026-09-23T16:14:07+00:00",
+   "correct": null,
+   "ml": {
+    "team": "ATL",
+    "side": "home",
+    "price": -205,
+    "prob": 56.9,
+    "book_prob": 64.3,
+    "edge": -7.4,
+    "value": false,
+    "home_ml": -205,
+    "away_ml": 168,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-29",
+   "game_id": "849849",
+   "start": "2026-09-29T17:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "HOU",
+   "away": "CWS",
+   "home_name": "Houston Astros",
+   "away_name": "Chicago White Sox",
+   "home_id": 117,
+   "away_id": 145,
+   "home_record": "81-81",
+   "away_record": "84-78",
+   "home_sp": {
+    "id": 805123,
+    "name": "AJ Blubaugh",
+    "era": null,
+    "ip": 0
+   },
+   "away_sp": {
+    "id": 696146,
+    "name": "Hagen Smith",
+    "era": 0.0,
+    "ip": 2.0
+   },
+   "pick": "HOU",
+   "prob": 53.5,
+   "home_prob": 53.5,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.002,
+    "starters": 0.001
+   },
+   "model": "2026-09-23T16:14:07+00:00",
+   "correct": null,
+   "ml": {
+    "team": "HOU",
+    "side": "home",
+    "price": -126,
+    "prob": 53.5,
+    "book_prob": 53.3,
+    "edge": 0.2,
+    "value": false,
+    "home_ml": -126,
+    "away_ml": 105,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-29",
+   "game_id": "849851",
+   "start": "2026-09-29T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "NYY",
+   "away": "BOS",
+   "home_name": "New York Yankees",
+   "away_name": "Boston Red Sox",
+   "home_id": 147,
+   "away_id": 111,
+   "home_record": "93-68",
+   "away_record": "87-75",
+   "home_sp": {
+    "id": 693645,
+    "name": "Cam Schlittler",
+    "era": 1.95,
+    "ip": 193.7
+   },
+   "away_sp": {
+    "id": 801139,
+    "name": "Payton Tolle",
+    "era": 3.03,
+    "ip": 148.7
+   },
+   "pick": "NYY",
+   "prob": 58.9,
+   "home_prob": 58.9,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.066,
+    "starters": 0.152
+   },
+   "model": "2026-09-23T16:14:07+00:00",
+   "correct": null,
+   "ml": {
+    "team": "NYY",
+    "side": "home",
+    "price": -145,
+    "prob": 58.9,
+    "book_prob": 56.6,
+    "edge": 2.3,
+    "value": false,
+    "home_ml": -145,
+    "away_ml": 120,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-29",
+   "game_id": "849843",
+   "start": "2026-09-29T22:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "SD",
+   "away": "CHC",
+   "home_name": "San Diego Padres",
+   "away_name": "Chicago Cubs",
+   "home_id": 135,
+   "away_id": 112,
+   "home_record": "91-71",
+   "away_record": "89-73",
+   "home_sp": {
+    "id": 650633,
+    "name": "Michael King",
+    "era": 3.21,
+    "ip": 185.0
+   },
+   "away_sp": {
+    "id": 571510,
+    "name": "Matthew Boyd",
+    "era": 3.91,
+    "ip": 126.7
+   },
+   "pick": "SD",
+   "prob": 53.7,
+   "home_prob": 53.7,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.023,
+    "starters": 0.03
+   },
+   "model": "2026-09-23T16:14:07+00:00",
+   "correct": null,
+   "ml": {
+    "team": "SD",
+    "side": "home",
+    "price": -130,
+    "prob": 53.7,
+    "book_prob": 54.0,
+    "edge": -0.3,
+    "value": false,
+    "home_ml": -130,
+    "away_ml": 108,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
