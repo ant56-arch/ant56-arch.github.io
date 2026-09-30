@@ -262,7 +262,7 @@ header.masthead[data-sport]::after {
   right: -0.04em;
   bottom: -0.2em;
   font-family: var(--font-head);
-  font-size: 260px;
+  font-size: 170px;
   font-weight: 800;
   font-style: italic;
   line-height: 1;
@@ -276,13 +276,13 @@ header.masthead[data-sport]::after {
   z-index: 1;
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 40px 24px 32px 24px;
+  padding: 24px 24px 22px 24px;
 }
 
 .wordmark {
   margin: 0;
   font-family: var(--font-head);
-  font-size: 80px;
+  font-size: 56px;
   font-weight: 800;
   font-style: italic;
   line-height: 0.92;
@@ -294,8 +294,8 @@ header.masthead[data-sport]::after {
 }
 
 .tagline {
-  margin-top: 14px;
-  font-size: 18px;
+  margin-top: 8px;
+  font-size: 16px;
   color: var(--text-muted);
   max-width: 52ch;
 }
@@ -304,7 +304,7 @@ header.masthead[data-sport]::after {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 14px;
   padding: 6px 12px;
   font-size: 13px;
   font-weight: 600;
@@ -762,10 +762,11 @@ footer.site-footer {
   .brand-mark { width: 26px; height: 26px; }
   .sport-tab { padding: 0 9px; font-size: 16px; }
   .sport-tab::after { left: 6px; right: 6px; }
-  .masthead-inner { padding-top: 32px; padding-bottom: 28px; }
-  header.masthead[data-sport]::after { font-size: 180px; }
-  .wordmark { font-size: 60px; }
-  .tagline { font-size: 16px; }
+  .masthead-inner { padding-top: 16px; padding-bottom: 16px; }
+  header.masthead[data-sport]::after { font-size: 110px; }
+  .wordmark { font-size: 40px; }
+  .tagline { font-size: 14px; margin-top: 6px; }
+  .updated-chip { margin-top: 10px; padding: 4px 10px; font-size: 12px; }
   .tabs-inner { gap: 22px; }
   nav.tabs a { font-size: 17px; }
   .card { padding: 18px 16px 20px 16px; margin-left: -4px; margin-right: -4px; }
@@ -944,6 +945,277 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
     align-items: center;
   }
   .sport-tab { min-height: 48px; }
+}
+
+/* ---------- Phone sport menu ----------
+   Below 560px the sport tabs fold into a menu button (the current sport and
+   three lines) at the right of the top bar. Tapping it drops every sport down
+   as a full-width list over the page. site.js / home.js add the button and the
+   .has-menu class, so without script the tabs stay in their row. */
+
+.menu-toggle { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 560px) {
+  .topbar { position: relative; z-index: 30; }
+  .topbar-inner.has-menu { flex-wrap: nowrap; }
+  .has-menu .brand { padding: 10px 0; }
+  .has-menu .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    min-height: 48px;
+    padding: 0 2px 0 12px;
+    background: none;
+    border: 0;
+    color: var(--text);
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .menu-icon { display: grid; gap: 5px; width: 22px; }
+  .menu-icon span { display: block; height: 2px; background: currentColor; border-radius: 1px; }
+  .menu-open .menu-icon span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-open .menu-icon span:nth-child(2) { opacity: 0; }
+  .menu-open .menu-icon span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .has-menu .sport-switcher {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    flex-basis: auto;
+    margin: 0;
+    padding: 6px 0 10px 0;
+    background: var(--bar);
+    border-top: 1px solid var(--rule);
+    border-bottom: 3px solid var(--ours);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  }
+  .has-menu.menu-open .sport-switcher { display: flex; }
+  .has-menu .sport-tab {
+    min-height: 52px;
+    padding: 0 20px;
+    font-size: 22px;
+    border-left: 3px solid transparent;
+  }
+  .has-menu .sport-tab::after { display: none; }
+  .has-menu .sport-tab.active { border-left-color: var(--ours); background: var(--surface); }
+}
+@media (max-width: 560px) and (prefers-reduced-motion: no-preference) {
+  .menu-icon span { transition: transform 0.2s ease, opacity 0.2s ease; }
+  .has-menu.menu-open .sport-switcher { animation: edge-drop 0.18s ease-out both; }
+  @keyframes edge-drop {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+/* ---------- Record band ----------
+   The first panel on every sport's Home tab: our record since live tracking
+   began, one big number that keeps adding up across seasons (live picks only,
+   never backtests), with a couple of supporting numbers beside it. */
+
+.record-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px 40px;
+  align-items: end;
+}
+.rb-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.rb-num {
+  margin-top: 8px;
+  font-family: var(--font-head);
+  font-size: 104px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 0.9;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+.rb-num small { margin-left: 14px; font-size: 0.4em; letter-spacing: 0; color: var(--ours); }
+.rb-num.rb-wait { font-size: 56px; line-height: 1; white-space: normal; color: var(--text-muted); }
+.rb-since { margin-top: 12px; font-size: 15px; color: var(--text-muted); max-width: 56ch; }
+.rb-side { display: flex; flex-wrap: wrap; gap: 12px; }
+.rb-side .stat { min-width: 170px; }
+.rb-side .stat-value { font-size: 36px; }
+.rb-spark { display: block; width: 320px; max-width: 100%; height: auto; }
+.rb-spark .g { stroke: var(--rule); stroke-width: 1; }
+.rb-spark .t { fill: var(--text-faint); font-size: 11px; font-family: var(--font); }
+.rb-spark .a { fill: rgba(229, 121, 59, 0.16); }
+.rb-spark .l { fill: none; stroke: var(--ours); stroke-width: 2; stroke-linejoin: round; }
+.rb-spark .d { fill: var(--ours); }
+
+/* ---------- Most confident picks ---------- */
+
+.bet-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.bet-card {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding: 16px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ours);
+  border-radius: var(--radius-sm);
+}
+.bet-when { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.bet-pick { font-size: 15px; color: var(--text-muted); }
+.bet-pick b {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.bet-pct {
+  margin-top: 6px;
+  font-family: var(--font-head);
+  font-size: 54px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1;
+  color: var(--ours);
+}
+.bet-pct small { font-size: 0.5em; }
+.bet-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+
+/* ---------- Pick list ----------
+   One row per pick: who, our pick, how sure (a bar and a percentage) and the
+   result once graded. Everything else (lines, prices, the why) opens under
+   the row on tap. Rows become two short lines on phones. */
+
+.pick-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.pick-list > li { border-bottom: 1px solid var(--rule); }
+.pick-list > li.pl-day {
+  padding: 22px 0 8px 0;
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ours);
+}
+.pick-list > li.pl-day:first-child { padding-top: 6px; }
+.pl-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr) minmax(150px, 220px) 96px;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 8px;
+  list-style: none;
+}
+.pl-row > summary { cursor: pointer; border-radius: 6px; transition: background 0.12s ease; }
+.pl-row > summary::-webkit-details-marker { display: none; }
+.pl-row > summary:hover, .pl-row[open] > summary { background: rgba(236, 235, 231, 0.04); }
+.pl-row > summary:focus-visible { outline: 2px solid var(--vegas); outline-offset: -2px; }
+.pl-match { display: grid; gap: 2px; min-width: 0; }
+.pl-teams { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-weight: 700; }
+.pl-teams .team-logo { width: 22px; height: 22px; }
+.pl-teams i { font-style: normal; font-weight: 400; font-size: 13px; color: var(--text-faint); }
+.pl-sub { font-size: 13px; color: var(--text-muted); }
+.pl-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+.pl-pick b {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--ours);
+}
+.pl-conf { display: flex; align-items: center; gap: 10px; }
+.pl-bar { position: relative; flex: 1; height: 6px; overflow: hidden; border-radius: 3px; background: var(--surface-2); }
+.pl-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
+.pl-pct {
+  width: 50px;
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 800;
+  font-style: italic;
+  text-align: right;
+  color: var(--ours);
+}
+.pl-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.pl-more {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 0;
+  padding: 6px 8px 16px 8px;
+}
+.pl-more div { display: grid; gap: 2px; align-content: start; }
+.pl-more dt { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.pl-more dd { margin: 0; font-size: 15px; }
+.pl-more dd small { display: block; font-size: 13px; color: var(--text-muted); }
+.pl-note { padding: 0 8px 16px 8px; font-size: 14px; color: var(--text-muted); }
+.pl-rank {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--text-faint);
+}
+.pick-list.ranked .pl-line { grid-template-columns: 32px minmax(0, 1fr) minmax(150px, 240px) 96px; }
+.list-note { margin: 0 0 12px 0; font-size: 14px; color: var(--text-faint); }
+
+/* "How to read this": the explanation, one tap away instead of always on. */
+details.how-to { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
+details.how-to > summary { padding: 12px 16px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+details.how-to > summary:hover { color: var(--text); }
+details.how-to > div { padding: 0 16px 14px 16px; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+details.how-to p { margin: 0 0 8px 0; }
+
+@media (max-width: 900px) {
+  .record-band { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .rb-num { font-size: 64px; }
+  .rb-num small { margin-left: 10px; }
+  .rb-num.rb-wait { font-size: 40px; }
+  .rb-side .stat { min-width: 0; flex: 1; }
+  .rb-side .stat-value { font-size: 28px; }
+  .bet-cards { gap: 8px; }
+  .bet-card { padding: 12px 10px 12px 12px; }
+  .bet-when, .bet-sub { font-size: 11px; }
+  .bet-pick { font-size: 13px; }
+  .bet-pick b { font-size: 19px; }
+  .bet-pct { font-size: 36px; }
+  .pl-line {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "match res" "pick conf";
+    gap: 6px 12px;
+    padding: 12px 4px;
+  }
+  .pl-match { grid-area: match; }
+  .pl-pick { grid-area: pick; }
+  .pl-conf { grid-area: conf; min-width: 150px; }
+  .pl-res { grid-area: res; }
+  .pick-list.ranked .pl-line {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    grid-template-areas: "rank match res" "rank conf conf";
+  }
+  .pick-list.ranked .pl-rank { grid-area: rank; align-self: start; }
+  .pl-more { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px 4px 14px 4px; }
+  .pl-note { padding: 0 4px 14px 4px; }
+}
+@media (max-width: 400px) {
+  .bet-cards { grid-template-columns: minmax(0, 1fr); }
+  .bet-card { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "when pct" "pick pct" "sub pct"; column-gap: 12px; }
+  .bet-when { grid-area: when; } .bet-pick { grid-area: pick; } .bet-sub { grid-area: sub; }
+  .bet-pct { grid-area: pct; align-self: center; margin: 0; }
 }
 
 /* ---------- MLB additions ---------- */

@@ -37,6 +37,7 @@ dist/ directory - the workflow's own steps upload and deploy it.
 
 from html import escape
 import math
+import re
 import pandas as pd
 import numpy as np
 import games as games_mod
@@ -120,11 +121,20 @@ def team_info(sport):
             for _, r in df.iterrows():
                 key = r[sport["team_abbr_col"]]
                 info[key] = {
-                    "color": r[sport["team_color_col"]], "color2": r[sport["team_color2_col"]], "logo": r[sport["team_logo_col"]],
+                    "color": r[sport["team_color_col"]], "color2": r[sport["team_color2_col"]],
+                    "logo": espn_logo(r[sport["team_logo_col"]]),
                     "short": r[short_col] if short_col else key,
                 }
         _TEAM_INFO[slug] = info
     return _TEAM_INFO[slug]
+
+def espn_logo(url):
+    """CollegeFootballData.com's logo URLs name the ESPN team id, but some of
+    its images (Miami, Washington, Indiana, Cincinnati, Texas Tech...) showed
+    as blank squares on the site. ESPN serves the same logo by that id, the
+    one the scoreboard strip already uses, so link that instead."""
+    m = re.search(r"collegefootballdata\.com/logos/\d+/(\d+)\.png", str(url))
+    return f"https://a.espncdn.com/i/teamlogos/ncaa/500/{m.group(1)}.png" if m else url
 
 def team_color(sport, abbr):
     return team_info(sport).get(abbr, {}).get("color", _FALLBACK_TEAM_COLOR)
@@ -444,8 +454,8 @@ def page_shell(sport, title, active_tab, body_html):
   </main>
   <footer class="site-footer">
     <div class="footer-brand">{sport["wordmark"]} <span>Edge</span></div>
-    <p class="footer-text">Our model's lines come from team efficiency stats, with weights fit on past seasons and
-      checked against seasons it wasn't fit on. {sport["data_source_text"]}</p>
+    <p class="footer-text">{sport["data_source_text"]} How the model works is on the
+      <a href="model.html">Model tab</a>.</p>
     <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
       predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
@@ -513,73 +523,180 @@ def day_label(gameday):
         return str(gameday)
     return f"{d:%A}, {d:%b} {d.day}"
 
-def render_week_table(week_games):
-    """The Home page's game table, in kickoff order under a header per day,
-    kept to what a bettor needs: our moneyline
-    pick and its chance to win, our spread next to Vegas's, and our pick
-    against the Vegas spread with its chance to cover. Once a game is final,
-    the score and whether each pick hit. (The Teams tab keeps the fuller view
-    with totals.)"""
+def conf_html(prob):
+    """How sure we are: a bar and the percentage."""
+    p = round(prob * 100)
+    return (f'<span class="pl-conf"><span class="pl-bar" aria-hidden="true"><span style="width:{p}%"></span></span>'
+            f'<span class="pl-pct">{p}%</span></span>')
+
+def kick_time(g):
+    """'8:15 PM ET' from a game's kickoff sort key, or '' without a time."""
+    key = g.get("kick_sort") or ""
+    if len(key) < 16 or key.endswith("99:99"):
+        return ""
+    hh, mm = int(key[11:13]), key[14:16]
+    return f"{hh % 12 or 12}:{mm} {'AM' if hh < 12 else 'PM'} ET"
+
+def game_pick(g):
+    """The one pick a game row shows: our moneyline pick (team, price, our
+    chance) when the book has a moneyline, else the team our model favors."""
+    ml = g.get("ml")
+    if ml:
+        return {"team": ml["team"], "other": ml["other"], "prob": ml["our"], "value": ml["value"],
+                "hit": {"W": True, "L": False}.get(ml["result"])}
+    other = team_short_label(g, g["favored_team"])
+    return {"team": g["favored_team"], "other": other, "prob": g["win_pct"], "value": False, "hit": g["correct"]}
+
+def team_short_label(g, team):
+    """The other team's short name in a game dict, given one team's."""
+    return g["away_label"] if team == g["home_label"] else g["home_label"]
+
+def game_row(sport, g):
+    """One game in the Home tab's list: teams and kickoff (or the final),
+    our pick and how sure we are, and the result once graded. The Vegas
+    line, our spread, the moneyline price and the spread pick open on tap."""
+    pick, ml, sp = game_pick(g), g.get("ml"), g.get("spread")
+    logos = {t: team_logo(sport, t) for t in (g["away_team"], g["home_team"])}
+    img = lambda t: (f'<img class="team-logo" src="{logos[t]}" alt="" loading="lazy" '
+                     f'onerror="this.style.display=\'none\'">' if logos[t] else "")
+    teams = (f'<span class="pl-teams">{img(g["away_team"])}{g["away_label"]} <i>@</i> '
+             f'{img(g["home_team"])}{g["home_label"]}</span>')
+    if g["graded"] and g["away_score"] is not None:
+        sub = f'Final, {g["away_score"]}-{g["home_score"]}'
+    else:
+        sub = kick_time(g) or "Time to be announced"
+    value = f' {pill("VALUE", "positive")}' if pick["value"] else ""
+    res = ""
+    if g["graded"] and pick["hit"] is not None:
+        res = pill("HIT", "positive") if pick["hit"] else pill("MISS", "danger")
+    elif g["graded"]:
+        res = pill("NO DECISION", "market")
+
+    if ml:
+        ml_dd = (f'{ml["team"]} {moneyline.format_price(ml["price"])}'
+                 f'<small>{ml_payout(ml["price"])}. We say {ml["our"]:.0%}, the price says {ml["book"]:.0%}.</small>')
+        if ml["units"] is not None and ml["result"] in ("W", "L"):
+            ml_dd += f'<small>{moneyline.fmt_units(ml["units"])} on 1 unit</small>'
+    else:
+        ml_dd = '<span class="faint">No moneyline posted</span>'
+    vegas = (f'{g["vegas_favored_team"]} -{g["vegas_favored_by"]:.1f}' if g["vegas_favored_team"]
+             else '<span class="faint">No line posted</span>')
+    if sp:
+        cover = ""
+        if g["graded"] and g.get("covered") is not None:
+            cover = " " + (pill("COVERED", "positive") if g["covered"] else pill("DIDN'T COVER", "danger"))
+        spread_dd = f'{sp["team"]} {sp["line"]}{cover}<small>{sp["prob"]:.0%} chance to cover</small>'
+    else:
+        spread_dd = '<span class="faint">None without a Vegas line</span>'
+    total = f'<small>Total {g["total"]:.1f}' + (f', Vegas {g["vegas_total"]:.1f}' if g.get("vegas_total") else "") + "</small>"
+    lock = g.get("lock_html", "")
+    return f"""<li><details class="pl-row"><summary class="pl-line">
+      <span class="pl-match">{teams}<span class="pl-sub">{sub}</span></span>
+      <span class="pl-pick"><b>{pick["team"]}</b>{value}</span>
+      {conf_html(pick["prob"])}
+      <span class="pl-res">{res}</span>
+    </summary>
+    <dl class="pl-more">
+      <div><dt>Moneyline</dt><dd>{ml_dd}</dd></div>
+      <div><dt>Our spread</dt><dd>{g["favored_team"]} -{g["favored_by"]:.1f}{total}</dd></div>
+      <div><dt>Vegas spread</dt><dd>{vegas}</dd></div>
+      <div><dt>Spread pick</dt><dd>{spread_dd}</dd></div>
+    </dl>{f'<div class="pl-note">{lock}</div>' if lock else ""}</details></li>"""
+
+HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
+  <p>The pick is the team we expect to win, and the percentage is our chance it does. When the book has a
+    moneyline, that's the team we'd bet at its price, and {value} means our chance beats the price by 6 or more
+    points.</p>
+  <p>Tap a game for the rest: the moneyline price and what it pays, our spread next to Vegas's, and our pick
+    against the Vegas spread with its chance to cover. Lines and picks lock {lock}. Hit or miss
+    shows once a game is final. The Model tab explains how the numbers are made.</p>
+</div></details>"""
+
+def render_week_list(sport, week_games):
+    """The Home tab's games for the week, in kickoff order under a header per
+    day, one row per game (see game_row)."""
     if not week_games:
         return '<div class="empty-state">No games this week.</div>'
-
-    def two_line(top, sub, top_class="accent"):
-        return (f'<span class="ml-pick"><span class="ml-line"><span class="{top_class}">{top}</span></span>'
-                f'<span class="ml-sub">{sub}</span></span>')
-
-    rows = ""
-    last_day = None
+    rows, last_day = "", None
     for g in sorted(week_games, key=lambda g: g.get("kick_sort") or "9999"):
         if g.get("gameday") and g["gameday"] != last_day:
             last_day = g["gameday"]
-            rows += f'<tr class="day-header"><td colspan="6">{day_label(last_day)}</td></tr>'
-        ml, sp = g.get("ml"), g.get("spread")
-        if ml:
-            value = f' {pill("VALUE", "positive")}' if ml["value"] else ""
-            ml_html = two_line(f'{ml["team"]} {moneyline.format_price(ml["price"])}{value}', f'{ml["our"]:.0%} to win')
-        else:  # no book moneyline: still show who we pick and how likely
-            ml_html = two_line(g["favored_team"], f'{g["win_pct"]:.0%} to win')
-        ml_prob = ml["our"] if ml else g["win_pct"]
-        sp_html = (two_line(f'{sp["team"]} {sp["line"]}', f'{sp["prob"]:.0%} to cover')
-                   if sp else f'<span class="faint">{DASH}</span>')
-        vegas_html = (f'<span class="market-color">{g["vegas_favored_team"]} -{g["vegas_favored_by"]:.1f}</span>'
-                      if g["vegas_favored_team"] else f'<span class="faint">{DASH}</span>')
+            rows += f'<li class="pl-day">{day_label(last_day)}</li>'
+        rows += game_row(sport, g)
+    lock = "at kickoff, or Friday 9 PM ET for weekend games" if sport["slug"] == "cfb" else "at kickoff"
+    return (f'<ul class="pick-list">{rows}</ul>'
+            + HOW_TO_READ.format(value=pill("VALUE", "positive"), lock=lock))
 
-        if g["graded"]:
-            # The score is already in the matchup bar; this says how each pick did.
-            ml_hit = ({"W": True, "L": False}.get(ml["result"]) if ml else g["correct"])
-            marks = []
-            if ml_hit is not None:
-                marks.append(pill("ML HIT", "positive") if ml_hit else pill("ML MISS", "danger"))
-            if g.get("covered") is not None:
-                marks.append(pill("ATS HIT", "positive") if g["covered"] else pill("ATS MISS", "danger"))
-            result_html = f'<span class="ml-pick">{"".join(marks)}</span>' if marks else f'<span class="faint">{DASH}</span>'
-        else:
-            result_html = f'<span class="faint">{DASH}</span>'
+def best_bets(week_games, n=3):
+    """This week's most confident picks among games not yet played."""
+    open_games = [g for g in week_games if not g["graded"]]
+    top = sorted(open_games, key=lambda g: -game_pick(g)["prob"])[:n]
+    cards = ""
+    for g in top:
+        pick = game_pick(g)
+        when = day_label(g["gameday"]).split(",")[0] if g.get("gameday") else ""
+        when = f"{when[:3]} {kick_time(g)}".strip() if when else kick_time(g)
+        value = pill("VALUE", "positive") if pick["value"] else ""
+        cards += f"""<article class="bet-card">
+      <div class="bet-when">{when}</div>
+      <div class="bet-pick"><b>{pick["team"]}</b> over {pick["other"]}</div>
+      <div class="bet-pct">{round(pick["prob"] * 100)}<small>%</small></div>
+      <div class="bet-sub">chance to win {value}</div>
+    </article>"""
+    return f'<div class="bet-cards">{cards}</div>' if cards else ""
 
-        rows += f"""<tr>
-          <td data-key="matchup" data-value="{g['away_team']} @ {g['home_team']}">{g['matchup_html']}{g.get('lock_html', '')}</td>
-          <td data-key="ml" data-value="{ml_prob:.3f}" data-label="Moneyline pick" class="num ml-cell">{ml_html}</td>
-          <td data-key="ourline" data-value="{g['favored_by']:.2f}" data-label="Our spread" class="num">{g['favored_team']} -{g['favored_by']:.1f}</td>
-          <td data-key="vegas" data-value="{g['vegas_favored_by'] if g['vegas_favored_by'] is not None else -1:.2f}" data-label="Vegas spread" class="num">{vegas_html}</td>
-          <td data-key="ats" data-value="{sp['prob'] if sp else -1:.3f}" data-label="Spread pick" class="num ml-cell">{sp_html}</td>
-          <td data-label="Result" class="num ml-cell">{result_html}</td>
-        </tr>"""
+def pick_hit(r):
+    """Whether our pick in a graded tracking-log game won: the moneyline pick
+    when the book had one (None for a tie), else the team our model favored."""
+    if pd.notna(r.get("ml_pick_side")) and pd.notna(r.get("ml_pick_price")):
+        return None if pd.isna(r.get("ml_won")) else r["ml_won"] == 1
+    return None if pd.isna(r.get("model_correct_pick")) else r["model_correct_pick"] == 1
 
-    return f"""<table class="data responsive-stack slate" data-sortable>
-      <thead><tr>
-        <th data-sort-key="matchup">Matchup</th>
-        <th data-sort-key="ml" class="num">Moneyline pick</th>
-        <th data-sort-key="ourline" class="num">Our spread</th>
-        <th data-sort-key="vegas" class="num">Vegas spread</th>
-        <th data-sort-key="ats" class="num">Spread pick</th>
-        <th class="num">Result</th>
-      </tr></thead>
-      <tbody>{rows}</tbody>
-    </table>
-    <div class="table-footnote muted">Moneyline pick is the team we pick to win, at its price, and our chance it wins.
-      {pill("VALUE", "positive")} means that chance beats the price by 6+ points. Spread pick is the side our spread
-      says will cover the Vegas spread, and our chance it covers (ATS means against the spread). Select a column header to sort.</div>"""
+def live_record(sport, log):
+    """Our record since live tracking began, added up across seasons (never
+    reset, never backfill): our pick to win in every graded game, the units
+    from betting 1 unit on each moneyline pick, and our spread picks against
+    Vegas. None before the first graded game."""
+    if log is None or log.empty or "actual_margin" not in log.columns:
+        return None
+    done = log[(log["season"] >= sport["live_tracking_start_season"]) & log["actual_margin"].notna()]
+    hits = [pick_hit(r) for _, r in done.iterrows()]
+    wins, losses = hits.count(True), hits.count(False)
+    if not wins + losses:
+        return None
+    ml = done[done["ml_pick_side"].notna() & done["ml_won"].notna()] if "ml_won" in done.columns else done.iloc[0:0]
+    ats = [spread_result(r) for _, r in done.iterrows()
+           if pd.notna(r.get("vegas_home_favored_by")) and r["model_spread"] != r["vegas_home_favored_by"]]
+    first = pd.to_datetime(done["gameday"], errors="coerce").min()
+    return {"wins": wins, "losses": losses, "pct": wins / (wins + losses),
+            "since": f"{first:%b} {first.day}, {first.year}" if pd.notna(first) else None,
+            "ml_n": len(ml), "units": float(ml["ml_units"].sum()) if len(ml) else None,
+            "ats": (ats.count(True), ats.count(False))}
+
+def record_band(sport, rec):
+    """The Home tab's first panel: our all-time record, big."""
+    eyebrow = f'<div class="rb-eyebrow">{sport["wordmark"]} Edge &middot; our picks to win</div>'
+    if not rec:
+        return f"""<section class="card record-card"><div class="record-band"><div>{eyebrow}
+      <div class="rb-num rb-wait">Starts with the first final</div>
+      <div class="rb-since">Every pick we post is graded once its game is final, and the record keeps adding up
+        from there.</div></div></div></section>"""
+    since = f"Since {rec['since']}. " if rec["since"] else ""
+    side = []
+    if rec["units"] is not None:
+        side.append((moneyline.fmt_units(rec["units"]), "Moneyline", f"1 unit on each of {rec['ml_n']} picks"))
+    aw, al = rec["ats"]
+    if aw + al:
+        side.append((f"{aw}-{al}", "Against the spread", f"covered {aw / (aw + al):.0%}"))
+    side_html = "".join(f'<div class="stat"><div class="stat-value">{v}</div><div class="stat-label">{l}</div>'
+                        f'<div class="stat-sub">{s}</div></div>' for v, l, s in side)
+    return f"""<section class="card record-card"><div class="record-band">
+      <div>{eyebrow}
+        <div class="rb-num">{rec["wins"]}-{rec["losses"]}<small>{rec["pct"]:.0%}</small></div>
+        <div class="rb-since">{since}Every pick we've posted, graded once final. It keeps adding up and never resets.</div>
+      </div>
+      <div class="rb-side">{side_html}</div>
+    </div></section>"""
 
 def build_edge_cards(sport, comparison, week_games, max_cards=3):
     if comparison is None or comparison.empty:
@@ -680,44 +797,6 @@ def build_moneyline_block(season, ml, with_label=True):
             '0.67, a loss costs 1. Ties count as no decision. This season\'s live picks only.</div>')
     return label + statline + note
 
-def build_track_record_section(sport, summary, ml_season=None, ml=None, log=None):
-    """Home's Track Record: how OUR picks - the ones in the slate table above
-    - have done this season. Moneyline picks are graded in units at the price
-    we listed; spread picks are our side against the Vegas spread. This
-    season's live picks only, never backtests."""
-    title, subtitle = "Our Track Record", "How the picks above have done this season"
-    year = (summary or {}).get("current_season_year") or ml_season
-    ours = (summary or {}).get("current_season", {}).get("model")
-    if not ours and not ml:
-        return card(title, subtitle, '<div class="empty-state">No games graded yet this season. '
-                    'Results show up here once the first picks are final.</div>')
-
-    def units(u):
-        return f"up {u:.2f} units" if u > 0 else (f"down {-u:.2f} units" if u < 0 else "even")
-
-    stats = []
-    if ml:
-        pushes = f", {ml['pushes']} no decision" if ml["pushes"] else ""
-        stats.append((ml["record"], "Moneyline picks",
-                      f"{units(ml['units'])}{pushes}"))
-    wins, losses, pushes = spread_record(log, year)
-    if wins + losses:
-        push_note = f", {pushes} push" if pushes else ""
-        stats.append((f"{wins}-{losses}", "Spread picks", f"covered {pct(wins / (wins + losses))}{push_note}"))
-    if ml and ml["value"]["n_decided"]:
-        v = ml["value"]
-        stats.append((v["record"], "Value picks", units(v["units"])))
-    if ours:
-        stats.append((str(ours["n_games"]), "Games graded", f"{year} season"))
-    statline = '<div class="statline">' + "".join(
-        f'<div class="stat"><div class="stat-value">{val}</div><div class="stat-label">{lab}</div>'
-        f'<div class="stat-sub">{sub}</div></div>' for val, lab, sub in stats) + "</div>"
-
-    note = """<div class="table-footnote">Moneyline picks: wins and losses on our pick to win, and the units you'd be
-      up or down betting 1 unit on each at the listed price. Spread picks: how often our side covered the Vegas
-      spread. Value picks are the moneyline picks tagged VALUE. Picks lock at kickoff.</div>"""
-    return card(title, subtitle, statline + note)
-
 TOP_PLAYERS = 10
 
 def anytime_td_prob(rush_tds, rec_tds):
@@ -813,15 +892,18 @@ def build_index_page(sport, games, props, comparison, accuracy_summary, log, top
     this_week_key = current_week_key(weeks)
     this_week = weeks.get(this_week_key) if this_week_key else None
     week_title = this_week["label"] if this_week else "Upcoming"
+    week_games = this_week["games"] if this_week else []
 
-    slate_html = render_week_table(this_week["games"] if this_week else [])
-    ml_season, ml = ml_record(sport, games, log)
-    track_html = build_track_record_section(sport, accuracy_summary, ml_season, ml, log)
-
-    subtitle = "Our model's pick and the Vegas line for every game this week, graded once played. The Teams tab has the full season."
+    body = record_band(sport, live_record(sport, log))
+    bets = best_bets(week_games)
+    if bets:
+        body += card(f"Most confident: {week_title}", "Our three surest picks among the games still to play", bets)
     if not weeks and sport.get("no_games_note"):
         slate_html = f'<div class="empty-state">No games available yet. {sport["no_games_note"]}</div>'
-    body = card(f"This Week's Slate: {week_title}", subtitle, slate_html) + track_html
+    else:
+        slate_html = render_week_list(sport, week_games)
+    body += card(f"Every game: {week_title}", "Tap a game for the Vegas line, our spread and the moneyline price. "
+                 "The Teams tab has the full season.", slate_html)
     return page_shell(sport, "Home", "index", body)
 
 WEEK_TYPE_LABELS = {"WC": "Wild Card", "DIV": "Divisional", "CON": "Conf. Championship", "SB": "Super Bowl", "POST": "Postseason"}
@@ -866,6 +948,7 @@ def assemble_season_weeks(sport, games, log, comparison, season):
             home_score = int(r["home_score"]) if pd.notna(r.get("home_score")) else None
             bucket["games"].append({
                 "away_team": r["away_team"], "home_team": r["home_team"],
+                "away_label": team_short(sport, r["away_team"]), "home_label": team_short(sport, r["home_team"]),
                 "matchup_html": matchup_bar(sport, r["away_team"], r["home_team"], f"{away_score}-{home_score}"),
                 "favored_team": team_short(sport, pick["favored_team"]), "favored_by": round(float(pick["favored_by"]), 1),
                 "win_pct": round(float(pick["win_pct"]), 3), "total": round(float(pick["total"]), 1),
@@ -940,6 +1023,7 @@ def assemble_season_weeks(sport, games, log, comparison, season):
             kickoff = format_kickoff(r.get("weekday"), r.get("gametime"))
             bucket["games"].append({
                 "away_team": r["away_team"], "home_team": r["home_team"],
+                "away_label": team_short(sport, r["away_team"]), "home_label": team_short(sport, r["home_team"]),
                 "matchup_html": matchup_bar(sport, r["away_team"], r["home_team"], kickoff or DASH),
                 "favored_team": team_short(sport, pick["favored_team"]), "favored_by": round(float(pick["favored_by"]), 1),
                 "win_pct": round(float(pick["win_pct"]), 3), "total": round(float(pick["total"]), 1),
@@ -1271,11 +1355,12 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
             "value": f"{g['favored_team']} -{g['favored_by']:.1f}",
             "result": g["correct"] if g["graded"] else None,
         } for g in top]
-    current = (accuracy_summary or {}).get("current_season", {}).get("vegas")
-    if current:
-        summary["record"] = {"value": current["record"],
-                             "label": f"{accuracy_summary.get('current_season_year', '')} straight-up".strip(),
-                             "sub": pct(current.get("pick_accuracy"))}
+    # Our all-time record since live tracking began (the Home tab's big
+    # number), not a season's and never Vegas's.
+    rec = live_record(sport, log)
+    if rec:
+        summary["record"] = {"value": f"{rec['wins']}-{rec['losses']}", "label": "our picks to win",
+                             "sub": pct(rec["pct"]), "since": rec["since"]}
     # Optional: this season's moneyline record, same shape as "record".
     ml_season, ml = ml_record(sport, games, log)
     summary["moneyline_record"] = ({"value": ml["record"], "label": f"{ml_season} moneyline",

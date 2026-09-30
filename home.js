@@ -199,18 +199,10 @@ async function initScoreboard() {
 }
 initScoreboard();
 
-// Home page: the scoreboard strip, the record row in the hero and one card per
-// site, all filled from the summary.json each site's build publishes next to
-// its pages (/nfl/, /cfb/, /mlb/, /nba/ and /cbb/summary.json). If one fails,
-// its card keeps its link.
-
-function formatUpdated(iso) {
-  const d = new Date(iso);
-  if (isNaN(d)) return "";
-  return "Updated " + d.toLocaleString("en-US", {
-    timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
-  }) + " ET";
-}
+// Home page: the Board, one row per site with its all-time record and top
+// pick, filled from the summary.json each site's build publishes next to its
+// pages (/nfl/, /cfb/, /mlb/, /nba/ and /cbb/summary.json). If one fails, its
+// row keeps its link.
 
 function formatRetrained(iso) {
   const d = new Date(iso);
@@ -218,77 +210,76 @@ function formatRetrained(iso) {
   return "Model retrained " + d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
 }
 
-function renderCard(box, s, summaryUrl) {
-  box.replaceChildren();
-
-  const meta = edgeNode("div", "picks-meta");
-  if (s.heading) meta.append(edgeNode("span", "picks-heading", s.heading));
-  const updated = formatUpdated(s.updated);
-  if (updated) meta.append(edgeNode("span", "picks-updated", updated));
-  box.append(meta);
-
-  if (s.picks && s.picks.length) {
-    const list = edgeNode("ol", "pick-list");
-    for (const p of s.picks) {
-      const row = edgeNode("li", "pick-row");
-      const who = edgeNode("div", "pick-who");
-      who.append(edgeNode("div", "pick-label", p.label));
-      if (p.sub) who.append(edgeNode("div", "pick-sub", p.sub));
-      const val = edgeNode("div", "pick-value");
-      val.append(edgeNode("span", "pick-number", p.value));
-      // A summary can name its own result labels (NBA Edge: ["WIN", "LOSS"]).
-      const pill = edgeResultPill(p.result, s.result_labels);
-      if (pill) val.append(pill);
-      row.append(who, val);
-      list.append(row);
-    }
-    box.append(list);
-  } else {
-    box.append(edgeNode("div", "picks-status", s.empty || "No picks yet."));
-  }
-
+function renderRow(row, s) {
+  const rec = row.querySelector(".board-rec");
+  const what = row.querySelector(".board-what");
+  const top = row.querySelector(".board-top");
   if (s.record) {
-    const rec = edgeNode("div", "site-record");
-    rec.append(edgeNode("span", "record-value", s.record.value), edgeNode("span", "record-label", s.record.label));
-    if (s.record.sub) rec.append(edgeNode("span", "record-sub", s.record.sub));
-    box.append(rec);
-  } else if (s.picks && s.picks.length) {
-    // Picks are out but none graded yet this season. Summaries only carry
-    // this season's live record, never a backtest, so say that plainly.
-    box.append(edgeNode("div", "picks-status record-pending", "No results yet this season. The record starts once these games are played."));
+    rec.classList.remove("is-wait");
+    rec.replaceChildren(s.record.value);
+    if (s.record.sub) rec.append(edgeNode("small", null, s.record.sub));
+    const label = s.record.label.charAt(0).toUpperCase() + s.record.label.slice(1);
+    what.textContent = label + (s.record.since ? `, since ${s.record.since}` : "");
+  } else {
+    rec.textContent = "Soon";
+    what.textContent = "The record starts with the first graded pick.";
   }
-
-  // When the model last retrained itself, linking to that site's Model tab.
+  const p = s.picks && s.picks[0];
+  if (p) {
+    // "Today: Wed, Sep 30" reads "Today's top pick"; "Week 5" reads "Week 5 top pick".
+    const heading = s.heading || "Latest:";
+    const when = heading.includes(":") ? heading.split(":")[0] + "'s" : heading;
+    top.replaceChildren(`${when} top pick: ${p.label} `, edgeNode("b", null, p.value));
+    const pill = edgeResultPill(p.result, s.result_labels);
+    if (pill) top.append(" ", pill);
+  } else {
+    top.textContent = s.empty || "No picks yet.";
+  }
   const retrained = s.retrained ? formatRetrained(s.retrained) : "";
-  if (retrained) {
-    const link = edgeNode("a", "model-link", retrained);
-    link.href = new URL(s.model_url || "model.html", new URL(summaryUrl, location.href)).pathname;
-    link.append(edgeNode("span", "model-link-more", "See how it learns"));
-    box.append(link);
-  }
+  if (retrained) top.append(edgeNode("small", null, retrained));
 }
 
 async function initHome() {
   const summaries = await edgeFetchSummaries();
   const bySummary = new Map(EDGE_SITES.map((site, i) => [site.summary, summaries[i]]));
-
-  document.querySelectorAll(".site-card[data-summary]").forEach(card => {
-    const box = card.querySelector(".site-picks");
-    const s = bySummary.get(card.dataset.summary);
-    if (s) renderCard(box, s, card.dataset.summary);
-    else box.replaceChildren(edgeNode("div", "picks-status", "Picks couldn't load here. Open the site to see them."));
-  });
-
-  const stats = document.querySelector(".hero-stats");
-  if (!stats) return;
-  EDGE_SITES.forEach((site, i) => {
-    const r = summaries[i] && summaries[i].record;
-    if (!r) return;
-    const stat = edgeNode("div", "hero-stat");
-    const value = edgeNode("dd");
-    value.append(edgeNode("span", "hero-stat-value", r.value));
-    stat.append(edgeNode("dt", null, `${site.sport} · ${r.label}`), value);
-    stats.append(stat);
+  document.querySelectorAll(".board-row[data-summary]").forEach(row => {
+    const s = bySummary.get(row.dataset.summary);
+    if (s) renderRow(row, s);
+    else row.querySelector(".board-what").textContent = "Couldn't load here. Open the site to see its picks.";
   });
 }
 initHome();
+
+// --- Sport menu on phones (shared by every Edge site) ---
+// Adds a menu button (the current sport and three lines) to the top bar; on
+// phones the CSS hides the sport tabs behind it and drops them down as a list
+// when it's tapped. Keep this block identical in home.js (repo root),
+// nfl-cfb/web/site.js and mlb-nba-cbb/web/site.js.
+function initSportMenu() {
+  const bar = document.querySelector(".topbar-inner");
+  const nav = bar && bar.querySelector(".sport-switcher");
+  if (!nav || bar.querySelector(".menu-toggle")) return;
+  nav.id = nav.id || "sport-menu";
+  const active = nav.querySelector(".sport-tab.active");
+  const btn = edgeNode("button", "menu-toggle");
+  btn.type = "button";
+  btn.setAttribute("aria-controls", nav.id);
+  btn.setAttribute("aria-expanded", "false");
+  const icon = edgeNode("span", "menu-icon");
+  icon.setAttribute("aria-hidden", "true");
+  icon.append(edgeNode("span"), edgeNode("span"), edgeNode("span"));
+  btn.append(edgeNode("span", "menu-current", active ? active.textContent : "Sports"),
+             edgeNode("span", "sr-only", " menu"), icon);
+  const setOpen = open => {
+    bar.classList.toggle("menu-open", open);
+    btn.setAttribute("aria-expanded", String(open));
+  };
+  btn.addEventListener("click", () => setOpen(!bar.classList.contains("menu-open")));
+  document.addEventListener("click", e => { if (!bar.contains(e.target)) setOpen(false); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && bar.classList.contains("menu-open")) { setOpen(false); btn.focus(); }
+  });
+  bar.insertBefore(btn, nav);
+  bar.classList.add("has-menu");
+}
+initSportMenu();

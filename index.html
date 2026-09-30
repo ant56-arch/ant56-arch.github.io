@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -34,62 +34,52 @@
     <div class="hero-kicker">Daily model picks</div>
     <h1 class="wordmark">Sports <span>Edge</span></h1>
     <div class="tagline">Model-driven picks for the NFL, college football, MLB, the NBA and college basketball, each graded against every final score.</div>
-    <dl class="hero-stats" aria-live="polite"></dl>
   </div>
 </header>
 
 <div class="wrap">
   <main id="main-content">
-    <div class="board-head">
-      <h2 class="board-title">The Board</h2>
-      <p class="board-sub">Every site's latest picks and how this season's picks have done.</p>
-    </div>
-    <div class="site-grid">
-      <section class="site-card" data-sport="NFL" data-summary="/nfl/summary.json" aria-labelledby="nfl-title">
-        <div class="site-head">
-          <h3 id="nfl-title" class="site-name">NFL <span>Edge</span></h3>
-          <p class="site-desc">Spreads, totals and player props, graded against the closing line every week.</p>
-        </div>
-        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
-        <a class="site-link" href="/nfl/index.html">Open NFL Edge</a>
-      </section>
-
-      <section class="site-card" data-sport="NBA" data-summary="/nba/summary.json" aria-labelledby="nba-title">
-        <div class="site-head">
-          <h3 id="nba-title" class="site-name">NBA <span>Edge</span></h3>
-          <p class="site-desc">A pick and win chance for every NBA game, graded against every final score.</p>
-        </div>
-        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
-        <a class="site-link" href="/nba/index.html">Open NBA Edge</a>
-      </section>
-
-      <section class="site-card" data-sport="MLB" data-summary="/mlb/summary.json" aria-labelledby="mlb-title">
-        <div class="site-head">
-          <h3 id="mlb-title" class="site-name">MLB <span>Edge</span></h3>
-          <p class="site-desc">The chance each hitter gets at least one hit today, graded against every box score.</p>
-        </div>
-        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
-        <a class="site-link" href="/mlb/">Open MLB Edge</a>
-      </section>
-
-      <section class="site-card" data-sport="CFB" data-summary="/cfb/summary.json" aria-labelledby="cfb-title">
-        <div class="site-head">
-          <h3 id="cfb-title" class="site-name">CFB <span>Edge</span></h3>
-          <p class="site-desc">Spreads and totals for Power-conference college football, graded every week.</p>
-        </div>
-        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading this week's picks</div></div>
-        <a class="site-link" href="/cfb/index.html">Open CFB Edge</a>
-      </section>
-
-      <section class="site-card" data-sport="CBB" data-summary="/cbb/summary.json" aria-labelledby="cbb-title">
-        <div class="site-head">
-          <h3 id="cbb-title" class="site-name">CBB <span>Edge</span></h3>
-          <p class="site-desc">KenPom-style ratings for every Division I team and a pick for every game, graded against every final score.</p>
-        </div>
-        <div class="site-picks" aria-live="polite"><div class="picks-status">Loading today's picks</div></div>
-        <a class="site-link" href="/cbb/index.html">Open CBB Edge</a>
-      </section>
-    </div>
+    <section class="card">
+      <div class="card-header"><h2>The Board</h2>
+        <div class="subtitle">Each site's record since we started counting, which keeps adding up and never resets, and its top pick right now.</div></div>
+      <ul class="board" aria-live="polite">
+        <li><a class="board-row" href="/nfl/index.html" data-summary="/nfl/summary.json">
+          <span class="board-sport">NFL <span>Edge</span></span>
+          <span class="board-rec is-wait"></span>
+          <span class="board-what">Loading</span>
+          <span class="board-top"></span>
+          <span class="board-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="board-row" href="/nba/index.html" data-summary="/nba/summary.json">
+          <span class="board-sport">NBA <span>Edge</span></span>
+          <span class="board-rec is-wait"></span>
+          <span class="board-what">Loading</span>
+          <span class="board-top"></span>
+          <span class="board-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="board-row" href="/mlb/" data-summary="/mlb/summary.json">
+          <span class="board-sport">MLB <span>Edge</span></span>
+          <span class="board-rec is-wait"></span>
+          <span class="board-what">Loading</span>
+          <span class="board-top"></span>
+          <span class="board-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="board-row" href="/cfb/index.html" data-summary="/cfb/summary.json">
+          <span class="board-sport">CFB <span>Edge</span></span>
+          <span class="board-rec is-wait"></span>
+          <span class="board-what">Loading</span>
+          <span class="board-top"></span>
+          <span class="board-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="board-row" href="/cbb/index.html" data-summary="/cbb/summary.json">
+          <span class="board-sport">CBB <span>Edge</span></span>
+          <span class="board-rec is-wait"></span>
+          <span class="board-what">Loading</span>
+          <span class="board-top"></span>
+          <span class="board-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+      </ul>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -103,6 +93,6 @@
     </nav>
   </footer>
 </div>
-<script src="home.js?v=3"></script>
+<script src="home.js?v=4"></script>
 </body>
 </html>

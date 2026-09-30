@@ -368,3 +368,37 @@ function initSectionTabs() {
   window.addEventListener("resize", edges);
 }
 initSectionTabs();
+
+// --- Sport menu on phones (shared by every Edge site) ---
+// Adds a menu button (the current sport and three lines) to the top bar; on
+// phones the CSS hides the sport tabs behind it and drops them down as a list
+// when it's tapped. Keep this block identical in home.js (repo root),
+// nfl-cfb/web/site.js and mlb-nba-cbb/web/site.js.
+function initSportMenu() {
+  const bar = document.querySelector(".topbar-inner");
+  const nav = bar && bar.querySelector(".sport-switcher");
+  if (!nav || bar.querySelector(".menu-toggle")) return;
+  nav.id = nav.id || "sport-menu";
+  const active = nav.querySelector(".sport-tab.active");
+  const btn = edgeNode("button", "menu-toggle");
+  btn.type = "button";
+  btn.setAttribute("aria-controls", nav.id);
+  btn.setAttribute("aria-expanded", "false");
+  const icon = edgeNode("span", "menu-icon");
+  icon.setAttribute("aria-hidden", "true");
+  icon.append(edgeNode("span"), edgeNode("span"), edgeNode("span"));
+  btn.append(edgeNode("span", "menu-current", active ? active.textContent : "Sports"),
+             edgeNode("span", "sr-only", " menu"), icon);
+  const setOpen = open => {
+    bar.classList.toggle("menu-open", open);
+    btn.setAttribute("aria-expanded", String(open));
+  };
+  btn.addEventListener("click", () => setOpen(!bar.classList.contains("menu-open")));
+  document.addEventListener("click", e => { if (!bar.contains(e.target)) setOpen(false); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && bar.classList.contains("menu-open")) { setOpen(false); btn.focus(); }
+  });
+  bar.insertBefore(btn, nav);
+  bar.classList.add("has-menu");
+}
+initSportMenu();
