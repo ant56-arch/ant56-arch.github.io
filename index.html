@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -23,6 +23,7 @@
       <a class="sport-tab" href="/mlb/">MLB</a>
       <a class="sport-tab" href="/cfb/index.html">CFB</a>
       <a class="sport-tab" href="/cbb/index.html">CBB</a>
+      <a class="sport-tab" href="/bets.html">Best Bets</a>
       <a class="sport-tab" href="/schedule.html">Schedule</a>
     </nav>
   </div>
@@ -39,6 +40,9 @@
 
 <div class="wrap">
   <main id="main-content">
+    <section class="card last-night" id="last-night" aria-live="polite" hidden>
+      <div class="card-body"></div>
+    </section>
     <section class="card">
       <div class="card-header"><h2>The Board</h2>
         <div class="subtitle">Each site's record since we started counting, which keeps adding up and never resets, and its top pick right now.</div></div>
@@ -87,6 +91,12 @@
         </a></li>
       </ul>
     </section>
+    <section class="card" id="dollars" hidden>
+      <div class="card-header"><h2>$10 a pick</h2>
+        <div class="subtitle">If you'd bet $10 on our pick in every game with a moneyline, at the price when it locked. Live picks only. It shows the good and the bad.</div></div>
+      <div class="card-body"></div>
+    </section>
+    <p class="home-more"><a href="/bets.html">See today's best bets &rarr;</a></p>
   </main>
 
   <footer class="site-footer">
@@ -100,6 +110,6 @@
     </nav>
   </footer>
 </div>
-<script src="home.js?v=5"></script>
+<script src="home.js?v=6"></script>
 </body>
 </html>

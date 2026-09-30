@@ -252,6 +252,293 @@ async function initHome() {
 }
 initHome();
 
+// --- Best Bets, "$10 a pick" and Last night (home site only) ---
+// Each site's summary.json carries "slate" (games still to play, with our
+// pick, its moneyline price and a link to the game's page), "units" (the
+// running total of 1 unit on every graded moneyline pick) and "last" (the
+// latest day's results). Money is $10 a pick: units times 10.
+const EDGE_STAKE = 10;
+const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", CBB: "#8fd3c4" };
+const EDGE_ET = { timeZone: "America/New_York" };
+
+function edgeMoney(units) {
+  const d = Math.round(units * EDGE_STAKE * 100) / 100;
+  return (d < 0 ? "−" : "+") + "$" + Math.abs(d).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function edgePrice(p) {
+  return p > 0 ? "+" + p : "−" + Math.abs(p);
+}
+
+function edgeDayKey(d) {
+  return d.toLocaleDateString("en-CA", EDGE_ET);  // YYYY-MM-DD in Eastern time
+}
+
+function edgeShortDay(iso) {
+  const d = new Date(iso + "T12:00:00Z");
+  return d.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" });
+}
+
+// "Today 8:00 PM", "Sat 12:00 PM" in Eastern time.
+function edgeWhen(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const day = edgeDayKey(d) === edgeDayKey(new Date()) ? "Today"
+    : d.toLocaleDateString("en-US", { ...EDGE_ET, weekday: "short" });
+  return day + " " + d.toLocaleTimeString("en-US", { ...EDGE_ET, hour: "numeric", minute: "2-digit" });
+}
+
+function edgeUpcoming(summaries) {
+  const now = Date.now();
+  const out = [];
+  summaries.forEach((s, i) => (s && s.slate || []).forEach(g => {
+    const t = new Date(g.start).getTime();
+    if (!g.start || t > now) out.push({ ...g, site: EDGE_SITES[i], t: t || Infinity });
+  }));
+  return out.sort((a, b) => a.t - b.t);
+}
+
+function edgeValueRow(g) {
+  const row = edgeNode("a", "vb-row");
+  row.href = g.url;
+  row.append(edgeNode("span", "vb-sport", g.sport));
+  const who = edgeNode("span", "vb-pick");
+  who.append(edgeNode("b", null, `${g.pick} ${edgePrice(g.price)}`), edgeNode("small", null, `over ${g.other}`));
+  const bar = edgeNode("span", "vb-bar");
+  const track = edgeNode("span", "vb-track");
+  track.setAttribute("aria-hidden", "true");
+  const fill = edgeNode("span", "vb-fill");
+  fill.style.width = g.prob + "%";
+  const tick = edgeNode("span", "vb-tick");
+  tick.style.left = g.book + "%";
+  track.append(fill, tick);
+  const say = edgeNode("small");
+  say.append("We say ", edgeNode("b", "vb-ours", Math.round(g.prob) + "%"), ", the price says ",
+             edgeNode("b", "vb-book", Math.round(g.book) + "%"));
+  bar.append(track, say);
+  const when = edgeNode("span", "vb-when");
+  const pays = g.price >= 100 ? `$100 wins $${g.price}` : `Bet $${-g.price} to win $100`;
+  when.append(edgeNode("span", null, edgeWhen(g.start) || "Time TBA"), edgeNode("small", null, pays));
+  row.append(who, bar, when);
+  return row;
+}
+
+function edgeSureCard(eyebrow, name, pct, sub, href) {
+  const card = edgeNode("a", "bet-card");
+  card.href = href;
+  const pick = edgeNode("div", "bet-pick");
+  pick.append(edgeNode("b", null, name));
+  const big = edgeNode("div", "bet-pct", String(Math.round(pct)));
+  big.append(edgeNode("small", null, "%"));
+  card.append(edgeNode("div", "bet-when", eyebrow), pick, big, edgeNode("div", "bet-sub", sub));
+  return card;
+}
+
+async function initBestBets() {
+  const list = document.getElementById("value-picks");
+  const sure = document.getElementById("surest-picks");
+  if (!list || !sure) return;
+  const summaries = await edgeFetchSummaries();
+  const games = edgeUpcoming(summaries);
+  const value = games.filter(g => g.value && g.price != null && g.book != null);
+  if (value.length) list.replaceChildren(...value.map(edgeValueRow));
+  else list.replaceChildren(edgeNode("div", "empty-state",
+    "No value picks right now. They show up here when our chance beats a betting price by 6 points or more."));
+
+  const cards = [];
+  EDGE_SITES.forEach((site, i) => {
+    const s = summaries[i];
+    if (!s) return;
+    if (site.sport === "MLB") {
+      const p = (s.picks || [])[0];
+      if (p && p.result == null && (s.heading || "").startsWith("Today")) {
+        cards.push(edgeSureCard("MLB hitter · today", p.label, parseFloat(p.value), `to get a hit, ${p.sub}`, site.href));
+      }
+    }
+    const top = games.filter(g => g.site === site).sort((a, b) => b.prob - a.prob)[0];
+    if (top) {
+      const label = site.sport === "MLB" ? "MLB game" : site.sport;
+      const when = edgeWhen(top.start);
+      cards.push(edgeSureCard(`${label} · ${when.split(" ")[0] || "soon"}`, top.pick, top.prob,
+                              `${top.at === "vs" ? "vs" : (top.pick === top.home ? "vs" : "at")} ${top.other}${when ? ", " + when.split(" ").slice(1).join(" ") : ""}`,
+                              top.url));
+    }
+  });
+  if (cards.length) sure.replaceChildren(...cards);
+  else sure.replaceChildren(edgeNode("div", "empty-state", "No games coming up right now."));
+  const stamp = document.getElementById("bets-updated");
+  if (stamp) stamp.textContent = `${games.length} games still to play across every sport`;
+}
+initBestBets();
+
+// The running total of $10 on every moneyline pick, one step line per sport.
+function edgeMoneyChart(lines) {
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 760, H = 300, L = 60, R = 176, T = 16, B = 34;
+  const day = s => new Date(s + "T12:00:00Z").getTime();
+  const DAY = 86400000;
+  const d0 = Math.min(...lines.map(l => day(l.units.series[0][0]) - DAY));
+  let d1 = Math.max(...lines.map(l => day(l.units.series[l.units.series.length - 1][0])));
+  if (d1 <= d0) d1 = d0 + DAY;
+  const vals = [0].concat(...lines.map(l => l.units.series.map(p => p[1] * EDGE_STAKE)));
+  const span = Math.max(...vals) - Math.min(...vals) || 1;
+  const step = [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000].find(s => span / s <= 6) || 10000;
+  const lo = Math.min(0, Math.floor(Math.min(...vals) / step) * step);
+  const hi = Math.max(Math.ceil(Math.max(...vals) / step) * step, lo + step);
+  const x = t => L + (W - L - R) * (t - d0) / (d1 - d0);
+  const y = v => T + (H - T - B) * (hi - v) / (hi - lo);
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Running total from $10 on every moneyline pick: " +
+    lines.map(l => `${l.name} ${edgeMoney(l.units.units)} over ${l.units.picks} picks`).join("; "));
+  const el = (tag, attrs, text) => {
+    const n = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
+    if (text != null) n.textContent = text;
+    svg.append(n);
+    return n;
+  };
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v === 0 ? "z" : "g" });
+    el("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end", class: "t" },
+       v === 0 ? "$0" : (v > 0 ? "+" : "−") + "$" + Math.abs(v).toLocaleString("en-US"));
+  }
+  const fmt = t => new Date(t).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", day: "numeric" });
+  const days = Math.round((d1 - d0) / DAY);
+  const ticks = days >= 2 ? [d0, d0 + Math.floor(days / 2) * DAY, d1] : [d0, d1];
+  ticks.forEach(t => el("text", { x: x(t), y: H - 10, "text-anchor": "middle", class: "t" }, fmt(t)));
+  const ends = lines.map((l, i) => [y(l.units.series[l.units.series.length - 1][1] * EDGE_STAKE), i]).sort((a, b) => a[0] - b[0]);
+  const placed = {};
+  let last = -99;
+  ends.forEach(([yy, i]) => { last = Math.max(yy, last + 16); placed[i] = last; });
+  lines.forEach((l, i) => {
+    const pts = [[day(l.units.series[0][0]) - DAY, 0]].concat(l.units.series.map(p => [day(p[0]), p[1] * EDGE_STAKE]));
+    let d = "";
+    pts.forEach(([t, v], k) => { d += k ? ` H${x(t).toFixed(1)} V${y(v).toFixed(1)}` : `M${x(t).toFixed(1)},${y(v).toFixed(1)}`; });
+    d += ` H${x(d1).toFixed(1)}`;
+    const endV = pts[pts.length - 1][1];
+    el("path", { d, fill: "none", style: `stroke:${l.color}`, "stroke-width": 2.5, "stroke-linejoin": "round" });
+    el("circle", { cx: x(d1), cy: y(endV), r: 4, style: `fill:${l.color}` });
+    el("text", { x: x(d1) + 10, y: placed[i] + 4, class: "lab", style: `fill:${l.color}` },
+       `${l.name} ${edgeMoney(l.units.units)}`);
+  });
+  const wrap = edgeNode("div", "money-chart");
+  wrap.append(svg);
+  return wrap;
+}
+
+async function initDollars() {
+  const box = document.getElementById("dollars");
+  if (!box) return;
+  const summaries = await edgeFetchSummaries();
+  const lines = [];
+  EDGE_SITES.forEach((site, i) => {
+    const u = summaries[i] && summaries[i].units;
+    if (u && u.series && u.series.length) {
+      lines.push({ name: site.sport === "MLB" ? "MLB games" : site.sport, color: EDGE_LINE_COLORS[site.sport], units: u, href: site.href });
+    }
+  });
+  if (!lines.length) return;
+  const total = lines.reduce((a, l) => a + l.units.units, 0);
+  const picks = lines.reduce((a, l) => a + l.units.picks, 0);
+  const tiles = edgeNode("div", "money-tiles");
+  const tile = (label, units, sub, href) => {
+    const t = edgeNode(href ? "a" : "div", "money-tile");
+    if (href) t.href = href;
+    t.append(edgeNode("span", "mt-label", label), edgeNode("span", "mt-num " + (units >= 0 ? "is-up" : "is-down"), edgeMoney(units)),
+             edgeNode("span", "mt-sub", sub));
+    return t;
+  };
+  tiles.append(tile("All sports", total, `${picks} picks, $${(picks * EDGE_STAKE).toLocaleString("en-US")} risked`));
+  lines.forEach(l => tiles.append(tile(l.name, l.units.units,
+    `${l.units.wins}-${l.units.losses} since ${edgeShortDay(l.units.since).replace(/^\w+, /, "")}`, l.href)));
+  const missing = EDGE_SITES.filter(site => site.sport !== "MLB" && !lines.some(l => l.name === site.sport)).map(s => s.sport);
+  const note = edgeNode("div", "table-footnote",
+    "MLB hitter picks have no betting price, so they aren't in this." +
+    (missing.length ? ` ${missing.join(" and ")} join with their first graded pick.` : ""));
+  box.querySelector(".card-body").replaceChildren(tiles, edgeMoneyChart(lines), note);
+  box.hidden = false;
+}
+initDollars();
+
+// Last night: every sport's latest results in one strip at the top of the home page.
+async function initLastNight() {
+  const box = document.getElementById("last-night");
+  if (!box) return;
+  const summaries = await edgeFetchSummaries();
+  const lasts = [];
+  EDGE_SITES.forEach((site, i) => { const l = summaries[i] && summaries[i].last; if (l) lasts.push({ site, last: l }); });
+  if (!lasts.length) return;
+  const latest = lasts.map(l => l.last.date).sort().pop();
+  const today = edgeDayKey(new Date());
+  const ago = d => Math.round((new Date(today + "T12:00:00Z") - new Date(d + "T12:00:00Z")) / 86400000);
+  if (ago(latest) > 3) return;  // nothing recent: offseason or a quiet stretch
+  const recent = lasts.filter(l => ago(l.last.date) - ago(latest) <= 2);
+  const yesterday = ago(latest) === 1;
+  let wins = 0, losses = 0, units = 0, bets = 0;
+  const rows = edgeNode("div", "ln-rows");
+  const addRow = (label, items, date, href) => {
+    const w = items.filter(it => it.hit).length;
+    wins += w; losses += items.length - w;
+    const row = edgeNode("div", "ln-row");
+    const name = edgeNode("a", "ln-sport");
+    name.href = href;
+    name.append(edgeNode("b", null, label), edgeNode("span", null, `${w}-${items.length - w}`));
+    if (date !== latest) name.append(edgeNode("small", null, edgeShortDay(date).split(",")[0]));
+    const list = edgeNode("span", "ln-items");
+    items.forEach(it => {
+      const item = edgeNode(it.url ? "a" : "span", "ln-item " + (it.hit ? "is-hit" : "is-miss"));
+      if (it.url) item.href = it.url;
+      item.append(edgeNode("span", "ln-mark", it.hit ? "✓" : "✗"));
+      item.setAttribute("aria-label", (it.hit ? "Hit: " : "Miss: ") + it.text);
+      item.append(it.text);
+      list.append(item);
+    });
+    row.append(name, list);
+    rows.append(row);
+  };
+  recent.forEach(({ site, last }) => {
+    if (last.games && last.games.length) {
+      last.games.forEach(g => { if (g.units != null) { units += g.units; bets += 1; } });
+      addRow(site.sport === "MLB" ? "MLB games" : site.sport, last.games, last.date,
+             site.sport === "MLB" ? "/mlb/games.html" : site.href);
+    }
+    if (last.hits && last.hits.length) {
+      addRow("MLB hits", last.hits.map(h => ({ hit: h.hit, text: `${h.name.split(" ").slice(1).join(" ") || h.name} ${h.line}` })),
+             last.date, site.href);
+    }
+  });
+  if (!rows.children.length) return;
+
+  // Next up: each sport's next game day still to come.
+  const next = [];
+  const seen = new Set();
+  edgeUpcoming(summaries).forEach(g => {
+    if (seen.has(g.site.sport) || !g.start) return;
+    seen.add(g.site.sport);
+    const key = edgeDayKey(new Date(g.start));
+    const n = (summaries[EDGE_SITES.indexOf(g.site)].slate || []).filter(x => x.start && edgeDayKey(new Date(x.start)) === key).length;
+    const when = key === today ? "today" : "on " + new Date(g.start).toLocaleDateString("en-US", { ...EDGE_ET, weekday: "long" });
+    next.push(`${n} ${g.site.sport} ${n === 1 ? "game" : "games"} ${when}`);
+  });
+  if (next.length) {
+    const row = edgeNode("div", "ln-row ln-next");
+    const name = edgeNode("span", "ln-sport");
+    name.append(edgeNode("b", null, "Next up"));
+    row.append(name, edgeNode("span", "ln-items", next.join(", ") + "."));
+    rows.append(row);
+  }
+
+  const head = edgeNode("div", "ln-head");
+  head.append(edgeNode("span", "rb-eyebrow", `${yesterday ? "Last night" : "Latest results"} · ${edgeShortDay(latest)}`),
+              edgeNode("span", "ln-num", `${wins}-${losses}`));
+  if (bets) head.append(edgeNode("span", "ln-sub", `${edgeMoney(units)} at $${EDGE_STAKE} a game pick`));
+  box.querySelector(".card-body").replaceChildren(head, rows);
+  box.hidden = false;
+}
+initLastNight();
+
 // --- Sport menu on phones (shared by every Edge site) ---
 // Adds a menu button (the current sport and three lines) to the top bar; on
 // phones the CSS hides the sport tabs behind it and drops them down as a list

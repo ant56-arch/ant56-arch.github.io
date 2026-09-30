@@ -25,8 +25,10 @@ from html import escape
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from build_site import (ET, ML_NOTE, NOW, bet_cards_html, card, conf_html, game_res, lock_note,  # noqa: E402
+from build_site import (bb_game, bb_game_pages, bb_home_parts, game_file, game_link, game_units,  # noqa: E402
+                        ET, ML_NOTE, NOW, bet_cards_html, card, conf_html, game_res, lock_note,  # noqa: E402
                         ml_day, ml_dd, ml_history, pct, pill, record_band_html, script_json, statline)
+import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
@@ -39,7 +41,7 @@ HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", None), ("MLB", f"{MLB_EDGE}/"),
                ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
-               ("Schedule", f"{HOME_URL}schedule.html")]
+               ("Best Bets", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Who wins every NBA game tonight and how likely it is, from a model graded against every final score."
 TOP_N = 3
 STRONG = 70  # win chance, in percent, that counts as a strong pick
@@ -207,7 +209,7 @@ def games_list(picks):
                    f"{p['home']} {p.get('home_record', '')}")
         value = " " + pill("VALUE", "positive") if (p.get("ml") or {}).get("value") else ""
         notes = game_notes(p)
-        note = lock_note(p)
+        note = lock_note(p) + game_link(p)
         rows += f"""<li><details class="pl-row"><summary class="pl-line">
       <span class="pl-match"><span class="pl-teams">{escape(p['away'])} <i>{at}</i> {escape(p['home'])}</span>
         <span class="pl-sub">{escape(sub)}</span></span>
@@ -259,7 +261,7 @@ def build_index(history, model):
         else:
             open_games = [p for p in day if p.get("correct") is None and not p.get("void")]
             bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:TOP_N],
-                                  lambda p: f"{tip_time(p)} ET")
+                                  lambda p: f"{tip_time(p)} ET", game_file)
             if bets:
                 body += card("Most confident tonight", "The model's surest picks among games still to play", bets)
         body += card(f"{heading}: {day_label(latest)}", "Tap a game for the moneyline, the projected margin and "
@@ -378,7 +380,8 @@ def charts_html(data):
 
 def build_accuracy(history, model):
     picks = sorted(graded(history["picks"]), key=lambda p: p["date"])
-    parts = []
+    parts = [card(f"${extras.STAKE} a pick", f"What ${extras.STAKE} on every moneyline pick would have made so far",
+                  extras.dollars_body(game_units(history["picks"])))]
     charts = False
     if picks:
         weeks = defaultdict(list)
@@ -510,6 +513,19 @@ def build_model(model, runs):
 
 
 # ── Home page summary ────────────────────────────────────────────────────────
+def game_facts(p):
+    notes = game_notes(p)
+    return [("Projected", f"{escape(p['pick'])} by {p['margin']:.1f}", "points, from the model's ratings"),
+            ("Injuries and rest", escape(notes) or '<span class="faint">Nothing notable</span>', "")]
+
+
+def all_games(history):
+    """Every pick in the shared game shape (extras.py), for game pages and the home site."""
+    return [bb_game(p, "NBA", "nba",
+                    lambda p, side: f"https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/{p[side].lower()}.png",
+                    game_facts) for p in history["picks"]]
+
+
 def build_summary(history, model):
     """summary.json for the NBA card on the home page (github.com/ant56-arch/ant56-arch.github.io)."""
     picks = history["picks"]
@@ -539,6 +555,7 @@ def build_summary(history, model):
             summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": "moneyline",
                                     "sub": f"{moneyline.units_text(ml['units'])}, {ml['roi']:+.1%} ROI"}
     # Only picks actually made count here, never last season's backtest.
+    bb_home_parts(summary, picks, all_games(history))
     return summary
 
 
@@ -559,6 +576,7 @@ def main():
         "terms.html": games_mod.legal_redirect("terms"),
         "privacy.html": games_mod.legal_redirect("privacy"),
     }
+    pages.update(bb_game_pages(all_games(history), page_shell))
     for name, html in pages.items():
         with open(os.path.join(OUT_DIR, name), "w") as f:
             f.write(html)
