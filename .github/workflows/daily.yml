@@ -33,6 +33,7 @@ on:
 
 permissions:
   contents: write
+  actions: write  # dispatches the MLB hitter retrain on a cold stretch
 
 concurrency:
   group: mlb-edge
@@ -105,11 +106,26 @@ jobs:
         continue-on-error: true
         run: python cbb/research/train.py
 
+      # Cold-stretch check (model_watch.py at the repo root): each sport's latest
+      # live picks against what its model expected, saved to model_watch.json. The
+      # game models above already retrain early on an alarm; the MLB hitter model
+      # retrains in the research workflow, so this dispatches it.
+      - name: Check for cold stretches
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python ../model_watch.py
+          if [ "${GITHUB_REF_NAME}" = main ] && [ "$(python ../model_watch.py --due mlb_hits)" = yes ]; then
+            gh workflow run research_pull.yml --ref main -f trigger="cold stretch"
+          fi
+
       - name: Commit picks history
         run: |
           git config user.name "MLB Edge Bot"
           git config user.email "actions@github.com"
           git add picks_history.json nba/picks_history.json nba/data/ nba/model_weights.json
+          [ -f ../model_watch.json ] && git add ../model_watch.json
           [ -f nba/model_history.json ] && git add nba/model_history.json
           git add teams/picks_history.json teams/data/ teams/model_weights.json
           [ -f teams/model_history.json ] && git add teams/model_history.json

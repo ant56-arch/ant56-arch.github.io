@@ -6,6 +6,8 @@ name: Research Data Pull + Retrain
 # and only switches how it's built when the switch wins on held-out recent
 # games. Does nothing in the offseason, when there are no new games. Every run
 # appends to model_history.json. Run it by hand to force a retrain.
+# daily.yml also dispatches it early when the hitter picks hit a cold
+# stretch (model_watch.py at the repo root).
 
 on:
   schedule:
@@ -17,6 +19,9 @@ on:
         required: false
       cutoff_date:
         description: "Last date to include, YYYY-MM-DD (blank = yesterday)"
+        required: false
+      trigger:
+        description: "Leave blank. daily.yml sets \"cold stretch\" when the hitter picks slump (model_watch.py)"
         required: false
 
 concurrency:
@@ -60,7 +65,10 @@ jobs:
 
       - name: Retrain model
         env:
-          FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
+          # A hand-run forces a retrain; a cold-stretch dispatch retrains early
+          # only if model_watch.py still says it's due.
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.trigger == '' && '1' || '' }}
+          TRIGGER: ${{ inputs.trigger }}
         run: python research/train_model.py
 
       - name: Commit model and history
