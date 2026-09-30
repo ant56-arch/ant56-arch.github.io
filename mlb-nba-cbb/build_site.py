@@ -869,8 +869,7 @@ def build_games(team_history):
         body += card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
                      'update: a winner and a win chance for every game.</div>')
     record, charts = game_record(picks)
-    dollars = card(f"${extras.STAKE} a pick", f"What ${extras.STAKE} on every game pick's moneyline would have made "
-                   "so far", extras.dollars_body(game_units(picks), "game pick"))
+    dollars = card(f"${extras.STAKE} a pick", f"${extras.STAKE} on the team we pick to win in every game, favorite or underdog", extras.dollars_body(game_units(picks), "game pick"))
     return page_shell("Games", "games.html", body + dollars + record + game_history(picks), charts=charts)
 
 

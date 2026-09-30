@@ -133,8 +133,8 @@ def units_chart(lines, end=None):
 def dollars_body(summary, what="moneyline pick"):
     """The '$10 a pick' panel: the total, the record behind it, and the chart."""
     if not summary:
-        return (f'<div class="empty-state">This starts with the first graded {what}: ${STAKE} on every one, at '
-                'the price when it locked.</div>')
+        return (f'<div class="empty-state">This starts with the first graded {what}: ${STAKE} on the team we pick '
+                'to win, favorite or underdog, at its price right before the game started.</div>')
     s = summary
     roi = s.get("roi", s["units"] / s["picks"] if s["picks"] else 0)
     tone = "is-up" if s["units"] >= 0 else "is-down"
@@ -148,8 +148,11 @@ def dollars_body(summary, what="moneyline pick"):
                    f'<div class="stat-sub">{sub}</div></div>' for v, lab, sub in tiles)
     return (f'<div class="statline">{stat}</div>'
             + units_chart([("", "var(--ours)", s)])
-            + f'<div class="table-footnote">If you had bet ${STAKE} on our pick in every game with a moneyline, at the '
-              'price when it locked. Live picks only, never a backtest. A postponed game or a tie is no bet.</div>')
+            + f'<div class="table-footnote">Each bet is ${STAKE} on the team our model picks to win, whether it is the '
+              'favorite or the underdog, at its moneyline right before the game started. A winning favorite pays '
+              f'less than the stake (${STAKE} at &#8722;150 wins $6.67) and a winning underdog pays more '
+              f'(${STAKE} at +130 wins $13). A loss costs the ${STAKE}. Live picks only, never a backtest. A postponed '
+              'game or a tie is no bet.</div>')
 
 
 # ── Game pages ───────────────────────────────────────────────────────────────
