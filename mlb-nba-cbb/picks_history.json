@@ -15062,9 +15062,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 3,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -15110,9 +15110,9 @@
       "reason": "Batting 1st \u00b7 .284 season average",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -15158,9 +15158,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 2,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -15206,9 +15206,9 @@
       "reason": "Batting 8th \u00b7 Hitting .405 over the last 2 weeks",
       "hit_streak": 5,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -15254,9 +15254,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 0,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 2,
       "void": false
     },
     {
@@ -15302,9 +15302,9 @@
       "reason": "Batting 5th \u00b7 .283 season average",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -15350,9 +15350,9 @@
       "reason": "Batting 1st \u00b7 .289 season average",
       "hit_streak": 0,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -15398,9 +15398,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -15787,5 +15787,67 @@
       "at_bats": null,
       "void": false
     }
-  ]
+  ],
+  "baselines": {
+    "2026-09-02": {
+      "hitters": 315,
+      "with_hit": 181
+    },
+    "2026-09-03": {
+      "hitters": 184,
+      "with_hit": 105
+    },
+    "2026-09-04": {
+      "hitters": 331,
+      "with_hit": 176
+    },
+    "2026-09-05": {
+      "hitters": 303,
+      "with_hit": 175
+    },
+    "2026-09-06": {
+      "hitters": 315,
+      "with_hit": 166
+    },
+    "2026-09-07": {
+      "hitters": 218,
+      "with_hit": 115
+    },
+    "2026-09-08": {
+      "hitters": 302,
+      "with_hit": 174
+    },
+    "2026-09-09": {
+      "hitters": 301,
+      "with_hit": 187
+    },
+    "2026-09-22": {
+      "hitters": 326,
+      "with_hit": 180
+    },
+    "2026-09-23": {
+      "hitters": 334,
+      "with_hit": 180
+    },
+    "2026-09-24": {
+      "hitters": 238,
+      "with_hit": 132
+    },
+    "2026-09-25": {
+      "hitters": 334,
+      "with_hit": 191
+    },
+    "2026-09-26": {
+      "hitters": 267,
+      "with_hit": 160
+    },
+    "2026-09-27": {
+      "hitters": 294,
+      "with_hit": 161
+    },
+    "2026-09-29": {
+      "hitters": 82,
+      "with_hit": 44
+    }
+  }
 }
