@@ -3913,7 +3913,7 @@
     "starters": 0.131
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-09-29T15:31:57Z",
    "ml": {
     "team": "ATL",
@@ -3926,9 +3926,12 @@
     "home_ml": -192,
     "away_ml": 158,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.521
+   },
+   "home_runs": 5,
+   "away_runs": 3,
+   "winner": "ATL"
   },
   {
    "date": "2026-09-29",
@@ -3966,7 +3969,7 @@
     "starters": 0.001
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-09-29T19:47:40Z",
    "ml": {
     "team": "HOU",
@@ -3979,9 +3982,12 @@
     "home_ml": -123,
     "away_ml": 102,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 3,
+   "away_runs": 6,
+   "winner": "CWS"
   },
   {
    "date": "2026-09-29",
@@ -4019,7 +4025,7 @@
     "starters": 0.152
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-09-29T23:34:00Z",
    "ml": {
     "team": "NYY",
@@ -4032,9 +4038,12 @@
     "home_ml": -140,
     "away_ml": 116,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.714
+   },
+   "home_runs": 9,
+   "away_runs": 0,
+   "winner": "NYY"
   },
   {
    "date": "2026-09-29",
@@ -4072,7 +4081,7 @@
     "starters": 0.03
    },
    "model": "2026-09-23T16:14:07+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-09-30T01:24:44Z",
    "ml": {
     "team": "SD",
@@ -4085,9 +4094,12 @@
     "home_ml": -130,
     "away_ml": 108,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.769
+   },
+   "home_runs": 8,
+   "away_runs": 0,
+   "winner": "SD"
   },
   {
    "date": "2026-09-30",
@@ -4117,23 +4129,23 @@
     "ip": 207.0
    },
    "pick": "PHI",
-   "prob": 50.5,
-   "home_prob": 49.5,
+   "prob": 50.1,
+   "home_prob": 49.9,
    "factors": {
     "home_field": 0.141,
-    "elo": 0.008,
+    "elo": 0.022,
     "starters": -0.168
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T04:43:01Z",
+   "set_at": "2026-09-30T05:02:11Z",
    "ml": {
     "team": "PHI",
     "side": "away",
     "price": -117,
-    "prob": 50.5,
+    "prob": 50.1,
     "book_prob": 51.5,
-    "edge": -1.0,
+    "edge": -1.4,
     "value": false,
     "home_ml": -103,
     "away_ml": -117,
@@ -4170,23 +4182,23 @@
     "ip": 142.3
    },
    "pick": "HOU",
-   "prob": 56.6,
-   "home_prob": 56.6,
+   "prob": 56.1,
+   "home_prob": 56.1,
    "factors": {
     "home_field": 0.141,
-    "elo": -0.002,
+    "elo": -0.024,
     "starters": 0.127
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T04:43:01Z",
+   "set_at": "2026-09-30T05:02:11Z",
    "ml": {
     "team": "HOU",
     "side": "home",
     "price": -155,
-    "prob": 56.6,
+    "prob": 56.1,
     "book_prob": 58.1,
-    "edge": -1.5,
+    "edge": -2.0,
     "value": false,
     "home_ml": -155,
     "away_ml": 128,
@@ -4223,23 +4235,23 @@
     "ip": 169.0
    },
    "pick": "NYY",
-   "prob": 56.5,
-   "home_prob": 56.5,
+   "prob": 57.3,
+   "home_prob": 57.3,
    "factors": {
     "home_field": 0.141,
-    "elo": 0.067,
+    "elo": 0.097,
     "starters": 0.054
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T04:43:01Z",
+   "set_at": "2026-09-30T05:02:11Z",
    "ml": {
     "team": "NYY",
     "side": "home",
     "price": -136,
-    "prob": 56.5,
+    "prob": 57.3,
     "book_prob": 55.1,
-    "edge": 1.4,
+    "edge": 2.2,
     "value": false,
     "home_ml": -136,
     "away_ml": 113,
@@ -4276,16 +4288,16 @@
     "ip": 0
    },
    "pick": "SD",
-   "prob": 57.4,
-   "home_prob": 57.4,
+   "prob": 58.1,
+   "home_prob": 58.1,
    "factors": {
     "home_field": 0.141,
-    "elo": -0.024,
-    "starters": 0.179
+    "elo": 0.006,
+    "starters": 0.178
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T04:43:01Z"
+   "set_at": "2026-09-30T05:02:11Z"
   }
  ]
 }
