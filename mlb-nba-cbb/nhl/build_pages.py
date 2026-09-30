@@ -382,7 +382,7 @@ def charts_html(data):
 
 def build_accuracy(history, model):
     picks = sorted(graded(history["picks"]), key=lambda p: p["date"])
-    parts = [card(f"${extras.STAKE} a pick", f"What ${extras.STAKE} on every moneyline pick would have made so far",
+    parts = [card(f"${extras.STAKE} a pick", f"${extras.STAKE} on the team we pick to win in every game, favorite or underdog",
                   extras.dollars_body(game_units(history["picks"])))]
     charts = False
     if picks:

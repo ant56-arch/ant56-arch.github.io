@@ -1136,8 +1136,7 @@ def build_moneyline_card(sport, games, log):
 
 def build_accuracy_page(sport, log, games=None):
     games = games if games is not None else pd.DataFrame()
-    ml_card = card(f"${extras.STAKE} a pick", f"What ${extras.STAKE} on every moneyline pick would have made since we "
-                   "started tracking", extras.dollars_body(ml_units(sport, log))) + build_moneyline_card(sport, games, log)
+    ml_card = card(f"${extras.STAKE} a pick", f"${extras.STAKE} on the team we pick to win in every game, favorite or underdog", extras.dollars_body(ml_units(sport, log))) + build_moneyline_card(sport, games, log)
     live_start = sport["live_tracking_start_season"]
     graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
     if not graded.empty:
