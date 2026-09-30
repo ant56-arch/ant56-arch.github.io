@@ -1,0 +1,56 @@
+name: NHL Research Data Pull + Retrain
+
+# Pulls full NHL seasons (final scores) from ESPN, then refits the NHL
+# model and re-runs its backtest on the latest season. Optional: the daily run
+# already stores every game, rolls each finished season into one file and
+# retrains weekly. Use this to rebuild the stored seasons from scratch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "Season end years, comma-separated (2026 = 2025-26). Blank = last three."
+        required: false
+
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r research/requirements.txt
+
+      - name: Pull seasons
+        env:
+          SEASONS: ${{ inputs.seasons }}
+        run: python nhl/research/pull_seasons.py
+
+      - name: Retrain model
+        env:
+          FORCE: '1'
+        run: python nhl/research/train.py
+
+      - name: Commit data and model
+        run: |
+          git config user.name "NHL Edge Bot"
+          git config user.email "actions@github.com"
+          git add nhl/data/ nhl/model_weights.json
+          [ -f nhl/model_history.json ] && git add nhl/model_history.json
+          git diff --staged --quiet && exit 0
+          git commit -m "Refresh NHL research data and retrain model"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

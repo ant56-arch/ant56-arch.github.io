@@ -16,6 +16,8 @@ const EDGE_SITES = [
     href: "/nba/index.html", schedule: "/schedule.html#nba" },
   { sport: "MLB", summary: "/mlb/summary.json", games: "/mlb/games.json",
     href: "/mlb/", schedule: "/schedule.html#mlb" },
+  { sport: "NHL", summary: "/nhl/summary.json", games: "/nhl/games.json",
+    href: "/nhl/index.html", schedule: "/schedule.html#nhl" },
   { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
     href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
   // CBB Edge has no games.json yet, so it shows on the home page only.
@@ -90,7 +92,7 @@ async function edgeLoadGames(site) {
     if (published.top25_only) games = games.filter(g => g.away.rank || g.home.rank);
     games.forEach(g => { if (picks[g.id]) g.pick = picks[g.id]; });
     const week = live.week && live.week.number;
-    return { label: week && site.sport !== "MLB" && site.sport !== "NBA" ? `Week ${week}` : published.label,
+    return { label: week && !["MLB", "NBA", "NHL"].includes(site.sport) ? `Week ${week}` : published.label,
              games, live: true };
   }
   return { label: published.label, games: published.games || [], live: false };
@@ -258,7 +260,7 @@ initHome();
 // running total of 1 unit on every graded moneyline pick) and "last" (the
 // latest day's results). Money is $10 a pick: units times 10.
 const EDGE_STAKE = 10;
-const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", CBB: "#8fd3c4" };
+const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", NHL: "#c9d6e3", CBB: "#8fd3c4" };
 const EDGE_ET = { timeZone: "America/New_York" };
 
 function edgeMoney(units) {
@@ -456,7 +458,8 @@ async function initDollars() {
   const missing = EDGE_SITES.filter(site => site.sport !== "MLB" && !lines.some(l => l.name === site.sport)).map(s => s.sport);
   const note = edgeNode("div", "table-footnote",
     "MLB hitter picks have no betting price, so they aren't in this." +
-    (missing.length ? ` ${missing.join(" and ")} join with their first graded pick.` : ""));
+    (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
+      " join with their first graded pick." : ""));
   box.querySelector(".card-body").replaceChildren(tiles, edgeMoneyChart(lines), note);
   box.hidden = false;
 }

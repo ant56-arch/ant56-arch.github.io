@@ -362,7 +362,8 @@ CBB_EDGE_URL = "https://ant56-arch.github.io/cbb/index.html"
 # the games.json each sport publishes).
 SCHEDULE_URL = "https://ant56-arch.github.io/schedule.html"
 # The sport switcher's order on every Sports Edge site, after "All".
-SPORT_TAB_ORDER = [("NFL", None), ("NBA", NBA_EDGE_URL), ("MLB", MLB_EDGE_URL), ("CFB", None),
+SPORT_TAB_ORDER = [("NFL", None), ("NBA", NBA_EDGE_URL), ("MLB", MLB_EDGE_URL),
+                   ("NHL", "https://ant56-arch.github.io/nhl/index.html"), ("CFB", None),
                    ("CBB", CBB_EDGE_URL), ("Best Bets", "https://ant56-arch.github.io/bets.html"),
                    ("Schedule", SCHEDULE_URL)]
 # The home page (index.html at the root of this repo) links every site

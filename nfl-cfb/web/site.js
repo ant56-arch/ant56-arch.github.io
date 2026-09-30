@@ -213,6 +213,8 @@ const EDGE_SITES = [
     href: "/nba/index.html", schedule: "/schedule.html#nba" },
   { sport: "MLB", summary: "/mlb/summary.json", games: "/mlb/games.json",
     href: "/mlb/", schedule: "/schedule.html#mlb" },
+  { sport: "NHL", summary: "/nhl/summary.json", games: "/nhl/games.json",
+    href: "/nhl/index.html", schedule: "/schedule.html#nhl" },
   { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
     href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
   // CBB Edge has no games.json yet, so it shows on the home page only.
@@ -287,7 +289,7 @@ async function edgeLoadGames(site) {
     if (published.top25_only) games = games.filter(g => g.away.rank || g.home.rank);
     games.forEach(g => { if (picks[g.id]) g.pick = picks[g.id]; });
     const week = live.week && live.week.number;
-    return { label: week && site.sport !== "MLB" && site.sport !== "NBA" ? `Week ${week}` : published.label,
+    return { label: week && !["MLB", "NBA", "NHL"].includes(site.sport) ? `Week ${week}` : published.label,
              games, live: true };
   }
   return { label: published.label, games: published.games || [], live: false };

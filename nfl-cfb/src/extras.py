@@ -175,7 +175,9 @@ def _team(t, is_pick):
            f'onerror="this.style.display=\'none\'">' if t.get("logo") else "")
     sub = " · ".join(x for x in (t.get("abbr") if t.get("name") != t.get("abbr") else "", t.get("record")) if x)
     score = f'<span class="gh-score">{t["score"]}</span>' if t.get("score") is not None else ""
-    return (f'<div class="gh-team{" is-pick" if is_pick else ""}">{img}<b>{escape(t.get("name") or t["abbr"])}</b>'
+    name = t.get("name") or t["abbr"]
+    longest = max(len(w) for w in name.split()) if name.split() else 1  # CSS shrinks long words to fit
+    return (f'<div class="gh-team{" is-pick" if is_pick else ""}" style="--n:{longest}">{img}<b>{escape(name)}</b>'
             f'<small>{escape(sub)}</small>{score}</div>')
 
 

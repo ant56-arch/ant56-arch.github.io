@@ -32,6 +32,7 @@ SPORTS = {
     "cfb": {"path": "football/college-football", "params": {"groups": "80", "limit": "400"}},
     "mlb": {"path": "baseball/mlb", "params": {}},
     "nba": {"path": "basketball/nba", "params": {}},
+    "nhl": {"path": "hockey/nhl", "params": {}},
 }
 
 
