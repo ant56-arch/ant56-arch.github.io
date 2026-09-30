@@ -44,6 +44,8 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import features as F  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+import model_watch  # noqa: E402  (the repo root's cold-stretch check)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 MODEL_FILE = "model_weights.json"
@@ -334,6 +336,10 @@ def summary(lines):
 
 def main():
     force = os.environ.get("FORCE", "").lower() in ("1", "true", "yes")
+    # daily.yml dispatches this run with TRIGGER=cold stretch when the hitter
+    # picks fall well short of what the model expected (model_watch.py).
+    # At most once every few days; a repeat dispatch falls back to the usual checks.
+    slump = model_watch.early_retrain("mlb_hits") if os.environ.get("TRIGGER") == "cold stretch" else None
     live = {}
     if os.path.exists(MODEL_FILE):
         with open(MODEL_FILE) as f:
@@ -348,7 +354,7 @@ def main():
     data = Data(rows)
     latest = str(data.dates[-1])
     print(f"{len(rows)} rows, {data.dates[0]} to {latest}, seasons {sorted(set(data.seasons.tolist()))}")
-    if live_through and latest <= live_through and not force:
+    if live_through and latest <= live_through and not force and not slump:
         print(f"No games since the live model's last training day ({live_through}); nothing to learn from.")
         return
 
@@ -424,8 +430,11 @@ def main():
         "candidates": [{"recipe": r, **short(ev)} for r, _, ev in results],
         "switched_recipe": bool(switched and ok),
         "deployed": ok,
-        "reason": why or ("new recipe beat the current one on held-out games" if switched
-                          else "kept the recipe, refit with the newest games"),
+        "reason": "; ".join(x for x in (
+            model_watch.slump_text(slump) if slump else "",
+            why or ("new recipe beat the current one on held-out games" if switched
+                    else "kept the recipe, refit with the newest games")) if x),
+        "trigger": "cold stretch" if slump else ("manual" if force else "weekly"),
         "live_picks_last_7_days": live_record(),
         "weights_before": weights_snapshot(live),
         "weights_after": weights_snapshot(final if ok else live),

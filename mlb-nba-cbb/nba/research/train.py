@@ -39,6 +39,8 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 import model as M  # noqa: E402
 import store  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
+import model_watch  # noqa: E402  (the repo root's cold-stretch check)
 
 OUT = os.path.join(HERE, "model_weights.json")
 HISTORY = os.path.join(HERE, "model_history.json")
@@ -258,6 +260,9 @@ def recipe_name(r):
 
 def main():
     force = os.environ.get("FORCE", "").lower() in ("1", "true", "yes")
+    slump = None if force else model_watch.early_retrain("nba")
+    if slump:
+        print(model_watch.slump_text(slump).capitalize() + ".")
     live = load(OUT, {})
     history = load(HISTORY, {"runs": []})
     current = live.get("recipe", DEFAULT_RECIPE)
@@ -269,7 +274,7 @@ def main():
     latest = rows[-1]["game"]["date"]
     live_through = live.get("trained_through")
     new_games = sum(1 for r in rows if live_through is None or r["game"]["date"] > live_through)
-    if not force:
+    if not force and not slump:
         last_run = history["runs"][-1]["run_at"][:10] if history["runs"] else None
         if last_run and date.fromisoformat(last_run) > date.today() - timedelta(days=RETRAIN_EVERY_DAYS):
             print(f"Retrained {last_run}; next retrain once a week has passed.")
@@ -338,8 +343,11 @@ def main():
         "candidates": [{"recipe": r, "log_loss": round(ll, 4)} for r, _, ll in results],
         "switched_recipe": bool(switched and ok),
         "deployed": ok,
-        "reason": why or ("new recipe beat the current one on held-out games" if switched
-                          else "kept the recipe, refit with the newest games"),
+        "reason": "; ".join(x for x in (
+            model_watch.slump_text(slump) if slump else "",
+            why or ("new recipe beat the current one on held-out games" if switched
+                    else "kept the recipe, refit with the newest games")) if x),
+        "trigger": "cold stretch" if slump else ("manual" if force else "weekly"),
         "live_picks_last_14_days": live_record(),
         "weights_before": live.get("coef"),
         "weights_after": (final if ok else live).get("coef"),
