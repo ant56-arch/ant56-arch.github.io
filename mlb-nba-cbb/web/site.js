@@ -162,12 +162,12 @@ initCharts();
 const EDGE_SITES = [
   { sport: "NFL", summary: "/nfl/summary.json", games: "/nfl/games.json",
     href: "/nfl/index.html", schedule: "/schedule.html#nfl" },
-  { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
-    href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
-  { sport: "MLB", summary: "/mlb/summary.json", games: "/mlb/games.json",
-    href: "/mlb/", schedule: "/schedule.html#mlb" },
   { sport: "NBA", summary: "/nba/summary.json", games: "/nba/games.json",
     href: "/nba/index.html", schedule: "/schedule.html#nba" },
+  { sport: "MLB", summary: "/mlb/summary.json", games: "/mlb/games.json",
+    href: "/mlb/", schedule: "/schedule.html#mlb" },
+  { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
+    href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
   // CBB Edge has no games.json yet, so it shows on the home page only.
   { sport: "CBB", summary: "/cbb/summary.json", games: null,
     href: "/cbb/index.html", schedule: "/cbb/index.html" },

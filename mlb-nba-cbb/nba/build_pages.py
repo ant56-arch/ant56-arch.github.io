@@ -37,8 +37,8 @@ ASSETS = ("style.css", "site.js", "nba.js")
 
 HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
-SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"),
-               ("MLB", f"{MLB_EDGE}/"), ("NBA", None), ("CBB", f"{HOME_URL}cbb/index.html"),
+SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", None), ("MLB", f"{MLB_EDGE}/"),
+               ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
                ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Who wins every NBA game tonight and how likely it is, from a model graded against every final score."
 TOP_N = 3
