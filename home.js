@@ -199,8 +199,8 @@ async function initScoreboard() {
 }
 initScoreboard();
 
-// Home page: the Board, one row per site with its all-time record and top
-// pick, filled from the summary.json each site's build publishes next to its
+// Home page: the Board, one row per site (two for MLB: hits and games) with
+// its all-time record and top pick, filled from the summary.json each site's build publishes next to its
 // pages (/nfl/, /cfb/, /mlb/, /nba/ and /cbb/summary.json). If one fails, its
 // row keeps its link.
 
@@ -243,7 +243,9 @@ async function initHome() {
   const summaries = await edgeFetchSummaries();
   const bySummary = new Map(EDGE_SITES.map((site, i) => [site.summary, summaries[i]]));
   document.querySelectorAll(".board-row[data-summary]").forEach(row => {
-    const s = bySummary.get(row.dataset.summary);
+    // A row can show one part of a site's summary: MLB's game picks are its own row.
+    const full = bySummary.get(row.dataset.summary);
+    const s = full && row.dataset.part ? full[row.dataset.part] && { ...full, ...full[row.dataset.part] } : full;
     if (s) renderRow(row, s);
     else row.querySelector(".board-what").textContent = "Couldn't load here. Open the site to see its picks.";
   });

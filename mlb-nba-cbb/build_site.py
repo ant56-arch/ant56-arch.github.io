@@ -131,7 +131,7 @@ BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><p
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
-    tabs = [("index.html", "Home"), ("games.html", "Games"), ("players.html", "Players"),
+    tabs = [("index.html", "Hits"), ("games.html", "Games"), ("players.html", "Players"),
             ("history.html", "History"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     nav = "".join(
         f'<a href="{href}" class="active" aria-current="page">{label}</a>' if href == active
@@ -393,37 +393,28 @@ def record_band(history, team_history):
     games = ""
     if tg:
         w, l = game_wl(tg)
-        games = f" Game picks are {w}-{l} on the Games tab."
+        games = f' Picking which team wins is {w}-{l}, on the <a href="games.html">Games tab</a>.'
     return record_band_html(eyebrow, f"{hits}-{len(g) - hits}", pct(hits / len(g), 1),
                             f"Since {d:%b} {d.day}, {d.year}. Every pick graded against the box score, and it "
                             f"never resets.{games}", hit_spark(g))
 
 
 HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
-  <p>Hitters: the percentage is the model's chance he gets at least one hit. Once a lineup is posted, only
-    confirmed starters can be picked, and a pick locks when its game starts. A hitter who doesn't bat is no
-    decision, not a miss. Tap a hitter for why he was picked.</p>
-  <p>Games: the pick is the team the model expects to win, with its win chance. Tap a game for the starting
-    pitchers and the moneyline bet. {ml_note} The Model tab explains how both models work.</p>
+  <p>The percentage is the model's chance he gets at least one hit. Once a lineup is posted, only confirmed
+    starters can be picked, and a pick locks when its game starts. A hitter who doesn't bat is no decision, not a
+    miss. Tap a hitter for why he was picked. The Model tab explains how the model works.</p>
 </div></details>"""
 
-
-def home_games_card(team_history):
-    """Today's game picks on Home, under the hitters; the Games tab keeps the
-    full record and past results."""
-    today = NOW.date().isoformat()
-    todays = [p for p in (team_history or {}).get("picks", []) if p["date"] == today]
-    if not todays:
-        return ""
-    return card(f"Today's Games: {day_label(today)}",
-                'Tap a game for the starters and the moneyline. Past results are on the '
-                '<a href="games.html">Games tab</a>.',
-                games_list(todays))
+GAMES_HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
+  <p>The pick is the team the model expects to win, and the percentage is its chance. Tap a game for the
+    starting pitchers and the moneyline bet. Picks refresh until first pitch as starters are named, then lock.
+    {ml_note} The Model tab explains how the model works.</p>
+</div></details>"""
 
 
 def build_index(history, slate, model, team_history=None):
     picks = history["picks"]
-    how = HOW_TO_READ.format(ml_note=escape(ML_NOTE))
+    how = HOW_TO_READ
     if picks:
         latest = max(p["date"] for p in picks)
         day_picks = [p for p in picks if p["date"] == latest]
@@ -436,8 +427,8 @@ def build_index(history, slate, model, team_history=None):
     if slate and not slate.get("games") and slate.get("date") == NOW.date().isoformat():
         picks_html = card("Today's Hitters", "", '<div class="empty-state">No MLB games today. Picks resume on the '
                           'next game day.</div>') + picks_html.replace("Today's Hitters", "Latest Hitters", 1)
-    body = record_band(history, team_history) + picks_html + home_games_card(team_history)
-    return page_shell("Home", "index.html", body)
+    body = record_band(history, team_history) + picks_html
+    return page_shell("Hits", "index.html", body)
 
 
 # ── Players ──────────────────────────────────────────────────────────────────
@@ -640,29 +631,6 @@ def game_result_html(p):
     return escape(score) + (pill("WIN", "positive") if p["correct"] else pill("LOSS", "danger"))
 
 
-def games_table(picks):
-    rows = ""
-    for p in sorted(picks, key=lambda p: (p["start"], p["game_id"])):
-        pick_id = p["home_id"] if p["pick"] == p["home"] else p["away_id"]
-        starters = f"{starter_text(p.get('away_sp'))} vs. {starter_text(p.get('home_sp'))}"
-        rows += f"""<tr>
-          <td><div class="player-name">{escape(p['away'])} @ {escape(p['home'])}</div>
-            <div class="player-meta">{escape(game_meta(p))}</div>
-            <div class="player-meta">{escape(starters)}</div></td>
-          <td data-label="Pick"><span class="matchup-team">{logo(pick_id)}{escape(p['pick'])}</span></td>
-          <td data-label="Win chance" class="num prob">{p['prob']:.0f}%</td>
-          {ml_cell(p)}
-          <td data-label="Result" class="num"><span>{game_result_html(p)}</span></td>
-        </tr>"""
-    return f"""<table class="data responsive-stack">
-      <thead><tr><th>Game and starters (ERA)</th><th>Pick</th><th class="num">Win chance</th><th>Moneyline bet</th><th class="num">Result</th></tr></thead>
-      <tbody>{rows}</tbody>
-    </table>
-    <div class="table-footnote">Win chance is the model's estimate that its pick wins the game. Starters are the
-      announced probables, away team first, with their ERA this season. Picks refresh until first pitch as starters
-      are named, then lock. {ML_NOTE}</div>"""
-
-
 # ── Moneyline picks (moneyline.py), shared with NBA Edge ─────────────────────
 ML_NOTE = ("Moneyline bet is the model's pick to win at its moneyline price (from ESPN's scoreboard). Value "
            "means the model gives that team at least 6 points more win chance than the price implies (vig "
@@ -855,24 +823,43 @@ def game_history(picks):
                 f'<script>const GAME_HISTORY = {script_json(data)};</script>')
 
 
+def games_band(picks):
+    """The Games tab's record band: every live game pick since the first,
+    never reset, with the moneyline units beside it."""
+    g = game_graded(picks)
+    eyebrow = "MLB Edge &middot; picking which team wins"
+    if not g:
+        return record_band_html(eyebrow, wait="Starts after the first night of results")
+    w, l = game_wl(g)
+    d = date.fromisoformat(min(p["date"] for p in g))
+    ml = moneyline.record(picks)
+    side = statline([(moneyline.units_text(ml["units"]), "Moneyline",
+                      f"1 unit on each of {ml['picks']} picks")]) if ml else ""
+    return record_band_html(eyebrow, f"{w}-{l}", pct(w / len(g), 1),
+                            f"Since {d:%b} {d.day}, {d.year}. Every game pick graded against the final score, and "
+                            "it never resets.", side)
+
+
 def build_games(team_history):
     picks = team_history["picks"]
     today = NOW.date().isoformat()
     todays = [p for p in picks if p["date"] == today]
+    body = games_band(picks)
     if todays:
-        top = sorted(todays, key=lambda p: -p["prob"])[:TOP_GAMES]
-        head = card(f"Today's Games: {day_label(today)}",
-                    f"A pick for every game. The {len(top)} most confident: "
-                    + ", ".join(f"{p['pick']} ({p['prob']:.0f}%)" for p in top) + ".",
-                    games_table(todays))
+        open_games = [p for p in todays if p.get("correct") is None and not p.get("void")]
+        bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:TOP_GAMES], lambda p: f"{first_pitch(p)} ET")
+        if bets:
+            body += card("Most confident today", "The model's surest picks among games still to play", bets)
+        body += card(f"Today's Games: {day_label(today)}", "Tap a game for the starters and the moneyline.",
+                     games_list(todays) + GAMES_HOW_TO_READ.format(ml_note=escape(ML_NOTE)))
     elif picks:
-        head = card("Today's Games", "", '<div class="empty-state">No MLB games today, or the slate isn\'t up '
-                    'yet. Picks go up on the next game day; past days are under Results below.</div>')
+        body += card("Today's Games", "", '<div class="empty-state">No MLB games today, or the slate isn\'t up '
+                     'yet. Picks go up on the next game day; past days are under Results below.</div>')
     else:
-        head = card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
-                    'update: a winner and a win chance for every game.</div>')
+        body += card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
+                     'update: a winner and a win chance for every game.</div>')
     record, charts = game_record(picks)
-    return page_shell("Games", "games.html", head + record + game_history(picks), charts=charts)
+    return page_shell("Games", "games.html", body + record + game_history(picks), charts=charts)
 
 
 # ── Schedule tab and scoreboard strip ────────────────────────────────────────
@@ -1134,13 +1121,37 @@ def build_model(model, runs, team_model, team_runs):
 
 
 # ── Home page summary ────────────────────────────────────────────────────────
-def build_summary(history, model):
+def games_summary(picks):
+    """The team-winner half of MLB Edge for the home page's second MLB row:
+    the latest day's surest game picks and the all-time game record."""
+    out = {"heading": None, "picks": [], "record": None, "empty": "No game picks yet.",
+           "result_labels": ["WIN", "LOSS"]}
+    if not picks:
+        return out
+    latest = max(p["date"] for p in picks)
+    out["heading"] = f"{'Today' if latest == NOW.date().isoformat() else 'Latest'}: {day_label(latest)}"
+    top = sorted((p for p in picks if p["date"] == latest), key=lambda p: -p["prob"])[:TOP_GAMES]
+    out["picks"] = [{"label": f"{p['pick']} over {p['away'] if p['pick'] == p['home'] else p['home']}",
+                     "sub": f"{p['away']} @ {p['home']} · {first_pitch(p)} ET", "value": f"{p['prob']:.0f}%",
+                     "result": None if p.get("void") or p.get("correct") is None else bool(p["correct"])}
+                    for p in top]
+    g = game_graded(picks)
+    if g:
+        w, l = game_wl(g)
+        d = date.fromisoformat(min(p["date"] for p in g))
+        out["record"] = {"value": f"{w}-{l}", "label": "picking which team wins", "sub": pct(w / len(g), 1),
+                         "since": f"{d:%b} {d.day}, {d.year}"}
+    return out
+
+
+def build_summary(history, model, team_history=None):
     """summary.json - the latest day's top three picks and the season record, for
     the card on the home page (ant56-arch.github.io, github.com/ant56-arch/ant56-arch.github.io)."""
     picks = history["picks"]
     summary = {"updated": NOW.isoformat(), "heading": None, "picks": [], "record": None,
                "empty": "No picks yet.", "retrained": model.get("trained_at"), "model_url": "model.html"}
     if not picks:
+        summary["games"] = games_summary((team_history or {}).get("picks", []))
         return summary
     latest = max(p["date"] for p in picks)
     prefix = "Today" if latest == NOW.date().isoformat() else "Latest"
@@ -1157,6 +1168,7 @@ def build_summary(history, model):
         d = date.fromisoformat(first)
         summary["record"] = {"value": f"{hits}-{len(g) - hits}", "label": "top hitters who got a hit",
                              "sub": pct(hits / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
+    summary["games"] = games_summary((team_history or {}).get("picks", []))
     return summary
 
 
@@ -1199,7 +1211,7 @@ def main():
         with open(os.path.join(DIST_DIR, name), "w") as f:
             f.write(html)
     with open(os.path.join(DIST_DIR, "summary.json"), "w") as f:
-        json.dump(build_summary(history, model), f, indent=1)
+        json.dump(build_summary(history, model, team_history), f, indent=1)
     games_mod.write_json(os.path.join(DIST_DIR, "games.json"), "mlb", games_slate, NOW.isoformat())
     for asset in ASSETS:
         shutil.copy(os.path.join(WEB_DIR, asset), os.path.join(DIST_DIR, asset))
