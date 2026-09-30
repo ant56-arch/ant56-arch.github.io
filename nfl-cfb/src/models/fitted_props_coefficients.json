@@ -1,0 +1,127 @@
+{
+  "fitted_at": "2026-09-29T16:34:40.894312+00:00",
+  "train_seasons": [
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "half_life_games": 13,
+  "half_life_grid_search": [
+    {
+      "half_life": 3,
+      "receiving_baseline_mae": 21.228,
+      "n": 4094
+    },
+    {
+      "half_life": 4,
+      "receiving_baseline_mae": 21.035,
+      "n": 4133
+    },
+    {
+      "half_life": 6,
+      "receiving_baseline_mae": 20.857,
+      "n": 4193
+    },
+    {
+      "half_life": 8,
+      "receiving_baseline_mae": 20.789,
+      "n": 4228
+    },
+    {
+      "half_life": 10,
+      "receiving_baseline_mae": 20.765,
+      "n": 4260
+    },
+    {
+      "half_life": 13,
+      "receiving_baseline_mae": 20.728,
+      "n": 4316
+    },
+    {
+      "half_life": 16,
+      "receiving_baseline_mae": 20.764,
+      "n": 4339
+    },
+    {
+      "half_life": 20,
+      "receiving_baseline_mae": 20.834,
+      "n": 4361
+    },
+    {
+      "half_life": 26,
+      "receiving_baseline_mae": 20.944,
+      "n": 4369
+    },
+    {
+      "half_life": 34,
+      "receiving_baseline_mae": 21.051,
+      "n": 4376
+    }
+  ],
+  "matchup_scaling": {
+    "receiving": {
+      "baseline_scale": 0.9184733071642645,
+      "matchup_scale": 0.24103115662773014,
+      "n_samples": 44710,
+      "mae_baseline_only": 21.752418502299857,
+      "mae_fitted": 21.168982317456415
+    },
+    "rushing": {
+      "baseline_scale": 0.9498606486585904,
+      "matchup_scale": 0.6453954552419101,
+      "n_samples": 17377,
+      "mae_baseline_only": 22.297771350206723,
+      "mae_fitted": 21.920493262101115
+    },
+    "passing": {
+      "baseline_scale": 0.958998540297072,
+      "matchup_scale": 0.21737852581733144,
+      "n_samples": 7373,
+      "mae_baseline_only": 68.7981553088319,
+      "mae_fitted": 68.17758324018791
+    }
+  },
+  "injury_multipliers": {
+    "Questionable": {
+      "multiplier": 0.84,
+      "n_samples": 2314
+    }
+  },
+  "holdout_validation": {
+    "seasons": [
+      2025,
+      2026
+    ],
+    "by_stat_type": {
+      "receiving": {
+        "n_games": 4316,
+        "mae_baseline_only": 20.728060299846067,
+        "mae_original_handpicked": 21.76767191704569,
+        "mae_fitted": 20.067560497035153
+      },
+      "rushing": {
+        "n_games": 1687,
+        "mae_baseline_only": 21.31083570187229,
+        "mae_original_handpicked": 22.003995945061263,
+        "mae_fitted": 20.941325171405314
+      },
+      "passing": {
+        "n_games": 743,
+        "mae_baseline_only": 67.78248832152751,
+        "mae_original_handpicked": 80.09976384165718,
+        "mae_fitted": 67.26861416819231
+      }
+    }
+  }
+}

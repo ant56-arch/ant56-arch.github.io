@@ -1,0 +1,294 @@
+"""
+track_results.py
+Keeps a running, git-committed history of every prediction we've ever sent,
+and grades it the moment the actual result shows up in schedules.csv. This is
+the only way to know whether changes to the model make it sharper or not -
+projecting confidently and never checking the scoreboard is how the original
+version of this project ended up with un-backtested constants for years.
+
+Two responsibilities each run:
+  1. SNAPSHOT - record this run's upcoming-game predictions (model-only,
+     market-blended "sharp", and the Vegas line at prediction time) into
+     data/tracking/predictions_log.csv, keyed by (season, week, home_team,
+     away_team). Re-running later in the same week (e.g. Tue -> Fri) updates
+     that game's snapshot in place, so we always keep the LAST snapshot
+     before kickoff - the fairest comparison against Vegas' closing line.
+  2. GRADE - for any previously-logged game whose actual result has since
+     appeared in schedules.csv, fill in the outcome and compute per-game
+     error metrics for the model, the blended "sharp" line, and Vegas itself,
+     so accuracy_summary.json can show head-to-head whether we're closing
+     the gap on the market or not.
+
+data/tracking/ is committed to git (unlike data/raw/ and data/processed/,
+which are regenerated fresh every run) specifically so this history survives
+the ephemeral GitHub Actions runner - see the workflow's "commit tracking
+data" step.
+"""
+
+import pandas as pd
+import numpy as np
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+from fetch_data import current_nfl_season
+import moneyline
+
+PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
+RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
+TRACKING_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "tracking")
+os.makedirs(TRACKING_DIR, exist_ok=True)
+
+LOG_PATH = os.path.join(TRACKING_DIR, "predictions_log.csv")
+SUMMARY_PATH = os.path.join(TRACKING_DIR, "accuracy_summary.json")
+
+KEY_COLS = ["season", "week", "home_team", "away_team"]
+LAST_N_WEEKS = 4
+
+def load_predictions_snapshot():
+    games = pd.read_csv(os.path.join(PROCESSED_DIR, "game_predictions.csv"))
+
+    vegas_cols = ["home_team", "away_team", "vegas_home_favored_by", "total_line", "vegas_home_win_prob"]
+    comparison_path = os.path.join(PROCESSED_DIR, "vegas_comparison.csv")
+    if os.path.exists(comparison_path):
+        comparison = pd.read_csv(comparison_path)
+        comparison = comparison[[c for c in vegas_cols if c in comparison.columns]].drop_duplicates(["home_team", "away_team"])
+        games = games.merge(comparison, on=["home_team", "away_team"], how="left")
+    for c in vegas_cols[2:]:
+        if c not in games.columns:
+            games[c] = np.nan
+
+    if "game_type" not in games.columns:
+        games["game_type"] = np.nan
+
+    snapshot = games[KEY_COLS + [
+        "gameday", "game_type", "model_spread", "model_total", "model_home_win_prob",
+        "projected_spread", "projected_total", "home_win_prob",
+        "vegas_home_favored_by", "total_line", "vegas_home_win_prob",
+    ]].copy()
+    return snapshot.rename(columns={
+        "projected_spread": "sharp_spread", "projected_total": "sharp_total", "home_win_prob": "sharp_home_win_prob",
+        "total_line": "vegas_total",
+    })
+
+def load_moneyline_snapshot():
+    """This run's moneyline picks (see src/moneyline.py), keyed like the log.
+    Written into the log by moneyline.lock_and_merge, which skips any game
+    whose kickoff has already passed - the pick and price lock at kickoff."""
+    path = os.path.join(PROCESSED_DIR, "vegas_comparison.csv")
+    if not os.path.exists(path):
+        return None
+    comparison = pd.read_csv(path)
+    if comparison.empty or "ml_pick_side" not in comparison.columns:
+        return None
+    return comparison[[c for c in KEY_COLS + moneyline.ML_COLS if c in comparison.columns]].drop_duplicates(KEY_COLS)
+
+def upsert_snapshot(log, snapshot):
+    if log is None or log.empty:
+        return snapshot
+
+    # Lines and predictions lock at kickoff: a game already under way (or
+    # over) keeps what was logged before it started, so a run during the game
+    # can't swap in live odds or a refit model's number.
+    started = log.loc[moneyline.kicked_off(log), KEY_COLS]
+    locked = pd.MultiIndex.from_frame(started) if not started.empty else None
+    log = log.set_index(KEY_COLS)
+    snapshot_indexed = snapshot.set_index(KEY_COLS)
+    if locked is not None:
+        snapshot_indexed = snapshot_indexed[~snapshot_indexed.index.isin(locked)]
+    # A run that didn't fetch odds (or a game the feed dropped) has no line:
+    # keep the line and market numbers already logged rather than blank them.
+    if "vegas_home_favored_by" in snapshot_indexed.columns and "vegas_home_favored_by" in log.columns:
+        no_line = snapshot_indexed["vegas_home_favored_by"].isna() & snapshot_indexed.index.isin(log.index)
+        market = [c for c in snapshot_indexed.columns if c.startswith(("vegas_", "sharp_"))]
+        if no_line.any() and market:
+            snapshot_indexed = snapshot_indexed.copy()
+            prior = log.reindex(snapshot_indexed.index[no_line])
+            for c in market:
+                if c in prior.columns:
+                    snapshot_indexed.loc[no_line, c] = prior[c].values
+    log = log.reindex(log.index.union(snapshot_indexed.index))
+    for col in snapshot_indexed.columns:
+        if col not in log.columns:
+            # Match the new column's dtype (e.g. game_type is a string column,
+            # not float) - a bare `np.nan` always creates a float64 column,
+            # and pandas 2.x raises rather than silently widening it back to
+            # object/string when we then assign real string values into it.
+            log[col] = pd.Series(index=log.index, dtype=snapshot_indexed[col].dtype)
+        log.loc[snapshot_indexed.index, col] = snapshot_indexed[col]
+    return log.reset_index()
+
+def grade_completed_games(log):
+    schedules = pd.read_csv(os.path.join(RAW_DIR, "schedules.csv"))
+    results = schedules[schedules["result"].notna()][KEY_COLS + ["home_score", "away_score"]]
+
+    log = log.drop(columns=[c for c in ["home_score", "away_score"] if c in log.columns])
+    log = log.merge(results, on=KEY_COLS, how="left")
+
+    graded = log["home_score"].notna()
+    if not graded.any():
+        # Nothing graded yet - bail out rather than let the loop below run
+        # its .loc[graded, ...] assignments against an all-False mask.
+        # Doesn't happen in practice for the NFL log (the 2024-2025 backfill
+        # means graded is never empty), but the CFB tracker hit this exact
+        # case for real: pandas' empty-selection assignment into a column
+        # reloaded from CSV with a different dtype than the fresh in-memory
+        # value can raise (TypeError: Invalid value '[]' for dtype ...) even
+        # though logically nothing needs to change, since it goes through the
+        # same dtype-compatibility check as a real assignment.
+        return log
+    log.loc[graded, "actual_margin"] = log.loc[graded, "home_score"] - log.loc[graded, "away_score"]
+    log.loc[graded, "actual_total"] = log.loc[graded, "home_score"] + log.loc[graded, "away_score"]
+    home_won = (log["actual_margin"] > 0).astype(float)
+
+    for label, spread_col, total_col, wp_col in [
+        ("model", "model_spread", "model_total", "model_home_win_prob"),
+        ("sharp", "sharp_spread", "sharp_total", "sharp_home_win_prob"),
+        ("vegas", "vegas_home_favored_by", "vegas_total", "vegas_home_win_prob"),
+    ]:
+        # Straight-up: did the favored team win the game outright?
+        picked_home_won = (log[spread_col] > 0) == (log["actual_margin"] > 0)
+        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float)
+        log.loc[graded, f"{label}_spread_error"] = (log[spread_col] - log["actual_margin"]).abs()[graded]
+        log.loc[graded, f"{label}_total_error"] = (log[total_col] - log["actual_total"]).abs()[graded]
+        log.loc[graded, f"{label}_brier"] = ((log[wp_col] - home_won) ** 2)[graded]
+
+        # Against the spread: did the favored team win by MORE than the
+        # spread margin? A separate question from straight-up - a 10-point
+        # favorite that wins by 3 is a correct straight-up pick and an ATS
+        # loss. cover_margin > 0 means the home team beat the line, < 0 means
+        # the away team did, == 0 is a push (excluded from the win/loss count,
+        # tracked separately - the standard way ATS records are reported).
+        cover_margin = log["actual_margin"] - log[spread_col]
+        push = cover_margin == 0
+        home_covered = cover_margin > 0
+        picked_covered = pd.Series(np.where(log[spread_col] >= 0, home_covered, ~home_covered), index=log.index)
+        log.loc[graded, f"{label}_ats_push"] = push[graded]
+        decided = graded & ~push
+        if decided.any():
+            log.loc[decided, f"{label}_ats_correct"] = picked_covered[decided].astype(float)
+
+    return log
+
+def summarize(log):
+    """
+    "all_time" keeps the full graded history (including the 2024-2025
+    backfill) for internal/backend reference, but the email only ever shows
+    "current_season" and "last_N_weeks" - both scoped to the live NFL season,
+    since the point of the tracker going forward is "how are we doing THIS
+    season," not diluting that with the backfilled seed data.
+    """
+    graded = log[log["actual_margin"].notna()].copy()
+    if graded.empty:
+        return {"n_graded_games": 0}
+
+    graded = graded.sort_values(["season", "week"])
+    current_season = current_nfl_season()
+    this_season = graded[graded["season"] == current_season]
+
+    distinct_weeks = this_season[["season", "week"]].drop_duplicates().sort_values(["season", "week"])
+    recent_weeks = pd.MultiIndex.from_frame(distinct_weeks.tail(LAST_N_WEEKS))
+    recent_mask = pd.MultiIndex.from_frame(this_season[["season", "week"]]).isin(recent_weeks)
+
+    summary = {
+        "n_graded_games": int(len(graded)),
+        "current_season_year": current_season,
+        "last_updated": pd.Timestamp.now("UTC").isoformat(),
+    }
+    windows = {
+        "all_time": graded,
+        "current_season": this_season,
+        f"last_{LAST_N_WEEKS}_weeks": this_season[recent_mask],
+    }
+
+    for window_name, window_df in windows.items():
+        if window_df.empty:
+            continue
+        window_summary = {}
+        for label in ["model", "sharp", "vegas"]:
+            wins = int(window_df[f"{label}_correct_pick"].sum())
+            losses = int(len(window_df)) - wins
+
+            # Against the spread: pushes are decided-neither-way, so they
+            # come out of the win/loss denominator (the standard way an ATS
+            # record is reported, e.g. "9-6-1") rather than counting as a loss.
+            ats_col = f"{label}_ats_correct"
+            push_col = f"{label}_ats_push"
+            ats_decided = window_df[ats_col].notna() if ats_col in window_df.columns else pd.Series(False, index=window_df.index)
+            ats_wins = int(window_df.loc[ats_decided, ats_col].sum())
+            ats_losses = int(ats_decided.sum()) - ats_wins
+            ats_pushes = int(window_df[push_col].sum()) if push_col in window_df.columns else 0
+            ats_record = f"{ats_wins}-{ats_losses}" + (f"-{ats_pushes}" if ats_pushes else "")
+
+            window_summary[label] = {
+                "wins": wins,
+                "losses": losses,
+                "record": f"{wins}-{losses}",
+                "pick_accuracy": round(float(window_df[f"{label}_correct_pick"].mean()), 3),
+                "spread_mae": round(float(window_df[f"{label}_spread_error"].mean()), 2),
+                "total_mae": round(float(window_df[f"{label}_total_error"].mean()), 2),
+                "brier_score": round(float(window_df[f"{label}_brier"].mean()), 4),
+                "n_games": int(len(window_df)),
+                "ats_wins": ats_wins,
+                "ats_losses": ats_losses,
+                "ats_pushes": ats_pushes,
+                "ats_record": ats_record,
+                "ats_accuracy": round(ats_wins / (ats_wins + ats_losses), 3) if (ats_wins + ats_losses) > 0 else None,
+            }
+        summary[window_name] = window_summary
+    return summary
+
+def main():
+    print("Loading this run's predictions to snapshot...")
+    snapshot = load_predictions_snapshot()
+
+    log = pd.read_csv(LOG_PATH) if os.path.exists(LOG_PATH) else None
+    # When this run's lines and picks were taken. upsert_snapshot only writes
+    # games that haven't kicked off, so once a game starts this stays the
+    # time its line and pick were locked in (shown on the site).
+    snapshot["lines_set_at"] = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ")
+    log = upsert_snapshot(log, snapshot)
+    ml_snapshot = load_moneyline_snapshot()
+    if ml_snapshot is not None:
+        log = moneyline.lock_and_merge(log, ml_snapshot, KEY_COLS)
+    print(f"  Tracking log now has {len(log)} predicted games total")
+
+    print("Grading any games whose results are now in...")
+    log = grade_completed_games(log)
+    log = moneyline.grade(log)
+    print(f"  {int(log['actual_margin'].notna().sum())} games have a graded actual result")
+
+    log.to_csv(LOG_PATH, index=False)
+
+    summary = summarize(log)
+    # This season's live moneyline record only (never backfill/past seasons).
+    summary["moneyline"] = moneyline.summarize(log, current_nfl_season())
+    with open(SUMMARY_PATH, "w") as f:
+        json.dump(summary, f, indent=2)
+
+    if summary.get("n_graded_games", 0) > 0:
+        year = summary.get("current_season_year")
+        current = summary.get("current_season", {})
+        all_time = summary.get("all_time", {})
+        if current:
+            print(f"\n{year} season accuracy (us vs the market):")
+            for label in ["model", "sharp", "vegas"]:
+                s = current.get(label, {})
+                if s:
+                    ats = f"{s['ats_record']} ({s['ats_accuracy']:.1%}) ATS" if s["ats_accuracy"] is not None else "no ATS decisions yet"
+                    print(f"  {label:>6}: {s['record']} ({s['pick_accuracy']:.1%}) straight-up | {ats} | "
+                          f"spread MAE {s['spread_mae']:.2f} | total MAE {s['total_mae']:.2f} | Brier {s['brier_score']:.4f}")
+        else:
+            print(f"\nNo {year} games graded yet.")
+        print(f"\nAll-time (including backfill), {all_time.get('sharp', {}).get('n_games', 0)} games:")
+        for label in ["model", "sharp", "vegas"]:
+            s = all_time.get(label, {})
+            if s:
+                ats = f"{s['ats_record']} ({s['ats_accuracy']:.1%}) ATS" if s["ats_accuracy"] is not None else "no ATS decisions yet"
+                print(f"  {label:>6}: {s['record']} ({s['pick_accuracy']:.1%}) straight-up | {ats}")
+
+    print(f"\nSaved tracking log to {LOG_PATH} and summary to {SUMMARY_PATH}")
+
+if __name__ == "__main__":
+    main()
