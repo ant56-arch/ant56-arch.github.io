@@ -2,8 +2,8 @@
 better, built from its model_history.json (one entry per retrain) and its live
 weights file.
 
-Keep this file identical in mlb-hit-predictor (MLB and NBA) and nfl-edge
-(src/model_page.py, NFL and CFB). Each site passes a `spec` describing its own
+Keep this file identical in mlb-nba-cbb/model_page.py (MLB, NBA and CBB) and
+nfl-cfb/src/model_page.py (NFL and CFB). Each site passes a `spec` describing its own
 model; this module only renders it with the shared Sports Edge markup.
 
 spec keys:

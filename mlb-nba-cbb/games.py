@@ -2,8 +2,8 @@
 scoreboard strip at the top of every Edge site and the Schedule tab on the
 home site (ant56-arch.github.io/schedule.html), which both read games.json.
 
-Keep this file identical in mlb-hit-predictor (MLB and NBA) and nfl-edge
-(src/games.py, NFL and CFB).
+Keep this file identical in mlb-nba-cbb/games.py (MLB, NBA and CBB) and
+nfl-cfb/src/games.py (NFL and CFB).
 
   load(sport)            this sport's current slate, the way ESPN's own
                          scoreboard defines it: the current week for NFL and

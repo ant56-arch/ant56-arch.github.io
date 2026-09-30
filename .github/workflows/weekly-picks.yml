@@ -1,4 +1,4 @@
-name: Weekly Picks
+name: NFL and CFB Picks
 
 # Runs both the NFL and college football pipelines. NFL always runs; the CFB
 # steps need the CFBD_API_KEY secret (a free key from
@@ -31,19 +31,19 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
+# This site's code lives in nfl-cfb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: nfl-cfb
+
 jobs:
   generate-and-publish-picks:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -150,14 +150,7 @@ jobs:
         id: build_site
         run: python src/build_site.py
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # NFL Edge's pages go to /nfl/ and CFB Edge's to /cfb/.
+      - name: Publish site
+        if: github.ref == 'refs/heads/main'
+        run: ../publish_site.sh dist/nfl:nfl dist/cfb:cfb

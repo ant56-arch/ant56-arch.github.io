@@ -2,7 +2,7 @@
 
 The chance each MLB hitter gets at least one hit today, published as a static
 site on GitHub Pages. It's the baseball sibling of
-[NFL Edge](https://ant56-arch.github.io/nfl-edge/nfl/index.html), with the same
+[NFL Edge](https://ant56-arch.github.io/nfl/index.html), with the same
 look and cross-linked NFL / CFB / MLB tabs. No betting odds are used anywhere.
 
 ## How it works
@@ -73,7 +73,7 @@ rebuilds `teams/data/seasons/` from scratch if ever needed.
 
 ## NBA Edge
 The NBA site lives in `nba/` and publishes to
-https://ant56-arch.github.io/mlb-hit-predictor/nba/ from the same daily
+https://ant56-arch.github.io/nba/ from the same daily
 workflow. Every run (any mode) runs `nba/predict.py`, which:
 
 1. stores each finished day's scores and box scores from ESPN (`nba/data/days/`),
@@ -112,7 +112,7 @@ stored seasons from ESPN if ever needed.
 
 ## CBB Edge (men's college basketball)
 The college basketball site lives in `cbb/` and publishes to
-https://ant56-arch.github.io/mlb-hit-predictor/cbb/ from the same daily
+https://ant56-arch.github.io/cbb/ from the same daily
 workflow. Every run (any mode) runs `cbb/predict.py`, which:
 
 1. stores each finished day's Division I scores and team box scores from ESPN

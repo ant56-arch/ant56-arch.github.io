@@ -36,11 +36,10 @@ OUT_DIR = os.path.join(ROOT, "dist", "nba")
 ASSETS = ("style.css", "site.js", "nba.js")
 
 HOME_URL = "https://ant56-arch.github.io/"
-NFL_EDGE = "https://ant56-arch.github.io/nfl-edge"
-MLB_EDGE = "https://ant56-arch.github.io/mlb-hit-predictor"
-SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{NFL_EDGE}/nfl/index.html"), ("CFB", f"{NFL_EDGE}/cfb/index.html"),
-               ("MLB", f"{MLB_EDGE}/"), ("NBA", None), ("CBB", f"{MLB_EDGE}/cbb/index.html"),
-               ("Schedule", "https://ant56-arch.github.io/schedule.html")]
+MLB_EDGE = f"{HOME_URL}mlb"
+SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"),
+               ("MLB", f"{MLB_EDGE}/"), ("NBA", None), ("CBB", f"{HOME_URL}cbb/index.html"),
+               ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Who wins every NBA game tonight and how likely it is, from a model graded against every final score."
 TOP_N = 3
 STRONG = 70  # win chance, in percent, that counts as a strong pick

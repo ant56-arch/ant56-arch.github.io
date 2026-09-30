@@ -5,6 +5,11 @@ name: Test Data Fetch
 on:
   workflow_dispatch:
 
+# This site's code lives in nfl-cfb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: nfl-cfb
+
 jobs:
   test-fetch:
     runs-on: ubuntu-latest

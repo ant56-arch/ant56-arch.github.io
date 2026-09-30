@@ -1,4 +1,4 @@
-name: MLB Edge Daily
+name: MLB, NBA and CBB Daily
 
 # Picks runs refresh today's picks; later runs see posted lineups, and picks
 # lock once their game starts. The 2am run grades yesterday's picks. Every run
@@ -11,7 +11,8 @@ name: MLB Edge Daily
 # (cbb/, men's college basketball) works like NBA: every run stores finished
 # games and box scores, refreshes the KenPom-style ratings and picks, and
 # cbb/research/train.py retrains weekly in season. Every run rebuilds the sites
-# and (on main) publishes them to GitHub Pages.
+# and (on main) publishes them to the site branch GitHub Pages serves
+# (publish_site.sh at the repo root).
 # Times are ET converted to UTC assuming EDT (UTC-4); they run an hour early
 # in EST, which only affects the offseason.
 
@@ -31,12 +32,15 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: mlb-edge
   cancel-in-progress: false
+
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
 
 jobs:
   build:
@@ -117,19 +121,12 @@ jobs:
         continue-on-error: true
         run: python cbb/build_pages.py
 
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # MLB Edge's pages go to /mlb/, NBA and CBB to /nba/ and /cbb/. A build
+      # that failed leaves that sport's last published pages up.
+      - name: Publish site
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p out
+          for s in nba cbb; do if [ -d "dist/$s" ]; then mv "dist/$s" "out/$s"; fi; done
+          if [ -f dist/index.html ]; then mv dist out/mlb; fi
+          ../publish_site.sh out/mlb:mlb out/nba:nba out/cbb:cbb

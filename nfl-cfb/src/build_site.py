@@ -13,6 +13,9 @@ independently browsable and linkable:
                   to the site root keep working with NFL as the default sport
   dist/<sport>/summary.json - this week's top picks and the season record,
                   read by the home page linking every site (ant56-arch.github.io)
+Only dist/nfl/ and dist/cfb/ are published, as /nfl/ and /cfb/ of
+ant56-arch.github.io (see publish_site.sh at the repo root); each carries its
+own style.css and site.js.
 
 Pages per sport (see SPORTS below for which apply to which sport):
   index.html    - Home: notable model-vs-market gaps, track record, and this
@@ -337,18 +340,19 @@ FAVICON = ('data:image/svg+xml,'
     '%3Cpath d=%22M9 23V9h3.4l6.6 9.3V9H22v14h-3.4L12 13.6V23z%22 fill=%22%23e5793b%22/%3E'
     '%3C/svg%3E')
 
-# MLB Edge and NBA Edge are separate sites (both built in
-# github.com/ant56-arch/mlb-hit-predictor) that share this look; the sport
-# switcher links out to them after the NFL and CFB tabs.
-MLB_EDGE_URL = "https://ant56-arch.github.io/mlb-hit-predictor/"
-NBA_EDGE_URL = "https://ant56-arch.github.io/mlb-hit-predictor/nba/index.html"
+# MLB, NBA and CBB Edge are built from mlb-nba-cbb/ in the same repo and share
+# this look; the sport switcher links out to them after the NFL and CFB tabs.
+MLB_EDGE_URL = "https://ant56-arch.github.io/mlb/"
+NBA_EDGE_URL = "https://ant56-arch.github.io/nba/index.html"
+CBB_EDGE_URL = "https://ant56-arch.github.io/cbb/index.html"
 # Every sport's games as a TV grid, on the home site (schedule.js there reads
 # the games.json each sport publishes).
 SCHEDULE_URL = "https://ant56-arch.github.io/schedule.html"
 OTHER_SPORT_TABS = (f'<a class="sport-tab" href="{MLB_EDGE_URL}">MLB</a>'
                  f'<a class="sport-tab" href="{NBA_EDGE_URL}">NBA</a>'
+                 f'<a class="sport-tab" href="{CBB_EDGE_URL}">CBB</a>'
                  f'<a class="sport-tab" href="{SCHEDULE_URL}">Schedule</a>')
-# The home page (github.com/ant56-arch/ant56-arch.github.io) links every site
+# The home page (index.html at the root of this repo) links every site
 # and shows each one's summary.json; the switcher's first tab goes back to it.
 HOME_URL = "https://ant56-arch.github.io/"
 HOME_SPORT_TAB = f'<a class="sport-tab" href="{HOME_URL}">All</a>'
@@ -389,7 +393,7 @@ def page_shell(sport, title, active_tab, body_html):
     other_slug = "cfb" if sport["slug"] == "nfl" else "nfl"
     other_page = active_tab + ".html" if active_tab else "index.html"
     sport_switcher = HOME_SPORT_TAB + "".join(
-        f'<a href="{"../" + s["slug"] + "/" + other_page if s["slug"] != sport["slug"] else "#"}" '
+        f'<a href="{"../" + s["slug"] + "/" + (other_page if other_page != "players.html" or s["player_props_csv"] else "index.html") if s["slug"] != sport["slug"] else "#"}" '
         + ('class="sport-tab active" aria-current="page">' if s["slug"] == sport["slug"] else 'class="sport-tab">')
         + f'{s["wordmark"]}</a>'
         for s in SPORTS.values()
@@ -409,7 +413,7 @@ def page_shell(sport, title, active_tab, body_html):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css?v={ver}">
+<link rel="stylesheet" href="style.css?v={ver}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -437,12 +441,12 @@ def page_shell(sport, title, active_tab, body_html):
       <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="https://github.com/ant56-arch/nfl-edge">Source code</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
       <span>&copy; {now.year} {sport["wordmark"]} Edge. Updated from final scores every week.</span>
     </nav>
   </footer>
 </div>
-<script src="../site.js?v={ver}"></script>
+<script src="site.js?v={ver}"></script>
 </body>
 </html>"""
 
@@ -1095,7 +1099,7 @@ def root_page_shell(title, body_html):
       <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="https://github.com/ant56-arch/nfl-edge">Source code</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
       <span>&copy; {now.year} NFL Edge</span>
     </nav>
   </footer>
@@ -1320,6 +1324,10 @@ def build_sport_pages(sport):
         with open(os.path.join(out_dir, filename), "w") as f:
             f.write(html)
         print(f"  Wrote {sport['slug']}/{filename}")
+    # Each sport folder carries its own copy of the assets, so it can be
+    # published on its own (/nfl/ and /cfb/ on ant56-arch.github.io).
+    for asset in ["style.css", "site.js"]:
+        shutil.copy(os.path.join(WEB_SRC_DIR, asset), os.path.join(out_dir, asset))
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump(build_summary(sport, games, log, comparison, accuracy_summary), f, indent=1)
     print(f"  Wrote {sport['slug']}/summary.json")

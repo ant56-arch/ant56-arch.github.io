@@ -204,17 +204,20 @@ initCharts();
 // ESPN for fresh scores in the browser, refreshes every minute while a game is
 // live, and keeps the published file if ESPN can't be reached. If no sport has
 // games, it falls back to each site's top picks from summary.json. Keep this
-// block identical in home.js (ant56-arch.github.io), web/site.js (nfl-edge)
-// and web/site.js (mlb-hit-predictor).
+// block identical in home.js (repo root), nfl-cfb/web/site.js and
+// mlb-nba-cbb/web/site.js.
 const EDGE_SITES = [
-  { sport: "NFL", summary: "/nfl-edge/nfl/summary.json", games: "/nfl-edge/nfl/games.json",
-    href: "/nfl-edge/nfl/index.html", schedule: "/schedule.html#nfl" },
-  { sport: "CFB", summary: "/nfl-edge/cfb/summary.json", games: "/nfl-edge/cfb/games.json",
-    href: "/nfl-edge/cfb/index.html", schedule: "/schedule.html#cfb" },
-  { sport: "MLB", summary: "/mlb-hit-predictor/summary.json", games: "/mlb-hit-predictor/games.json",
-    href: "/mlb-hit-predictor/", schedule: "/schedule.html#mlb" },
-  { sport: "NBA", summary: "/mlb-hit-predictor/nba/summary.json", games: "/mlb-hit-predictor/nba/games.json",
-    href: "/mlb-hit-predictor/nba/index.html", schedule: "/schedule.html#nba" },
+  { sport: "NFL", summary: "/nfl/summary.json", games: "/nfl/games.json",
+    href: "/nfl/index.html", schedule: "/schedule.html#nfl" },
+  { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
+    href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
+  { sport: "MLB", summary: "/mlb/summary.json", games: "/mlb/games.json",
+    href: "/mlb/", schedule: "/schedule.html#mlb" },
+  { sport: "NBA", summary: "/nba/summary.json", games: "/nba/games.json",
+    href: "/nba/index.html", schedule: "/schedule.html#nba" },
+  // CBB Edge has no games.json yet, so it shows on the home page only.
+  { sport: "CBB", summary: "/cbb/summary.json", games: null,
+    href: "/cbb/index.html", schedule: "/cbb/index.html" },
 ];
 const EDGE_GAMES_PER_SPORT = 16;
 
@@ -273,6 +276,7 @@ function edgeParseEspn(ev) {
 }
 
 async function edgeLoadGames(site) {
+  if (!site.games) return null;
   const published = await edgeFetchJson(site.games);
   if (!published) return null;
   const live = published.espn ? await edgeFetchJson(published.espn, 6000) : null;

@@ -13,6 +13,11 @@ on:
         description: "Season end years, comma-separated (2026 = 2025-26). Blank = last three."
         required: false
 
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
+
 jobs:
   pull:
     runs-on: ubuntu-latest

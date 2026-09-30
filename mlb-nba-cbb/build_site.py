@@ -19,9 +19,9 @@ and writes:
   games.json    - today's slate for the scoreboard strip, each game carrying
                   the team model's pick (or the top hitter when there's none)
 
-Same look and page structure as NFL Edge (github.com/ant56-arch/nfl-edge),
-with an NFL / CFB / MLB switcher linking the sites together. Published to
-GitHub Pages by .github/workflows/daily.yml.
+Same look and page structure as NFL Edge (nfl-cfb/ in this repo), with a
+sport switcher linking the sites together. Published as /mlb/ of
+ant56-arch.github.io by .github/workflows/daily.yml (see publish_site.sh).
 """
 
 import hashlib
@@ -45,11 +45,9 @@ ET = ZoneInfo("America/New_York")
 NOW = datetime.now(ET)
 
 HOME_URL = "https://ant56-arch.github.io/"
-NFL_EDGE = "https://ant56-arch.github.io/nfl-edge"
-SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{NFL_EDGE}/nfl/index.html"), ("CFB", f"{NFL_EDGE}/cfb/index.html"), ("MLB", None),
-               ("NBA", "https://ant56-arch.github.io/mlb-hit-predictor/nba/index.html"),
-               ("CBB", "https://ant56-arch.github.io/mlb-hit-predictor/cbb/index.html"),
-               ("Schedule", "https://ant56-arch.github.io/schedule.html")]
+SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"),
+               ("MLB", None), ("NBA", f"{HOME_URL}nba/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
+               ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = ("Who wins every MLB game and which hitters get a hit today, from models graded against every "
            "box score.")
 TEAMS_DIR = os.path.join(ROOT, "teams")
@@ -203,7 +201,7 @@ def footer():
       <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="{NFL_EDGE}/nfl/index.html">NFL Edge</a>
+      <a href="{HOME_URL}nfl/index.html">NFL Edge</a>
       <span>&copy; {NOW.year} MLB Edge. Updated from box scores every night.</span>
     </nav>
   </footer>"""

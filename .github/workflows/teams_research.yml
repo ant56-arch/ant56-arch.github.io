@@ -17,6 +17,11 @@ concurrency:
   group: mlb-edge
   cancel-in-progress: false
 
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
+
 jobs:
   pull:
     runs-on: ubuntu-latest
@@ -40,7 +45,7 @@ jobs:
         run: python teams/research/pull_seasons.py
 
       - name: Retrain model
-        if: hashFiles('teams/research/train.py') != ''
+        if: hashFiles('mlb-nba-cbb/teams/research/train.py') != ''
         continue-on-error: true
         env:
           FORCE: '1'

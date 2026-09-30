@@ -23,6 +23,11 @@ concurrency:
   group: mlb-research
   cancel-in-progress: false
 
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
+
 jobs:
   pull_and_train:
     runs-on: ubuntu-latest
@@ -43,7 +48,7 @@ jobs:
       - name: Restore pulled seasons
         uses: actions/cache@v4
         with:
-          path: research/data
+          path: mlb-nba-cbb/research/data
           key: mlb-research-data-${{ github.run_id }}
           restore-keys: mlb-research-data-
 
