@@ -1218,6 +1218,99 @@ details.how-to p { margin: 0 0 8px 0; }
   .bet-pct { grid-area: pct; align-self: center; margin: 0; }
 }
 
+/* ---------- Game pages, "$10 a pick" (extras.py) ----------
+   A page per game: the matchup, our pick, why the model likes it and the
+   numbers behind it. Plus the running total of $10 on every moneyline pick. */
+
+a.bet-card { color: inherit; text-decoration: none; transition: border-color 0.15s ease, background 0.15s ease; }
+a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ours-hot); background: #26272a; }
+.pl-link { margin-left: 12px; font-weight: 700; color: var(--ours); text-decoration: none; white-space: nowrap; }
+.pl-link:hover { text-decoration: underline; }
+.lock-note + .pl-link, .pl-note > .pl-link:first-child { margin-left: 0; }
+
+.is-up { color: var(--hit); }
+.is-down { color: var(--miss); }
+.money-chart { margin-top: 18px; overflow-x: auto; }
+.money-chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.money-chart .g { stroke: var(--rule); stroke-width: 1; }
+.money-chart .z { stroke: var(--rule-strong); stroke-width: 1; stroke-dasharray: 4 4; }
+.money-chart .t { fill: var(--text-faint); font: 12px var(--font); }
+.money-chart .lab { font: 700 13px var(--font); }
+
+.game-hero { text-align: center; }
+.gh-when { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-faint); }
+.gh-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin: 18px 0 8px 0;
+}
+.gh-team { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.gh-team b {
+  font-family: var(--font-head);
+  font-size: 42px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.gh-team.is-pick b { color: var(--ours); }
+.gh-team small { font-size: 14px; color: var(--text-muted); }
+.gh-logo { width: 56px; height: 56px; object-fit: contain; }
+.gh-score { font-family: var(--font-head); font-size: 40px; font-weight: 800; line-height: 1; }
+.gh-at { font-size: 16px; color: var(--text-faint); }
+.gh-verdict { display: grid; justify-items: center; gap: 2px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.gh-big {
+  font-family: var(--font-head);
+  font-size: 72px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ours);
+}
+.gh-big small { font-size: 0.55em; }
+.gh-sub { font-size: 14px; color: var(--text-muted); }
+.gh-note { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; font-weight: 600; }
+.gh-lock { margin-top: 6px; font-size: 13px; color: var(--text-faint); }
+.gh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 20px; }
+.why-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.why-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(80px, 1.2fr) 44px; gap: 12px; align-items: center; }
+.why-label { display: grid; font-weight: 600; }
+.why-label small { font-size: 12px; font-weight: 400; color: var(--text-faint); }
+.why-bar { position: relative; height: 6px; overflow: hidden; border-radius: 3px; background: var(--surface-2); }
+.why-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
+.why-list li.is-against .why-bar span { background: var(--vegas); }
+.why-pct { font-family: var(--font-head); font-size: 20px; font-weight: 800; font-style: italic; text-align: right; }
+.gh-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; margin: 0; }
+.gh-facts div { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.gh-facts dt { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.gh-facts dd { margin: 0; font-size: 16px; font-weight: 600; }
+.gh-facts dd small { display: block; font-size: 13px; font-weight: 400; color: var(--text-muted); }
+.hw-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.hw-list li { display: grid; grid-template-columns: minmax(0, 1fr) 60px 140px; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--rule); }
+.hw-name { display: grid; min-width: 0; }
+.hw-name small { font-size: 13px; color: var(--text-muted); }
+.hw-pct { font-family: var(--font-head); font-size: 22px; font-weight: 800; font-style: italic; color: var(--ours); text-align: right; }
+.hw-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.gh-back { margin: 8px 0 0 0; }
+.gh-back a { font-weight: 700; color: var(--ours); text-decoration: none; }
+.gh-back a:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .gh-team b { font-size: 26px; }
+  .gh-logo { width: 40px; height: 40px; }
+  .gh-score { font-size: 30px; }
+  .gh-big { font-size: 52px; }
+  .gh-grid { grid-template-columns: minmax(0, 1fr); }
+  .gh-facts { grid-template-columns: minmax(0, 1fr); }
+  .hw-list li { grid-template-columns: minmax(0, 1fr) 50px; }
+  .hw-res { grid-column: 1 / -1; justify-content: flex-start; }
+  .hw-res:empty { display: none; }
+}
+
 /* ---------- Home page ---------- */
 
 .hero-kicker {
@@ -1299,7 +1392,98 @@ details.how-to p { margin: 0 0 8px 0; }
   .board-what { margin-top: 4px; }
 }
 
-* ---------- Schedule page: Cards / TV Guide toggle and guide view ---------- */
+/* Last night: every sport's latest results in one strip (home.js). */
+.last-night { border-left: 3px solid var(--ours); }
+.last-night .card-body { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 16px 32px; align-items: start; }
+.ln-head { display: grid; gap: 4px; }
+.ln-num { font-family: var(--font-head); font-size: 64px; font-weight: 800; font-style: italic; line-height: 0.95; }
+.ln-sub { font-size: 14px; color: var(--text-muted); }
+.ln-rows { display: grid; gap: 12px; min-width: 0; }
+.ln-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 4px 16px; align-items: baseline; }
+.ln-sport { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 4px 8px; text-decoration: none; }
+.ln-sport b { font-family: var(--font-head); font-size: 20px; font-weight: 800; font-style: italic; text-transform: uppercase; }
+.ln-sport span { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--ours); }
+.ln-sport small { font-size: 12px; color: var(--text-faint); }
+a.ln-sport:hover b { color: var(--ours); }
+.ln-items { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--text-muted); min-width: 0; }
+.ln-item { display: inline-flex; gap: 4px; color: var(--text); text-decoration: none; white-space: nowrap; }
+.ln-item.is-miss { color: var(--text-muted); }
+a.ln-item:hover { text-decoration: underline; }
+.ln-mark { font-weight: 700; }
+.ln-item.is-hit .ln-mark { color: var(--hit); }
+.ln-item.is-miss .ln-mark { color: var(--miss); }
+.ln-next { padding-top: 10px; border-top: 1px solid var(--rule); }
+.ln-next .ln-sport b { font-size: 16px; color: var(--text-muted); }
+
+/* $10 a pick: a tile per sport and the running total (home.js). */
+.money-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.money-tile {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  color: inherit;
+  text-decoration: none;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+a.money-tile:hover { border-color: var(--rule-strong); }
+.mt-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.mt-num { font-family: var(--font-head); font-size: 34px; font-weight: 800; font-style: italic; line-height: 1.05; }
+.mt-sub { font-size: 12px; color: var(--text-muted); }
+.home-more { margin: 4px 0 0 0; }
+.home-more a { font-weight: 700; color: var(--ours); text-decoration: none; }
+.home-more a:hover { text-decoration: underline; }
+
+/* Best Bets (bets.html): value picks as rows, each opening its game page. */
+.vb-list { border-top: 1px solid var(--rule); }
+.vb-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(180px, 1.2fr) 150px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 8px;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 6px;
+  transition: background 0.12s ease;
+}
+.vb-row:hover { background: rgba(236, 235, 231, 0.04); }
+.vb-sport { font-family: var(--font-head); font-size: 16px; font-weight: 800; font-style: italic; color: var(--text-faint); }
+.vb-pick { display: grid; min-width: 0; }
+.vb-pick b { font-family: var(--font-head); font-size: 24px; font-weight: 800; font-style: italic; line-height: 1.1; text-transform: uppercase; color: var(--ours); }
+.vb-pick small, .vb-bar small, .vb-when small { font-size: 13px; color: var(--text-muted); }
+.vb-bar { display: grid; gap: 6px; }
+.vb-track { position: relative; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.vb-fill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; background: var(--ours); }
+.vb-tick { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--vegas); }
+.vb-ours { color: var(--ours); }
+.vb-book { color: var(--vegas); }
+.vb-when { display: grid; font-weight: 600; }
+.sure-cards { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+@media (max-width: 700px) {
+  .last-night .card-body { grid-template-columns: minmax(0, 1fr); }
+  .ln-num { font-size: 52px; }
+  .ln-row { grid-template-columns: minmax(0, 1fr); }
+  .money-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .money-tiles > :first-child { grid-column: 1 / -1; }
+  .mt-num { font-size: 28px; }
+  .vb-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "sport when" "pick when" "bar bar";
+    gap: 2px 12px;
+    padding: 14px 4px;
+  }
+  .vb-sport { grid-area: sport; font-size: 13px; }
+  .vb-bar { margin-top: 6px; }
+  .vb-pick { grid-area: pick; }
+  .vb-bar { grid-area: bar; }
+  .vb-when { grid-area: when; text-align: right; }
+}
+
+/* ---------- Schedule page: Cards / TV Guide toggle and guide view ---------- */
 
 .sched-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 16px; }
 .sched-toolbar-label { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }

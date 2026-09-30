@@ -1218,6 +1218,99 @@ details.how-to p { margin: 0 0 8px 0; }
   .bet-pct { grid-area: pct; align-self: center; margin: 0; }
 }
 
+/* ---------- Game pages, "$10 a pick" (extras.py) ----------
+   A page per game: the matchup, our pick, why the model likes it and the
+   numbers behind it. Plus the running total of $10 on every moneyline pick. */
+
+a.bet-card { color: inherit; text-decoration: none; transition: border-color 0.15s ease, background 0.15s ease; }
+a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ours-hot); background: #26272a; }
+.pl-link { margin-left: 12px; font-weight: 700; color: var(--ours); text-decoration: none; white-space: nowrap; }
+.pl-link:hover { text-decoration: underline; }
+.lock-note + .pl-link, .pl-note > .pl-link:first-child { margin-left: 0; }
+
+.is-up { color: var(--hit); }
+.is-down { color: var(--miss); }
+.money-chart { margin-top: 18px; overflow-x: auto; }
+.money-chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.money-chart .g { stroke: var(--rule); stroke-width: 1; }
+.money-chart .z { stroke: var(--rule-strong); stroke-width: 1; stroke-dasharray: 4 4; }
+.money-chart .t { fill: var(--text-faint); font: 12px var(--font); }
+.money-chart .lab { font: 700 13px var(--font); }
+
+.game-hero { text-align: center; }
+.gh-when { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-faint); }
+.gh-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin: 18px 0 8px 0;
+}
+.gh-team { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.gh-team b {
+  font-family: var(--font-head);
+  font-size: 42px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.gh-team.is-pick b { color: var(--ours); }
+.gh-team small { font-size: 14px; color: var(--text-muted); }
+.gh-logo { width: 56px; height: 56px; object-fit: contain; }
+.gh-score { font-family: var(--font-head); font-size: 40px; font-weight: 800; line-height: 1; }
+.gh-at { font-size: 16px; color: var(--text-faint); }
+.gh-verdict { display: grid; justify-items: center; gap: 2px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.gh-big {
+  font-family: var(--font-head);
+  font-size: 72px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ours);
+}
+.gh-big small { font-size: 0.55em; }
+.gh-sub { font-size: 14px; color: var(--text-muted); }
+.gh-note { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; font-weight: 600; }
+.gh-lock { margin-top: 6px; font-size: 13px; color: var(--text-faint); }
+.gh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 20px; }
+.why-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.why-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(80px, 1.2fr) 44px; gap: 12px; align-items: center; }
+.why-label { display: grid; font-weight: 600; }
+.why-label small { font-size: 12px; font-weight: 400; color: var(--text-faint); }
+.why-bar { position: relative; height: 6px; overflow: hidden; border-radius: 3px; background: var(--surface-2); }
+.why-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
+.why-list li.is-against .why-bar span { background: var(--vegas); }
+.why-pct { font-family: var(--font-head); font-size: 20px; font-weight: 800; font-style: italic; text-align: right; }
+.gh-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; margin: 0; }
+.gh-facts div { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.gh-facts dt { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.gh-facts dd { margin: 0; font-size: 16px; font-weight: 600; }
+.gh-facts dd small { display: block; font-size: 13px; font-weight: 400; color: var(--text-muted); }
+.hw-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.hw-list li { display: grid; grid-template-columns: minmax(0, 1fr) 60px 140px; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--rule); }
+.hw-name { display: grid; min-width: 0; }
+.hw-name small { font-size: 13px; color: var(--text-muted); }
+.hw-pct { font-family: var(--font-head); font-size: 22px; font-weight: 800; font-style: italic; color: var(--ours); text-align: right; }
+.hw-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.gh-back { margin: 8px 0 0 0; }
+.gh-back a { font-weight: 700; color: var(--ours); text-decoration: none; }
+.gh-back a:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .gh-team b { font-size: 26px; }
+  .gh-logo { width: 40px; height: 40px; }
+  .gh-score { font-size: 30px; }
+  .gh-big { font-size: 52px; }
+  .gh-grid { grid-template-columns: minmax(0, 1fr); }
+  .gh-facts { grid-template-columns: minmax(0, 1fr); }
+  .hw-list li { grid-template-columns: minmax(0, 1fr) 50px; }
+  .hw-res { grid-column: 1 / -1; justify-content: flex-start; }
+  .hw-res:empty { display: none; }
+}
+
 /* ---------- Moneyline picks (NFL/CFB additions) ---------- */
 
 .ml-pick { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 4px; }

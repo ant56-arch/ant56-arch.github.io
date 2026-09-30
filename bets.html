@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Schedule | Sports Edge</title>
-<meta name="description" content="This week's NFL, college football Top 25, MLB and NBA games with start times, TV networks and our pick for each.">
+<title>Best Bets | Sports Edge</title>
+<meta name="description" content="Every sport's value picks, where our chance beats the betting price, and each sport's surest pick, on one page.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,37 +23,42 @@
       <a class="sport-tab" href="/mlb/">MLB</a>
       <a class="sport-tab" href="/cfb/index.html">CFB</a>
       <a class="sport-tab" href="/cbb/index.html">CBB</a>
-      <a class="sport-tab" href="/bets.html">Best Bets</a>
-      <a class="sport-tab active" href="/schedule.html" aria-current="page">Schedule</a>
+      <a class="sport-tab active" href="/bets.html" aria-current="page">Best Bets</a>
+      <a class="sport-tab" href="/schedule.html">Schedule</a>
     </nav>
   </div>
 </header>
 <aside class="scoreboard" aria-label="Latest top picks" hidden></aside>
 
-<header class="masthead schedule-hero" data-sport="TV">
+<header class="masthead home-hero" data-sport="BETS">
   <div class="masthead-inner">
-    <div class="hero-kicker">Where to watch</div>
-    <h1 class="wordmark">TV <span>Schedule</span></h1>
-    <div class="tagline">Every game with its start time, TV network and our pick. College football shows games with a Top 25 team.</div>
+    <div class="hero-kicker">Every sport, one page</div>
+    <h1 class="wordmark">Best <span>Bets</span></h1>
+    <div class="tagline">The games where our chance to win beats the betting price, and each sport's surest pick right now.</div>
   </div>
 </header>
-<nav class="tabs" aria-label="Sport"><div class="tabs-inner sched-tabs">
-  <a href="#nfl" data-sport="nfl">NFL</a>
-  <a href="#nba" data-sport="nba">NBA</a>
-  <a href="#mlb" data-sport="mlb">MLB</a>
-  <a href="#cfb" data-sport="cfb">CFB Top 25</a>
-</div></nav>
 
 <div class="wrap">
-  <div class="sched-toolbar">
-    <span class="sched-toolbar-label">View</span>
-    <div class="view-toggle" role="group" aria-label="Schedule view">
-      <button type="button" data-view="guide" aria-pressed="true">TV Guide</button>
-      <button type="button" data-view="cards" aria-pressed="false">Cards</button>
-    </div>
-  </div>
-  <main id="main-content" class="schedule-main" aria-live="polite">
-    <section class="card"><div class="empty-state">Loading the schedule</div></section>
+  <main id="main-content">
+    <section class="card">
+      <div class="card-header"><h2>Value picks</h2>
+        <div class="subtitle">Our chance beats the betting price by 6 points or more. Soonest first.</div></div>
+      <div class="card-body">
+        <div class="vb-list" id="value-picks" aria-live="polite"><div class="empty-state">Loading</div></div>
+        <details class="how-to"><summary>How to read this</summary><div>
+          <p>The orange bar is our chance to win. The blue tick is the chance the betting price implies, with the
+            bookmaker's cut taken out. When the bar runs 6 or more points past the tick, the price pays more than the
+            pick is worth to the model, and that's a value pick.</p>
+          <p>Prices are the ones we saw at our last update and lock when each game starts. Tap a pick for its game
+            page.</p>
+        </div></details>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header"><h2>Surest picks</h2>
+        <div class="subtitle" id="bets-updated">Each sport's most confident pick, whatever the price</div></div>
+      <div class="card-body"><div class="bet-cards sure-cards" id="surest-picks"><div class="empty-state">Loading</div></div></div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -68,6 +73,5 @@
   </footer>
 </div>
 <script src="home.js?v=6"></script>
-<script src="schedule.js?v=3"></script>
 </body>
 </html>

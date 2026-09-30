@@ -33,6 +33,7 @@ from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
+import extras
 import games as games_mod
 import model_page
 import moneyline
@@ -47,7 +48,7 @@ NOW = datetime.now(ET)
 HOME_URL = "https://ant56-arch.github.io/"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"), ("MLB", None),
                ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
-               ("Schedule", f"{HOME_URL}schedule.html")]
+               ("Best Bets", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = ("Who wins every MLB game and which hitters get a hit today, from models graded against every "
            "box score.")
 TEAMS_DIR = os.path.join(ROOT, "teams")
@@ -243,15 +244,15 @@ def record_band_html(eyebrow, value=None, pct_text="", since="", side="", wait="
     </div></section>"""
 
 
-def bet_cards_html(picks, when):
+def bet_cards_html(picks, when, href=None):
     """The day's most confident game picks as big cards. when(p) is the
-    time line on each."""
-    cards = "".join(f"""<article class="bet-card">
+    time line on each; href(p), when given, links each card to its game page."""
+    cards = "".join(f"""<{'a href="' + href(p) + '"' if href else 'article'} class="bet-card">
       <div class="bet-when">{escape(when(p))}</div>
       <div class="bet-pick"><b>{escape(p['pick'])}</b> over {escape(p['away'] if p['pick'] == p['home'] else p['home'])}</div>
       <div class="bet-pct">{p['prob']:.0f}<small>%</small></div>
       <div class="bet-sub">chance to win{' ' + pill('VALUE', 'positive') if (p.get('ml') or {}).get('value') else ''}</div>
-    </article>""" for p in picks)
+    </{'a' if href else 'article'}>""" for p in picks)
     return f'<div class="bet-cards">{cards}</div>' if cards else ""
 
 
@@ -330,7 +331,7 @@ def games_list(picks):
             sub = " · ".join(x for x in (p.get("round"), f"{first_pitch(p)} ET") if x)
         value = " " + pill("VALUE", "positive") if (p.get("ml") or {}).get("value") else ""
         starters = f"{starter_text(p.get('away_sp'))} vs. {starter_text(p.get('home_sp'))}"
-        note = lock_note(p)
+        note = lock_note(p) + game_link(p)
         rows += f"""<li><details class="pl-row"><summary class="pl-line">
       <span class="pl-match"><span class="pl-teams">{escape(p['away'])} <i>@</i> {escape(p['home'])}</span>
         <span class="pl-sub">{escape(sub)}</span></span>
@@ -343,6 +344,14 @@ def games_list(picks):
       <div><dt>Starters (ERA)</dt><dd>{escape(starters)}</dd></div>
     </dl>{f'<div class="pl-note">{note}</div>' if note else ""}</details></li>"""
     return f'<ul class="pick-list">{rows}</ul>'
+
+
+def game_file(p):
+    return f"game-{p['game_id']}.html"
+
+
+def game_link(p):
+    return f'<a class="pl-link" href="{game_file(p)}">Game page &rarr;</a>'
 
 
 def hit_spark(g):
@@ -847,7 +856,8 @@ def build_games(team_history):
     body = games_band(picks)
     if todays:
         open_games = [p for p in todays if p.get("correct") is None and not p.get("void")]
-        bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:TOP_GAMES], lambda p: f"{first_pitch(p)} ET")
+        bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:TOP_GAMES], lambda p: f"{first_pitch(p)} ET",
+                              game_file)
         if bets:
             body += card("Most confident today", "The model's surest picks among games still to play", bets)
         body += card(f"Today's Games: {day_label(today)}", "Tap a game for the starters and the moneyline.",
@@ -859,7 +869,132 @@ def build_games(team_history):
         body += card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
                      'update: a winner and a win chance for every game.</div>')
     record, charts = game_record(picks)
-    return page_shell("Games", "games.html", body + record + game_history(picks), charts=charts)
+    dollars = card(f"${extras.STAKE} a pick", f"What ${extras.STAKE} on every game pick's moneyline would have made "
+                   "so far", extras.dollars_body(game_units(picks), "game pick"))
+    return page_shell("Games", "games.html", body + dollars + record + game_history(picks), charts=charts)
+
+
+# ── Game pages, "$10 a pick" and the home site's Best Bets / Last night ──────
+GAME_PAGE_DAYS = 21  # game pages are built for this many days back, plus today
+WHY_LABELS = {"home_field": "Home field", "elo": "Team strength", "starters": "Starting pitchers",
+              "bullpen": "Bullpen"}
+
+
+def game_units(picks):
+    """Every graded moneyline game pick, for the '$10 a pick' record."""
+    return extras.units_summary((p["date"], p["ml"]["units"], p["ml"]["won"]) for p in moneyline.graded(picks))
+
+
+def sp_fact(team, sp):
+    if not sp or not sp.get("id"):
+        return (f"{team} starter", "To be announced", "")
+    if sp.get("era") is None:
+        return (f"{team} starter", escape(sp["name"]), "First start of the season")
+    ip = sp.get("ip") or 0
+    whole, frac = int(ip), round((ip - int(ip)) * 3)
+    innings = f"{whole}{['', '⅓', '⅔'][frac] if frac < 3 else ''}" if frac < 3 else str(whole + 1)
+    return (f"{team} starter", escape(sp["name"]), f"{sp['era']:.2f} ERA, {innings} innings")
+
+
+def mlb_game(p, hitters=()):
+    """A team-model pick in the shared game shape (extras.py)."""
+    gid = str(p["game_id"])
+    final = p.get("correct") is not None and not p.get("void")
+    start = datetime.fromisoformat(p["start"]).astimezone(ET)
+    label = " · ".join(x for x in (p.get("round"), f"Game {p['doubleheader']}" if p.get("doubleheader") else "",
+                                   f"{start:%a, %b} {start.day}", f"{first_pitch(p)} ET") if x)
+    team = lambda side: {"abbr": p[side], "name": p.get(f"{side}_name") or p[side],
+                         "record": p.get(f"{side}_record") or "",
+                         "logo": f"https://www.mlbstatic.com/team-logos/{p[f'{side}_id']}.svg" if p.get(f"{side}_id") else "",
+                         "score": p.get(f"{side}_runs") if final else None}
+    home_pick = p["pick"] == p["home"]
+    ml = p.get("ml")
+    why = [(WHY_LABELS.get(k, k.replace("_", " ").capitalize()), v if home_pick else -v)
+           for k, v in (p.get("factors") or {}).items()]
+    hw = []
+    for h in sorted(hitters, key=lambda h: -h["confidence"]):
+        res = result_html(h) if h.get("got_hit") is not None or h.get("void") else ""
+        hw.append((h["player_name"], f"{h.get('team_abbr', '')} vs. {h.get('opp_pitcher') or 'TBD'}",
+                   h["confidence"], res))
+    return {
+        "sport": "MLB", "id": gid, "file": f"game-{gid}.html", "url": f"/mlb/game-{gid}.html",
+        "date": p["date"], "start": p["start"], "label": label,
+        "away": team("away"), "home": team("home"),
+        "pick": p["pick"], "other": p["away"] if home_pick else p["home"], "prob": p["prob"],
+        "final": final, "hit": p.get("correct") if final else None, "void": bool(p.get("void")),
+        "ml": {"price": ml["price"], "book": ml["book_prob"], "value": ml.get("value"),
+               "units": ml.get("units"), "won": ml.get("won")} if ml else None,
+        "why": why,
+        "facts": [sp_fact(p["away"], p.get("away_sp")), sp_fact(p["home"], p.get("home_sp"))],
+        "hitters": hw, "note": lock_note(p),
+    }
+
+
+def mlb_games(team_history, history):
+    """Every team pick in the shared game shape, newest last, with our hitter
+    picks in each game."""
+    by_game = defaultdict(list)
+    for h in history.get("picks", []):
+        if is_model_pick(h):
+            by_game[(h["date"], str(h.get("game_id")))].append(h)
+    return [mlb_game(p, by_game.get((p["date"], str(p["game_id"])), ())) for p in team_history.get("picks", [])]
+
+
+def build_game_pages(games):
+    cutoff = (NOW.date() - timedelta(days=GAME_PAGE_DAYS)).isoformat()
+    return {g["file"]: page_shell(f"{g['away']['abbr']} @ {g['home']['abbr']}", None,
+                                  extras.game_page_body(g, "games.html", "All of today's games"))
+            for g in games if g["date"] >= cutoff}
+
+
+def bb_game(p, sport, slug, logo_url, facts, name=None):
+    """An NBA or CBB pick in the shared game shape (extras.py). logo_url(p,
+    side) and name(p, side) give each team's logo and display name; facts are
+    the sport's own matchup lines."""
+    gid = str(p["game_id"])
+    final = p.get("correct") is not None and not p.get("void")
+    start = datetime.fromisoformat(p["start"]).astimezone(ET)
+    label = " · ".join(x for x in (p.get("note") if sport == "CBB" else "", f"{start:%a, %b} {start.day}",
+                                   f"{start:%-I:%M %p} ET") if x)
+    team = lambda side: {"abbr": p[side], "name": (name(p, side) if name else p.get(f"{side}_name")) or p[side],
+                         "record": p.get(f"{side}_record") or "", "logo": logo_url(p, side),
+                         "score": p.get(f"{side}_pts") if final else None}
+    ml = p.get("ml")
+    return {
+        "sport": sport, "id": gid, "file": f"game-{gid}.html", "url": f"/{slug}/game-{gid}.html",
+        "date": p["date"], "start": p["start"], "label": label, "neutral": bool(p.get("neutral")),
+        "away": team("away"), "home": team("home"),
+        "pick": p["pick"], "other": p["away"] if p["pick"] == p["home"] else p["home"], "prob": p["prob"],
+        "final": final, "hit": p.get("correct") if final else None, "void": bool(p.get("void")),
+        "ml": {"price": ml["price"], "book": ml["book_prob"], "value": ml.get("value"),
+               "units": ml.get("units"), "won": ml.get("won")} if ml else None,
+        "why": [], "facts": facts(p), "hitters": [], "note": lock_note(p),
+    }
+
+
+def bb_game_pages(games, shell):
+    cutoff = (NOW.date() - timedelta(days=GAME_PAGE_DAYS)).isoformat()
+    return {g["file"]: shell(f"{g['away']['abbr']} {'vs' if g.get('neutral') else '@'} {g['home']['abbr']}", None,
+                             extras.game_page_body(g, "index.html", "All of today's games"))
+            for g in games if g["date"] >= cutoff}
+
+
+def bb_home_parts(summary, picks, games):
+    """Best Bets, '$10 a pick' and Last night data for an NBA or CBB summary."""
+    today = NOW.date().isoformat()
+    summary["slate"] = [extras.slate_entry(g) for g in games
+                        if g["date"] >= today and not g["final"] and not g["void"]]
+    summary["units"] = game_units(picks)
+    summary["last"] = extras.last_day(games)
+
+
+def hitter_results(history):
+    """{date: [{"name", "hit", "line"}]} for graded hitter picks, for Last night."""
+    out = defaultdict(list)
+    for h in sorted(graded(history.get("picks", [])), key=lambda h: -h.get("confidence", 0)):
+        out[h["date"]].append({"name": h["player_name"], "hit": bool(h["got_hit"]),
+                               "line": f"{h['hits']}-for-{h['at_bats']}"})
+    return dict(out)
 
 
 # ── Schedule tab and scoreboard strip ────────────────────────────────────────
@@ -1152,6 +1287,7 @@ def build_summary(history, model, team_history=None):
                "empty": "No picks yet.", "retrained": model.get("trained_at"), "model_url": "model.html"}
     if not picks:
         summary["games"] = games_summary((team_history or {}).get("picks", []))
+        add_home_parts(summary, history, team_history)
         return summary
     latest = max(p["date"] for p in picks)
     prefix = "Today" if latest == NOW.date().isoformat() else "Latest"
@@ -1169,7 +1305,22 @@ def build_summary(history, model, team_history=None):
         summary["record"] = {"value": f"{hits}-{len(g) - hits}", "label": "top hitters who got a hit",
                              "sub": pct(hits / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
     summary["games"] = games_summary((team_history or {}).get("picks", []))
+    add_home_parts(summary, history, team_history)
     return summary
+
+
+def add_home_parts(summary, history, team_history):
+    """What the home site's Best Bets page, '$10 a pick' chart and Last night
+    strip read: games still to play, the running moneyline total and the
+    latest day's results."""
+    team_history = team_history or {"picks": []}
+    games = mlb_games(team_history, history)
+    today = NOW.date().isoformat()
+    summary["slate"] = [extras.slate_entry(g) for g in games
+                        if g["date"] >= today and not g["final"] and not g["void"]]
+    summary["units"] = game_units(team_history["picks"])
+    last = extras.last_day(games, hitter_results(history))
+    summary["last"] = last
 
 
 # ── Root pages ───────────────────────────────────────────────────────────────
@@ -1207,6 +1358,7 @@ def main():
         "privacy.html": games_mod.legal_redirect("privacy"),
         "404.html": build_404(),
     }
+    pages.update(build_game_pages(mlb_games(team_history, history)))
     for name, html in pages.items():
         with open(os.path.join(DIST_DIR, name), "w") as f:
             f.write(html)
