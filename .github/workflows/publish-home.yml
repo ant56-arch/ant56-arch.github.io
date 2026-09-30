@@ -1,0 +1,32 @@
+name: Publish Home Page
+
+# Publishes the home page files (the root of this repo) to the site branch
+# that GitHub Pages serves, leaving every sport's pages as they are. The sport
+# workflows copy the home page in on every run too; this one makes a home page
+# change show up right away. Run it by hand to create the site branch.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - home.js
+      - schedule.html
+      - schedule.js
+      - style.css
+      - terms.html
+      - privacy.html
+      - publish_site.sh
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish home page
+        run: ./publish_site.sh

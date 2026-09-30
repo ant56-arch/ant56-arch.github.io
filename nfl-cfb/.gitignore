@@ -1,0 +1,11 @@
+data/raw/
+data/historical_raw/
+data/processed/
+dist/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+
+# data/tracking/ IS committed on purpose - it's the only state that needs to
+# survive across ephemeral GitHub Actions runs (see track_results.py).
