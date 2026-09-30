@@ -30,8 +30,8 @@ from html import escape
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from build_site import (DASH, ET, ML_NOTE, NOW, card, ml_cell, ml_day, ml_history, ml_record_html, pct, pill,  # noqa: E402
-                        script_json, statline)
+from build_site import (DASH, ET, ML_NOTE, NOW, bet_cards_html, card, conf_html, game_res, lock_note,  # noqa: E402
+                        ml_day, ml_dd, ml_history, pct, pill, record_band_html, script_json, statline)
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
@@ -172,12 +172,8 @@ def page_shell(title, active, body_html, charts=False):
 def footer():
     return f"""<footer class="site-footer">
     <div class="footer-brand">CBB <span>Edge</span></div>
-    <p class="footer-text">Win chances come from a model fit on past college basketball seasons: KenPom-style
-      adjusted offense, defense and tempo computed from every Division I box score, the four factors (shooting,
-      turnovers, offensive rebounding, free throws), Elo, recent form, rest, home court, and Bart Torvik's T-Rank.
-      Scores, box scores and moneyline prices via ESPN; T-Rank via barttorvik.com. The model uses no betting odds;
-      each game's moneyline pick compares its win chance with the book price, vig removed. Not affiliated with
-      KenPom.</p>
+    <p class="footer-text">Scores, box scores and moneyline prices via ESPN; T-Rank via barttorvik.com. Not
+      affiliated with KenPom. How the model works is on the <a href="model.html">Model tab</a>.</p>
     <p class="footer-text">For entertainment and research only. This is not betting advice, and past results
       don't predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
@@ -191,15 +187,9 @@ def footer():
 
 
 # ── Home ─────────────────────────────────────────────────────────────────────
-def result_html(p):
-    if p.get("void"):
-        return pill("NO DECISION", "void")
-    if p.get("correct") is None:
-        return f'<span class="faint">{DASH}</span>'
-    score = f"{p['away']} {p['away_pts']}, {p['home']} {p['home_pts']} "
-    return score + (pill("WIN", "positive") if p["correct"] else pill("LOSS", "danger"))
-
-
+# The Home tab leads with the all-time record (every live pick since opening
+# night, never reset, never the backtest), then the day's surest picks and a
+# short row per game whose details open on tap.
 def team_label(p, side):
     """'#4 Duke' style: AP rank when ranked."""
     rank = p.get(f"{side}_rank")
@@ -216,33 +206,84 @@ def game_notes(p):
     return "; ".join(notes)
 
 
-def games_table(picks):
+def games_list(picks):
     rows = ""
     for p in sorted(picks, key=lambda p: (p["start"], p["game_id"])):
         at = "vs" if p.get("neutral") else "@"
+        if p.get("correct") is not None and not p.get("void"):
+            sub = f"Final, {p['away']} {p['away_pts']}, {p['home']} {p['home_pts']}"
+        else:
+            sub = (f"{tip_time(p)} ET · {p['away']} {p.get('away_record', '')}, "
+                   f"{p['home']} {p.get('home_record', '')}")
+        value = " " + pill("VALUE", "positive") if (p.get("ml") or {}).get("value") else ""
         notes = game_notes(p)
+        note = lock_note(p)
         pick_id = p["home_id"] if p["pick"] == p["home"] else p["away_id"]
         proj = p.get("proj") or {}
         projected = (f"{escape(p['away'])} {proj['away']}, {escape(p['home'])} {proj['home']}"
-                     if proj else f"by {p['margin']:.1f}")
-        tempo = f", {proj['tempo']} possessions" if proj.get("tempo") else ""
-        rows += f"""<tr>
-          <td><div class="player-name">{escape(team_label(p, 'away'))} {at} {escape(team_label(p, 'home'))}</div>
-            <div class="player-meta">{tip_time(p)} ET · {escape(p['away'])} {p.get('away_record', '')}, {escape(p['home'])} {p.get('home_record', '')}</div></td>
-          <td data-label="Pick"><span class="matchup-team">{logo(pick_id)}{escape(p['pick'])}</span></td>
-          <td data-label="Win chance" class="num prob">{p['prob']:.0f}%</td>
-          <td data-label="Projected" class="num">{projected}<div class="player-meta">by {p['margin']:.1f}{tempo}</div></td>
-          {ml_cell(p)}
-          <td{' data-label="Notes"' if notes else ''} class="why">{escape(notes)}</td>
-          <td data-label="Result" class="num"><span>{result_html(p)}</span></td>
-        </tr>"""
-    return f"""<table class="data responsive-stack">
-      <thead><tr><th>Game</th><th>Pick</th><th class="num">Win chance</th><th class="num">Projected</th><th>Moneyline bet</th><th>Notes</th><th class="num">Result</th></tr></thead>
-      <tbody>{rows}</tbody>
-    </table>
-    <div class="table-footnote">Win chance is the model's estimate that its pick wins the game. The projected
-      score comes from each team's adjusted offense, defense and tempo, set to the model's margin. Picks are made
-      only for games between two Division I teams, refreshed until tip-off, then locked. {ML_NOTE}</div>"""
+                     f"<small>{escape(p['pick'])} by {p['margin']:.1f}"
+                     + (f", {proj['tempo']} possessions" if proj.get("tempo") else "") + "</small>"
+                     if proj else f"{escape(p['pick'])} by {p['margin']:.1f}")
+        rows += f"""<li><details class="pl-row"><summary class="pl-line">
+      <span class="pl-match"><span class="pl-teams">{escape(team_label(p, 'away'))} <i>{at}</i> {escape(team_label(p, 'home'))}</span>
+        <span class="pl-sub">{escape(sub)}</span></span>
+      <span class="pl-pick">{logo(pick_id)}<b>{escape(p['pick'])}</b>{value}</span>
+      {conf_html(p["prob"])}
+      <span class="pl-res">{game_res(p)}</span>
+    </summary>
+    <dl class="pl-more">
+      <div><dt>Moneyline</dt><dd>{ml_dd(p)}</dd></div>
+      <div><dt>Projected score</dt><dd>{projected}</dd></div>
+      <div><dt>Notes</dt><dd>{escape(notes) or '<span class="faint">Nothing notable</span>'}</dd></div>
+    </dl>{f'<div class="pl-note">{note}</div>' if note else ""}</details></li>"""
+    return f'<ul class="pick-list">{rows}</ul>'
+
+
+HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
+  <p>The pick is the team the model expects to win, and the percentage is its chance. Tap a game for the
+    projected score, from each team's adjusted offense, defense and tempo, and the moneyline bet. Picks are made
+    only for games between two Division I teams, refreshed until tip-off, then locked. {ml_note}</p>
+  <p>The Model tab explains how the model works, and the Accuracy tab shows how it did on last season.</p>
+</div></details>"""
+
+
+def record_band(history):
+    g = graded(history["picks"])
+    eyebrow = "CBB Edge &middot; our picks to win"
+    if not g:
+        return record_band_html(eyebrow, wait="Starts on opening night")
+    w, l = wl(g)
+    d = date.fromisoformat(min(p["date"] for p in g))
+    ml = moneyline.record(history["picks"])
+    side = statline([(moneyline.units_text(ml["units"]), "Moneyline", f"1 unit on each of {ml['picks']} picks")]) if ml else ""
+    return record_band_html(eyebrow, f"{w}-{l}", pct(w / len(g), 1),
+                            f"Since {d:%b} {d.day}, {d.year}. Every pick graded against the final score, and it "
+                            "never resets.", side)
+
+
+def build_index(history, model, ratings):
+    picks = history["picks"]
+    today = NOW.date().isoformat()
+    body = record_band(history)
+    if picks:
+        latest = max(p["date"] for p in picks)
+        heading = "Today's Games" if latest == today else "Latest Games"
+        day = [p for p in picks if p["date"] == latest]
+        if latest != today:
+            body += card("Today's Games", "", '<div class="empty-state">No Division I games today. Picks resume on '
+                         'the next game day.</div>')
+        else:
+            open_games = [p for p in day if p.get("correct") is None and not p.get("void")]
+            bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:3],
+                                  lambda p: f"{tip_time(p)} ET")
+            if bets:
+                body += card("Most confident today", "The model's surest picks among games still to play", bets)
+        body += card(f"{heading}: {day_label(latest)}", "Tap a game for the projected score and the moneyline.", games_list(day) + HOW_TO_READ.format(ml_note=escape(ML_NOTE)))
+    else:
+        body += card("Today's Games", "", '<div class="empty-state">The season tips off in early November, and '
+                     'picks start on opening night. Until then, the <a href="accuracy.html">Accuracy tab</a> shows '
+                     'how the model did on every game of last season.</div>')
+    return page_shell("Home", "index.html", body + ratings_preview(ratings))
 
 
 def backtest_stats(model):
@@ -261,45 +302,6 @@ def backtest_stats(model):
     return stats
 
 
-def backtest_note(model):
-    bt = model.get("backtest") or {}
-    b = model.get("baselines", {})
-    if not bt:
-        return ""
-    return (f'<div class="table-footnote">Backtest: fit only on seasons before {model["backtest_season"]}, then used '
-            f'to pick all {bt["games"]} regular-season Division I games of {model["backtest_season"]}, each with only '
-            f'what was known that morning. The home team won {pct(b.get("home_team_accuracy"), 1)} of those games, '
-            f'and the adjusted efficiency ratings alone picked {pct(b.get("ratings_only_accuracy"), 1)}. See the '
-            f'Accuracy tab for more.</div>')
-
-
-def track_record(history, model):
-    picks = history["picks"]
-    body = ""
-    season_picks = []
-    if picks:
-        season = season_of(max(p["date"] for p in picks))
-        season_picks = [p for p in picks if season_of(p["date"]) == season]
-        g = graded(season_picks)
-        if g:
-            w, l = wl(g)
-            tw, tl = wl(top_per_day(g))
-            strong = [p for p in g if p["prob"] >= STRONG]
-            sw, sl = wl(strong)
-            body = statline([
-                (f"{w}-{l}", f"{season} record", f"{pct(w / len(g), 1)} of every game"),
-                (f"{tw}-{tl}", f"Top {TOP_N} picks each day", pct(tw / (tw + tl), 1) if tw + tl else ""),
-                (f"{sw}-{sl}", f"Picks at {STRONG}%+", pct(sw / len(strong), 1) if strong else DASH),
-            ])
-    if not body:
-        body = '<div class="empty-state">No picks graded yet this season.</div>'
-    body += ml_record_html(season_picks)  # live picks this season only, never the backtest
-    bt = backtest_stats(model)
-    if bt:
-        body += '<div class="section-label">Backtest</div>' + statline(bt) + backtest_note(model)
-    return card("Track Record", "Every pick graded against the final score", body)
-
-
 def as_of(ratings):
     if ratings.get("final"):
         s = ratings["season"]
@@ -314,27 +316,6 @@ def ratings_preview(ratings, n=25):
     return card(f"Top {len(teams)} by Adjusted Efficiency",
                 f"{as_of(ratings)}. Every team, the four factors and T-Rank are on the Ratings tab.",
                 ratings_table(teams, compact=True))
-
-
-def build_index(history, model, ratings):
-    picks = history["picks"]
-    today = NOW.date().isoformat()
-    if picks:
-        latest = max(p["date"] for p in picks)
-        heading = "Today's Games" if latest == today else "Latest Games"
-        top = sorted((p for p in picks if p["date"] == latest), key=lambda p: -p["prob"])
-        picks_html = card(f"{heading}: {day_label(latest)}",
-                          f"A pick for every game. The {TOP_N} most confident: "
-                          + ", ".join(f"{p['pick']} ({p['prob']:.0f}%)" for p in top[:TOP_N]) + ".",
-                          games_table([p for p in picks if p["date"] == latest]))
-        if latest != today:
-            picks_html = card("Today's Games", "", '<div class="empty-state">No Division I games today. Picks '
-                              'resume on the next game day.</div>') + picks_html
-    else:
-        picks_html = card("Today's Games", "", '<div class="empty-state">The season tips off in early November, '
-                          'and picks start on opening night. Until then, the Track Record below shows how the model '
-                          'did on every game of last season.</div>')
-    return page_shell("Home", "index.html", picks_html + track_record(history, model) + ratings_preview(ratings))
 
 
 # ── Ratings ──────────────────────────────────────────────────────────────────
@@ -641,15 +622,16 @@ def build_summary(history, model):
             "value": f"{p['prob']:.0f}%",
             "result": None if p.get("void") or p.get("correct") is None else bool(p["correct"]),
         } for p in top]
-        season = season_of(latest)
-        g = graded([p for p in picks if season_of(p["date"]) == season])
+        # The all-time record the Home tab leads with, never reset by season.
+        g = graded(picks)
         if g:
             w, l = wl(g)
-            summary["record"] = {"value": f"{w}-{l}", "label": f"{season} record",
-                                 "sub": f"{pct(w / len(g), 1)} of games picked right"}
-        ml = moneyline.record([p for p in picks if season_of(p["date"]) == season])
+            d = date.fromisoformat(min(p["date"] for p in g))
+            summary["record"] = {"value": f"{w}-{l}", "label": "our picks to win",
+                                 "sub": pct(w / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
+        ml = moneyline.record(picks)
         if ml:  # optional: the home page can show it next to the record
-            summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": f"{season} moneyline",
+            summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": "moneyline",
                                     "sub": f"{moneyline.units_text(ml['units'])}, {ml['roi']:+.1%} ROI"}
     # Only picks actually made count here, never last season's backtest.
     return summary
