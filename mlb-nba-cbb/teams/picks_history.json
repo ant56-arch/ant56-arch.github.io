@@ -4138,17 +4138,17 @@
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T05:02:11Z",
+   "set_at": "2026-09-30T05:42:53Z",
    "ml": {
     "team": "PHI",
     "side": "away",
-    "price": -117,
+    "price": -114,
     "prob": 50.1,
-    "book_prob": 51.5,
-    "edge": -1.4,
+    "book_prob": 51.0,
+    "edge": -0.9,
     "value": false,
-    "home_ml": -103,
-    "away_ml": -117,
+    "home_ml": -105,
+    "away_ml": -114,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -4191,7 +4191,7 @@
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T05:02:11Z",
+   "set_at": "2026-09-30T05:42:53Z",
    "ml": {
     "team": "HOU",
     "side": "home",
@@ -4244,7 +4244,7 @@
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T05:02:11Z",
+   "set_at": "2026-09-30T05:42:53Z",
    "ml": {
     "team": "NYY",
     "side": "home",
@@ -4282,22 +4282,36 @@
     "ip": 34.7
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 592332,
+    "name": "Kevin Gausman",
+    "era": 4.51,
+    "ip": 177.7
    },
    "pick": "SD",
-   "prob": 58.1,
-   "home_prob": 58.1,
+   "prob": 55.0,
+   "home_prob": 55.0,
    "factors": {
     "home_field": 0.141,
     "elo": 0.006,
-    "starters": 0.178
+    "starters": 0.053
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-09-30T05:02:11Z"
+   "set_at": "2026-09-30T05:42:53Z",
+   "ml": {
+    "team": "SD",
+    "side": "home",
+    "price": -145,
+    "prob": 55.0,
+    "book_prob": 56.6,
+    "edge": -1.6,
+    "value": false,
+    "home_ml": -145,
+    "away_ml": 120,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
