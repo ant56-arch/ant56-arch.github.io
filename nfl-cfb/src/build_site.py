@@ -341,21 +341,33 @@ FAVICON = ('data:image/svg+xml,'
     '%3C/svg%3E')
 
 # MLB, NBA and CBB Edge are built from mlb-nba-cbb/ in the same repo and share
-# this look; the sport switcher links out to them after the NFL and CFB tabs.
+# this look; the sport switcher links out to them.
 MLB_EDGE_URL = "https://ant56-arch.github.io/mlb/"
 NBA_EDGE_URL = "https://ant56-arch.github.io/nba/index.html"
 CBB_EDGE_URL = "https://ant56-arch.github.io/cbb/index.html"
 # Every sport's games as a TV grid, on the home site (schedule.js there reads
 # the games.json each sport publishes).
 SCHEDULE_URL = "https://ant56-arch.github.io/schedule.html"
-OTHER_SPORT_TABS = (f'<a class="sport-tab" href="{MLB_EDGE_URL}">MLB</a>'
-                 f'<a class="sport-tab" href="{NBA_EDGE_URL}">NBA</a>'
-                 f'<a class="sport-tab" href="{CBB_EDGE_URL}">CBB</a>'
-                 f'<a class="sport-tab" href="{SCHEDULE_URL}">Schedule</a>')
+# The sport switcher's order on every Sports Edge site, after "All".
+SPORT_TAB_ORDER = [("NFL", None), ("NBA", NBA_EDGE_URL), ("MLB", MLB_EDGE_URL), ("CFB", None),
+                   ("CBB", CBB_EDGE_URL), ("Schedule", SCHEDULE_URL)]
 # The home page (index.html at the root of this repo) links every site
 # and shows each one's summary.json; the switcher's first tab goes back to it.
 HOME_URL = "https://ant56-arch.github.io/"
 HOME_SPORT_TAB = f'<a class="sport-tab" href="{HOME_URL}">All</a>'
+
+
+def sport_tabs(own_href, active=None):
+    """The top bar's sport switcher in SPORT_TAB_ORDER. own_href(slug) is the
+    link for NFL and CFB (built here); the other tabs link out."""
+    tabs = HOME_SPORT_TAB
+    for label, url in SPORT_TAB_ORDER:
+        href = url or own_href(label.lower())
+        if label == active:
+            tabs += f'<a href="#" class="sport-tab active" aria-current="page">{label}</a>'
+        else:
+            tabs += f'<a href="{href}" class="sport-tab">{label}</a>'
+    return tabs
 # The Sports Edge brand mark in the top bar, same on every Edge site.
 BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/>'
               '<path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" '
@@ -392,12 +404,11 @@ def page_shell(sport, title, active_tab, body_html):
 
     other_slug = "cfb" if sport["slug"] == "nfl" else "nfl"
     other_page = active_tab + ".html" if active_tab else "index.html"
-    sport_switcher = HOME_SPORT_TAB + "".join(
-        f'<a href="{"../" + s["slug"] + "/" + (other_page if other_page != "players.html" or s["player_props_csv"] else "index.html") if s["slug"] != sport["slug"] else "#"}" '
-        + ('class="sport-tab active" aria-current="page">' if s["slug"] == sport["slug"] else 'class="sport-tab">')
-        + f'{s["wordmark"]}</a>'
-        for s in SPORTS.values()
-    ) + OTHER_SPORT_TABS
+    # The other football sport's tab keeps you on the same page when it has one.
+    sport_switcher = sport_tabs(
+        lambda slug: "../" + slug + "/" + (other_page if other_page != "players.html"
+                                           or SPORTS[slug]["player_props_csv"] else "index.html"),
+        active=sport["wordmark"])
 
     now = datetime.now(timezone.utc)
     generated = now.strftime("%b %d, %Y %H:%M UTC")
@@ -1089,7 +1100,7 @@ def root_page_shell(title, body_html):
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
-{top_bar(HOME_SPORT_TAB + '<a class="sport-tab" href="nfl/index.html">NFL</a><a class="sport-tab" href="cfb/index.html">CFB</a>' + OTHER_SPORT_TABS)}
+{top_bar(sport_tabs(lambda slug: slug + "/index.html"))}
 <div class="wrap">
   <main id="main-content">
   {body_html}

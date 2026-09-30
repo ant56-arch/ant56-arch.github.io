@@ -8,12 +8,12 @@
 // network, times across the top, each game a block as long as a typical game.
 const SCHED_SPORTS = [
   { key: "nfl", sport: "NFL", pickLabel: "Our pick", empty: "No NFL games on this week's schedule yet." },
-  { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
-    note: "Games with a Top 25 team (AP poll). Our pick shows for games between teams we cover." },
-  { key: "mlb", sport: "MLB", pickLabel: "Top hitter",
-    empty: "No MLB games on today's schedule. The next slate shows up here the morning of." },
   { key: "nba", sport: "NBA", pickLabel: "Our pick",
     empty: "No NBA games on the schedule yet. The 2026-27 season tips off in late October." },
+  { key: "mlb", sport: "MLB", pickLabel: "Top hitter",
+    empty: "No MLB games on today's schedule. The next slate shows up here the morning of." },
+  { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
+    note: "Games with a Top 25 team (AP poll). Our pick shows for games between teams we cover." },
 ];
 const SCHED_MAX_NETWORKS = 6;
 // Typical game length in minutes, for the width of a guide block.
