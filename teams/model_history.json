@@ -364,6 +364,380 @@
     "elo": 0.47501,
     "starters": 0.20008
    }
+  },
+  {
+   "run_at": "2026-09-30T01:24:50+00:00",
+   "data_through": "2026-09-27",
+   "holdout": {
+    "from": "2026-09-05",
+    "games": 300,
+    "home_rate_log_loss": 0.6892
+   },
+   "live_model": {
+    "trained_at": "2026-09-23T16:14:07+00:00",
+    "recipe": {
+     "elo_k": 3,
+     "elo_carry": 0.67,
+     "sp_shrink": 60,
+     "years": 2
+    },
+    "holdout_log_loss": 0.6559
+   },
+   "current_recipe_log_loss": 0.6569,
+   "best_recipe": {
+    "recipe": {
+     "elo_k": 3,
+     "elo_carry": 0.5,
+     "sp_shrink": 60,
+     "years": 2
+    },
+    "log_loss": 0.6566
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6572
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6572
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6569
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6569
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6566
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6567
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6574
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6573
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6571
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.657
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6569
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6568
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6584
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6584
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.658
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6581
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6577
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6579
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6586
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6586
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6582
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6582
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6579
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.658
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6604
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6605
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.66
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6602
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6597
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6599
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6606
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6607
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6602
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6603
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6599
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6601
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "live_picks_last_14_days": {
+    "days": 14,
+    "picks": 72,
+    "accuracy": 0.6389,
+    "predicted": 0.5763
+   },
+   "weights_before": {
+    "home_field": 0.14114,
+    "elo": 0.47501,
+    "starters": 0.20008
+   },
+   "weights_after": {
+    "home_field": 0.14149,
+    "elo": 0.48506,
+    "starters": 0.19708
+   }
   }
  ]
 }
