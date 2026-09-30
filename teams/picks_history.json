@@ -4088,6 +4088,204 @@
     "won": null,
     "units": null
    }
+  },
+  {
+   "date": "2026-09-30",
+   "game_id": "849841",
+   "start": "2026-09-30T14:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "ATL",
+   "away": "PHI",
+   "home_name": "Atlanta Braves",
+   "away_name": "Philadelphia Phillies",
+   "home_id": 144,
+   "away_id": 143,
+   "home_record": "94-68",
+   "away_record": "88-74",
+   "home_sp": {
+    "id": 641816,
+    "name": "Tyler Mahle",
+    "era": 3.99,
+    "ip": 149.0
+   },
+   "away_sp": {
+    "id": 650911,
+    "name": "Cristopher S\u00e1nchez",
+    "era": 2.91,
+    "ip": 207.0
+   },
+   "pick": "PHI",
+   "prob": 50.5,
+   "home_prob": 49.5,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.008,
+    "starters": -0.168
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-09-30T04:03:31Z",
+   "ml": {
+    "team": "PHI",
+    "side": "away",
+    "price": -117,
+    "prob": 50.5,
+    "book_prob": 51.5,
+    "edge": -1.0,
+    "value": false,
+    "home_ml": -103,
+    "away_ml": -117,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-30",
+   "game_id": "849846",
+   "start": "2026-09-30T17:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "HOU",
+   "away": "CWS",
+   "home_name": "Houston Astros",
+   "away_name": "Chicago White Sox",
+   "home_id": 117,
+   "away_id": 145,
+   "home_record": "81-81",
+   "away_record": "84-78",
+   "home_sp": {
+    "id": 686613,
+    "name": "Hunter Brown",
+    "era": 3.19,
+    "ip": 107.3
+   },
+   "away_sp": {
+    "id": 680732,
+    "name": "Sean Burke",
+    "era": 3.73,
+    "ip": 142.3
+   },
+   "pick": "HOU",
+   "prob": 56.6,
+   "home_prob": 56.6,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.002,
+    "starters": 0.127
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-09-30T04:03:31Z",
+   "ml": {
+    "team": "HOU",
+    "side": "home",
+    "price": -155,
+    "prob": 56.6,
+    "book_prob": 58.1,
+    "edge": -1.5,
+    "value": false,
+    "home_ml": -155,
+    "away_ml": 128,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-30",
+   "game_id": "849848",
+   "start": "2026-09-30T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "NYY",
+   "away": "BOS",
+   "home_name": "New York Yankees",
+   "away_name": "Boston Red Sox",
+   "home_id": 147,
+   "away_id": 111,
+   "home_record": "93-68",
+   "away_record": "87-75",
+   "home_sp": {
+    "id": 608331,
+    "name": "Max Fried",
+    "era": 2.8,
+    "ip": 112.7
+   },
+   "away_sp": {
+    "id": 543243,
+    "name": "Sonny Gray",
+    "era": 2.72,
+    "ip": 169.0
+   },
+   "pick": "NYY",
+   "prob": 56.5,
+   "home_prob": 56.5,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.067,
+    "starters": 0.054
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-09-30T04:03:31Z",
+   "ml": {
+    "team": "NYY",
+    "side": "home",
+    "price": -136,
+    "prob": 56.5,
+    "book_prob": 55.1,
+    "edge": 1.4,
+    "value": false,
+    "home_ml": -136,
+    "away_ml": 113,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-09-30",
+   "game_id": "849842",
+   "start": "2026-09-30T22:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "SD",
+   "away": "CHC",
+   "home_name": "San Diego Padres",
+   "away_name": "Chicago Cubs",
+   "home_id": 135,
+   "away_id": 112,
+   "home_record": "91-71",
+   "away_record": "89-73",
+   "home_sp": {
+    "id": 601713,
+    "name": "Nick Pivetta",
+    "era": 2.86,
+    "ip": 34.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "SD",
+   "prob": 57.4,
+   "home_prob": 57.4,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.024,
+    "starters": 0.179
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-09-30T04:03:31Z"
   }
  ]
 }
