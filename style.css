@@ -1246,10 +1246,10 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
   align-items: center;
   margin: 18px 0 8px 0;
 }
-.gh-team { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.gh-team { display: grid; justify-items: center; gap: 4px; min-width: 0; container-type: inline-size; }
 .gh-team b {
   font-family: var(--font-head);
-  font-size: 42px;
+  font-size: min(42px, 140cqi / var(--n, 8));
   font-style: italic;
   font-weight: 800;
   line-height: 1;
@@ -1300,7 +1300,7 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
 .gh-back a:hover { text-decoration: underline; }
 
 @media (max-width: 700px) {
-  .gh-team b { font-size: 26px; }
+  .gh-team b { font-size: min(26px, 140cqi / var(--n, 8)); }
   .gh-logo { width: 40px; height: 40px; }
   .gh-score { font-size: 30px; }
   .gh-big { font-size: 52px; }
