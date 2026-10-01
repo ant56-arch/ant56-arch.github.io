@@ -48,7 +48,7 @@ NOW = datetime.now(ET)
 HOME_URL = "https://ant56-arch.github.io/"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"), ("MLB", None),
                ("NHL", f"{HOME_URL}nhl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
-               ("Best Bets", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
+               ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = ("Who wins every MLB game and which hitters get a hit today, from models graded against every "
            "box score.")
 TEAMS_DIR = os.path.join(ROOT, "teams")
@@ -164,7 +164,6 @@ def page_shell(title, active, body_html, charts=False):
     <nav class="sport-switcher" aria-label="Sport">{switcher}</nav>
   </div>
 </header>
-<aside class="scoreboard" aria-label="Latest top picks" hidden></aside>
 <header class="masthead" data-sport="MLB">
   <div class="masthead-inner">
     <h1 class="wordmark">MLB <span>EDGE</span></h1>
@@ -185,21 +184,26 @@ def page_shell(title, active, body_html, charts=False):
 </html>"""
 
 
-def footer():
-    return f"""<footer class="site-footer">
-    <div class="footer-brand">MLB <span>Edge</span></div>
-    <p class="footer-text">Stats, lineups and box scores via the MLB Stats API; moneyline prices via ESPN's
-      scoreboard. How both models work is on the <a href="model.html">Model tab</a>.</p>
-    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results
-      don't predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
+def slim_footer(name, sources):
+    """Every MLB, NBA, NHL and CBB page's footer: data credits and the
+    gambling note on one line, links on the next."""
+    return f"""<footer class="site-footer slim">
+    <p class="footer-text">{sources} For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
-      <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
-      <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
+      <a href="model.html">How the model works</a>
+      <a href="{HOME_URL}terms.html">Terms</a>
+      <a href="{HOME_URL}privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="{HOME_URL}nfl/index.html">NFL Edge</a>
-      <span>&copy; {NOW.year} MLB Edge. Updated from box scores every night.</span>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; {NOW.year} {name}</span>
     </nav>
   </footer>"""
+
+
+def footer():
+    return slim_footer("MLB Edge", "Stats, lineups and box scores via the MLB Stats API; moneyline prices via "
+                                   "ESPN's scoreboard.")
 
 
 def card(title, subtitle, body_html):
@@ -242,28 +246,6 @@ def record_band_html(eyebrow, value=None, pct_text="", since="", side="", wait="
       </div>
       <div class="rb-side">{side}</div>
     </div></section>"""
-
-
-def bet_cards_html(picks, when, href=None):
-    """The day's most confident game picks as big cards. when(p) is the
-    time line on each; href(p), when given, links each card to its game page."""
-    cards = "".join(f"""<{'a href="' + href(p) + '"' if href else 'article'} class="bet-card">
-      <div class="bet-when">{escape(when(p))}</div>
-      <div class="bet-pick"><b>{escape(p['pick'])}</b> over {escape(p['away'] if p['pick'] == p['home'] else p['home'])}</div>
-      <div class="bet-pct">{p['prob']:.0f}<small>%</small></div>
-      <div class="bet-sub">chance to win{' ' + pill('VALUE', 'positive') if (p.get('ml') or {}).get('value') else ''}</div>
-    </{'a' if href else 'article'}>""" for p in picks)
-    return f'<div class="bet-cards">{cards}</div>' if cards else ""
-
-
-def ml_dd(p):
-    """The moneyline bet, spelled out, for a game's tap-open details."""
-    ml = p.get("ml")
-    if not ml:
-        return '<span class="faint">No odds</span>'
-    res = ml_result_html(ml, p.get("void"))
-    return (f'{escape(moneyline.text(ml))}{" " + res if res else ""}'
-            + "".join(f"<small>{escape(line)}</small>" for line in moneyline.detail_lines(ml)))
 
 
 def game_res(p):
@@ -318,40 +300,8 @@ def picks_list(picks):
     return f'<ul class="pick-list ranked">{rows}</ul>'
 
 
-def games_list(picks):
-    """Today's game picks as rows: teams and first pitch, the pick and its
-    win chance, the result once final; starters and the moneyline on tap."""
-    rows = ""
-    for p in sorted(picks, key=lambda p: (p["start"], p["game_id"])):
-        pick_id = p["home_id"] if p["pick"] == p["home"] else p["away_id"]
-        res = game_res(p)
-        if p.get("correct") is not None and not p.get("void"):
-            sub = f"Final, {p['away']} {p['away_runs']}, {p['home']} {p['home_runs']}"
-        else:
-            sub = " · ".join(x for x in (p.get("round"), f"{first_pitch(p)} ET") if x)
-        value = " " + pill("VALUE", "positive") if (p.get("ml") or {}).get("value") else ""
-        starters = f"{starter_text(p.get('away_sp'))} vs. {starter_text(p.get('home_sp'))}"
-        note = lock_note(p) + game_link(p)
-        rows += f"""<li><details class="pl-row"><summary class="pl-line">
-      <span class="pl-match"><span class="pl-teams">{escape(p['away'])} <i>@</i> {escape(p['home'])}</span>
-        <span class="pl-sub">{escape(sub)}</span></span>
-      <span class="pl-pick">{logo(pick_id)}<b>{escape(p['pick'])}</b>{value}</span>
-      {conf_html(p["prob"])}
-      <span class="pl-res">{res}</span>
-    </summary>
-    <dl class="pl-more">
-      <div><dt>Moneyline</dt><dd>{ml_dd(p)}</dd></div>
-      <div><dt>Starters (ERA)</dt><dd>{escape(starters)}</dd></div>
-    </dl>{f'<div class="pl-note">{note}</div>' if note else ""}</details></li>"""
-    return f'<ul class="pick-list">{rows}</ul>'
-
-
 def game_file(p):
     return f"game-{p['game_id']}.html"
-
-
-def game_link(p):
-    return f'<a class="pl-link" href="{game_file(p)}">Game page &rarr;</a>'
 
 
 def hit_spark(g):
@@ -413,13 +363,6 @@ HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div
     starters can be picked, and a pick locks when its game starts. A hitter who doesn't bat is no decision, not a
     miss. Tap a hitter for why he was picked. The Model tab explains how the model works.</p>
 </div></details>"""
-
-GAMES_HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
-  <p>The pick is the team the model expects to win, and the percentage is its chance. Tap a game for the
-    starting pitchers and the moneyline bet. Picks refresh until first pitch as starters are named, then lock.
-    {ml_note} The Model tab explains how the model works.</p>
-</div></details>"""
-
 
 def build_index(history, slate, model, team_history=None):
     picks = history["picks"]
@@ -643,7 +586,7 @@ def game_result_html(p):
 # ── Moneyline picks (moneyline.py), shared with NBA Edge ─────────────────────
 ML_NOTE = ("Moneyline bet is the model's pick to win at its moneyline price (from ESPN's scoreboard). Value "
            "means the model gives that team at least 6 points more win chance than the price implies (vig "
-           "removed). Graded at 1 unit a pick.")
+           "removed).")
 
 
 def ml_result_html(ml, void=False):
@@ -651,7 +594,7 @@ def ml_result_html(ml, void=False):
         return pill("NO DECISION", "void")
     if ml.get("won") is None:
         return ""
-    return pill(moneyline.units_text(ml["units"]), "positive" if ml["won"] else "danger")
+    return pill("WON", "positive") if ml["won"] else pill("LOST", "danger")
 
 
 def locked_text(p):
@@ -690,7 +633,7 @@ def lock_note(p):
 def ml_cell(p):
     """The Moneyline bet column, spelled out: "BUF to win +135" (the model's
     pick, VALUE at a 6+ point edge), what the price pays, our chance vs. the
-    price's, and once graded the units won or lost."""
+    price's, and once graded whether it won."""
     ml = p.get("ml")
     if not ml:
         return '<td data-label="Moneyline bet" class="ml-cell"><div class="ml"><span class="faint">No odds</span></div></td>'
@@ -711,19 +654,18 @@ def ml_record_html(picks, empty="No moneyline picks graded yet this season."):
         return body + f'<div class="empty-state">{empty}</div>'
     value = moneyline.record([p for p in picks if p.get("ml", {}).get("value")])
     body += statline([
-        (f"{rec['wins']}-{rec['losses']}", "Moneyline record",
-         f"Value picks {value['wins']}-{value['losses']}" if value else "No value picks graded yet"),
-        (moneyline.units_text(rec["units"]), "Units", "1 unit a pick at the book price"),
-        (f"{rec['roi']:+.1%}", "ROI", f"on {rec['picks']} {'pick' if rec['picks'] == 1 else 'picks'}"),
+        (f"{rec['wins']}-{rec['losses']}", "Moneyline record", f"{rec['picks']} {'pick' if rec['picks'] == 1 else 'picks'} graded"),
+        (f"{value['wins']}-{value['losses']}" if value else DASH, "Value picks", "our chance 6+ points over the price's"),
     ])
     return body + ('<div class="table-footnote">Live moneyline picks only, at the price when the game started. '
-                   'A postponed game is no decision.</div>')
+                   'A postponed game is no decision. What betting them would have made is on the '
+                   f'<a href="{HOME_URL}bets.html">Betting tab</a>.</div>')
 
 
 def ml_day(picks):
     """A History day's moneyline summary and per-game fields for nba.js."""
     rec = moneyline.record(picks)
-    return {"wins": rec["wins"], "losses": rec["losses"], "units": moneyline.units_text(rec["units"])} if rec else None
+    return {"wins": rec["wins"], "losses": rec["losses"]} if rec else None
 
 
 def game_bands(picks):
@@ -834,34 +776,30 @@ def game_history(picks):
 
 def games_band(picks):
     """The Games tab's record band: every live game pick since the first,
-    never reset, with the moneyline units beside it."""
+    never reset."""
     g = game_graded(picks)
     eyebrow = "MLB Edge &middot; picking which team wins"
     if not g:
         return record_band_html(eyebrow, wait="Starts after the first night of results")
     w, l = game_wl(g)
     d = date.fromisoformat(min(p["date"] for p in g))
-    ml = moneyline.record(picks)
-    side = statline([(moneyline.units_text(ml["units"]), "Moneyline",
-                      f"1 unit on each of {ml['picks']} picks")]) if ml else ""
     return record_band_html(eyebrow, f"{w}-{l}", pct(w / len(g), 1),
                             f"Since {d:%b} {d.day}, {d.year}. Every game pick graded against the final score, and "
-                            "it never resets.", side)
+                            "it never resets.")
 
 
-def build_games(team_history):
+BOARD_NOTE = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. "
+              "Value means our chance beats the odds by 6 points or more. Tap a game for more.")
+
+
+def build_games(team_history, espn_games=()):
     picks = team_history["picks"]
     today = NOW.date().isoformat()
     todays = [p for p in picks if p["date"] == today]
     body = games_band(picks)
     if todays:
-        open_games = [p for p in todays if p.get("correct") is None and not p.get("void")]
-        bets = bet_cards_html(sorted(open_games, key=lambda p: -p["prob"])[:TOP_GAMES], lambda p: f"{first_pitch(p)} ET",
-                              game_file)
-        if bets:
-            body += card("Most confident today", "The model's surest picks among games still to play", bets)
-        body += card(f"Today's Games: {day_label(today)}", "Tap a game for the starters and the moneyline.",
-                     games_list(todays) + GAMES_HOW_TO_READ.format(ml_note=escape(ML_NOTE)))
+        board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays])
+        body += extras.board_section(f"Today's games: {day_label(today)}", BOARD_NOTE, board)
     elif picks:
         body += card("Today's Games", "", '<div class="empty-state">No MLB games today, or the slate isn\'t up '
                      'yet. Picks go up on the next game day; past days are under Results below.</div>')
@@ -869,19 +807,78 @@ def build_games(team_history):
         body += card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
                      'update: a winner and a win chance for every game.</div>')
     record, charts = game_record(picks)
-    dollars = card(f"${extras.STAKE} a pick", f"${extras.STAKE} on the team we pick to win in every game, favorite or underdog", extras.dollars_body(game_units(picks), "game pick"))
-    return page_shell("Games", "games.html", body + dollars + record + game_history(picks), charts=charts)
+    return page_shell("Games", "games.html", body + record + game_history(picks), charts=charts)
 
 
-# ── Game pages, "$10 a pick" and the home site's Best Bets / Last night ──────
+# ── Game cards (extras.game_board) for MLB, NBA, NHL and CBB ────────────────
+def espn_for(p, espn_games):
+    """The game on ESPN's scoreboard matching a pick, by team abbreviation or
+    name, the closest start for a doubleheader; None without one."""
+    def names(t):
+        return {t.get("abbr", ""), ABBR_ALIASES.get(t.get("abbr", ""), t.get("abbr", "")), t.get("name", "")} - {""}
+    ours = lambda side: {p.get(side, ""), p.get(f"{side}_name") or ""} - {""}
+    cands = [g for g in espn_games if names(g["away"]) & ours("away") and names(g["home"]) & ours("home")]
+    if not cands:
+        return None
+    start = datetime.fromisoformat(p["start"])
+    return min(cands, key=lambda g: abs((games_mod.start_et(g) - start).total_seconds()))
+
+
+def card_game(g, p, espn_games, lines):
+    """A game in the shared shape, with what its card adds: TV, stadium and
+    records from ESPN's scoreboard (where it has the game) and the lines strip."""
+    info = games_mod.card_info(espn_for(p, espn_games or ()))
+    g["tv"], g["venue"], g["lines"] = info.get("tv", ""), info.get("venue", ""), lines
+    for side, rec in zip(("away", "home"), info.get("records", ("", ""))):
+        if rec and not g[side].get("record"):
+            g[side]["record"] = rec
+    return g
+
+
+def price_line(p):
+    """The lines-strip cell with the book's chance for our pick, next to ours in the card's footer."""
+    ml = p.get("ml")
+    if not ml:
+        return ("Odds say", '<span class="faint">No odds yet</span>', "", "")
+    return ("Odds say", f"{ml['book_prob']:.0f}%", "vegas", f"for {escape(p['pick'])}, we say {p['prob']:.0f}%")
+
+
+def mlb_lines(p):
+    """Each starting pitcher and the book's chance for our pick."""
+    def sp(side):
+        s = p.get(f"{side}_sp") or {}
+        if not s.get("id"):
+            return (f"{p[side]} starter", '<span class="faint">TBD</span>', "", "")
+        era = f"{s['era']:.2f} ERA" if s.get("era") is not None else "1st start"
+        return (f"{p[side]} starter", escape(starter_text(s).rsplit(" (", 1)[0]), "", era)
+    return [sp("away"), sp("home"), price_line(p)]
+
+
+def bb_lines(p, sport):
+    """Our projected margin and the book's chance for our pick."""
+    if sport == "NHL":
+        ours = ("Projected", f"{escape(p['pick'])} by {p['margin']:.1f}", "ours", "goals")
+    else:
+        ours = ("Our line", f"{escape(p['pick'])} {extras.MINUS}{p['margin']:.1f}", "ours", "")
+    return [ours, price_line(p)]
+
+
+def bb_board(picks, games_by_id, espn_games, sport):
+    """A day's NBA, NHL or CBB picks as game cards."""
+    return extras.game_board([card_game(games_by_id[str(p["game_id"])], p, espn_games, bb_lines(p, sport))
+                              for p in picks])
+
+
+# ── Game pages and the home site's Betting tab and Last night strip ─────────
 GAME_PAGE_DAYS = 21  # game pages are built for this many days back, plus today
 WHY_LABELS = {"home_field": "Home field", "elo": "Team strength", "starters": "Starting pitchers",
               "bullpen": "Bullpen"}
 
 
 def game_units(picks):
-    """Every graded moneyline game pick, for the '$10 a pick' record."""
-    return extras.units_summary((p["date"], p["ml"]["units"], p["ml"]["won"]) for p in moneyline.graded(picks))
+    """Every graded moneyline game pick, for the Betting tab's units."""
+    return extras.units_summary((p["date"], p["ml"]["units"], p["ml"]["won"], p["ml"].get("price"), p["ml"].get("value"))
+                                for p in moneyline.graded(picks))
 
 
 def sp_fact(team, sp):
@@ -955,9 +952,10 @@ def bb_game(p, sport, slug, logo_url, facts, name=None):
     start = datetime.fromisoformat(p["start"]).astimezone(ET)
     label = " · ".join(x for x in (p.get("note") if sport == "CBB" else "", f"{start:%a, %b} {start.day}",
                                    f"{start:%-I:%M %p} ET") if x)
+    proj = p.get("proj") or {}
     team = lambda side: {"abbr": p[side], "name": (name(p, side) if name else p.get(f"{side}_name")) or p[side],
                          "record": p.get(f"{side}_record") or "", "logo": logo_url(p, side),
-                         "score": p.get(f"{side}_pts") if final else None}
+                         "proj": proj.get(side), "score": p.get(f"{side}_pts") if final else None}
     ml = p.get("ml")
     return {
         "sport": sport, "id": gid, "file": f"game-{gid}.html", "url": f"/{slug}/game-{gid}.html",
@@ -979,7 +977,7 @@ def bb_game_pages(games, shell):
 
 
 def bb_home_parts(summary, picks, games):
-    """Best Bets, '$10 a pick' and Last night data for an NBA or CBB summary."""
+    """Betting tab and Last night data for an NBA, NHL or CBB summary."""
     today = NOW.date().isoformat()
     summary["slate"] = [extras.slate_entry(g) for g in games
                         if g["date"] >= today and not g["final"] and not g["void"]]
@@ -1309,7 +1307,7 @@ def build_summary(history, model, team_history=None):
 
 
 def add_home_parts(summary, history, team_history):
-    """What the home site's Best Bets page, '$10 a pick' chart and Last night
+    """What the home site's Betting tab (best bets and units) and Last night
     strip read: games still to play, the running moneyline total and the
     latest day's results."""
     team_history = team_history or {"picks": []}
@@ -1346,7 +1344,7 @@ def main():
     os.makedirs(DIST_DIR)
     pages = {
         "index.html": build_index(history, slate, model, team_history),
-        "games.html": build_games(team_history),
+        "games.html": build_games(team_history, games_slate["games"]),
         "players.html": build_players(slate),
         "history.html": build_history(history),
         "accuracy.html": build_accuracy(history, model),

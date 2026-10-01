@@ -258,15 +258,15 @@ def ml_payout(price):
 def ml_cell_html(ml):
     """The Moneyline cell, spelled out: which team to take and at what price,
     what the price pays, our win % vs the book's (vig removed), a VALUE tag at
-    6+ points of edge, and W/L with units once graded. The bet is always the
-    team our model picks to win."""
+    6+ points of edge, and W/L once graded. The bet is always the team our
+    model picks to win."""
     if not ml:
         return f'<span class="faint">{DASH}</span>'
     tags = f' {pill("VALUE", "positive")}' if ml["value"] else ""
     if ml["result"] == "W":
-        tags += f' {pill("W " + moneyline.fmt_units(ml["units"]), "positive")}'
+        tags += f' {pill("W", "positive")}'
     elif ml["result"] == "L":
-        tags += f' {pill("L " + moneyline.fmt_units(ml["units"]), "danger")}'
+        tags += f' {pill("L", "danger")}'
     elif ml["result"] == "P":
         tags += f' {pill("NO DECISION", "market")}'
     lines = [ml_payout(ml["price"]),
@@ -364,7 +364,7 @@ SCHEDULE_URL = "https://ant56-arch.github.io/schedule.html"
 # The sport switcher's order on every Sports Edge site, after "All".
 SPORT_TAB_ORDER = [("NFL", None), ("NBA", NBA_EDGE_URL), ("MLB", MLB_EDGE_URL),
                    ("NHL", "https://ant56-arch.github.io/nhl/index.html"), ("CFB", None),
-                   ("CBB", CBB_EDGE_URL), ("Best Bets", "https://ant56-arch.github.io/bets.html"),
+                   ("CBB", CBB_EDGE_URL), ("Betting", "https://ant56-arch.github.io/bets.html"),
                    ("Schedule", SCHEDULE_URL)]
 # The home page (index.html at the root of this repo) links every site
 # and shows each one's summary.json; the switcher's first tab goes back to it.
@@ -389,15 +389,14 @@ BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><p
               'fill="#121314"/></svg>')
 
 def top_bar(sport_switcher):
-    """The black network bar (brand + sport tabs) and the scoreboard strip
-    under it, which site.js fills from every Edge site's summary.json."""
+    """The black network bar (brand + sport tabs). The scoreboard strip of
+    every sport's games is on the home site only, to keep sport pages calm."""
     return f"""<header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="{HOME_URL}">{BRAND_MARK}<span class="brand-name">Sports <span>Edge</span></span></a>
     <nav class="sport-switcher" aria-label="Sport">{sport_switcher}</nav>
   </div>
-</header>
-<aside class="scoreboard" aria-label="Latest top picks" hidden></aside>"""
+</header>"""
 
 def page_shell(sport, title, active_tab, body_html):
     tabs = [
@@ -457,18 +456,16 @@ def page_shell(sport, title, active_tab, body_html):
   <main id="main-content">
   {body_html}
   </main>
-  <footer class="site-footer">
-    <div class="footer-brand">{sport["wordmark"]} <span>Edge</span></div>
-    <p class="footer-text">{sport["data_source_text"]} How the model works is on the
-      <a href="model.html">Model tab</a>.</p>
-    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
-      predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
+  <footer class="site-footer slim">
+    <p class="footer-text">{sport["data_source_text"]} For entertainment only, not betting advice. Gambling problem?
+      Call 1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
-      <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
-      <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>
       <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
-      <span>&copy; {now.year} {sport["wordmark"]} Edge. Updated from final scores every week.</span>
+      <span>&copy; {now.year} {sport["wordmark"]} Edge</span>
     </nav>
   </footer>
 </div>
@@ -528,12 +525,6 @@ def day_label(gameday):
         return str(gameday)
     return f"{d:%A}, {d:%b} {d.day}"
 
-def conf_html(prob):
-    """How sure we are: a bar and the percentage."""
-    p = round(prob * 100)
-    return (f'<span class="pl-conf"><span class="pl-bar" aria-hidden="true"><span style="width:{p}%"></span></span>'
-            f'<span class="pl-pct">{p}%</span></span>')
-
 def kick_time(g):
     """'8:15 PM ET' from a game's kickoff sort key, or '' without a time."""
     key = g.get("kick_sort") or ""
@@ -555,100 +546,6 @@ def game_pick(g):
 def team_short_label(g, team):
     """The other team's short name in a game dict, given one team's."""
     return g["away_label"] if team == g["home_label"] else g["home_label"]
-
-def game_row(sport, g):
-    """One game in the Home tab's list: teams and kickoff (or the final),
-    our pick and how sure we are, and the result once graded. The Vegas
-    line, our spread, the moneyline price and the spread pick open on tap."""
-    pick, ml, sp = game_pick(g), g.get("ml"), g.get("spread")
-    logos = {t: team_logo(sport, t) for t in (g["away_team"], g["home_team"])}
-    img = lambda t: (f'<img class="team-logo" src="{logos[t]}" alt="" loading="lazy" '
-                     f'onerror="this.style.display=\'none\'">' if logos[t] else "")
-    teams = (f'<span class="pl-teams">{img(g["away_team"])}{g["away_label"]} <i>@</i> '
-             f'{img(g["home_team"])}{g["home_label"]}</span>')
-    if g["graded"] and g["away_score"] is not None:
-        sub = f'Final, {g["away_score"]}-{g["home_score"]}'
-    else:
-        sub = kick_time(g) or "Time to be announced"
-    value = f' {pill("VALUE", "positive")}' if pick["value"] else ""
-    res = ""
-    if g["graded"] and pick["hit"] is not None:
-        res = pill("HIT", "positive") if pick["hit"] else pill("MISS", "danger")
-    elif g["graded"]:
-        res = pill("NO DECISION", "market")
-
-    if ml:
-        ml_dd = (f'{ml["team"]} {moneyline.format_price(ml["price"])}'
-                 f'<small>{ml_payout(ml["price"])}. We say {ml["our"]:.0%}, the price says {ml["book"]:.0%}.</small>')
-        if ml["units"] is not None and ml["result"] in ("W", "L"):
-            ml_dd += f'<small>{moneyline.fmt_units(ml["units"])} on 1 unit</small>'
-    else:
-        ml_dd = '<span class="faint">No moneyline posted</span>'
-    vegas = (f'{g["vegas_favored_team"]} -{g["vegas_favored_by"]:.1f}' if g["vegas_favored_team"]
-             else '<span class="faint">No line posted</span>')
-    if sp:
-        cover = ""
-        if g["graded"] and g.get("covered") is not None:
-            cover = " " + (pill("COVERED", "positive") if g["covered"] else pill("DIDN'T COVER", "danger"))
-        spread_dd = f'{sp["team"]} {sp["line"]}{cover}<small>{sp["prob"]:.0%} chance to cover</small>'
-    else:
-        spread_dd = '<span class="faint">None without a Vegas line</span>'
-    total = f'<small>Total {g["total"]:.1f}' + (f', Vegas {g["vegas_total"]:.1f}' if g.get("vegas_total") else "") + "</small>"
-    lock = g.get("lock_html", "") + extras.game_link(g)
-    return f"""<li><details class="pl-row"><summary class="pl-line">
-      <span class="pl-match">{teams}<span class="pl-sub">{sub}</span></span>
-      <span class="pl-pick"><b>{pick["team"]}</b>{value}</span>
-      {conf_html(pick["prob"])}
-      <span class="pl-res">{res}</span>
-    </summary>
-    <dl class="pl-more">
-      <div><dt>Moneyline</dt><dd>{ml_dd}</dd></div>
-      <div><dt>Our spread</dt><dd>{g["favored_team"]} -{g["favored_by"]:.1f}{total}</dd></div>
-      <div><dt>Vegas spread</dt><dd>{vegas}</dd></div>
-      <div><dt>Spread pick</dt><dd>{spread_dd}</dd></div>
-    </dl>{f'<div class="pl-note">{lock}</div>' if lock else ""}</details></li>"""
-
-HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
-  <p>The pick is the team we expect to win, and the percentage is our chance it does. When the book has a
-    moneyline, that's the team we'd bet at its price, and {value} means our chance beats the price by 6 or more
-    points.</p>
-  <p>Tap a game for the rest: the moneyline price and what it pays, our spread next to Vegas's, and our pick
-    against the Vegas spread with its chance to cover. Lines and picks lock {lock}. Hit or miss
-    shows once a game is final. The Model tab explains how the numbers are made.</p>
-</div></details>"""
-
-def render_week_list(sport, week_games):
-    """The Home tab's games for the week, in kickoff order under a header per
-    day, one row per game (see game_row)."""
-    if not week_games:
-        return '<div class="empty-state">No games this week.</div>'
-    rows, last_day = "", None
-    for g in sorted(week_games, key=lambda g: g.get("kick_sort") or "9999"):
-        if g.get("gameday") and g["gameday"] != last_day:
-            last_day = g["gameday"]
-            rows += f'<li class="pl-day">{day_label(last_day)}</li>'
-        rows += game_row(sport, g)
-    lock = "at kickoff, or Friday 9 PM ET for weekend games" if sport["slug"] == "cfb" else "at kickoff"
-    return (f'<ul class="pick-list">{rows}</ul>'
-            + HOW_TO_READ.format(value=pill("VALUE", "positive"), lock=lock))
-
-def best_bets(week_games, n=3):
-    """This week's most confident picks among games not yet played."""
-    open_games = [g for g in week_games if not g["graded"]]
-    top = sorted(open_games, key=lambda g: -game_pick(g)["prob"])[:n]
-    cards = ""
-    for g in top:
-        pick = game_pick(g)
-        when = day_label(g["gameday"]).split(",")[0] if g.get("gameday") else ""
-        when = f"{when[:3]} {kick_time(g)}".strip() if when else kick_time(g)
-        value = pill("VALUE", "positive") if pick["value"] else ""
-        cards += f"""<a class="bet-card" href="{g["file"]}">
-      <div class="bet-when">{when}</div>
-      <div class="bet-pick"><b>{pick["team"]}</b> over {pick["other"]}</div>
-      <div class="bet-pct">{round(pick["prob"] * 100)}<small>%</small></div>
-      <div class="bet-sub">chance to win {value}</div>
-    </a>"""
-    return f'<div class="bet-cards">{cards}</div>' if cards else ""
 
 def pick_hit(r):
     """Whether our pick in a graded tracking-log game won: the moneyline pick
@@ -688,8 +585,6 @@ def record_band(sport, rec):
         from there.</div></div></div></section>"""
     since = f"Since {rec['since']}. " if rec["since"] else ""
     side = []
-    if rec["units"] is not None:
-        side.append((moneyline.fmt_units(rec["units"]), "Moneyline", f"1 unit on each of {rec['ml_n']} picks"))
     aw, al = rec["ats"]
     if aw + al:
         side.append((f"{aw}-{al}", "Against the spread", f"covered {aw / (aw + al):.0%}"))
@@ -780,8 +675,8 @@ def ml_record(sport, games, log):
     return season, moneyline.summarize(log, season)
 
 def build_moneyline_block(season, ml, with_label=True):
-    """Moneyline record tiles (W-L, units, ROI, Value picks), or the empty
-    state until a pick this season has been graded."""
+    """Moneyline record tiles (W-L and Value picks), or the empty state until
+    a pick this season has been graded. Units live on the home site's Betting tab."""
     label = f'<div class="section-label">Moneyline, {season}</div>' if with_label else ""
     if not ml:
         return label + f'<div class="empty-state">{ML_EMPTY}</div>'
@@ -789,17 +684,14 @@ def build_moneyline_block(season, ml, with_label=True):
     v = ml["value"]
     stats = [
         (ml["record"], f"{season} moneyline", f"{ml['n_decided']} picks graded{pushes}"),
-        (moneyline.fmt_units(ml["units"]), "Units", "1 unit risked per pick"),
-        (moneyline.fmt_roi(ml["roi"]), "ROI", "return per unit risked"),
-        (v["record"] if v["n_decided"] else DASH, "Value picks",
-         f"{moneyline.fmt_units(v['units'])}, ROI {moneyline.fmt_roi(v['roi'])}" if v["n_decided"] else "edge of 6+ points"),
+        (v["record"] if v["n_decided"] else DASH, "Value picks", "our chance 6+ points over the price's"),
     ]
     statline = '<div class="statline">' + "".join(
         f'<div class="stat"><div class="stat-value">{val}</div><div class="stat-label">{lab}</div>'
         f'<div class="stat-sub">{sub}</div></div>' for val, lab, sub in stats) + "</div>"
-    note = ('<div class="table-footnote">Our moneyline pick in every game with a book moneyline, graded at 1 unit '
-            'risked at the book price and locked at kickoff. A win at +135 pays 1.35 units, a win at -150 pays '
-            '0.67, a loss costs 1. Ties count as no decision. This season\'s live picks only.</div>')
+    note = ('<div class="table-footnote">Our moneyline pick in every game with a book moneyline, at the price '
+            'locked at kickoff. Ties count as no decision. This season\'s live picks only. What betting them would '
+            'have made is on the <a href="https://ant56-arch.github.io/bets.html">Betting tab</a>.</div>')
     return label + statline + note
 
 TOP_PLAYERS = 10
@@ -891,7 +783,10 @@ def display_season(sport, games, log):
         return int(log.loc[log["actual_margin"].notna(), "season"].max())
     return sport["live_tracking_start_season"]
 
-def build_index_page(sport, games, props, comparison, accuracy_summary, log, top25_summary=None):
+BOARD_NOTE = ("Scores are our projections, lines show the favored team, and the odds are our pick's moneyline. "
+              "Value means our chance beats the odds by 6 points or more. Tap a game for more.")
+
+def build_index_page(sport, games, log, comparison, espn=None):
     season = display_season(sport, games, log)
     weeks = assemble_season_weeks(sport, games, log, comparison, season)
     this_week_key = current_week_key(weeks)
@@ -900,15 +795,9 @@ def build_index_page(sport, games, props, comparison, accuracy_summary, log, top
     week_games = this_week["games"] if this_week else []
 
     body = record_band(sport, live_record(sport, log))
-    bets = best_bets(week_games)
-    if bets:
-        body += card(f"Most confident: {week_title}", "Our three surest picks among the games still to play", bets)
-    if not weeks and sport.get("no_games_note"):
-        slate_html = f'<div class="empty-state">No games available yet. {sport["no_games_note"]}</div>'
-    else:
-        slate_html = render_week_list(sport, week_games)
-    body += card(f"Every game: {week_title}", "Tap a game for the Vegas line, our spread and the moneyline price. "
-                 "The Teams tab has the full season.", slate_html)
+    empty = f"No games available yet. {sport['no_games_note']}".strip() if not weeks else "No games this week."
+    board = extras.game_board([nf_game(sport, g, espn) for g in week_games], empty=empty)
+    body += extras.board_section(f"{week_title} games", BOARD_NOTE, board)
     return page_shell(sport, "Home", "index", body)
 
 WEEK_TYPE_LABELS = {"WC": "Wild Card", "DIV": "Divisional", "CON": "Conf. Championship", "SB": "Super Bowl", "POST": "Postseason"}
@@ -1132,11 +1021,11 @@ def build_moneyline_card(sport, games, log):
       <thead><tr><th>Game</th><th class="num">Pick</th></tr></thead>
       <tbody>{rows}</tbody>
     </table>"""
-    return card("Moneyline Record", f"{season} moneyline picks, graded at 1 unit each", body)
+    return card("Moneyline Record", f"{season} moneyline picks and the price each one locked at", body)
 
 def build_accuracy_page(sport, log, games=None):
     games = games if games is not None else pd.DataFrame()
-    ml_card = card(f"${extras.STAKE} a pick", f"${extras.STAKE} on the team we pick to win in every game, favorite or underdog", extras.dollars_body(ml_units(sport, log))) + build_moneyline_card(sport, games, log)
+    ml_card = build_moneyline_card(sport, games, log)
     live_start = sport["live_tracking_start_season"]
     graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
     if not graded.empty:
@@ -1349,12 +1238,23 @@ def model_page_weights(model):
     out.update({k: v for k, v in model.items() if k.startswith("blend_weight_on_")})
     return out
 
-# ── Game pages, "$10 a pick" and the home site's Best Bets / Last night ──────
+# ── Game pages and the home site's Betting tab and Last night strip ─────────
 ET = ZoneInfo("America/New_York")
 
 
-def nf_game(sport, g):
-    """A game from assemble_season_weeks in the shared game shape (extras.py)."""
+def espn_match(sport, espn, away, home):
+    """The game on ESPN's scoreboard (espn: its games) matching one of ours,
+    the way attach_game_picks matches them, or None."""
+    if not espn:
+        return None
+    a, h = espn_keys_for(sport, away), espn_keys_for(sport, home)
+    return next((eg for eg in espn if a & espn_team_keys(eg["away"]) and h & espn_team_keys(eg["home"])), None)
+
+
+def nf_game(sport, g, espn=None):
+    """A game from assemble_season_weeks in the shared game shape (extras.py),
+    with what its card on the Home tab shows: projected points from our spread
+    and total, the lines strip, and TV, stadium and records from ESPN."""
     pick, ml, sp = game_pick(g), g.get("ml"), g.get("spread")
     key = g.get("kick_sort") or ""
     start = extras.iso_et(key[:10], key[11:16], ET) if len(key) >= 16 and not key.endswith("99:99") else None
@@ -1362,8 +1262,13 @@ def nf_game(sport, g):
     label = " · ".join(x for x in (g.get("week_label"), f"{day:%a, %b} {day.day}" if pd.notna(day) else "",
                                    kick_time(g)) if x)
     info = team_info(sport)
+    eg = games_mod.card_info(espn_match(sport, espn, g["away_team"], g["home_team"]))
+    espn_rec = dict(zip(("away", "home"), eg.get("records", ("", ""))))
+    home_margin = g["favored_by"] if g["favored_team"] == g["home_label"] else -g["favored_by"]
+    proj = {"home": (g["total"] + home_margin) / 2, "away": (g["total"] - home_margin) / 2}
     team = lambda side: {"abbr": g[f"{side}_label"], "name": info.get(g[f"{side}_team"], {}).get("name", g[f"{side}_team"]),
-                         "record": "", "logo": team_logo(sport, g[f"{side}_team"]),
+                         "record": espn_rec[side],
+                         "logo": team_logo(sport, g[f"{side}_team"]), "proj": proj[side],
                          "score": g[f"{side}_score"] if g["graded"] else None}
     facts = [("Our spread", f'{escape(g["favored_team"])} -{g["favored_by"]:.1f}', ""),
              ("Vegas spread", f'{escape(g["vegas_favored_team"])} -{g["vegas_favored_by"]:.1f}' if g["vegas_favored_team"]
@@ -1389,7 +1294,27 @@ def nf_game(sport, g):
         "ml": {"price": ml["price"], "book": ml["book"] * 100, "value": ml["value"], "units": ml["units"],
                "won": {"W": True, "L": False}.get(ml["result"])} if ml else None,
         "why": [], "facts": facts, "hitters": [], "note": g.get("lock_html", ""),
+        "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "lines": card_lines(g),
     }
+
+
+def card_lines(g):
+    """The strip under the teams on a game card: Vegas's line, ours, and our
+    pick against Vegas's with its chance to cover (and whether it did)."""
+    m = extras.MINUS
+    vegas = (f'{escape(g["vegas_favored_team"])} {m}{g["vegas_favored_by"]:.1f}' if g["vegas_favored_team"]
+             else '<span class="faint">None yet</span>')
+    lines = [("Vegas line", vegas, "vegas", ""), ("Our line", f'{escape(g["favored_team"])} {m}{g["favored_by"]:.1f}', "ours", "")]
+    sp = g.get("spread")
+    if sp:
+        cover = ""
+        if g["graded"] and g.get("covered") is not None:
+            cover = " " + (pill("COVERED", "positive") if g["covered"] else pill("MISSED", "danger"))
+        lines.append(("Spread pick", f'{escape(sp["team"])} {sp["line"].replace("-", m)}{cover}', "",
+                      f'{sp["prob"]:.0%} to cover'))
+    else:
+        lines.append(("Spread pick", '<span class="faint">After the line</span>', "", ""))
+    return lines
 
 
 def season_games(sport, games, log, comparison):
@@ -1398,11 +1323,13 @@ def season_games(sport, games, log, comparison):
 
 
 def ml_units(sport, log):
-    """Every graded live moneyline pick, for the '$10 a pick' record."""
+    """Every graded live moneyline pick, for the Betting tab's units."""
     if log is None or log.empty or "ml_won" not in log.columns:
         return None
     done = log[(log["season"] >= sport["live_tracking_start_season"]) & log["ml_won"].notna() & log["ml_units"].notna()]
-    return extras.units_summary((str(r["gameday"])[:10], float(r["ml_units"]), r["ml_won"] == 1)
+    return extras.units_summary((str(r["gameday"])[:10], float(r["ml_units"]), r["ml_won"] == 1,
+                                 float(r["ml_pick_price"]) if pd.notna(r.get("ml_pick_price")) else None,
+                                 moneyline.is_value(r.get("ml_value")))
                                 for _, r in done.iterrows())
 
 
@@ -1413,7 +1340,7 @@ def build_game_pages(sport, ngames):
 
 
 def add_home_parts(sport, summary, ngames, log):
-    """What the home site's Best Bets page, '$10 a pick' chart and Last night
+    """What the home site's Betting tab (best bets and units) and Last night
     strip read: this week's games still to play, the running moneyline total
     and the latest day's results."""
     week = min((g["week"] for g in ngames if not g["final"]), default=None)
@@ -1451,7 +1378,7 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
     # Optional: this season's moneyline record, same shape as "record".
     ml_season, ml = ml_record(sport, games, log)
     summary["moneyline_record"] = ({"value": ml["record"], "label": f"{ml_season} moneyline",
-                                    "sub": f"{moneyline.fmt_units(ml['units'])}, ROI {moneyline.fmt_roi(ml['roi'])}"}
+                                    "sub": f"{ml['n_decided']} picks graded"}
                                    if ml else None)
     add_home_parts(sport, summary, season_games(sport, games, log, comparison), log)
     return summary
@@ -1459,14 +1386,19 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
 # nflverse team codes that differ from ESPN's.
 ESPN_NFL_CODES = {"LA": "LAR", "WAS": "WSH"}
 
+def espn_keys_for(sport, code):
+    """Ways ESPN might name one of our teams (abbreviation, or school name for CFB)."""
+    short = team_short(sport, code)
+    return {str(code).upper(), str(short).upper(), ESPN_NFL_CODES.get(code, code).upper()}
+
+def espn_team_keys(t):
+    return {t["abbr"].upper(), t["location"].upper(), t["short"].upper()}
+
 def attach_game_picks(sport, slate, games, log, comparison):
     """Each ESPN game gets the model's pick from this season's weeks, matched
     on both teams (ESPN abbreviation, or school name for CFB)."""
     weeks = assemble_season_weeks(sport, games, log, comparison, display_season(sport, games, log))
-
-    def keys(code):
-        short = team_short(sport, code)
-        return {str(code).upper(), str(short).upper(), ESPN_NFL_CODES.get(code, code).upper()}
+    keys = lambda code: espn_keys_for(sport, code)
 
     picks = []
     for wk in weeks.values():
@@ -1475,11 +1407,8 @@ def attach_game_picks(sport, slate, games, log, comparison):
         for g in wk["games"]:
             picks.append((keys(g["away_team"]), keys(g["home_team"]), g))
 
-    def espn_keys(t):
-        return {t["abbr"].upper(), t["location"].upper(), t["short"].upper()}
-
     for eg in slate["games"]:
-        a, h = espn_keys(eg["away"]), espn_keys(eg["home"])
+        a, h = espn_team_keys(eg["away"]), espn_team_keys(eg["home"])
         match = next((g for ak, hk, g in picks if ak & a and hk & h), None)
         if match:
             eg["pick"] = {"text": f"{match['favored_team']} -{match['favored_by']:.1f}, {match['win_pct']:.0%}",
@@ -1490,9 +1419,10 @@ def build_sport_pages(sport):
     print(f"Loading {sport['wordmark']} data...")
     games, props, comparison, accuracy_summary, log, top25_summary = load_data(sport)
     slate = attach_game_picks(sport, games_mod.load(sport["slug"]), games, log, comparison)
+    espn = slate["games"]
 
     pages = {
-        "index.html": build_index_page(sport, games, props, comparison, accuracy_summary, log, top25_summary),
+        "index.html": build_index_page(sport, games, log, comparison, espn),
         "teams.html": build_teams_page(sport, games, log, comparison),
         "history.html": build_history_page(sport, log),
         "accuracy.html": build_accuracy_page(sport, log, games),

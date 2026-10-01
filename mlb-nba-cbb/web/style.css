@@ -1311,6 +1311,163 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
   .hw-res:empty { display: none; }
 }
 
+/* ---------- Calmer sport pages: game cards (extras.game_board) ----------
+   Every sport's Home tab: a small header over the same striped background, the
+   record on the page without a panel, then one card per game, two across.
+   Units and dollars live only on the home site's Betting tab. */
+
+/* Sport pages: smaller header, same background. The home page keeps its big hero. */
+header.masthead:not(.home-hero)::after { font-size: 120px; }
+header.masthead:not(.home-hero) .masthead-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 26px;
+  padding-bottom: 18px;
+}
+header.masthead:not(.home-hero) .wordmark { font-size: 46px; }
+header.masthead:not(.home-hero) .tagline { display: none; }
+header.masthead:not(.home-hero) .updated-chip { margin-top: 0; }
+
+/* The record, on the page: rules above and below instead of a panel. */
+.card.record-card {
+  padding: 22px 0 24px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+}
+.card.record-card .rb-num { font-size: 76px; }
+.card.record-card .rb-side .stat { background: none; border: 0; border-left: 1px solid var(--rule); border-radius: 0; padding: 4px 0 4px 24px; }
+
+/* A Home tab section without a panel. */
+.slate-sec { margin: 32px 0 40px 0; }
+.slate-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 32px; }
+.slate-head h2 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 34px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.slate-head p { margin: 0; max-width: 48ch; font-size: 14px; color: var(--text-muted); }
+
+.day-chips { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--rule); overflow-x: auto; scrollbar-width: none; }
+.day-chips button {
+  padding: 10px 14px;
+  font: 600 14px var(--font);
+  color: var(--text-muted);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.day-chips button span { margin-left: 6px; font-size: 12px; color: var(--text-faint); }
+.day-chips button:hover { color: var(--text); }
+.day-chips button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px var(--ours); }
+
+.gc-day { margin-top: 26px; }
+.gc-day[hidden] { display: none; }
+.gc-day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.gc-day-head h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ours); }
+.gc-day-head span { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); }
+.gc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+a.gc {
+  display: block;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--rule-strong);
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+a.gc:hover { border-color: var(--rule-strong); }
+a.gc.is-top { border-top-color: var(--ours); }
+.gc-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--rule);
+}
+.gc-when { font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+.gc-top { margin-left: 8px; padding-left: 8px; font-style: normal; color: var(--ours); border-left: 1px solid var(--rule-strong); }
+.gc-venue { min-width: 0; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.gc-team { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.gc-team + .gc-team { border-top: 1px solid var(--rule); }
+.gc-logo {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font: 800 11px var(--font-head);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 6px;
+}
+.gc-logo em { font-style: normal; }
+.gc-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--surface); }
+.gc-name { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.gc-name b { overflow: hidden; font-size: 16px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.gc-name small { font-size: 12px; color: var(--text-faint); }
+.gc-num { margin-left: auto; font: 700 30px/1 var(--font-head); color: var(--text-muted); }
+.gc-num i { font-size: 0.6em; font-style: normal; }
+.gc-team.is-lead .gc-num { color: var(--text); }
+.gc-lines { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--rule); }
+.gc-lines > div { min-width: 0; padding: 10px 16px; }
+.gc-lines > div + div { border-left: 1px solid var(--rule); }
+.gc-lines dt { font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); }
+.gc-lines dd { margin: 2px 0 0 0; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.gc-lines dd small { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: normal; }
+.gc-lines dd .pill { margin-left: 4px; vertical-align: 1px; }
+.gc-lines .vegas { color: var(--vegas); }
+.gc-lines .ours { color: var(--ours); }
+.gc-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--rule);
+}
+.gc-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
+.gc-pick b { min-width: 0; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.gc-odds { font-weight: 600; color: var(--vegas); white-space: nowrap; }
+.gc-value { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--hit); }
+.gc-pct { margin-left: auto; font: italic 800 26px/1 var(--font-head); color: var(--ours); }
+.gc-pct i { font-size: 0.6em; }
+
+/* Footer: two short lines. */
+footer.site-footer.slim { margin-top: 48px; padding-top: 18px; font-size: 13px; }
+footer.site-footer.slim .footer-text { margin: 0; max-width: none; }
+footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border-top: 0; gap: 6px 20px; }
+
+@media (max-width: 760px) {
+  .gc-grid { grid-template-columns: minmax(0, 1fr); }
+  header.masthead:not(.home-hero) .wordmark { font-size: 38px; }
+  .card.record-card .rb-num { font-size: 60px; }
+  .card.record-card .rb-side .stat:first-child { border-left: 0; padding-left: 0; }
+}
+@media (max-width: 420px) {
+  .gc-team, .gc-head, .gc-pick { padding-left: 12px; padding-right: 12px; }
+  .gc-lines > div { padding: 9px 10px; }
+  .gc-lines dt { font-size: 9.5px; letter-spacing: 0.6px; }
+  .gc-lines dd { font-size: 14px; }
+  .gc-venue { display: none; }
+  .gc-label { display: none; }
+}
+
 /* ---------- MLB additions ---------- */
 
 .pill-void { color: var(--text-faint); }
