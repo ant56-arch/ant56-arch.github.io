@@ -4341,38 +4341,38 @@
    "home_record": "94-68",
    "away_record": "88-74",
    "home_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 678061,
+    "name": "Ray Kerr",
+    "era": 0.0,
+    "ip": 3.0
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 605400,
+    "name": "Aaron Nola",
+    "era": 4.67,
+    "ip": 175.3
    },
    "pick": "ATL",
-   "prob": 53.8,
-   "home_prob": 53.8,
+   "prob": 54.5,
+   "home_prob": 54.5,
    "factors": {
     "home_field": 0.141,
     "elo": 0.011,
-    "starters": 0.0
+    "starters": 0.027
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:38:06Z",
+   "set_at": "2026-10-01T20:11:00Z",
    "ml": {
     "team": "ATL",
     "side": "home",
-    "price": -111,
-    "prob": 53.8,
-    "book_prob": 50.3,
-    "edge": 3.5,
+    "price": -109,
+    "prob": 54.5,
+    "book_prob": 49.9,
+    "edge": 4.6,
     "value": false,
-    "home_ml": -111,
-    "away_ml": -108,
+    "home_ml": -109,
+    "away_ml": -110,
     "book": "DraftKings",
     "won": null,
     "units": null
