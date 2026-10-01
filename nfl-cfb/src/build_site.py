@@ -1249,6 +1249,9 @@ FACTOR_LABELS = {
     "sack_weight": ("Sack rate gap", "points per 10-point gap in sack rate", 0.1, "pts"),
     "success_rate_weight": ("Success rate gap", "points per 10-point gap in success rate", 0.1, "pts"),
     "explosiveness_weight": ("Explosiveness gap", "points per 0.1 gap in explosiveness", 0.1, "pts"),
+    "points_rating_weight": ("Power rating gap", "points of margin per point of schedule-adjusted power rating gap", 1, "pts"),
+    "success_rating_weight": ("Success rate gap (schedule-adjusted)", "points per 10-point gap in success rate", 0.1, "pts"),
+    "qb_weight": ("Starting QB gap", "points per 0.1 EPA per dropback between the two starters", 0.1, "pts"),
     "home_field_advantage": ("Home field", "points for the home team", 1, "pts"),
     "margin_std_dev": ("Game-to-game swing", "how many points results typically miss by", 1, "plain"),
     "blend_weight_on_model_winprob": ("Model's say in the win chance", "the rest comes from the Vegas line", 1, "share"),
@@ -1322,6 +1325,9 @@ def build_model_page(sport):
         ],
         "setup": [
             ("Learns from:", since),
+            ("Team ratings:", f"adjusted for who each team played, plus the two starting QBs; a game's weight "
+                              f"halves every {recipe['rating_half_life']} weeks")
+            if recipe.get("rating_half_life") else
             ("Team form:", f"recent games count most - a game's weight halves every {half} games" if half
              else "every game this season counts the same"),
             ("Sharp line:", "blends the model with the Vegas line; the last rows below show how much say the model gets"),

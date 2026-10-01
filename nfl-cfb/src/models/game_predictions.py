@@ -3,18 +3,17 @@ game_predictions.py
 Predicts game winners, spreads, and totals for upcoming NFL games.
 
 APPROACH:
-Anchored on net EPA/play (expected points added), the strongest single
-team-strength metric in modern NFL analytics. Secondary factors (third-down
-rate, red zone efficiency, explosiveness, sack rate) act as smaller
-adjustments layered on top.
+The spread comes from team_ratings.py: schedule-adjusted power and
+success-rate ratings for both teams plus the gap between the two starting
+QBs, rebuilt from play-by-play before each week. The total still comes from
+each team's recency-weighted EPA/play (team_stats.csv): each team's expected
+efficiency in THIS game = average of (their own offensive efficiency) and
+(their opponent's defensive efficiency allowed).
 
-MATCHUP LOGIC (not just raw team strength):
-Each team's expected efficiency in THIS game = average of (their own
-offensive efficiency) and (their opponent's defensive efficiency allowed).
-
-MANUAL OVERRIDES: before computing anything, team_stats gets adjusted by
-team_overrides.py and auto_defense_adjustments.py for personnel changes
-this season's data can't fully see yet.
+MANUAL OVERRIDES: team_stats gets adjusted by team_overrides.py and
+auto_defense_adjustments.py for personnel changes this season's data can't
+fully see yet. Those adjust the EPA columns, so they now move the total and
+the legacy spread only; the ratings see trades through the games played.
 
 CALIBRATION: every point/probability conversion below (EPA-to-points scaling,
 spread-to-win% curve, home field edge, secondary-factor weights) is a
@@ -45,6 +44,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from team_overrides import apply_overrides
 from auto_defense_adjustments import apply_auto_adjustments
+import team_ratings
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
@@ -87,6 +87,12 @@ def load_coefficients():
     }
     return coefs, blend, fitted.get("holdout_validation")
 
+def load_rating_half_life():
+    if not os.path.exists(COEFFICIENTS_PATH):
+        return team_ratings.RATING_HALF_LIFE_WEEKS
+    with open(COEFFICIENTS_PATH) as f:
+        return json.load(f).get("rating_half_life_weeks", team_ratings.RATING_HALF_LIFE_WEEKS)
+
 def load_team_stats():
     team_stats = pd.read_csv(os.path.join(PROCESSED_DIR, "team_stats.csv")).set_index("team")
     team_stats = apply_overrides(team_stats)
@@ -100,6 +106,17 @@ def load_upcoming_games():
     # isn't upcoming - without this it would sort ahead of the real next week.
     recent = (pd.Timestamp.now() - pd.Timedelta(days=14)).strftime("%Y-%m-%d")
     return upcoming[upcoming["gameday"].astype(str).str[:10] >= recent]
+
+def load_rating_features(half_life):
+    """team_ratings.FEATURES for every game of the current season, indexed by
+    (season, week, home_team, away_team)."""
+    cols = ["game_id", "season", "week", "posteam", "defteam", "play_type", "epa", "success",
+            "pass", "qb_dropback", "passer_player_id"]
+    pbp = pd.read_parquet(os.path.join(RAW_DIR, "pbp_combined.parquet"), columns=cols)
+    schedules = pd.read_csv(os.path.join(RAW_DIR, "schedules.csv"))
+    feats = team_ratings.game_features(pbp, schedules, from_season=int(schedules["season"].max()),
+                                       half_life=half_life)
+    return feats.set_index(["season", "week", "home_team", "away_team"])
 
 def load_vegas_odds():
     odds_path = os.path.join(RAW_DIR, "odds.csv")
@@ -142,7 +159,14 @@ def get_vegas_line(vegas_odds, home_team, away_team):
         "home_win_prob": row.get("vegas_home_win_prob"),
     }
 
-def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True):
+def ratings_spread(rating_row, coefs):
+    return (rating_row["points_rating_diff"] * coefs["points_rating_weight"]
+            + rating_row["success_rating_diff"] * coefs["success_rating_weight"]
+            + rating_row["qb_diff"] * coefs["qb_weight"]
+            + rating_row["home_field"] * coefs["home_field_advantage"])
+
+def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True,
+                 rating_row=None):
     if home_team not in team_stats.index or away_team not in team_stats.index:
         return None
 
@@ -152,11 +176,15 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
     home_expected_eff = matchup_expected_efficiency(home_row, away_row, use_current_form)
     away_expected_eff = matchup_expected_efficiency(away_row, home_row, use_current_form)
 
-    epa_diff = home_expected_eff - away_expected_eff
-    base_spread = epa_diff * coefs["epa_diff_coef"]
-    adjustment = secondary_adjustment(home_row, away_row, coefs, use_current_form)
-
-    model_spread = base_spread + adjustment + coefs["home_field_advantage"]
+    if "points_rating_weight" in coefs:
+        if rating_row is None:
+            return None
+        model_spread = ratings_spread(rating_row, coefs)
+    else:
+        epa_diff = home_expected_eff - away_expected_eff
+        base_spread = epa_diff * coefs["epa_diff_coef"]
+        adjustment = secondary_adjustment(home_row, away_row, coefs, use_current_form)
+        model_spread = base_spread + adjustment + coefs["home_field_advantage"]
     model_home_win_prob = norm.cdf(model_spread / coefs["margin_std_dev"])
 
     combined_expected_eff = home_expected_eff + away_expected_eff
@@ -199,6 +227,9 @@ def predict_all_upcoming(use_current_form=True):
     team_stats = load_team_stats()
     upcoming = load_upcoming_games()
     vegas_odds = load_vegas_odds()
+    ratings = None
+    if "points_rating_weight" in coefs:
+        ratings = load_rating_features(load_rating_half_life())
 
     if vegas_odds is None:
         print("  No Vegas odds available yet - predictions will be model-only "
@@ -206,7 +237,10 @@ def predict_all_upcoming(use_current_form=True):
 
     predictions = []
     for _, game in upcoming.iterrows():
-        pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds, use_current_form)
+        key = (game["season"], game["week"], game["home_team"], game["away_team"])
+        rating_row = ratings.loc[key] if ratings is not None and key in ratings.index else None
+        pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds,
+                            use_current_form, rating_row)
         if pred:
             pred["season"] = game["season"]
             pred["week"] = game["week"]

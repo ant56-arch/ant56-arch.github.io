@@ -61,6 +61,8 @@ def run():
     schedules = fm.fetch_historical_schedules()
     dataset = fm.build_dataset(off_walk, def_walk, schedules)
     dataset = dataset[dataset["season"] >= fm.TRAIN_START_SEASON]
+    dataset = fm.attach_ratings(dataset, pbp, schedules,
+                                half_life=fitted.get("rating_half_life_weeks", fm.team_ratings.RATING_HALF_LIFE_WEEKS))
 
     train = dataset[dataset["season"] < min(BACKFILL_SEASONS)]
     target = dataset[dataset["season"].isin(BACKFILL_SEASONS)].copy()

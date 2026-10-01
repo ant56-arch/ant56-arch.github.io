@@ -1,5 +1,5 @@
 {
-  "fitted_at": "2026-09-29T15:44:43.266161+00:00",
+  "fitted_at": "2026-10-01T14:21:12.657654+00:00",
   "train_seasons": [
     2013,
     2014,
@@ -16,22 +16,20 @@
     2025,
     2026
   ],
-  "n_games_used": 3380,
+  "n_games_used": 3342,
   "coefficients": {
-    "epa_diff_coef": 52.474979419937576,
-    "third_down_weight": 9.803458873495773,
-    "redzone_weight": -1.1932800126827825,
-    "explosive_weight": 14.680363557955637,
-    "sack_weight": -21.50611056033409,
-    "home_field_advantage": 1.9436645178713259,
-    "margin_std_dev": 13.327751549629573,
-    "total_coef": 33.047529514521536,
-    "total_intercept": 46.091779409642534,
-    "total_std_dev": 13.672067943792952,
-    "n_games": 3380
+    "points_rating_weight": 1.9319921494412988,
+    "success_rating_weight": 22.713019198449246,
+    "qb_weight": 22.17862668338709,
+    "home_field_advantage": 1.9247243009485608,
+    "margin_std_dev": 13.147269498611598,
+    "total_coef": 33.356103081782564,
+    "total_intercept": 46.086264713356584,
+    "total_std_dev": 13.672493429680014,
+    "n_games": 3342
   },
   "blend_weight_on_model_spread": 0.0,
-  "blend_weight_on_model_winprob": 0.2,
+  "blend_weight_on_model_winprob": 0.1,
   "blend_weight_on_model_total": 0.2,
   "holdout_validation": {
     "seasons": [
@@ -39,20 +37,22 @@
       2026
     ],
     "n_games": 333,
-    "model_only_spread_mae": 10.27718878178035,
+    "model_only_spread_mae": 10.079064587934205,
     "vegas_only_spread_mae": 9.776276276276276,
     "blended_spread_mae": 9.776276276276276,
-    "model_only_total_mae": 10.859281503039837,
+    "model_only_total_mae": 10.858048497678183,
     "vegas_only_total_mae": 10.52102102102102,
-    "blended_total_mae": 10.513615150059588,
-    "model_only_brier": 0.22084955003977272,
+    "blended_total_mae": 10.51320079016513,
+    "model_only_brier": 0.2186544844412766,
     "vegas_only_brier": 0.21361723897629298,
-    "blended_brier": 0.21325785244032774
+    "blended_brier": 0.21354021775843401
   },
   "recipe": {
     "team_half_life": 4,
+    "rating_half_life": 4,
     "seasons": "all"
   },
   "team_half_life_games": 4,
+  "rating_half_life_weeks": 4,
   "trained_through": "2026-09-28"
 }
