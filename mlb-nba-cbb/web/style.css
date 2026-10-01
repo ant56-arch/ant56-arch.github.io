@@ -1470,6 +1470,24 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
 
 /* ---------- MLB additions ---------- */
 
+/* MLB Home: the hitter and game records side by side, each opening its tab. */
+.duo-band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 40px; }
+a.duo { display: block; color: inherit; text-decoration: none; min-width: 0; }
+a.duo + a.duo { border-left: 1px solid var(--rule); padding-left: 40px; }
+a.duo:hover .rb-num { color: var(--ours); }
+.duo-band .rb-num { font-size: 72px; }
+.duo-band .rb-num.rb-wait { font-size: 36px; }
+.duo-note { margin: 18px 0 0 0; font-size: 14px; color: var(--text-muted); }
+.duo-note a, a.more-link { color: var(--ours); font-weight: 600; white-space: nowrap; }
+.duo-note a::after, a.more-link::after { content: " \2192"; }
+a.more-link { display: inline-block; margin-top: 16px; font-size: 15px; text-decoration: none; }
+a.more-link:hover, .duo-note a:hover { text-decoration: underline; }
+@media (max-width: 760px) {
+  .duo-band { grid-template-columns: minmax(0, 1fr); }
+  a.duo + a.duo { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 18px; }
+  .duo-band .rb-num { font-size: 56px; }
+}
+
 .pill-void { color: var(--text-faint); }
 
 .player-name { font-weight: 700; }

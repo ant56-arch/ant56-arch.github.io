@@ -4,16 +4,18 @@ build_site.py - generates the static MLB Edge website into dist/.
 Reads picks_history.json (every pick and its result), data/slate.json (today's
 full slate, written by predict.py) and model_weights.json (backtest numbers),
 and writes:
-  index.html    - the day's picks and the season track record
-  games.html    - the team model's pick and win chance for every game today,
-                  with a moneyline pick against the book price, this season's
-                  live record (game picks and moneyline) and every past day's
-                  results
+Three tabs:
+  index.html    - Home: both all-time records, today's three surest hitters
+                  and games, and the latest results
+  players.html  - Player Hits: today's 10 hitter picks, every hitter in
+                  today's games (sortable) and any past day's picks
+  games.html    - Games: a card for every game today (the team model's pick,
+                  win chance and moneyline price) and every past day's results
                   (teams/picks_history.json, written by teams/predict.py)
-  players.html  - every hitter in today's games, sortable
-  history.html  - any past day's picks and how they did
-  accuracy.html - predicted vs. actual hit rate over the season
-  model.html    - how the hit model and the team model retrain themselves
+  model.html    - Model: how both models work and how they've done: live accuracy,
+                  calibration, the backtest, this season's game record, and
+                  how each model retrains itself
+  history.html, accuracy.html - stubs forwarding to where those tabs went
   terms.html, privacy.html, 404.html
   summary.json  - today's top picks and the record, read by the home page
   games.json    - today's slate for the scoreboard strip, each game carrying
@@ -132,8 +134,7 @@ BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><p
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
-    tabs = [("index.html", "Hits"), ("games.html", "Games"), ("players.html", "Players"),
-            ("history.html", "History"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
+    tabs = [("index.html", "Home"), ("players.html", "Player Hits"), ("games.html", "Games"), ("model.html", "Model")]
     nav = "".join(
         f'<a href="{href}" class="active" aria-current="page">{label}</a>' if href == active
         else f'<a href="{href}">{label}</a>' for href, label in tabs)
@@ -361,34 +362,119 @@ def record_band(history, team_history):
 HOW_TO_READ = """<details class="how-to"><summary>How to read this</summary><div>
   <p>The percentage is the model's chance he gets at least one hit. Once a lineup is posted, only confirmed
     starters can be picked, and a pick locks when its game starts. A hitter who doesn't bat is no decision, not a
-    miss. Tap a hitter for why he was picked. The Model tab explains how the model works.</p>
+    miss. Tap a hitter for why he was picked.</p>
 </div></details>"""
 
-def build_index(history, slate, model, team_history=None):
+
+def latest_hitters(history):
+    """(date, picks) for the newest day with hitter picks, or (None, [])."""
     picks = history["picks"]
-    how = HOW_TO_READ
-    if picks:
-        latest = max(p["date"] for p in picks)
-        day_picks = [p for p in picks if p["date"] == latest]
-        heading = "Today's Hitters" if latest == NOW.date().isoformat() else "Latest Hitters"
-        picks_html = card(f"{heading}: {day_label(latest)}",
-                          "The 10 hitters most likely to get a hit, at most two per game. Tap one for why.",
-                          picks_list(day_picks) + how)
+    if not picks:
+        return None, []
+    latest = max(p["date"] for p in picks)
+    return latest, [p for p in picks if p["date"] == latest]
+
+
+def no_games_today(slate):
+    return bool(slate) and not slate.get("games") and slate.get("date") == NOW.date().isoformat()
+
+
+# ── Home ─────────────────────────────────────────────────────────────────────
+# A quick look: both all-time records side by side, today's three surest
+# hitters and games, and how the latest picks did. Everything else is one tap
+# away on Player Hits, Games or the model page.
+def duo_half(href, eyebrow, wl, n, since, wait):
+    if not n:
+        num = f'<div class="rb-num rb-wait">{wait}</div>'
+        since = ""
     else:
-        picks_html = card("Today's Hitters", "", '<div class="empty-state">No picks yet.</div>')
-    if slate and not slate.get("games") and slate.get("date") == NOW.date().isoformat():
-        picks_html = card("Today's Hitters", "", '<div class="empty-state">No MLB games today. Picks resume on the '
-                          'next game day.</div>') + picks_html.replace("Today's Hitters", "Latest Hitters", 1)
-    body = record_band(history, team_history) + picks_html
-    return page_shell("Hits", "index.html", body)
+        num = f'<div class="rb-num">{wl[0]}-{wl[1]}<small>{pct(wl[0] / n, 1)}</small></div>'
+        d = date.fromisoformat(since)
+        since = f'<div class="rb-since">Since {d:%b} {d.day}, {d.year}</div>'
+    return f'<a class="duo" href="{href}"><div class="rb-eyebrow">{eyebrow}</div>{num}{since}</a>'
 
 
-# ── Players ──────────────────────────────────────────────────────────────────
-def build_players(slate):
+def duo_band(history, team_history):
+    g, hits, first = alltime(history)
+    tg = game_graded(team_history.get("picks", []))
+    gw, gl = game_wl(tg)
+    return f"""<section class="card record-card"><div class="duo-band">
+      {duo_half("players.html", "Player hits &middot; top hitters who got a hit", (hits, len(g) - hits), len(g),
+                first, "Starts with the first box score")}
+      {duo_half("games.html", "Games &middot; picking which team wins", (gw, gl), len(tg),
+                min((p["date"] for p in tg), default=None), "Starts after the first night of results")}
+    </div>
+    <p class="duo-note">Live picks only, each graded against the final score, and neither record ever resets.
+      <a href="model.html">How the models work and how they've done</a></p></section>"""
+
+
+def last_results(history, team_history):
+    """How the newest finished day's hitter and game picks did, as two stats."""
+    today = NOW.date().isoformat()
+    stats = []
+    g = [p for p in graded(history["picks"]) if p["date"] < today]
+    if g:
+        day = max(p["date"] for p in g)
+        d = [p for p in g if p["date"] == day]
+        stats.append((f"{sum(p['got_hit'] for p in d)} of {len(d)}", "Top hitters got a hit", day_label(day)))
+    tg = [p for p in game_graded(team_history.get("picks", [])) if p["date"] < today]
+    if tg:
+        day = max(p["date"] for p in tg)
+        w, l = game_wl([p for p in tg if p["date"] == day])
+        stats.append((f"{w}-{l}", "Game picks", day_label(day)))
+    return extras.board_section("Latest results", "How the last finished day's picks did.", statline(stats)) \
+        if stats else ""
+
+
+def build_index(history, slate, team_history, espn_games=()):
+    body = duo_band(history, team_history)
+    latest, day_picks = latest_hitters(history)
+    more = '<a class="more-link" href="{}">{}</a>'.format
+    if no_games_today(slate):
+        body += extras.board_section("Today", "", '<div class="empty-state">No MLB games today. Picks resume on '
+                                     'the next game day.</div>')
+    elif day_picks:
+        when = "Today's" if latest == NOW.date().isoformat() else "Latest"
+        body += extras.board_section(
+            f"{when} surest hitters: {day_label(latest)}",
+            "The three hitters most likely to get a hit. Tap one for why.",
+            picks_list(sorted(day_picks, key=lambda p: -p["confidence"])[:3])
+            + more("players.html", f"All {len(day_picks)} picks and every hitter in today's games"
+                   if len(day_picks) > 3 else "Every hitter in today's games and past days"))
+    today = NOW.date().isoformat()
+    todays = sorted((p for p in team_history.get("picks", []) if p["date"] == today), key=lambda p: -p["prob"])
+    if todays:
+        board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays[:3]],
+                                  top_n=0)
+        n = len(todays)
+        body += extras.board_section(
+            f"Today's surest games: {day_label(today)}", BOARD_NOTE,
+            board + more("games.html", f"All {n} of today's games" if n > 3 else "Every game and past results"))
+    return page_shell("Home", "index.html", body + last_results(history, team_history))
+
+
+# ── Player Hits ──────────────────────────────────────────────────────────────
+# The hitter record, today's 10 picks, every hitter in today's games, then
+# any past day's picks.
+def todays_picks(history, slate):
+    latest, day_picks = latest_hitters(history)
+    if not day_picks:
+        return card("Today's Hitters", "", '<div class="empty-state">No picks yet.</div>')
+    heading = "Today's hitters" if latest == NOW.date().isoformat() else "Latest hitters"
+    html = extras.board_section(f"{heading}: {day_label(latest)}",
+                                f"The {len(day_picks)} hitters most likely to get a hit, at most two per game. "
+                                "Tap one for why.",
+                                picks_list(day_picks) + HOW_TO_READ)
+    if no_games_today(slate):
+        html = card("Today's Hitters", "", '<div class="empty-state">No MLB games today. Picks resume on the '
+                    'next game day.</div>') + html
+    return html
+
+
+def every_hitter(slate):
     if not slate or not slate.get("players"):
-        body = card("Players", "Every hitter in today's games",
+        return card("Every Hitter Today", "",
                     '<div class="empty-state">No slate yet today. It fills in once the day\'s games are scored.</div>')
-        return page_shell("Players", "players.html", body)
 
     pick_ids = set(slate.get("pick_ids", []))
     rows = ""
@@ -421,18 +507,16 @@ def build_players(slate):
       nine starters are. Select a column header to sort.</div>"""
     subtitle = (f"All {len(slate['players'])} hitters in {len(slate['games'])} games on {day_label(slate['date'])}, "
                 f"most likely to get a hit first.")
-    return page_shell("Players", "players.html", card("Players", subtitle, table))
+    return card("Every Hitter Today", subtitle, table)
 
 
-# ── History ──────────────────────────────────────────────────────────────────
-def build_history(history):
+def past_days(history):
     by_day = defaultdict(list)
     for p in history["picks"]:
-        by_day[p["date"]].append(p)
+        if p["date"] < NOW.date().isoformat():  # today's picks are in the list above
+            by_day[p["date"]].append(p)
     if not by_day:
-        body = card("History", "Every day's picks", '<div class="empty-state">No picks yet.</div>')
-        return page_shell("History", "history.html", body)
-
+        return ""
     days = {}
     for d, picks in by_day.items():
         g = graded(picks)
@@ -449,11 +533,30 @@ def build_history(history):
             } for p in sorted(picks, key=lambda p: -p["confidence"])],
         }
     data = {"order": sorted(days, reverse=True), "days": days}
-    body = card("History", "Every day's picks and how they did. Choose a day.",
-                '<select id="day-select" class="week-picker" aria-label="Day"></select>'
-                '<div id="day-content" style="margin-top:16px;"></div>'
-                f'<script>const HISTORY_DATA = {script_json(data)};</script>')
-    return page_shell("History", "history.html", body)
+    return ('<div id="past"></div>'
+            + card("Past Days", "Every day's hitter picks and how they did. Choose a day.",
+                   '<select id="day-select" class="week-picker" aria-label="Day"></select>'
+                   '<div id="day-content" style="margin-top:16px;"></div>'
+                   f'<script>const HISTORY_DATA = {script_json(data)};</script>'))
+
+
+def build_players(history, slate, team_history):
+    body = record_band(history, team_history) + todays_picks(history, slate) + every_hitter(slate) + past_days(history)
+    return page_shell("Player Hits", "players.html", body)
+
+
+def moved(url, title):
+    """A stub at an old tab's address that forwards to where it went."""
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url={url}">
+<link rel="canonical" href="{url}">
+<title>{title} | MLB Edge</title>
+</head>
+<body><p>This page moved to <a href="{url}">{title}</a>.</p></body>
+</html>"""
 
 
 # ── Accuracy ─────────────────────────────────────────────────────────────────
@@ -478,7 +581,9 @@ def calibration_table(picks):
     <div class="table-footnote">If the model is honest, each row's two percentages should be close. Small rows swing a lot.</div>"""
 
 
-def build_accuracy(history, model):
+def hit_accuracy(history, model):
+    """The hit model's live accuracy charts, calibration and backtest, for the
+    model page."""
     picks = sorted(graded([p for p in history["picks"] if is_model_pick(p)]), key=lambda p: p["date"])
     parts = []
     if picks:
@@ -530,7 +635,7 @@ def build_accuracy(history, model):
                           f"""<table class="data record-table responsive-stack">
           <thead><tr><th>Hit chance</th><th class="num">Games</th><th class="num">Model said</th><th class="num">Actually hit</th></tr></thead>
           <tbody>{rows}</tbody></table><div class="table-footnote">{note}</div>"""))
-    return page_shell("Accuracy", "accuracy.html", "".join(parts), charts=bool(picks))
+    return "".join(parts), bool(picks)
 
 
 # ── Games (the team model) ───────────────────────────────────────────────────
@@ -739,7 +844,8 @@ def game_record(picks):
                            "cumulative": "Season-to-Date Win Rate"}}
         body += '<div class="section-label">Accuracy</div>' + "".join(
             f'<div class="chart-card" data-state="loading"><canvas id="{c}" height="90"></canvas></div>'
-            for c in ("chart-weekly", "chart-cumulative")) + f'<script>const ACCURACY_DATA = {script_json(data)};</script>'
+            for c in ("chart-games-weekly", "chart-games-cumulative")) \
+            + f'<script>const GAMES_ACCURACY_DATA = {script_json(data)};</script>'
         charts = True
     body += '<div class="section-label">Calibration</div>' + game_bands(g)
     return card(f"{season} Record", "Every pick graded against the final score", body), charts
@@ -806,8 +912,7 @@ def build_games(team_history, espn_games=()):
     else:
         body += card("Today's Games", "", '<div class="empty-state">Game picks go up with the next daily '
                      'update: a winner and a win chance for every game.</div>')
-    record, charts = game_record(picks)
-    return page_shell("Games", "games.html", body + record + game_history(picks), charts=charts)
+    return page_shell("Games", "games.html", body + game_history(picks))
 
 
 # ── Game cards (extras.game_board) for MLB, NBA, NHL and CBB ────────────────
@@ -1045,7 +1150,7 @@ def attach_picks(slate, history, team_history):
     return slate
 
 
-# ── Model tab ────────────────────────────────────────────────────────────────
+# ── Model page ───────────────────────────────────────────────────────────────
 FACTOR_LABELS = {
     "season_avg": ("Season batting average", ""),
     "recent_form_avg": ("Recent form", "batting average over his last games"),
@@ -1131,7 +1236,8 @@ def hit_model_html(model, runs):
                         "for a typical swing in that factor. Before is the model that was live until the last retrain.",
         "empty": "No retrains logged yet. The first one runs on the next Monday after new games.",
     }
-    return model_page.render(spec)
+    return model_page.render(spec).replace("Live results are on the Accuracy tab.",
+                                           "Live results are higher up this page.")
 
 
 TEAM_FACTOR_LABELS = {
@@ -1157,7 +1263,7 @@ def team_recipe_setup(recipe):
 
 
 def team_model_html(model, runs):
-    """The team model's section of the Model tab, from teams/model_weights.json
+    """The team model's section of the model page, from teams/model_weights.json
     and teams/model_history.json."""
     runs = list(reversed(runs))
 
@@ -1208,8 +1314,9 @@ def team_model_html(model, runs):
                         "its usual win rate. Before is the model that was live until the last retrain.",
         "empty": "No retrains logged yet. The first one runs about a week into the season.",
     }
-    # model_page is shared across sites; point its live-results line at this model's tab.
-    html = model_page.render(spec).replace("Live results are on the Accuracy tab.", "Live results are on the Games tab.")
+    # model_page is shared across sites; point its live-results line at this page's record.
+    html = model_page.render(spec).replace("Live results are on the Accuracy tab.",
+                                           "Live results are in the record higher up this page.")
     bt = model.get("backtest")
     if bt:
         b = model.get("baselines", {})
@@ -1240,16 +1347,20 @@ def team_model_html(model, runs):
     return html
 
 
-def build_model(model, runs, team_model, team_runs):
+def build_model(model, runs, team_model, team_runs, history, team_history):
+    """How both models work and how they've done."""
     jump = ('<nav class="subtabs model-jump" aria-label="Models">'
             '<a class="subtab" href="#hit-model">Hit model</a><a class="subtab" href="#team-model">Team model</a></nav>')
+    hit_parts, hit_charts = hit_accuracy(history, model)
+    record, game_charts = game_record(team_history["picks"])
     body = (jump
             + '<h2 class="model-group" id="hit-model">Hit model <span>who gets a hit</span></h2>'
-            + hit_model_html(model, runs)
+            + hit_parts + hit_model_html(model, runs)
             + '<h2 class="model-group" id="team-model">Team model <span>who wins each game</span></h2>'
+            + record
             + (team_model_html(team_model, team_runs) if team_model.get("coef") else
                card("Team Model", "", '<div class="empty-state">The team model hasn\'t been trained yet.</div>')))
-    return page_shell("Model", "model.html", body)
+    return page_shell("Model", "model.html", body, charts=hit_charts or game_charts)
 
 
 # ── Home page summary ────────────────────────────────────────────────────────
@@ -1343,14 +1454,15 @@ def main():
         shutil.rmtree(DIST_DIR)
     os.makedirs(DIST_DIR)
     pages = {
-        "index.html": build_index(history, slate, model, team_history),
+        "index.html": build_index(history, slate, team_history, games_slate["games"]),
+        "players.html": build_players(history, slate, team_history),
         "games.html": build_games(team_history, games_slate["games"]),
-        "players.html": build_players(slate),
-        "history.html": build_history(history),
-        "accuracy.html": build_accuracy(history, model),
+        "history.html": moved("players.html#past", "Player Hits"),
+        "accuracy.html": moved("model.html", "Model"),
         "schedule.html": games_mod.schedule_redirect("mlb"),
         "model.html": build_model(model, load_json("model_history.json", {"runs": []})["runs"], team_model,
-                                  load_json(os.path.join("teams", "model_history.json"), {"runs": []})["runs"]),
+                                  load_json(os.path.join("teams", "model_history.json"), {"runs": []})["runs"],
+                                  history, team_history),
         "terms.html": games_mod.legal_redirect("terms"),
         "privacy.html": games_mod.legal_redirect("privacy"),
         "404.html": build_404(),
