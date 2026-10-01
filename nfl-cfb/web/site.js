@@ -451,3 +451,17 @@ function initSportMenu() {
   bar.classList.add("has-menu");
 }
 initSportMenu();
+
+// --- Day buttons over the game cards (extras.game_board) ---
+// "All games" shows every day; a day's button shows only that day's cards.
+// Keep this block identical in nfl-cfb/web/site.js and mlb-nba-cbb/web/site.js.
+function initDayChips() {
+  document.querySelectorAll(".day-chips").forEach(group => {
+    const days = group.parentElement.querySelectorAll(".gc-day");
+    group.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+      group.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      days.forEach(d => { d.hidden = btn.dataset.day !== "all" && d.dataset.day !== btn.dataset.day; });
+    }));
+  });
+}
+initDayChips();

@@ -7,7 +7,8 @@ nfl-cfb/src/games.py (NFL and CFB).
 
   load(sport)            this sport's current slate, the way ESPN's own
                          scoreboard defines it: the current week for NFL and
-                         CFB, the current day for MLB and NBA. Never raises;
+                         CFB (every FBS game), the current day for MLB and
+                         NBA, with TV, stadium and records. Never raises;
                          returns {"label", "games": []} when ESPN can't be
                          reached (it's blocked in some sandboxes).
   write_json(path, ...)  games.json for the scoreboard strip and Schedule
@@ -85,6 +86,7 @@ def parse(event):
     if set(sides) != {"home", "away"}:
         return None
     status = (comp.get("status") or event.get("status") or {}).get("type", {})
+    venue = comp.get("venue") or {}
     tv = []
     for b in comp.get("broadcasts") or []:
         for n in b.get("names") or []:
@@ -96,6 +98,7 @@ def parse(event):
         "state": status.get("state", "pre"),  # pre / in / post
         "detail": status.get("shortDetail") or status.get("detail") or "",
         "tv": ", ".join(tv[:2]),
+        "venue": venue.get("fullName", ""),
         "neutral": bool(comp.get("neutralSite")),
         "away": _team(sides["away"]),
         "home": _team(sides["home"]),
@@ -112,8 +115,6 @@ def load(sport):
     if not data:
         return {"label": "", "week": None, "games": []}
     games = [g for g in (parse(e) for e in data.get("events", [])) if g]
-    if sport == "cfb":
-        games = [g for g in games if is_top25(g)]
     games.sort(key=lambda g: (g["start"] or "", g["id"]))
     week = (data.get("week") or {}).get("number")
     if sport in ("nfl", "cfb") and week:
@@ -131,10 +132,19 @@ def start_et(g):
 
 
 def write_json(path, sport, slate, updated):
-    """games.json for the scoreboard strip."""
+    """games.json for the scoreboard strip, which keeps CFB to games with a Top 25 team."""
+    games = [g for g in slate["games"] if is_top25(g)] if sport == "cfb" else slate["games"]
     with open(path, "w") as f:
         json.dump({"sport": sport.upper(), "label": slate["label"], "updated": updated,
-                   "espn": espn_url(sport), "top25_only": sport == "cfb", "games": slate["games"]}, f, indent=1)
+                   "espn": espn_url(sport), "top25_only": sport == "cfb", "games": games}, f, indent=1)
+
+
+def card_info(espn_game):
+    """What a game card takes from ESPN: TV, stadium and each team's record."""
+    if not espn_game:
+        return {}
+    return {"tv": espn_game.get("tv") or "", "venue": espn_game.get("venue") or "",
+            "records": (espn_game["away"].get("record") or "", espn_game["home"].get("record") or "")}
 
 
 

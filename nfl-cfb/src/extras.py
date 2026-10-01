@@ -1,5 +1,5 @@
-"""Game pages, the "$10 a pick" record and chart, and the data the home site's
-Best Bets page and "Last night" strip read, shared by every Sports Edge
+"""Game pages, the game cards on every sport's Home tab, and the data the home
+site's Betting tab and "Last night" strip read, shared by every Sports Edge
 builder. Keep nfl-cfb/src/extras.py and mlb-nba-cbb/extras.py identical.
 
 Each builder turns its own picks into one game shape (a dict):
@@ -13,21 +13,20 @@ Each builder turns its own picks into one game shape (a dict):
   why       [(factor, pull toward our pick)]; facts [(label, value html, sub)]
   hitters   [(name, team, chance, result html)]; note (html, the lock note)
 
-and this module renders the page and the JSON from it. Money here is the
-record of betting $10 on every moneyline pick at the price it locked at:
-a moneyline unit is 1 bet, so dollars are units times 10. Live picks only.
+and, for the game cards on each sport's Home tab (all optional): tv and venue
+(from ESPN's scoreboard), "proj" on away/home (projected points), and lines
+[(label, value html, "vegas"|"ours"|"", sub)] for the strip under the teams.
+
+and this module renders the page, the cards and the JSON from it. Money
+(units, "$10 a pick") only ever shows on the home site's Betting tab, which
+reads it from summary.json: a moneyline unit is 1 bet at the price the pick
+locked at, so dollars are units times 10. Live picks only.
 """
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from html import escape
+from zoneinfo import ZoneInfo
 
-STAKE = 10  # dollars a pick
 MINUS = "−"
-
-
-def money(units, stake=STAKE):
-    """'+$136.40' / '−$81.80' for a number of units at stake dollars a unit."""
-    d = round(units * stake, 2)
-    return f"{'+' if d >= 0 else MINUS}${abs(d):,.2f}"
 
 
 def price_text(price):
@@ -35,124 +34,45 @@ def price_text(price):
     return f"+{price}" if price > 0 else f"{MINUS}{abs(price)}"
 
 
+def payout_text(price):
+    """What a price pays: '$100 wins $135' / 'Bet $150 to win $100'."""
+    return f"$100 wins ${price:,.0f}" if price >= 100 else f"Bet ${-price:,.0f} to win $100"
+
+
 def short_day(iso):
     d = date.fromisoformat(iso[:10])
     return f"{d:%b} {d.day}"
 
 
-# ── "$10 a pick" ─────────────────────────────────────────────────────────────
+# ── Units, for the home site's Betting tab ──────────────────────────────────
+def _tally(rows):
+    wins = sum(1 for r in rows if r[2])
+    units = sum(r[1] for r in rows)
+    return {"picks": len(rows), "wins": wins, "losses": len(rows) - wins, "units": round(units, 2),
+            "roi": round(units / len(rows), 4) if rows else 0.0}
+
+
 def units_summary(rows):
-    """rows: (date, units, won) for every graded moneyline pick (no-decisions
-    left out). The running total by day, for the chart and summary.json."""
-    rows = sorted((str(d)[:10], float(u), bool(w)) for d, u, w in rows if d)
+    """rows: (date, units, won, price, value) for every graded moneyline pick
+    (no-decisions left out). The running total by day for the chart, and the
+    same picks split into favorites, underdogs and value picks."""
+    rows = sorted((str(r[0])[:10], float(r[1]), bool(r[2]), r[3], bool(r[4])) for r in rows if r[0])
     if not rows:
         return None
     by_day = {}
-    for d, u, _ in rows:
+    for d, u, *_ in rows:
         by_day[d] = by_day.get(d, 0.0) + u
     total, series = 0.0, []
     for d in sorted(by_day):
         total += by_day[d]
         series.append([d, round(total, 2)])
-    wins = sum(1 for r in rows if r[2])
-    return {"units": round(total, 2), "roi": round(total / len(rows), 4), "picks": len(rows), "wins": wins,
-            "losses": len(rows) - wins,
-            "since": rows[0][0], "series": series}
-
-
-def _nice_step(span):
-    for step in (5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000):
-        if span / step <= 6:
-            return step
-    return 10000
-
-
-def units_chart(lines, end=None):
-    """An SVG step chart of running dollars. lines: [(label, css color,
-    units_summary)]. Every line starts at $0 the day before its first pick."""
-    lines = [ln for ln in lines if ln[2]]
-    if not lines:
-        return ""
-    W, H, L, R, T, B = 760, 300, 60, 176, 16, 34
-    starts = [date.fromisoformat(s["series"][0][0]) - timedelta(days=1) for _, _, s in lines]
-    d0 = min(starts)
-    d1 = max([date.fromisoformat(s["series"][-1][0]) for _, _, s in lines] + ([end] if end else []))
-    if d1 <= d0:
-        d1 = d0 + timedelta(days=1)
-    vals = [0.0] + [v * STAKE for _, _, s in lines for _, v in s["series"]]
-    step = _nice_step(max(vals) - min(vals) or 1)
-    lo = min(0, step * (min(vals) // step))
-    hi = step * -(-max(vals) // step)
-    hi = max(hi, lo + step)
-
-    def x(d):
-        return L + (W - L - R) * (d - d0).days / (d1 - d0).days
-
-    def y(v):
-        return T + (H - T - B) * (hi - v) / (hi - lo)
-
-    out = []
-    v = lo
-    while v <= hi + 1e-9:
-        cls = "z" if v == 0 else "g"
-        lab = "$0" if v == 0 else f"{'+' if v > 0 else MINUS}${abs(v):,.0f}"
-        out.append(f'<line x1="{L}" x2="{W - R}" y1="{y(v):.1f}" y2="{y(v):.1f}" class="{cls}"/>'
-                   f'<text x="{L - 8}" y="{y(v) + 4:.1f}" text-anchor="end" class="t">{lab}</text>')
-        v += step
-    days = (d1 - d0).days
-    ticks = [d0, d0 + timedelta(days=days // 2), d1] if days >= 2 else [d0, d1]
-    for d in ticks:
-        out.append(f'<text x="{x(d):.1f}" y="{H - 10}" text-anchor="middle" class="t">{d:%b} {d.day}</text>')
-    # End labels, nudged apart so they never overlap.
-    ends = sorted(((y(s["series"][-1][1] * STAKE), i) for i, (_, _, s) in enumerate(lines)))
-    placed, last = {}, -99
-    for yy, i in ends:
-        yy = max(yy, last + 16)
-        placed[i] = yy
-        last = yy
-    for i, (label, color, s) in enumerate(lines):
-        path, first = "", True
-        pts = [(date.fromisoformat(s["series"][0][0]) - timedelta(days=1), 0.0)] + \
-              [(date.fromisoformat(d), u * STAKE) for d, u in s["series"]]
-        for d, val in pts:
-            path += f"M{x(d):.1f},{y(val):.1f}" if first else f" H{x(d):.1f} V{y(val):.1f}"
-            first = False
-        path += f" H{x(d1):.1f}"
-        endv = s["series"][-1][1] * STAKE
-        name = f"{escape(label)} " if label else ""
-        out.append(f'<path d="{path}" fill="none" style="stroke:{color}" stroke-width="2.5" stroke-linejoin="round"/>'
-                   f'<circle cx="{x(d1):.1f}" cy="{y(endv):.1f}" r="4" style="fill:{color}"/>'
-                   f'<text x="{x(d1) + 10:.1f}" y="{placed[i] + 4:.1f}" class="lab" style="fill:{color}">'
-                   f'{name}{money(s["series"][-1][1])}</text>')
-    desc = "; ".join(f"{label or 'total'} {money(s['units'])} over {s['picks']} picks" for label, _, s in lines)
-    return (f'<div class="money-chart"><svg viewBox="0 0 {W} {H}" role="img" '
-            f'aria-label="Running total from ${STAKE} on every moneyline pick: {escape(desc)}">'
-            + "".join(out) + "</svg></div>")
-
-
-def dollars_body(summary, what="moneyline pick"):
-    """The '$10 a pick' panel: the total, the record behind it, and the chart."""
-    if not summary:
-        return (f'<div class="empty-state">This starts with the first graded {what}: ${STAKE} on the team we pick '
-                'to win, favorite or underdog, at its price right before the game started.</div>')
-    s = summary
-    roi = s.get("roi", s["units"] / s["picks"] if s["picks"] else 0)
-    tone = "is-up" if s["units"] >= 0 else "is-down"
-    tiles = [
-        (f'<span class="{tone}">{money(s["units"])}</span>', f"${STAKE} on every pick",
-         f"${s['picks'] * STAKE:,} risked on {s['picks']} picks"),
-        (f"{s['wins']}-{s['losses']}", "Moneyline record", f"since {short_day(s['since'])}"),
-        (f"{roi:+.1%}", "Return", "profit per dollar risked"),
-    ]
-    stat = "".join(f'<div class="stat"><div class="stat-value">{v}</div><div class="stat-label">{lab}</div>'
-                   f'<div class="stat-sub">{sub}</div></div>' for v, lab, sub in tiles)
-    return (f'<div class="statline">{stat}</div>'
-            + units_chart([("", "var(--ours)", s)])
-            + f'<div class="table-footnote">Each bet is ${STAKE} on the team our model picks to win, whether it is the '
-              'favorite or the underdog, at its moneyline right before the game started. A winning favorite pays '
-              f'less than the stake (${STAKE} at &#8722;150 wins $6.67) and a winning underdog pays more '
-              f'(${STAKE} at +130 wins $13). A loss costs the ${STAKE}. Live picks only, never a backtest. A postponed '
-              'game or a tie is no bet.</div>')
+    out = _tally(rows)
+    out.update(since=rows[0][0], series=series, splits={
+        "favorites": _tally([r for r in rows if r[3] is not None and r[3] < 0]),
+        "underdogs": _tally([r for r in rows if r[3] is not None and r[3] > 0]),
+        "value": _tally([r for r in rows if r[4]]),
+    })
+    return out
 
 
 # ── Game pages ───────────────────────────────────────────────────────────────
@@ -206,12 +126,8 @@ def ml_fact(g):
     if not ml:
         return ("Moneyline", '<span class="faint">No price posted</span>', "")
     value = ' <span class="pill pill-positive">VALUE</span>' if ml.get("value") else ""
-    res = ""
-    if ml.get("won") is not None and ml.get("units") is not None:
-        res = (f' <span class="pill pill-{"positive" if ml["won"] else "danger"}">'
-               f'{money(ml["units"])}</span>')
-    sub = f"We say {g['prob']:.0f}%, the price says {ml['book']:.0f}%."
-    return ("Moneyline", f"{escape(g['pick'])} {price_text(ml['price'])}{value}{res}", sub)
+    sub = f"{payout_text(ml['price'])}. We say {g['prob']:.0f}%, the price says {ml['book']:.0f}%."
+    return ("Moneyline", f"{escape(g['pick'])} {price_text(ml['price'])}{value}", sub)
 
 
 def game_page_body(g, back_href="index.html", back_text="All picks"):
@@ -255,9 +171,134 @@ def game_link(g, text="Game page"):
     return f'<a class="pl-link" href="{g["file"]}">{text} &rarr;</a>'
 
 
+# ── Game cards: every sport's Home tab ──────────────────────────────────────
+# One card per game, two across (one on phones), grouped by day with buttons
+# to show one day (site.js), our three surest open picks tagged "Top 3".
+ET = ZoneInfo("America/New_York")
+
+
+def _when(g):
+    """'Sun 1:00 PM ET' from a game's start, or its day without one."""
+    try:
+        t = datetime.fromisoformat(str(g["start"]).replace("Z", "+00:00")).astimezone(ET)
+        return f"{t:%a} {t.hour % 12 or 12}:{t:%M} {'AM' if t.hour < 12 else 'PM'} ET"
+    except (KeyError, TypeError, ValueError):
+        try:
+            return f"{date.fromisoformat(g['date'][:10]):%a, %b} {int(g['date'][8:10])}"
+        except (KeyError, TypeError, ValueError):
+            return ""
+
+
+def _logo(t):
+    """The team's logo over its abbreviation, which shows if the image can't load."""
+    img = (f'<img src="{escape(t["logo"])}" alt="" loading="lazy" onerror="this.remove()">'
+           if t.get("logo") else "")
+    return f'<span class="gc-logo" aria-hidden="true"><em>{escape(t["abbr"][:4])}</em>{img}</span>'
+
+
+def _side_number(g, side):
+    """What a team row shows on the right: the final score, else our
+    projected points, else that team's chance to win."""
+    t = g[side]
+    if g.get("final") and t.get("score") is not None:
+        return str(t["score"])
+    if t.get("proj") is not None:
+        return f"{t['proj']:.1f}"
+    chance = g["prob"] if g["pick"] == t["abbr"] else 100 - g["prob"]
+    return f'{chance:.0f}<i>%</i>'
+
+
+def _leads(g, side):
+    """Whether this side is ahead: the winner once final, else the team our numbers favor."""
+    other = "home" if side == "away" else "away"
+    a, b = g[side], g[other]
+    if g.get("final") and a.get("score") is not None and b.get("score") is not None:
+        return a["score"] > b["score"]
+    if a.get("proj") is not None and b.get("proj") is not None:
+        return a["proj"] > b["proj"]
+    return g["pick"] == a["abbr"]
+
+
+def game_card(g, top=False):
+    """One game: when, TV and stadium; both teams with their record and our
+    projected points (or chance to win); the lines strip; and our pick to win
+    with its odds and chance, and HIT / MISS once final."""
+    head = "Final" if g.get("final") else ("Postponed" if g.get("void") else _when(g))
+    if g.get("tv"):
+        head += f" · {escape(g['tv'])}"
+    tag = '<em class="gc-top">Top 3 pick</em>' if top else ""
+    venue = f'<span class="gc-venue">{escape(g["venue"])}</span>' if g.get("venue") else ""
+    rows = ""
+    for side in ("away", "home"):
+        t = g[side]
+        rec = f"<small>{escape(t['record'])}</small>" if t.get("record") else ""
+        rows += (f'<div class="gc-team{" is-lead" if _leads(g, side) else ""}">{_logo(t)}'
+                 f'<span class="gc-name"><b>{escape(t.get("name") or t["abbr"])}</b>{rec}</span>'
+                 f'<span class="gc-num">{_side_number(g, side)}</span></div>')
+    lines = ""
+    if g.get("lines"):
+        cells = "".join(f'<div><dt>{escape(label)}</dt><dd class="{cls}">{value}'
+                        f'{f"<small>{sub}</small>" if sub else ""}</dd></div>'
+                        for label, value, cls, sub in g["lines"])
+        lines = f'<dl class="gc-lines" style="--cols:{len(g["lines"])}">{cells}</dl>'
+    pick_name = g["home"]["name"] if g["pick"] == g["home"]["abbr"] else g["away"]["name"]
+    ml = g.get("ml") or {}
+    odds = f'<span class="gc-odds">{price_text(ml["price"])}</span>' if ml.get("price") is not None else ""
+    value = '<span class="gc-value">Value</span>' if ml.get("value") else ""
+    res = ""
+    if g.get("void"):
+        res = '<span class="pill pill-void">NO DECISION</span>'
+    elif g.get("final") and g.get("hit") is not None:
+        res = ('<span class="pill pill-positive">HIT</span>' if g["hit"]
+               else '<span class="pill pill-danger">MISS</span>')
+    return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}">'
+            f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{rows}{lines}'
+            f'<div class="gc-pick"><span class="gc-label">Pick to win</span>'
+            f'<b>{escape(pick_name or g["pick"])}</b>{odds}{value}{res}'
+            f'<span class="gc-pct">{g["prob"]:.0f}<i>%</i></span></div></a>')
+
+
+def _day_name(iso):
+    d = date.fromisoformat(iso)
+    return f"{d:%A}, {d:%b} {d.day}"
+
+
+def game_board(games, top_n=3, empty=""):
+    """Every game as a card, under a header per day, with day buttons when
+    the games span more than one day."""
+    if not games:
+        return f'<div class="empty-state">{empty}</div>' if empty else ""
+    games = sorted(games, key=lambda g: (g["date"][:10], str(g.get("start") or ""), g["id"]))
+    live = [g for g in games if not g.get("final") and not g.get("void")]
+    tops = {g["id"] for g in sorted(live, key=lambda g: -g["prob"])[:top_n]}
+    days = {}
+    for g in games:
+        days.setdefault(g["date"][:10], []).append(g)
+    chips = ""
+    if len(days) > 1:
+        chips = ('<div class="day-chips" role="group" aria-label="Day">'
+                 f'<button type="button" data-day="all" aria-pressed="true">All games<span>{len(games)}</span></button>'
+                 + "".join(f'<button type="button" data-day="{d}" aria-pressed="false">{date.fromisoformat(d):%A}'
+                           f'<span>{len(gs)}</span></button>' for d, gs in days.items()) + "</div>")
+    out = ""
+    for d, gs in days.items():
+        n = f"{len(gs)} game{'s' if len(gs) != 1 else ''}"
+        out += (f'<section class="gc-day" data-day="{d}"><div class="gc-day-head"><h3>{_day_name(d)}</h3>'
+                f'<span>{n}</span></div><div class="gc-grid">'
+                + "".join(game_card(g, g["id"] in tops) for g in gs) + "</div></section>")
+    return chips + out
+
+
+def board_section(title, sub, body):
+    """A Home tab section without a panel around it: a heading, a line on how
+    to read it, and the cards."""
+    sub = f"<p>{sub}</p>" if sub else ""
+    return f'<section class="slate-sec"><div class="slate-head"><h2>{title}</h2>{sub}</div>{body}</section>'
+
+
 # ── summary.json parts for the home site ─────────────────────────────────────
 def slate_entry(g):
-    """One game still to be decided, for Best Bets and 'Next up'."""
+    """One game still to be decided, for the Betting tab and 'Next up'."""
     ml = g.get("ml") or {}
     return {"sport": g["sport"], "id": g["id"], "url": g["url"], "start": g.get("start"), "date": g["date"],
             "away": g["away"]["abbr"], "home": g["home"]["abbr"], "at": "vs" if g.get("neutral") else "@",

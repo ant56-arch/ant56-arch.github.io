@@ -254,14 +254,19 @@ async function initHome() {
 }
 initHome();
 
-// --- Best Bets, "$10 a pick" and Last night (home site only) ---
+// --- Betting tab and Last night (home site only) ---
 // Each site's summary.json carries "slate" (games still to play, with our
 // pick, its moneyline price and a link to the game's page), "units" (the
-// running total of 1 unit on every graded moneyline pick) and "last" (the
-// latest day's results). Money is $10 a pick: units times 10.
+// running total of 1 unit on every graded moneyline pick, split into
+// favorites, underdogs and value picks) and "last" (the latest day's
+// results). Units and money show only on the Betting tab: a unit is $10.
 const EDGE_STAKE = 10;
 const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", NHL: "#c9d6e3", CBB: "#8fd3c4" };
 const EDGE_ET = { timeZone: "America/New_York" };
+
+function edgeUnits(units) {
+  return (units < 0 ? "−" : "+") + Math.abs(units).toFixed(2) + "u";
+}
 
 function edgeMoney(units) {
   const d = Math.round(units * EDGE_STAKE * 100) / 100;
@@ -438,7 +443,8 @@ async function initDollars() {
   EDGE_SITES.forEach((site, i) => {
     const u = summaries[i] && summaries[i].units;
     if (u && u.series && u.series.length) {
-      lines.push({ name: site.sport === "MLB" ? "MLB games" : site.sport, color: EDGE_LINE_COLORS[site.sport], units: u, href: site.href });
+      lines.push({ name: site.sport === "MLB" ? "MLB games" : site.sport, color: EDGE_LINE_COLORS[site.sport], units: u,
+                   href: site.sport === "MLB" ? "/mlb/games.html" : site.href });
     }
   });
   if (!lines.length) return;
@@ -448,19 +454,55 @@ async function initDollars() {
   const tile = (label, units, sub, href) => {
     const t = edgeNode(href ? "a" : "div", "money-tile");
     if (href) t.href = href;
-    t.append(edgeNode("span", "mt-label", label), edgeNode("span", "mt-num " + (units >= 0 ? "is-up" : "is-down"), edgeMoney(units)),
+    t.append(edgeNode("span", "mt-label", label), edgeNode("span", "mt-num " + (units >= 0 ? "is-up" : "is-down"), edgeUnits(units)),
              edgeNode("span", "mt-sub", sub));
     return t;
   };
-  tiles.append(tile("All sports", total, `${picks} picks, $${(picks * EDGE_STAKE).toLocaleString("en-US")} risked`));
+  tiles.append(tile("All sports", total, `${edgeMoney(total)} at $${EDGE_STAKE} a pick, ${picks} picks`));
   lines.forEach(l => tiles.append(tile(l.name, l.units.units,
-    `${l.units.wins}-${l.units.losses} since ${edgeShortDay(l.units.since).replace(/^\w+, /, "")}`, l.href)));
+    `${edgeMoney(l.units.units)}, ${l.units.wins}-${l.units.losses} since ${edgeShortDay(l.units.since).replace(/^\w+, /, "")}`, l.href)));
+
+  // Every sport's picks, and the same picks split by the kind of bet.
+  const cell = (t, cls) => {
+    const td = edgeNode("td", cls || "num");
+    if (!t || !t.picks) { td.append(edgeNode("span", "faint", "—")); return td; }
+    td.append(edgeNode("b", t.units >= 0 ? "is-up" : "is-down", edgeUnits(t.units)),
+              edgeNode("small", "u-rec", `${t.wins}-${t.losses}`));
+    return td;
+  };
+  const table = edgeNode("table", "data units-table responsive-stack");
+  const head = edgeNode("thead");
+  const hr = edgeNode("tr");
+  ["Sport", "Every pick", "Favorites", "Underdogs", "Value picks", "Return"].forEach((h, i) => hr.append(edgeNode("th", i ? "num" : null, h)));
+  head.append(hr);
+  const body = edgeNode("tbody");
+  lines.forEach(l => {
+    const sp = l.units.splits || {};
+    const tr = edgeNode("tr");
+    const name = edgeNode("td", "row-label");
+    const a = edgeNode("a", null, l.name);
+    a.href = l.href;
+    name.append(a);
+    tr.append(name, cell(l.units), cell(sp.favorites), cell(sp.underdogs), cell(sp.value),
+              edgeNode("td", "num", `${(l.units.roi * 100 >= 0 ? "+" : "−")}${Math.abs(l.units.roi * 100).toFixed(1)}%`));
+    ["", "Every pick", "Favorites", "Underdogs", "Value picks", "Return"].forEach((lab, i) => { if (i) tr.children[i].dataset.label = lab; });
+    body.append(tr);
+  });
+  table.append(head, body);
+  const tableWrap = edgeNode("div", "units-wrap");
+  tableWrap.append(table);
+
   const missing = EDGE_SITES.filter(site => site.sport !== "MLB" && !lines.some(l => l.name === site.sport)).map(s => s.sport);
   const note = edgeNode("div", "table-footnote",
-    "MLB hitter picks have no betting price, so they aren't in this." +
+    `One unit on the team we pick to win in every game with a price, favorite or underdog, at its moneyline right ` +
+    `before the game started; the chart counts a unit as $${EDGE_STAKE}. A winning favorite pays less than it risks ` +
+    `(1 unit at −150 wins 0.67) and a winning underdog pays more (1 unit at +130 wins 1.30). Value picks are the ones ` +
+    `where our chance beat the price's by 6 points or more. Return is units won per unit risked. Live picks only, ` +
+    `never a backtest, and a postponed game or a tie is no bet. MLB hitter picks have no betting price, so they ` +
+    `aren't in this.` +
     (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
       " join with their first graded pick." : ""));
-  box.querySelector(".card-body").replaceChildren(tiles, edgeMoneyChart(lines), note);
+  box.querySelector(".card-body").replaceChildren(tiles, tableWrap, edgeMoneyChart(lines), note);
   box.hidden = false;
 }
 initDollars();
@@ -479,7 +521,7 @@ async function initLastNight() {
   if (ago(latest) > 3) return;  // nothing recent: offseason or a quiet stretch
   const recent = lasts.filter(l => ago(l.last.date) - ago(latest) <= 2);
   const yesterday = ago(latest) === 1;
-  let wins = 0, losses = 0, units = 0, bets = 0;
+  let wins = 0, losses = 0;
   const rows = edgeNode("div", "ln-rows");
   const addRow = (label, items, date, href) => {
     const w = items.filter(it => it.hit).length;
@@ -503,7 +545,6 @@ async function initLastNight() {
   };
   recent.forEach(({ site, last }) => {
     if (last.games && last.games.length) {
-      last.games.forEach(g => { if (g.units != null) { units += g.units; bets += 1; } });
       addRow(site.sport === "MLB" ? "MLB games" : site.sport, last.games, last.date,
              site.sport === "MLB" ? "/mlb/games.html" : site.href);
     }
@@ -536,7 +577,6 @@ async function initLastNight() {
   const head = edgeNode("div", "ln-head");
   head.append(edgeNode("span", "rb-eyebrow", `${yesterday ? "Last night" : "Latest results"} · ${edgeShortDay(latest)}`),
               edgeNode("span", "ln-num", `${wins}-${losses}`));
-  if (bets) head.append(edgeNode("span", "ln-sub", `${edgeMoney(units)} at $${EDGE_STAKE} a game pick`));
   box.querySelector(".card-body").replaceChildren(head, rows);
   box.hidden = false;
 }
