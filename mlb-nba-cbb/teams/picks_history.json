@@ -4137,7 +4137,7 @@
     "starters": -0.168
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-09-30T16:04:30Z",
    "ml": {
     "team": "PHI",
@@ -4150,9 +4150,12 @@
     "home_ml": -102,
     "away_ml": -117,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.855
+   },
+   "home_runs": 3,
+   "away_runs": 4,
+   "winner": "PHI"
   },
   {
    "date": "2026-09-30",
@@ -4190,7 +4193,7 @@
     "starters": 0.127
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-09-30T19:52:44Z",
    "ml": {
     "team": "HOU",
@@ -4203,9 +4206,12 @@
     "home_ml": -155,
     "away_ml": 129,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 3,
+   "away_runs": 7,
+   "winner": "CWS"
   },
   {
    "date": "2026-09-30",
@@ -4243,7 +4249,7 @@
     "starters": 0.054
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-09-30T23:36:28Z",
    "ml": {
     "team": "NYY",
@@ -4256,9 +4262,12 @@
     "home_ml": -136,
     "away_ml": 113,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.735
+   },
+   "home_runs": 9,
+   "away_runs": 2,
+   "winner": "NYY"
   },
   {
    "date": "2026-09-30",
@@ -4296,7 +4305,7 @@
     "starters": 0.053
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-01T01:23:12Z",
    "ml": {
     "team": "SD",
@@ -4308,6 +4317,62 @@
     "value": false,
     "home_ml": -149,
     "away_ml": 123,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.671
+   },
+   "home_runs": 4,
+   "away_runs": 1,
+   "winner": "SD"
+  },
+  {
+   "date": "2026-10-01",
+   "game_id": "849844",
+   "start": "2026-10-01T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Wild Card",
+   "doubleheader": 0,
+   "home": "ATL",
+   "away": "PHI",
+   "home_name": "Atlanta Braves",
+   "away_name": "Philadelphia Phillies",
+   "home_id": 144,
+   "away_id": 143,
+   "home_record": "94-68",
+   "away_record": "88-74",
+   "home_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "ATL",
+   "prob": 53.8,
+   "home_prob": 53.8,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.011,
+    "starters": 0.0
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-01T12:58:30Z",
+   "ml": {
+    "team": "ATL",
+    "side": "home",
+    "price": -102,
+    "prob": 53.8,
+    "book_prob": 48.3,
+    "edge": 5.5,
+    "value": false,
+    "home_ml": -102,
+    "away_ml": -118,
     "book": "DraftKings",
     "won": null,
     "units": null
