@@ -201,58 +201,365 @@ async function initScoreboard() {
 }
 initScoreboard();
 
-// Home page: the Board, one row per site (two for MLB: hits and games) with
-// its all-time record and top pick, filled from the summary.json each site's build publishes next to its
-// pages (/nfl/, /cfb/, /mlb/, /nba/ and /cbb/summary.json). If one fails, its
-// row keeps its link.
+// Home page: every sport's games with our pick, live games first, then games
+// still to play, then finals, each grouped by sport. Picks come from each
+// site's summary.json "slate"; scores, logos, records and TV come from ESPN in
+// the browser (the games.json "espn" address, without the CFB Top 25 filter),
+// refreshed every minute while a game is live. A pick is matched to its ESPN
+// game by start time and one shared team abbreviation. Below it, each site's
+// all-time record from summary.json.
+const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB"];
+const HG_FAV_KEY = "edge-favs";
+const HG_LAYOUT_KEY = "edge-home-layout";
+const hg = { day: null, sport: "all", sort: "time", value: false, layout: null, favs: new Set(), games: [], summaries: [] };
 
-function formatRetrained(iso) {
-  const d = new Date(iso);
-  if (isNaN(d)) return "";
-  return "Model retrained " + d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
+function hgStore(key, value) {
+  try {
+    if (value === undefined) return localStorage.getItem(key);
+    localStorage.setItem(key, value);
+  } catch (e) { return null; }
+  return null;
 }
 
-function renderRow(row, s) {
-  const rec = row.querySelector(".board-rec");
-  const what = row.querySelector(".board-what");
-  const top = row.querySelector(".board-top");
-  if (s.record) {
-    rec.classList.remove("is-wait");
-    rec.replaceChildren(s.record.value);
-    if (s.record.sub) rec.append(edgeNode("small", null, s.record.sub));
-    const label = s.record.label.charAt(0).toUpperCase() + s.record.label.slice(1);
-    what.textContent = label + (s.record.since ? `, since ${s.record.since}` : "");
-  } else {
-    rec.textContent = "Soon";
-    what.textContent = "The record starts with the first graded pick.";
-  }
-  const p = s.picks && s.picks[0];
-  if (p) {
-    // "Today: Wed, Sep 30" reads "Today's top pick"; "Week 5" reads "Week 5 top pick".
-    const heading = s.heading || "Latest:";
-    const when = heading.includes(":") ? heading.split(":")[0] + "'s" : heading;
-    top.replaceChildren(`${when} top pick: ${p.label} `, edgeNode("b", null, p.value));
-    const pill = edgeResultPill(p.result, s.result_labels);
-    if (pill) top.append(" ", pill);
-  } else {
-    top.textContent = s.empty || "No picks yet.";
-  }
-  const retrained = s.retrained ? formatRetrained(s.retrained) : "";
-  if (retrained) top.append(edgeNode("small", null, retrained));
+function hgEl(tag, cls, text, attrs) {
+  const n = edgeNode(tag, cls, text);
+  Object.entries(attrs || {}).forEach(([k, v]) => n.setAttribute(k, v));
+  return n;
 }
 
-async function initHome() {
-  const summaries = await edgeFetchSummaries();
-  const bySummary = new Map(EDGE_SITES.map((site, i) => [site.summary, summaries[i]]));
-  document.querySelectorAll(".board-row[data-summary]").forEach(row => {
-    // A row can show one part of a site's summary: MLB's game picks are its own row.
-    const full = bySummary.get(row.dataset.summary);
-    const s = full && row.dataset.part ? full[row.dataset.part] && { ...full, ...full[row.dataset.part] } : full;
-    if (s) renderRow(row, s);
-    else row.querySelector(".board-what").textContent = "Couldn't load here. Open the site to see its picks.";
+// YYYY-MM-DD in Eastern time, `days` after today.
+function hgDayKey(days) {
+  return edgeDayKey(new Date(Date.now() + (days || 0) * 86400000));
+}
+
+function hgDays() {
+  const dow = new Date(hgDayKey() + "T12:00:00Z").getUTCDay();  // 0 Sun .. 6 Sat
+  // The weekend is the coming Saturday through Monday night (today on a weekend).
+  const toSat = dow === 0 ? -1 : dow === 1 ? -2 : 6 - dow;
+  const weekend = [0, 1, 2].map(i => hgDayKey(toSat + i)).filter(k => k >= hgDayKey());
+  return [
+    { k: "today", label: "Today", dates: [hgDayKey()], title: "Today's games" },
+    { k: "tomorrow", label: "Tomorrow", dates: [hgDayKey(1)], title: "Tomorrow's games" },
+    { k: "weekend", label: "Weekend", dates: weekend, title: "This weekend's games" },
+  ];
+}
+
+async function hgLoadEspn(site) {
+  if (!site.games) return [];
+  const published = await edgeFetchJson(site.games);
+  if (!published) return [];
+  const live = published.espn ? await edgeFetchJson(published.espn, 6000) : null;
+  if (live && Array.isArray(live.events)) return live.events.map(edgeParseEspn).filter(Boolean);
+  return published.games || [];
+}
+
+function hgMatch(g, espn) {
+  const t = new Date(g.start).getTime();
+  const teams = [g.away, g.home];
+  return espn.find(e => Math.abs(new Date(e.start).getTime() - t) < 15 * 60000 &&
+                        (teams.includes(e.away.abbr) || teams.includes(e.home.abbr))) || null;
+}
+
+async function hgLoad() {
+  const [summaries, espn] = await Promise.all([edgeFetchSummaries(), Promise.all(EDGE_SITES.map(hgLoadEspn))]);
+  hg.summaries = summaries;
+  const games = [];
+  EDGE_SITES.forEach((site, i) => {
+    const s = summaries[i];
+    (s && s.slate || []).forEach(g => {
+      if (!g.start) return;
+      const e = hgMatch(g, espn[i]);
+      const flip = e && !(e.away.abbr === g.away || e.home.abbr === g.home);  // ESPN lists them the other way
+      const side = (ours, theirs) => ({
+        abbr: ours, name: theirs ? theirs.short || theirs.name || ours : ours, logo: theirs ? theirs.logo : "",
+        rank: theirs ? theirs.rank : null, record: theirs ? theirs.record : null,
+        score: theirs && e.state !== "pre" ? theirs.score : null,
+      });
+      const away = side(g.away, e && (flip ? e.home : e.away));
+      const home = side(g.home, e && (flip ? e.away : e.home));
+      const state = e ? e.state : "pre";
+      let hit = null;
+      if (state === "post" && away.score != null && home.score != null && away.score !== home.score) {
+        hit = (g.pick === g.away) === (away.score > home.score);
+      }
+      games.push({ ...g, key: site.sport + ":" + g.id, date: edgeDayKey(new Date(g.start)), away, home, state,
+                   detail: e ? e.detail : "", tv: e ? e.tv : "", hit });
+    });
   });
+  hg.games = games;
 }
-initHome();
+
+function hgIsFav(g) {
+  return hg.favs.has(g.sport + ":" + g.away.abbr) || hg.favs.has(g.sport + ":" + g.home.abbr);
+}
+
+function hgTime(g, withDay) {
+  const d = new Date(g.start);
+  const t = d.toLocaleTimeString("en-US", { ...EDGE_ET, hour: "numeric", minute: "2-digit" });
+  return withDay ? d.toLocaleDateString("en-US", { ...EDGE_ET, weekday: "short" }) + " " + t : t;
+}
+
+function hgStatus(g, withDay) {
+  if (g.state === "in") return hgEl("span", "hg-live", g.detail || "Live");
+  if (g.state === "post") return hgEl("span", null, g.detail || "Final");
+  return hgEl("span", null, hgTime(g, withDay) + " ET");
+}
+
+function hgResult(g) {
+  if (g.hit === true) return hgEl("span", "hg-res is-hit", "Hit");
+  if (g.hit === false) return hgEl("span", "hg-res is-miss", "Miss");
+  return g.value && g.state === "pre" ? hgEl("span", "hg-val", "Value") : null;
+}
+
+function hgStar(g) {
+  const on = hgIsFav(g);
+  const names = `${g.away.name} and ${g.home.name}`;
+  const b = hgEl("button", "hg-star", on ? "★" : "☆",
+                 { type: "button", "aria-pressed": String(on), "aria-label": (on ? "Unpin " : "Pin ") + names });
+  b.dataset.key = g.key;
+  return b;
+}
+
+function hgTeamRow(g, t) {
+  const other = t === g.away ? g.home : g.away;
+  const row = hgEl("a", "hg-tm" + (t.abbr === g.pick ? " is-pick" : "") +
+                   (t.score != null && other.score != null && t.score >= other.score ? " is-lead" : ""));
+  row.href = g.url;
+  const tile = hgEl("span", "hg-tile", t.abbr, { "aria-hidden": "true" });
+  if (t.logo) {
+    const img = hgEl("img", "hg-logo", null, { src: t.logo, alt: "", loading: "lazy" });
+    img.addEventListener("error", () => img.replaceWith(tile));
+    row.append(img);
+  } else {
+    row.append(tile);
+  }
+  const nm = hgEl("span", "hg-nm");
+  const b = hgEl("b", null, (t.rank ? t.rank + " " : "") + t.name);
+  const bits = [t.record, t === g.away ? (g.at === "vs" ? "" : "Away") : (g.at === "vs" ? "" : "Home")].filter(Boolean);
+  nm.append(b, hgEl("small", null, bits.join(" · ") || "Neutral site"));
+  row.append(nm);
+  if (t.abbr === g.pick) row.append(hgEl("span", "hg-ours", "Our pick"));
+  if (t.score != null) row.append(hgEl("span", "hg-sc", String(t.score)));
+  return row;
+}
+
+function hgCard(g, top, withDay) {
+  const card = hgEl("div", "hg-card" + (top ? " is-top" : "") + (g.hit === true ? " is-hit" : g.hit === false ? " is-miss" : ""));
+  const head = hgEl("div", "hg-card-head");
+  const left = hgEl("span", "hg-when");
+  left.append(hgEl("b", null, g.sport), hgStatus(g, withDay));
+  if (g.tv && g.state !== "post") left.append(hgEl("span", "hg-tv", g.tv));
+  const right = hgEl("span", "hg-card-tools");
+  if (top) right.append(hgEl("em", "hg-top", "Top 3 pick"));
+  right.append(hgStar(g));
+  head.append(left, right);
+  const lines = hgEl("dl", "hg-lines");
+  const cell = (dt, dd, cls) => { const d = hgEl("div"); d.append(hgEl("dt", null, dt), hgEl("dd", cls, dd)); lines.append(d); };
+  if (g.price != null) cell("Odds", `${g.pick} ${edgePrice(g.price)}`);
+  if (g.book != null) cell("Vegas gives", Math.round(g.book) + "%", "hg-vg");
+  const pick = hgEl("div", "hg-pick");
+  pick.append(hgEl("span", "hg-lbl", "Pick to win"),
+              hgEl("b", null, (g.pick === g.away.abbr ? g.away : g.home).name));
+  const res = hgResult(g);
+  if (res) pick.append(res);
+  const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
+  pct.append(hgEl("i", null, "%"));
+  pick.append(pct);
+  card.append(head, hgTeamRow(g, g.away), hgTeamRow(g, g.home));
+  if (lines.children.length) card.append(lines);
+  card.append(pick);
+  return card;
+}
+
+function hgRow(g, withDay) {
+  const row = hgEl("div", "hg-row");
+  const when = hgEl("div", "hg-row-when");
+  if (g.state === "pre") {
+    when.append(hgEl("span", null, withDay ? new Date(g.start).toLocaleDateString("en-US", { ...EDGE_ET, weekday: "short" }) : g.sport),
+                hgEl("b", null, hgTime(g)));
+  } else {
+    when.append(g.state === "in" ? hgEl("span", "hg-live", "Live") : hgEl("span", null, "Final"),
+                hgEl("b", null, `${g.away.score ?? ""}-${g.home.score ?? ""}`));
+  }
+  const mu = hgEl("a", "hg-mu");
+  mu.href = g.url;
+  const team = abbr => abbr === g.pick ? hgEl("strong", null, abbr) : document.createTextNode(abbr);
+  mu.append(team(g.away.abbr), ` ${g.at === "vs" ? "vs" : "@"} `, team(g.home.abbr));
+  const sub = hgEl("small", null, `${g.sport} · Pick ${g.pick}${g.price != null ? " " + edgePrice(g.price) : ""}`);
+  const res = hgResult(g);
+  if (res) sub.append(" ", res);
+  mu.append(sub);
+  const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
+  pct.append(hgEl("i", null, "%"));
+  row.append(when, mu, pct, hgStar(g));
+  return row;
+}
+
+function hgRender() {
+  const out = document.getElementById("hg-out");
+  if (!out) return;
+  const days = hgDays();
+  const counts = days.map(d => hg.games.filter(g => d.dates.includes(g.date)).length);
+  if (!hg.day) hg.day = (days[counts.findIndex(n => n > 0)] || days[0]).k;
+  const day = days.find(d => d.k === hg.day);
+  const withDay = day.dates.length > 1;
+  document.getElementById("hg-title").textContent = day.title;
+  const dayBtns = document.getElementById("hg-days");
+  dayBtns.replaceChildren(...days.map((d, i) => {
+    const b = hgEl("button", null, d.label, { type: "button", "aria-pressed": String(d.k === hg.day) });
+    b.dataset.v = d.k;
+    b.append(hgEl("span", null, String(counts[i])));
+    return b;
+  }));
+
+  const inDay = hg.games.filter(g => day.dates.includes(g.date));
+  const sports = HG_ORDER.filter(sp => inDay.some(g => g.sport === sp));
+  if (hg.sport !== "all" && !sports.includes(hg.sport)) hg.sport = "all";
+  const chip = (v, label, n) => {
+    const b = hgEl("button", null, label, { type: "button", "aria-pressed": String(hg.sport === v) });
+    b.dataset.v = v;
+    b.append(hgEl("span", null, String(n)));
+    return b;
+  };
+  document.getElementById("hg-sports").replaceChildren(chip("all", "All", inDay.length),
+    ...sports.map(sp => chip(sp, sp, inDay.filter(g => g.sport === sp).length)));
+  ["hg-sort", "hg-layout"].forEach(id => document.querySelectorAll(`#${id} button`).forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.v === hg[id === "hg-sort" ? "sort" : "layout"]))));
+  document.getElementById("hg-value").setAttribute("aria-pressed", String(hg.value));
+
+  const done = inDay.filter(g => g.hit != null);
+  const live = inDay.filter(g => g.state === "in").length;
+  const won = done.filter(g => g.hit).length;
+  const tally = document.getElementById("hg-tally");
+  tally.replaceChildren();
+  if (done.length || live) {
+    if (done.length) tally.append("So far: ", hgEl("b", null, `${won}-${done.length - won}`), " on finished games");
+    if (live) tally.append(done.length ? ", " : "", hgEl("b", null, String(live)), " live now");
+    tally.append(".");
+  } else if (!hg.favs.size && inDay.length) {
+    tally.textContent = "Tap ☆ on any game to pin your teams to the top.";
+  }
+
+  let list = inDay.filter(g => (hg.sport === "all" || g.sport === hg.sport) && (!hg.value || g.value));
+  const byTime = (a, b) => new Date(a.start) - new Date(b.start);
+  list.sort(hg.sort === "sure" ? (a, b) => b.prob - a.prob || byTime(a, b) : byTime);
+  const top = new Set([...inDay].sort((a, b) => b.prob - a.prob).slice(0, 3).map(g => g.key));
+  const block = gs => {
+    const wrap = hgEl("div", hg.layout === "list" ? "hg-list" : "hg-grid");
+    wrap.append(...gs.map(g => hg.layout === "list" ? hgRow(g, withDay) : hgCard(g, top.has(g.key), withDay)));
+    return wrap;
+  };
+  const group = (title, gs, cls) => {
+    const sub = hgEl("div", "hg-sub" + (cls ? " " + cls : ""));
+    const h = hgEl("h4", null, title);
+    h.append(hgEl("span", null, String(gs.length)));
+    sub.append(h, block(gs));
+    return sub;
+  };
+  const n = k => `${k} ${k === 1 ? "game" : "games"}`;
+  const sections = [];
+  [["Live now", "in", "is-live"], ["Still to play", "pre", ""], ["Final", "post", ""]].forEach(([title, state, cls]) => {
+    const gs = list.filter(g => g.state === state);
+    if (!gs.length) return;
+    const sec = hgEl("section", "hg-sec" + (cls ? " " + cls : ""));
+    const h = hgEl("h3", null, title);
+    h.append(hgEl("span", null, n(gs.length)));
+    sec.append(h);
+    const favs = gs.filter(hgIsFav);
+    if (favs.length) sec.append(group("★ Your teams", favs, "is-fav"));
+    const rest = gs.filter(g => !hgIsFav(g));
+    HG_ORDER.forEach(sp => { const sg = rest.filter(g => g.sport === sp); if (sg.length) sec.append(group(sp, sg)); });
+    sections.push(sec);
+  });
+  if (!sections.length) {
+    const msg = !inDay.length ? `No games with our picks ${day.k === "today" ? "today" : day.k === "tomorrow" ? "tomorrow" : "this weekend"}.`
+      : "No value picks here. Value picks are games where we like a team more than Vegas does.";
+    sections.push(hgEl("div", "empty-state", msg));
+  }
+  out.replaceChildren(...sections);
+}
+
+function hgHero() {
+  const date = document.getElementById("home-date");
+  if (date) date.textContent = new Date().toLocaleDateString("en-US", { ...EDGE_ET, weekday: "long", month: "short", day: "numeric" });
+  const count = document.getElementById("home-count");
+  const today = hg.games.filter(g => g.date === hgDayKey());
+  if (count && today.length) {
+    const sports = HG_ORDER.filter(sp => today.some(g => g.sport === sp));
+    const list = sports.length > 1 ? sports.slice(0, -1).join(", ") + " and " + sports[sports.length - 1] : sports[0];
+    count.replaceChildren(hgEl("b", null, `${today.length} ${today.length === 1 ? "game" : "games"} today`),
+                          ` across ${list}`, hgEl("br"), "Every pick graded against the final score");
+  }
+}
+
+function hgRecords() {
+  const box = document.getElementById("home-records");
+  if (!box) return;
+  const tiles = [];
+  const soon = [];
+  EDGE_SITES.forEach((site, i) => {
+    const s = hg.summaries[i];
+    const parts = site.sport === "MLB"
+      ? [["MLB", "hits", s, site.href], ["MLB", "games", s && s.games, "/mlb/games.html"]]
+      : [[site.sport, "", s, site.href]];
+    parts.forEach(([sport, part, data, href]) => {
+      const rec = data && data.record;
+      if (!rec) { if (!soon.includes(sport)) soon.push(sport); return; }
+      const a = hgEl("a", "hr-tile");
+      a.href = href;
+      const lbl = hgEl("span", "hr-lbl", sport + " ");
+      if (part) lbl.append(hgEl("em", null, part));
+      const val = hgEl("span", "hr-val", rec.value);
+      if (rec.sub) val.append(hgEl("i", null, rec.sub.replace(/\.\d%$/, "%")));
+      a.append(lbl, val, hgEl("small", null, rec.since ? "since " + rec.since.replace(/, \d{4}$/, "") : rec.label));
+      tiles.push(a);
+    });
+  });
+  if (soon.length) {
+    const d = hgEl("div", "hr-tile is-soon");
+    d.append(hgEl("span", "hr-lbl", soon.join(" · ")), hgEl("span", "hr-val", "Starts with the first graded pick"));
+    tiles.push(d);
+  }
+  box.replaceChildren(...tiles);
+}
+
+async function initHomeGames() {
+  if (!document.getElementById("hg-out")) return;
+  const saved = hgStore(HG_FAV_KEY);
+  try { const f = JSON.parse(saved); if (Array.isArray(f)) hg.favs = new Set(f); } catch (e) { /* no favorites yet */ }
+  hg.layout = hgStore(HG_LAYOUT_KEY) || (matchMedia("(max-width: 560px)").matches ? "list" : "cards");
+  const pick = (id, key, save) => document.getElementById(id).addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    hg[key] = b.dataset.v;
+    if (save) hgStore(save, b.dataset.v);
+    hgRender();
+  });
+  pick("hg-days", "day");
+  pick("hg-sports", "sport");
+  pick("hg-sort", "sort");
+  pick("hg-layout", "layout", HG_LAYOUT_KEY);
+  document.getElementById("hg-value").addEventListener("click", () => { hg.value = !hg.value; hgRender(); });
+  document.getElementById("hg-out").addEventListener("click", e => {
+    const b = e.target.closest(".hg-star");
+    if (!b) return;
+    const g = hg.games.find(x => x.key === b.dataset.key);
+    if (!g) return;
+    if (hgIsFav(g)) [g.away.abbr, g.home.abbr].forEach(a => hg.favs.delete(g.sport + ":" + a));
+    else hg.favs.add(g.sport + ":" + g.pick);
+    hgStore(HG_FAV_KEY, JSON.stringify([...hg.favs]));
+    hgRender();
+  });
+  hgHero();
+  const refresh = async () => {
+    await hgLoad();
+    hgHero();
+    hgRecords();
+    hgRender();
+    if (hg.games.some(g => g.state === "in")) setTimeout(refresh, 60000);
+  };
+  await refresh();
+}
 
 // --- Betting tab and Last night (home site only) ---
 // Each site's summary.json carries "slate" (games still to play, with our
@@ -581,6 +888,7 @@ async function initLastNight() {
   box.hidden = false;
 }
 initLastNight();
+initHomeGames();  // after the shared helpers above (EDGE_ET) are defined
 
 // --- Sport menu on phones (shared by every Edge site) ---
 // Adds a menu button (the current sport and three lines) to the top bar; on

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -31,88 +31,57 @@
 </header>
 <aside class="scoreboard" aria-label="Latest top picks" hidden></aside>
 
-<header class="masthead home-hero">
+<header class="masthead home-hero home-slim">
   <div class="masthead-inner">
-    <div class="hero-kicker">Daily model picks</div>
-    <h1 class="wordmark">Sports <span>Edge</span></h1>
-    <div class="tagline">Model-driven picks for the NFL, college football, MLB, the NBA, the NHL and college basketball, each graded against every final score.</div>
+    <div class="home-hero-text">
+      <div class="home-date" id="home-date"></div>
+      <h1 class="wordmark">Sports <span>Edge</span></h1>
+    </div>
+    <div class="home-hero-meta" id="home-count">Model picks for every game, graded against every final score.</div>
   </div>
 </header>
 
 <div class="wrap">
   <main id="main-content">
+    <section class="hg" aria-labelledby="hg-title">
+      <div class="hg-head"><h2 id="hg-title">Today's games</h2><p>Tap a team for the full game page.</p></div>
+      <div class="hg-controls">
+        <div class="hg-seg" role="group" aria-label="Day" id="hg-days"></div>
+        <div class="hg-right">
+          <span class="hg-lbl" id="hg-sort-lbl">Sort</span>
+          <div class="hg-seg" role="group" aria-labelledby="hg-sort-lbl" id="hg-sort">
+            <button type="button" data-v="time" aria-pressed="true">Game time</button>
+            <button type="button" data-v="sure" aria-pressed="false">Surest first</button>
+          </div>
+          <button type="button" class="hg-pill" id="hg-value" aria-pressed="false">Value only</button>
+          <div class="hg-seg" role="group" aria-label="Layout" id="hg-layout">
+            <button type="button" data-v="cards" aria-pressed="true">Cards</button>
+            <button type="button" data-v="list" aria-pressed="false">List</button>
+          </div>
+        </div>
+      </div>
+      <div class="hg-chips" role="group" aria-label="Sport" id="hg-sports"></div>
+      <p class="hg-tally" id="hg-tally" aria-live="polite"></p>
+      <div id="hg-out"><p class="hg-tally">Loading today's games.</p></div>
+    </section>
+
+    <section class="hg" aria-labelledby="rec-title">
+      <div class="hg-head"><h2 id="rec-title">Our record</h2><p>Live picks since we started counting. It never resets.</p></div>
+      <div class="home-records" id="home-records"></div>
+    </section>
+
     <section class="card last-night" id="last-night" aria-live="polite" hidden>
       <div class="card-body"></div>
     </section>
-    <section class="card">
-      <div class="card-header"><h2>The Board</h2>
-        <div class="subtitle">Each site's record since we started counting, which keeps adding up and never resets, and its top pick right now.</div></div>
-      <ul class="board" aria-live="polite">
-        <li><a class="board-row" href="/nfl/index.html" data-summary="/nfl/summary.json">
-          <span class="board-sport">NFL <span>Edge</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/nba/index.html" data-summary="/nba/summary.json">
-          <span class="board-sport">NBA <span>Edge</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/mlb/" data-summary="/mlb/summary.json">
-          <span class="board-sport">MLB <span>Hits</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/mlb/games.html" data-summary="/mlb/summary.json" data-part="games">
-          <span class="board-sport">MLB <span>Games</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/nhl/index.html" data-summary="/nhl/summary.json">
-          <span class="board-sport">NHL <span>Edge</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/cfb/index.html" data-summary="/cfb/summary.json">
-          <span class="board-sport">CFB <span>Edge</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-        <li><a class="board-row" href="/cbb/index.html" data-summary="/cbb/summary.json">
-          <span class="board-sport">CBB <span>Edge</span></span>
-          <span class="board-rec is-wait"></span>
-          <span class="board-what">Loading</span>
-          <span class="board-top"></span>
-          <span class="board-go" aria-hidden="true">&rarr;</span>
-        </a></li>
-      </ul>
-    </section>
-    <p class="home-more"><a href="/bets.html">Best bets and units on the Betting tab &rarr;</a></p>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-brand">Sports <span>Edge</span></div>
-    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
-      predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
-    <nav class="footer-links" aria-label="Site">
-      <a href="/terms.html">Terms of Use</a>
-      <a href="/privacy.html">Privacy Policy</a>
-      <a href="https://github.com/ant56-arch">Source code</a>
-    </nav>
+  <footer class="home-foot">
+    <span>For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</span>
+    <a href="/terms.html">Terms</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="https://github.com/ant56-arch">Source code</a>
   </footer>
 </div>
-<script src="home.js?v=8"></script>
+<script src="home.js?v=9"></script>
 </body>
 </html>
