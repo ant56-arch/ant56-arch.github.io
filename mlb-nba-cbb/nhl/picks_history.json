@@ -22,7 +22,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "BUF",
     "side": "away",
@@ -60,17 +60,17 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "NJ",
     "side": "home",
-    "price": -162,
+    "price": -170,
     "prob": 51.5,
-    "book_prob": 59.3,
-    "edge": -7.8,
+    "book_prob": 60.4,
+    "edge": -8.9,
     "value": false,
-    "home_ml": -162,
-    "away_ml": 136,
+    "home_ml": -170,
+    "away_ml": 142,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -98,7 +98,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "TB",
     "side": "away",
@@ -136,7 +136,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "MIN",
     "side": "away",
@@ -174,7 +174,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "CGY",
     "side": "home",
@@ -212,7 +212,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "UTA",
     "side": "home",
@@ -250,7 +250,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "FLA",
     "side": "away",
@@ -288,7 +288,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-01T15:17:51Z",
+   "set_at": "2026-10-01T15:38:07Z",
    "ml": {
     "team": "EDM",
     "side": "away",
