@@ -94,8 +94,15 @@ function initHistoryPicker() {
 initHistoryPicker();
 
 // --- Accuracy charts ---
+// Each data set draws a weekly and a season-to-date chart into its own pair of
+// canvases: ACCURACY_DATA into #chart-weekly / #chart-cumulative, and on MLB
+// Edge's model page GAMES_ACCURACY_DATA into #chart-games-weekly /
+// #chart-games-cumulative.
 function initCharts() {
-  if (typeof ACCURACY_DATA === "undefined") return;
+  const sets = [];
+  if (typeof ACCURACY_DATA !== "undefined") sets.push([ACCURACY_DATA, "chart"]);
+  if (typeof GAMES_ACCURACY_DATA !== "undefined") sets.push([GAMES_ACCURACY_DATA, "chart-games"]);
+  if (!sets.length) return;
   if (typeof Chart === "undefined") {
     document.querySelectorAll(".chart-card").forEach(c => c.dataset.state = "failed");
     return;
@@ -104,14 +111,14 @@ function initCharts() {
   Chart.defaults.animation = false;
   const pct = v => (v * 100).toFixed(0) + "%";
 
-  function lineChart(canvasId, title, series) {
+  function lineChart(canvasId, labels, title, series) {
     const el = document.getElementById(canvasId);
     if (!el) return;
     el.closest(".chart-card")?.setAttribute("data-state", "ready");
     new Chart(el, {
       type: "line",
       data: {
-        labels: ACCURACY_DATA.labels,
+        labels,
         datasets: series.map(s => ({
           label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color,
           borderDash: s.dash || [], pointRadius: 3, borderWidth: 2, tension: 0,
@@ -135,16 +142,18 @@ function initCharts() {
     });
   }
 
-  // NBA Edge passes its own chart titles in ACCURACY_DATA.titles.
-  const t = ACCURACY_DATA.titles || {};
-  lineChart("chart-weekly", t.weekly || "Hit Rate by Week: Picks vs. What the Model Predicted", [
-    { label: t.weekly_actual || "Actual hit rate", data: ACCURACY_DATA.actual, color: "#e5793b" },
-    { label: t.weekly_predicted || "Model's predicted hit rate", data: ACCURACY_DATA.predicted, color: "#a8a7a1", dash: [4, 4] },
-  ]);
-  lineChart("chart-cumulative", t.cumulative || "Season-to-Date Hit Rate", [
-    { label: "Actual, season to date", data: ACCURACY_DATA.cumulative_actual, color: "#e5793b" },
-    { label: "Predicted, season to date", data: ACCURACY_DATA.cumulative_predicted, color: "#a8a7a1", dash: [4, 4] },
-  ]);
+  // A data set can pass its own chart titles in .titles (NBA Edge, MLB games).
+  sets.forEach(([d, prefix]) => {
+    const t = d.titles || {};
+    lineChart(prefix + "-weekly", d.labels, t.weekly || "Hit Rate by Week: Picks vs. What the Model Predicted", [
+      { label: t.weekly_actual || "Actual hit rate", data: d.actual, color: "#e5793b" },
+      { label: t.weekly_predicted || "Model's predicted hit rate", data: d.predicted, color: "#a8a7a1", dash: [4, 4] },
+    ]);
+    lineChart(prefix + "-cumulative", d.labels, t.cumulative || "Season-to-Date Hit Rate", [
+      { label: "Actual, season to date", data: d.cumulative_actual, color: "#e5793b" },
+      { label: "Predicted, season to date", data: d.cumulative_predicted, color: "#a8a7a1", dash: [4, 4] },
+    ]);
+  });
 }
 initCharts();
 
