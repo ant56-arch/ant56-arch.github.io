@@ -227,7 +227,8 @@ const EDGE_SOON = 6 * 3600000;
 const EDGE_TICKER_SPORTS = ["MLB", "NFL", "NBA", "NHL", "CFB"];
 const EDGE_SCORES_KEY = "edge-ticker-scores";
 const EDGE_PLAYS_KEY = "edge-ticker-plays";
-const edgeTicker = { published: {}, slates: {}, plays: [], flash: new Set(), crawlStart: {}, toasts: null, settings: null };
+const EDGE_CRAWL_KEY = "edge-ticker-start";
+const edgeTicker = { published: {}, slates: {}, plays: [], flash: new Set(), toasts: null, settings: null };
 
 function edgeFetchJson(url, ms) {
   const ctrl = new AbortController();
@@ -632,9 +633,32 @@ function edgeCrawl(cls, label, items) {
   bar.replaceChildren(tag, view);
   const width = run.scrollWidth / 2;
   const secs = Math.max(15, width / (EDGE_SPEED[edgeSettings().speed] || EDGE_SPEED.normal));
-  const t0 = edgeTicker.crawlStart[cls] || (edgeTicker.crawlStart[cls] = Date.now());
+  const t0 = edgeCrawlStart(cls);
   run.style.animationDuration = secs + "s";
   run.style.animationDelay = -(((Date.now() - t0) / 1000) % secs) + "s";
+  // A pause (hovering over the bar) moves the shared start later by as long
+  // as it lasted, so the next page picks up where this one stopped.
+  if (!bar.dataset.paused) {
+    bar.dataset.paused = "1";
+    let pausedAt = 0;
+    bar.addEventListener("mouseenter", () => { pausedAt = Date.now(); });
+    bar.addEventListener("mouseleave", () => {
+      if (pausedAt) edgeCrawlStart(cls, edgeCrawlStart(cls) + Date.now() - pausedAt);
+      pausedAt = 0;
+    });
+  }
+}
+
+// When each bar started scrolling, shared by every page on this device, so
+// going from one tab to another keeps the bar where it was instead of
+// starting it over.
+function edgeCrawlStart(cls, value) {
+  const all = edgeStore(EDGE_CRAWL_KEY) || {};
+  if (value !== undefined || !all[cls]) {
+    all[cls] = value !== undefined ? value : Date.now();
+    edgeStore(EDGE_CRAWL_KEY, all);
+  }
+  return all[cls];
 }
 
 function edgeTickerItem(site, g) {
