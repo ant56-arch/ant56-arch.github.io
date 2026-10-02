@@ -47,6 +47,7 @@ LOG_PATH = os.path.join(TRACKING_DIR, "cfb_ratings_log.csv")
 HALF_LIFE_WEEKS = 6
 CARRYOVER = 0.5
 RIDGE = 3.0
+MARGIN_CAP = None            # blowouts beyond this margin count as this margin (None = no cap)
 FCS = "FCS"
 LOG_DAYS_AHEAD = 8
 
@@ -85,7 +86,8 @@ def _order(games):
     return games["season"].astype(float) * 40 + wk
 
 
-def fit_ratings(done, fbs, t_now, season_now, half_life=HALF_LIFE_WEEKS, carryover=CARRYOVER, ridge=RIDGE):
+def fit_ratings(done, fbs, t_now, season_now, half_life=HALF_LIFE_WEEKS, carryover=CARRYOVER, ridge=RIDGE,
+                cap=MARGIN_CAP):
     """Offense/defense/overall for every FBS team from completed games `done`
     (each game's weight from its distance to t_now)."""
     teams = sorted(fbs) + [FCS]
@@ -110,7 +112,11 @@ def fit_ratings(done, fbs, t_now, season_now, half_life=HALF_LIFE_WEEKS, carryov
     X[m + rows, n + hi] = 1
     X[m + rows, 2 * n] = -h / 2
     X[:, 2 * n + 1] = 1
-    y = np.concatenate([g["home_score"].values, g["away_score"].values]).astype(float)
+    hs, aws = g["home_score"].values.astype(float), g["away_score"].values.astype(float)
+    if cap:
+        total, margin = hs + aws, np.clip(hs - aws, -cap, cap)
+        hs, aws = (total + margin) / 2, (total - margin) / 2
+    y = np.concatenate([hs, aws])
     ww = np.concatenate([w, w])
 
     A = X.T @ (X * ww[:, None])
@@ -238,16 +244,16 @@ def backtest(seasons_back=4):
     done["t"] = _order(done)
     test = done[done["season"] > years[0]]
 
-    for hl in (4, 6, 10):
-        for carry in (0.3, 0.5, 0.7):
-            for ridge in (1.0, 3.0, 10.0):
+    for hl, carry, ridge, cap in [(h, c, r, k) for h in (10, 16, 30) for c in (0.5, 0.7)
+                                  for r in (0.3, 1.0) for k in (None, 28)]:
+            if True:
                 rows = []
                 for (s, t), wk in test.groupby(["season", "t"]):
                     fbs = fbs_by_year[s]
                     hist = done[(done["t"] < t) & (done["season"] >= s - 1)]
                     if len(hist) < 200:
                         continue
-                    r, hfa = fit_ratings(hist, fbs, t, s, hl, carry, ridge)
+                    r, hfa = fit_ratings(hist, fbs, t, s, hl, carry, ridge, cap)
                     for g in wk.itertuples():
                         if g.home_team in fbs and g.away_team in fbs:
                             rows.append((g.id, rating_line(r, hfa, g.home_team, g.away_team, bool(g.neutral)),
@@ -257,7 +263,7 @@ def backtest(seasons_back=4):
                 acc = (np.sign(p["line"]) == np.sign(p["margin"])).mean()
                 mae = (p["line"] - p["margin"]).abs().mean()
                 v = p.merge(lines, on="id")
-                print(f"half-life {hl:>2} carry {carry} ridge {ridge:>4}: {len(p)} FBS games, picks {acc:.1%}, "
+                print(f"half-life {hl:>2} carry {carry} ridge {ridge:>4} cap {cap}: {len(p)} FBS games, picks {acc:.1%}, "
                       f"miss {mae:.2f} | lined {len(v)}: ours {(np.sign(v['line']) == np.sign(v['margin'])).mean():.1%} "
                       f"miss {(v['line'] - v['margin']).abs().mean():.2f}, Vegas "
                       f"{(np.sign(v['vegas']) == np.sign(v['margin'])).mean():.1%} miss {(v['vegas'] - v['margin']).abs().mean():.2f}",
