@@ -211,7 +211,8 @@ initScoreboard();
 const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB"];
 const HG_FAV_KEY = "edge-favs";
 const HG_LAYOUT_KEY = "edge-home-layout";
-const hg = { day: null, sport: "all", value: false, layout: null, favs: new Set(), games: [], summaries: [] };
+const HG_SHOW = 9;  // games per sport group before "See more"
+const hg = { day: null, sport: "all", value: false, open: new Set(), layout: null, favs: new Set(), games: [], summaries: [] };
 
 function hgStore(key, value) {
   try {
@@ -449,11 +450,19 @@ function hgRender() {
     wrap.append(...gs.map(g => hg.layout === "list" ? hgRow(g, withDay) : hgCard(g, top.has(g.key), withDay)));
     return wrap;
   };
-  const group = (title, gs, cls) => {
+  // Long groups (a 26-game CFB Saturday) show HG_SHOW games and a See more button.
+  const group = (title, gs, cls, key) => {
     const sub = hgEl("div", "hg-sub" + (cls ? " " + cls : ""));
     const h = hgEl("h4", null, title);
     h.append(hgEl("span", null, String(gs.length)));
-    sub.append(h, block(gs));
+    const open = !key || hg.open.has(key) || gs.length <= HG_SHOW + 2;
+    sub.append(h, block(open ? gs : gs.slice(0, HG_SHOW)));
+    if (key && gs.length > HG_SHOW + 2) {
+      const more = hgEl("button", "hg-more", open ? "Show fewer" : `See all ${gs.length} ${title} games`,
+                        { type: "button", "aria-expanded": String(open) });
+      more.dataset.group = key;
+      sub.append(more);
+    }
     return sub;
   };
   const n = k => `${k} ${k === 1 ? "game" : "games"}`;
@@ -468,7 +477,7 @@ function hgRender() {
     const favs = gs.filter(hgIsFav);
     if (favs.length) sec.append(group("★ Your teams", favs, "is-fav"));
     const rest = gs.filter(g => !hgIsFav(g));
-    HG_ORDER.forEach(sp => { const sg = rest.filter(g => g.sport === sp); if (sg.length) sec.append(group(sp, sg)); });
+    HG_ORDER.forEach(sp => { const sg = rest.filter(g => g.sport === sp); if (sg.length) sec.append(group(sp, sg, "", `${hg.day}:${state}:${sp}`)); });
     sections.push(sec);
   });
   if (!sections.length) {
@@ -540,6 +549,20 @@ async function initHomeGames() {
   pick("hg-layout", "layout", HG_LAYOUT_KEY);
   document.getElementById("hg-value").addEventListener("click", () => { hg.value = !hg.value; hgRender(); });
   document.getElementById("hg-out").addEventListener("click", e => {
+    const more = e.target.closest(".hg-more");
+    if (more) {
+      const k = more.dataset.group;
+      if (hg.open.has(k)) {
+        hg.open.delete(k);
+        hgRender();
+        const again = document.querySelector(`.hg-more[data-group="${k}"]`);
+        if (again) again.closest(".hg-sub").scrollIntoView({ block: "start" });
+      } else {
+        hg.open.add(k);
+        hgRender();
+      }
+      return;
+    }
     const b = e.target.closest(".hg-star");
     if (!b) return;
     const g = hg.games.find(x => x.key === b.dataset.key);
