@@ -9,11 +9,11 @@
 const SCHED_SPORTS = [
   { key: "nfl", sport: "NFL", pickLabel: "Our pick", empty: "No NFL games on this week's schedule yet." },
   { key: "nba", sport: "NBA", pickLabel: "Our pick",
-    empty: "No NBA games on the schedule yet. The 2026-27 season tips off in late October." },
+    empty: "No NBA games on the schedule right now. The season runs from late October to June." },
   { key: "mlb", sport: "MLB", pickLabel: "Top hitter",
     empty: "No MLB games on today's schedule. The next slate shows up here the morning of." },
   { key: "nhl", sport: "NHL", pickLabel: "Our pick",
-    empty: "No NHL games on the schedule yet. The 2026-27 season opens on October 7." },
+    empty: "No NHL games on the schedule right now. The season runs from early October to June." },
   { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
     note: "Games with a Top 25 team (AP poll). Our pick shows for games between teams we cover." },
   { key: "soccer", sport: "Soccer", pickLabel: "Our pick",

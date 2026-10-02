@@ -1,4 +1,7 @@
-pandas
-requests
-pyarrow
-scipy
+# Pinned to the versions the workflows run today, so a new major release
+# (pandas 4, numpy 3) can't change results or break a run without a review.
+pandas==3.0.6
+numpy==2.4.6
+requests==2.34.2
+pyarrow==25.0.1
+scipy==1.17.1
