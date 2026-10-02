@@ -211,7 +211,7 @@ initScoreboard();
 const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB"];
 const HG_FAV_KEY = "edge-favs";
 const HG_LAYOUT_KEY = "edge-home-layout";
-const hg = { day: null, sport: "all", sort: "time", value: false, layout: null, favs: new Set(), games: [], summaries: [] };
+const hg = { day: null, sport: "all", value: false, layout: null, favs: new Set(), games: [], summaries: [] };
 
 function hgStore(key, value) {
   try {
@@ -423,8 +423,8 @@ function hgRender() {
   };
   document.getElementById("hg-sports").replaceChildren(chip("all", "All", inDay.length),
     ...sports.map(sp => chip(sp, sp, inDay.filter(g => g.sport === sp).length)));
-  ["hg-sort", "hg-layout"].forEach(id => document.querySelectorAll(`#${id} button`).forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.v === hg[id === "hg-sort" ? "sort" : "layout"]))));
+  document.querySelectorAll("#hg-layout button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.v === hg.layout)));
   document.getElementById("hg-value").setAttribute("aria-pressed", String(hg.value));
 
   const done = inDay.filter(g => g.hit != null);
@@ -442,7 +442,7 @@ function hgRender() {
 
   let list = inDay.filter(g => (hg.sport === "all" || g.sport === hg.sport) && (!hg.value || g.value));
   const byTime = (a, b) => new Date(a.start) - new Date(b.start);
-  list.sort(hg.sort === "sure" ? (a, b) => b.prob - a.prob || byTime(a, b) : byTime);
+  list.sort(byTime);
   const top = new Set([...inDay].sort((a, b) => b.prob - a.prob).slice(0, 3).map(g => g.key));
   const block = gs => {
     const wrap = hgEl("div", hg.layout === "list" ? "hg-list" : "hg-grid");
@@ -537,7 +537,6 @@ async function initHomeGames() {
   });
   pick("hg-days", "day");
   pick("hg-sports", "sport");
-  pick("hg-sort", "sort");
   pick("hg-layout", "layout", HG_LAYOUT_KEY);
   document.getElementById("hg-value").addEventListener("click", () => { hg.value = !hg.value; hgRender(); });
   document.getElementById("hg-out").addEventListener("click", e => {
