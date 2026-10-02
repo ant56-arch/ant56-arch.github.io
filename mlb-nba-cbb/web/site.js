@@ -189,7 +189,7 @@ const EDGE_SOON = 6 * 3600000;
 const EDGE_TICKER_SPORTS = ["MLB", "NFL", "NBA", "NHL", "CFB"];
 const EDGE_SCORES_KEY = "edge-ticker-scores";
 const EDGE_PLAYS_KEY = "edge-ticker-plays";
-const EDGE_CRAWL_KEY = "edge-ticker-start";
+const EDGE_CRAWL_KEY = "edge-ticker-pos";
 const edgeTicker = { published: {}, slates: {}, plays: [], flash: new Set(), toasts: null, settings: null };
 
 function edgeFetchJson(url, ms) {
@@ -567,8 +567,10 @@ function edgeScoreToast(play) {
 }
 
 // One scrolling bar (the ticker or the red scoring-plays bar). Its items run
-// twice in a row and slide left forever; a rebuild keeps the bar where it was
-// in its loop, so a score update doesn't jump it back to the start.
+// twice in a row and slide left forever. Where the bar is (how far it has
+// scrolled, and when) is saved as the page runs and as it closes, and every
+// rebuild or new page carries on from there, so a score update or moving to
+// another tab doesn't start it over.
 function edgeCrawl(cls, label, items) {
   let bar = document.querySelector("." + cls);
   if (!items.length) {
@@ -581,6 +583,7 @@ function edgeCrawl(cls, label, items) {
     if (!anchor) return;
     anchor.after(bar);
   }
+  edgeCrawlSave(cls);
   bar.setAttribute("aria-label", label);
   bar.hidden = false;
   const tag = edgeNode("span", "crawl-tag", label);
@@ -595,32 +598,31 @@ function edgeCrawl(cls, label, items) {
   bar.replaceChildren(tag, view);
   const width = run.scrollWidth / 2;
   const secs = Math.max(15, width / (EDGE_SPEED[edgeSettings().speed] || EDGE_SPEED.normal));
-  const t0 = edgeCrawlStart(cls);
+  const saved = (edgeStore(EDGE_CRAWL_KEY) || {})[cls];
+  // Pixels scrolled so far: the saved spot plus the time since it was saved.
+  const px = saved ? saved.px + Math.max(0, Date.now() - saved.t) / 1000 * (width / secs) : 0;
   run.style.animationDuration = secs + "s";
-  run.style.animationDelay = -(((Date.now() - t0) / 1000) % secs) + "s";
-  // A pause (hovering over the bar) moves the shared start later by as long
-  // as it lasted, so the next page picks up where this one stopped.
-  if (!bar.dataset.paused) {
-    bar.dataset.paused = "1";
-    let pausedAt = 0;
-    bar.addEventListener("mouseenter", () => { pausedAt = Date.now(); });
-    bar.addEventListener("mouseleave", () => {
-      if (pausedAt) edgeCrawlStart(cls, edgeCrawlStart(cls) + Date.now() - pausedAt);
-      pausedAt = 0;
-    });
+  run.style.animationDelay = -((px % width) / width * secs) + "s";
+  if (!edgeTicker.crawlSaving) {
+    edgeTicker.crawlSaving = true;
+    const saveAll = () => ["crawl-ticker", "crawl-plays"].forEach(edgeCrawlSave);
+    setInterval(saveAll, 1000);
+    addEventListener("pagehide", saveAll);
+    document.addEventListener("visibilitychange", saveAll);
   }
 }
 
-// When each bar started scrolling, shared by every page on this device, so
-// going from one tab to another keeps the bar where it was instead of
-// starting it over.
-function edgeCrawlStart(cls, value) {
+// Saves how far a bar has scrolled right now (shared by every page on this
+// device).
+function edgeCrawlSave(cls) {
+  const run = document.querySelector(`.${cls}:not([hidden]) .crawl-run`);
+  if (!run || !run.style.animationDuration) return;
+  const width = run.scrollWidth / 2;
+  const x = -new DOMMatrixReadOnly(getComputedStyle(run).transform).m41;
+  if (!width || !Number.isFinite(x)) return;
   const all = edgeStore(EDGE_CRAWL_KEY) || {};
-  if (value !== undefined || !all[cls]) {
-    all[cls] = value !== undefined ? value : Date.now();
-    edgeStore(EDGE_CRAWL_KEY, all);
-  }
-  return all[cls];
+  all[cls] = { px: x, t: Date.now() };
+  edgeStore(EDGE_CRAWL_KEY, all);
 }
 
 function edgeTickerItem(site, g) {
