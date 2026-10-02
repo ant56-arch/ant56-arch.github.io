@@ -1,0 +1,1100 @@
+{
+ "as_of": "2026-10-02",
+ "leagues": {
+  "B1": -0.695,
+  "D1": 0.031,
+  "E0": 0.76,
+  "F1": 0.308,
+  "I1": -0.095,
+  "N1": -0.927,
+  "P1": -0.596,
+  "SC0": -0.795,
+  "SP1": 0.155,
+  "T1": -0.666,
+  "OTHER": -0.484
+ },
+ "home": 0.206,
+ "rho": -0.04,
+ "teams": [
+  {
+   "team": "bayern munich",
+   "league": "D1",
+   "strength": 1.954
+  },
+  {
+   "team": "barcelona",
+   "league": "SP1",
+   "strength": 1.844
+  },
+  {
+   "team": "paris sg",
+   "league": "F1",
+   "strength": 1.777
+  },
+  {
+   "team": "arsenal",
+   "league": "E0",
+   "strength": 1.755
+  },
+  {
+   "team": "man city",
+   "league": "E0",
+   "strength": 1.749
+  },
+  {
+   "team": "liverpool",
+   "league": "E0",
+   "strength": 1.48
+  },
+  {
+   "team": "madrid",
+   "league": "SP1",
+   "strength": 1.442
+  },
+  {
+   "team": "brighton",
+   "league": "E0",
+   "strength": 1.187
+  },
+  {
+   "team": "newcastle",
+   "league": "E0",
+   "strength": 1.181
+  },
+  {
+   "team": "chelsea",
+   "league": "E0",
+   "strength": 1.144
+  },
+  {
+   "team": "man united",
+   "league": "E0",
+   "strength": 1.129
+  },
+  {
+   "team": "inter",
+   "league": "I1",
+   "strength": 1.121
+  },
+  {
+   "team": "brentford",
+   "league": "E0",
+   "strength": 1.084
+  },
+  {
+   "team": "aston villa",
+   "league": "E0",
+   "strength": 1.038
+  },
+  {
+   "team": "bournemouth",
+   "league": "E0",
+   "strength": 1.007
+  },
+  {
+   "team": "atletico madrid",
+   "league": "SP1",
+   "strength": 1.002
+  },
+  {
+   "team": "dortmund",
+   "league": "D1",
+   "strength": 0.902
+  },
+  {
+   "team": "hull",
+   "league": "E0",
+   "strength": 0.876
+  },
+  {
+   "team": "sporting",
+   "league": "P1",
+   "strength": 0.868
+  },
+  {
+   "team": "leeds",
+   "league": "E0",
+   "strength": 0.856
+  },
+  {
+   "team": "lyon",
+   "league": "F1",
+   "strength": 0.847
+  },
+  {
+   "team": "nottingham forest",
+   "league": "E0",
+   "strength": 0.83
+  },
+  {
+   "team": "lens",
+   "league": "F1",
+   "strength": 0.821
+  },
+  {
+   "team": "marseille",
+   "league": "F1",
+   "strength": 0.809
+  },
+  {
+   "team": "monaco",
+   "league": "F1",
+   "strength": 0.785
+  },
+  {
+   "team": "lille",
+   "league": "F1",
+   "strength": 0.78
+  },
+  {
+   "team": "leverkusen",
+   "league": "D1",
+   "strength": 0.766
+  },
+  {
+   "team": "fulham",
+   "league": "E0",
+   "strength": 0.751
+  },
+  {
+   "team": "tottenham",
+   "league": "E0",
+   "strength": 0.741
+  },
+  {
+   "team": "everton",
+   "league": "E0",
+   "strength": 0.739
+  },
+  {
+   "team": "benfica",
+   "league": "P1",
+   "strength": 0.714
+  },
+  {
+   "team": "roma",
+   "league": "I1",
+   "strength": 0.7
+  },
+  {
+   "team": "crystal palace",
+   "league": "E0",
+   "strength": 0.658
+  },
+  {
+   "team": "strasbourg",
+   "league": "F1",
+   "strength": 0.644
+  },
+  {
+   "team": "sunderland",
+   "league": "E0",
+   "strength": 0.638
+  },
+  {
+   "team": "villarreal",
+   "league": "SP1",
+   "strength": 0.635
+  },
+  {
+   "team": "rennes",
+   "league": "F1",
+   "strength": 0.602
+  },
+  {
+   "team": "juventus",
+   "league": "I1",
+   "strength": 0.577
+  },
+  {
+   "team": "como",
+   "league": "I1",
+   "strength": 0.567
+  },
+  {
+   "team": "west ham",
+   "league": "E0",
+   "strength": 0.56
+  },
+  {
+   "team": "porto",
+   "league": "P1",
+   "strength": 0.556
+  },
+  {
+   "team": "betis",
+   "league": "SP1",
+   "strength": 0.556
+  },
+  {
+   "team": "paris fc",
+   "league": "F1",
+   "strength": 0.529
+  },
+  {
+   "team": "stuttgart",
+   "league": "D1",
+   "strength": 0.524
+  },
+  {
+   "team": "psv eindhoven",
+   "league": "N1",
+   "strength": 0.514
+  },
+  {
+   "team": "atalanta",
+   "league": "I1",
+   "strength": 0.477
+  },
+  {
+   "team": "galatasaray",
+   "league": "T1",
+   "strength": 0.452
+  },
+  {
+   "team": "rb leipzig",
+   "league": "D1",
+   "strength": 0.435
+  },
+  {
+   "team": "milan",
+   "league": "I1",
+   "strength": 0.429
+  },
+  {
+   "team": "fenerbahce",
+   "league": "T1",
+   "strength": 0.397
+  },
+  {
+   "team": "napoli",
+   "league": "I1",
+   "strength": 0.395
+  },
+  {
+   "team": "le mans",
+   "league": "F1",
+   "strength": 0.377
+  },
+  {
+   "team": "union st gilloise",
+   "league": "B1",
+   "strength": 0.376
+  },
+  {
+   "team": "toulouse",
+   "league": "F1",
+   "strength": 0.367
+  },
+  {
+   "team": "celta vigo",
+   "league": "SP1",
+   "strength": 0.361
+  },
+  {
+   "team": "elversberg",
+   "league": "D1",
+   "strength": 0.353
+  },
+  {
+   "team": "athletic",
+   "league": "SP1",
+   "strength": 0.326
+  },
+  {
+   "team": "lorient",
+   "league": "F1",
+   "strength": 0.296
+  },
+  {
+   "team": "la coruna",
+   "league": "SP1",
+   "strength": 0.272
+  },
+  {
+   "team": "wolverhampton",
+   "league": "E0",
+   "strength": 0.254
+  },
+  {
+   "team": "nice",
+   "league": "F1",
+   "strength": 0.248
+  },
+  {
+   "team": "brest",
+   "league": "F1",
+   "strength": 0.239
+  },
+  {
+   "team": "coventry",
+   "league": "E0",
+   "strength": 0.226
+  },
+  {
+   "team": "sociedad",
+   "league": "SP1",
+   "strength": 0.221
+  },
+  {
+   "team": "burnley",
+   "league": "E0",
+   "strength": 0.201
+  },
+  {
+   "team": "auxerre",
+   "league": "F1",
+   "strength": 0.191
+  },
+  {
+   "team": "bodo glimt",
+   "league": "OTHER",
+   "strength": 0.188
+  },
+  {
+   "team": "lazio",
+   "league": "I1",
+   "strength": 0.185
+  },
+  {
+   "team": "ipswich",
+   "league": "E0",
+   "strength": 0.164
+  },
+  {
+   "team": "celtic",
+   "league": "SC0",
+   "strength": 0.162
+  },
+  {
+   "team": "mainz",
+   "league": "D1",
+   "strength": 0.162
+  },
+  {
+   "team": "club brugge",
+   "league": "B1",
+   "strength": 0.161
+  },
+  {
+   "team": "alaves",
+   "league": "SP1",
+   "strength": 0.154
+  },
+  {
+   "team": "eintracht frankfurt",
+   "league": "D1",
+   "strength": 0.132
+  },
+  {
+   "team": "freiburg",
+   "league": "D1",
+   "strength": 0.13
+  },
+  {
+   "team": "rayo vallecano",
+   "league": "SP1",
+   "strength": 0.121
+  },
+  {
+   "team": "girona",
+   "league": "SP1",
+   "strength": 0.111
+  },
+  {
+   "team": "elche",
+   "league": "SP1",
+   "strength": 0.101
+  },
+  {
+   "team": "bologna",
+   "league": "I1",
+   "strength": 0.101
+  },
+  {
+   "team": "sevilla",
+   "league": "SP1",
+   "strength": 0.092
+  },
+  {
+   "team": "hoffenheim",
+   "league": "D1",
+   "strength": 0.086
+  },
+  {
+   "team": "mallorca",
+   "league": "SP1",
+   "strength": 0.082
+  },
+  {
+   "team": "espanyol",
+   "league": "SP1",
+   "strength": 0.068
+  },
+  {
+   "team": "osasuna",
+   "league": "SP1",
+   "strength": 0.062
+  },
+  {
+   "team": "schalke",
+   "league": "D1",
+   "strength": 0.059
+  },
+  {
+   "team": "feyenoord",
+   "league": "N1",
+   "strength": 0.056
+  },
+  {
+   "team": "levante",
+   "league": "SP1",
+   "strength": 0.053
+  },
+  {
+   "team": "rangers",
+   "league": "SC0",
+   "strength": 0.045
+  },
+  {
+   "team": "getafe",
+   "league": "SP1",
+   "strength": 0.039
+  },
+  {
+   "team": "valencia",
+   "league": "SP1",
+   "strength": 0.036
+  },
+  {
+   "team": "braga",
+   "league": "P1",
+   "strength": 0.026
+  },
+  {
+   "team": "le havre",
+   "league": "F1",
+   "strength": -0.026
+  },
+  {
+   "team": "frosinone",
+   "league": "I1",
+   "strength": -0.036
+  },
+  {
+   "team": "paderborn",
+   "league": "D1",
+   "strength": -0.044
+  },
+  {
+   "team": "angers",
+   "league": "F1",
+   "strength": -0.045
+  },
+  {
+   "team": "fiorentina",
+   "league": "I1",
+   "strength": -0.047
+  },
+  {
+   "team": "augsburg",
+   "league": "D1",
+   "strength": -0.077
+  },
+  {
+   "team": "besiktas",
+   "league": "T1",
+   "strength": -0.08
+  },
+  {
+   "team": "trabzonspor",
+   "league": "T1",
+   "strength": -0.085
+  },
+  {
+   "team": "amedspor",
+   "league": "T1",
+   "strength": -0.085
+  },
+  {
+   "team": "nantes",
+   "league": "F1",
+   "strength": -0.09
+  },
+  {
+   "team": "troyes",
+   "league": "F1",
+   "strength": -0.165
+  },
+  {
+   "team": "werder bremen",
+   "league": "D1",
+   "strength": -0.165
+  },
+  {
+   "team": "udinese",
+   "league": "I1",
+   "strength": -0.175
+  },
+  {
+   "team": "monchengladbach",
+   "league": "D1",
+   "strength": -0.189
+  },
+  {
+   "team": "olympiacos",
+   "league": "OTHER",
+   "strength": -0.19
+  },
+  {
+   "team": "sassuolo",
+   "league": "I1",
+   "strength": -0.196
+  },
+  {
+   "team": "ajax",
+   "league": "N1",
+   "strength": -0.212
+  },
+  {
+   "team": "wolfsburg",
+   "league": "D1",
+   "strength": -0.222
+  },
+  {
+   "team": "shakhtar donetsk",
+   "league": "OTHER",
+   "strength": -0.223
+  },
+  {
+   "team": "pafos",
+   "league": "OTHER",
+   "strength": -0.226
+  },
+  {
+   "team": "cagliari",
+   "league": "I1",
+   "strength": -0.23
+  },
+  {
+   "team": "famalicao",
+   "league": "P1",
+   "strength": -0.243
+  },
+  {
+   "team": "buyuksehyr",
+   "league": "T1",
+   "strength": -0.245
+  },
+  {
+   "team": "malaga",
+   "league": "SP1",
+   "strength": -0.247
+  },
+  {
+   "team": "torino",
+   "league": "I1",
+   "strength": -0.268
+  },
+  {
+   "team": "genoa",
+   "league": "I1",
+   "strength": -0.269
+  },
+  {
+   "team": "anderlecht",
+   "league": "B1",
+   "strength": -0.273
+  },
+  {
+   "team": "gent",
+   "league": "B1",
+   "strength": -0.275
+  },
+  {
+   "team": "twente",
+   "league": "N1",
+   "strength": -0.276
+  },
+  {
+   "team": "koln",
+   "league": "D1",
+   "strength": -0.298
+  },
+  {
+   "team": "santander",
+   "league": "SP1",
+   "strength": -0.309
+  },
+  {
+   "team": "f c kbenhavn",
+   "league": "OTHER",
+   "strength": -0.327
+  },
+  {
+   "team": "oviedo",
+   "league": "SP1",
+   "strength": -0.35
+  },
+  {
+   "team": "hearts",
+   "league": "SC0",
+   "strength": -0.354
+  },
+  {
+   "team": "parma",
+   "league": "I1",
+   "strength": -0.358
+  },
+  {
+   "team": "az alkmaar",
+   "league": "N1",
+   "strength": -0.364
+  },
+  {
+   "team": "santa clara",
+   "league": "P1",
+   "strength": -0.374
+  },
+  {
+   "team": "aek athens",
+   "league": "OTHER",
+   "strength": -0.375
+  },
+  {
+   "team": "union berlin",
+   "league": "D1",
+   "strength": -0.375
+  },
+  {
+   "team": "hamburg",
+   "league": "D1",
+   "strength": -0.376
+  },
+  {
+   "team": "heidenheim",
+   "league": "D1",
+   "strength": -0.4
+  },
+  {
+   "team": "metz",
+   "league": "F1",
+   "strength": -0.403
+  },
+  {
+   "team": "st pauli",
+   "league": "D1",
+   "strength": -0.418
+  },
+  {
+   "team": "academico viseu",
+   "league": "P1",
+   "strength": -0.422
+  },
+  {
+   "team": "genk",
+   "league": "B1",
+   "strength": -0.434
+  },
+  {
+   "team": "goztep",
+   "league": "T1",
+   "strength": -0.498
+  },
+  {
+   "team": "alanyaspor",
+   "league": "T1",
+   "strength": -0.505
+  },
+  {
+   "team": "antwerp",
+   "league": "B1",
+   "strength": -0.517
+  },
+  {
+   "team": "lask linz",
+   "league": "OTHER",
+   "strength": -0.522
+  },
+  {
+   "team": "kocaelispor",
+   "league": "T1",
+   "strength": -0.523
+  },
+  {
+   "team": "gil vicente",
+   "league": "P1",
+   "strength": -0.524
+  },
+  {
+   "team": "cremonese",
+   "league": "I1",
+   "strength": -0.524
+  },
+  {
+   "team": "nijmegen",
+   "league": "N1",
+   "strength": -0.543
+  },
+  {
+   "team": "viking",
+   "league": "OTHER",
+   "strength": -0.545
+  },
+  {
+   "team": "guimaraes",
+   "league": "P1",
+   "strength": -0.553
+  },
+  {
+   "team": "lecce",
+   "league": "I1",
+   "strength": -0.553
+  },
+  {
+   "team": "corum",
+   "league": "T1",
+   "strength": -0.563
+  },
+  {
+   "team": "charleroi",
+   "league": "B1",
+   "strength": -0.577
+  },
+  {
+   "team": "samsunspor",
+   "league": "T1",
+   "strength": -0.589
+  },
+  {
+   "team": "qarabag",
+   "league": "OTHER",
+   "strength": -0.604
+  },
+  {
+   "team": "slavia prague",
+   "league": "OTHER",
+   "strength": -0.616
+  },
+  {
+   "team": "lommel",
+   "league": "B1",
+   "strength": -0.636
+  },
+  {
+   "team": "st truiden",
+   "league": "B1",
+   "strength": -0.652
+  },
+  {
+   "team": "arouca",
+   "league": "P1",
+   "strength": -0.661
+  },
+  {
+   "team": "verona",
+   "league": "I1",
+   "strength": -0.666
+  },
+  {
+   "team": "utrecht",
+   "league": "N1",
+   "strength": -0.67
+  },
+  {
+   "team": "venezia",
+   "league": "I1",
+   "strength": -0.673
+  },
+  {
+   "team": "waregem",
+   "league": "B1",
+   "strength": -0.675
+  },
+  {
+   "team": "monza",
+   "league": "I1",
+   "strength": -0.678
+  },
+  {
+   "team": "kasimpasa",
+   "league": "T1",
+   "strength": -0.696
+  },
+  {
+   "team": "sabah",
+   "league": "OTHER",
+   "strength": -0.696
+  },
+  {
+   "team": "rizespor",
+   "league": "T1",
+   "strength": -0.697
+  },
+  {
+   "team": "motherwell",
+   "league": "SC0",
+   "strength": -0.699
+  },
+  {
+   "team": "mechelen",
+   "league": "B1",
+   "strength": -0.701
+  },
+  {
+   "team": "westerlo",
+   "league": "B1",
+   "strength": -0.714
+  },
+  {
+   "team": "standard",
+   "league": "B1",
+   "strength": -0.717
+  },
+  {
+   "team": "groningen",
+   "league": "N1",
+   "strength": -0.724
+  },
+  {
+   "team": "kairat almaty",
+   "league": "OTHER",
+   "strength": -0.73
+  },
+  {
+   "team": "go ahead eagles",
+   "league": "N1",
+   "strength": -0.732
+  },
+  {
+   "team": "konyaspor",
+   "league": "T1",
+   "strength": -0.733
+  },
+  {
+   "team": "estoril",
+   "league": "P1",
+   "strength": -0.74
+  },
+  {
+   "team": "hibernian",
+   "league": "SC0",
+   "strength": -0.755
+  },
+  {
+   "team": "moreirense",
+   "league": "P1",
+   "strength": -0.782
+  },
+  {
+   "team": "alverca",
+   "league": "P1",
+   "strength": -0.788
+  },
+  {
+   "team": "gaziantep",
+   "league": "T1",
+   "strength": -0.79
+  },
+  {
+   "team": "maritimo",
+   "league": "P1",
+   "strength": -0.81
+  },
+  {
+   "team": "heerenveen",
+   "league": "N1",
+   "strength": -0.825
+  },
+  {
+   "team": "falkirk",
+   "league": "SC0",
+   "strength": -0.832
+  },
+  {
+   "team": "nacional",
+   "league": "P1",
+   "strength": -0.861
+  },
+  {
+   "team": "excelsior",
+   "league": "N1",
+   "strength": -0.869
+  },
+  {
+   "team": "oud heverlee leuven",
+   "league": "B1",
+   "strength": -0.87
+  },
+  {
+   "team": "cercle brugge",
+   "league": "B1",
+   "strength": -0.88
+  },
+  {
+   "team": "genclerbirligi",
+   "league": "T1",
+   "strength": -0.884
+  },
+  {
+   "team": "raal la louviere",
+   "league": "B1",
+   "strength": -0.892
+  },
+  {
+   "team": "slovan bratislava",
+   "league": "OTHER",
+   "strength": -0.896
+  },
+  {
+   "team": "karagumruk",
+   "league": "T1",
+   "strength": -0.909
+  },
+  {
+   "team": "beveren",
+   "league": "B1",
+   "strength": -0.926
+  },
+  {
+   "team": "pisa",
+   "league": "I1",
+   "strength": -0.926
+  },
+  {
+   "team": "eyupspor",
+   "league": "T1",
+   "strength": -0.927
+  },
+  {
+   "team": "aberdeen",
+   "league": "SC0",
+   "strength": -0.933
+  },
+  {
+   "team": "telstar",
+   "league": "N1",
+   "strength": -0.94
+  },
+  {
+   "team": "estrela",
+   "league": "P1",
+   "strength": -0.953
+  },
+  {
+   "team": "dundee",
+   "league": "SC0",
+   "strength": -0.969
+  },
+  {
+   "team": "erzurumspor",
+   "league": "T1",
+   "strength": -1.005
+  },
+  {
+   "team": "rio ave",
+   "league": "P1",
+   "strength": -1.014
+  },
+  {
+   "team": "antalyaspor",
+   "league": "T1",
+   "strength": -1.022
+  },
+  {
+   "team": "tondela",
+   "league": "P1",
+   "strength": -1.037
+  },
+  {
+   "team": "casa pia",
+   "league": "P1",
+   "strength": -1.057
+  },
+  {
+   "team": "st mirren",
+   "league": "SC0",
+   "strength": -1.081
+  },
+  {
+   "team": "sparta rotterdam",
+   "league": "N1",
+   "strength": -1.081
+  },
+  {
+   "team": "for sittard",
+   "league": "N1",
+   "strength": -1.101
+  },
+  {
+   "team": "kayserispor",
+   "league": "T1",
+   "strength": -1.127
+  },
+  {
+   "team": "st johnstone",
+   "league": "SC0",
+   "strength": -1.149
+  },
+  {
+   "team": "dender",
+   "league": "B1",
+   "strength": -1.176
+  },
+  {
+   "team": "nac breda",
+   "league": "N1",
+   "strength": -1.202
+  },
+  {
+   "team": "volendam",
+   "league": "N1",
+   "strength": -1.27
+  },
+  {
+   "team": "avs",
+   "league": "P1",
+   "strength": -1.345
+  },
+  {
+   "team": "livingston",
+   "league": "SC0",
+   "strength": -1.383
+  },
+  {
+   "team": "kilmarnock",
+   "league": "SC0",
+   "strength": -1.402
+  },
+  {
+   "team": "zwolle",
+   "league": "N1",
+   "strength": -1.407
+  },
+  {
+   "team": "kortrijk",
+   "league": "B1",
+   "strength": -1.439
+  },
+  {
+   "team": "den haag",
+   "league": "N1",
+   "strength": -1.461
+  },
+  {
+   "team": "willem ii",
+   "league": "N1",
+   "strength": -1.577
+  },
+  {
+   "team": "cambuur",
+   "league": "N1",
+   "strength": -1.634
+  },
+  {
+   "team": "heracles",
+   "league": "N1",
+   "strength": -1.716
+  }
+ ]
+}

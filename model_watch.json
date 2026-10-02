@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T12:21:10Z",
+ "updated": "2026-10-02T17:12:59Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -68,6 +68,20 @@
    "through": null,
    "alarm": false,
    "last_retrain": "2026-09-30",
+   "alarm_since": null,
+   "cleared_on": null,
+   "early_retrain": false
+  },
+  "soccer": {
+   "label": "Soccer",
+   "picks": 0,
+   "won": 0,
+   "expected": 0,
+   "z": 0.0,
+   "from": null,
+   "through": null,
+   "alarm": false,
+   "last_retrain": "2026-10-02",
    "alarm_since": null,
    "cleared_on": null,
    "early_retrain": false
