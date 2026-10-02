@@ -102,6 +102,7 @@ SPORTS = {
         "ats_since_year": 2026,
         "data_source_text": "Team efficiency (PPA, success rate, explosiveness) via CollegeFootballData.com. Vegas lines via the-odds-api.com, where available. Covers SEC, Big Ten, Big 12, ACC and FBS independent teams.",
         "no_games_note": "Covers Power-conference and independent FBS teams only.",
+        "ratings": True,
     },
 }
 
@@ -392,6 +393,8 @@ def page_shell(sport, title, active_tab, body_html):
         ("index.html", "index", "Home"),
         ("teams.html", "teams", "Teams"),
     ]
+    if sport.get("ratings"):
+        tabs.append(("ratings.html", "ratings", "Ratings"))
     if sport["player_props_csv"]:
         tabs.append(("players.html", "players", "Players"))
     tabs += [
@@ -407,10 +410,11 @@ def page_shell(sport, title, active_tab, body_html):
 
     other_page = active_tab + ".html" if active_tab else "index.html"
     # The other football sport's tab keeps you on the same page when it has one.
-    sport_switcher = sport_tabs(
-        lambda slug: "../" + slug + "/" + (other_page if other_page != "players.html"
-                                           or SPORTS[slug]["player_props_csv"] else "index.html"),
-        active=sport["wordmark"])
+    def same_page(slug):
+        missing = ((other_page == "players.html" and not SPORTS[slug]["player_props_csv"])
+                   or (other_page == "ratings.html" and not SPORTS[slug].get("ratings")))
+        return "../" + slug + "/" + ("index.html" if missing else other_page)
+    sport_switcher = sport_tabs(same_page, active=sport["wordmark"])
 
     now = datetime.now(timezone.utc)
     generated = now.strftime("%b %d, %Y %H:%M UTC")
@@ -891,6 +895,74 @@ def build_teams_page(sport, games, log, comparison):
                 f'<script>const TEAMS_DATA = {teams_json};</script>')
     return page_shell(sport, "Teams", "teams", body)
 
+def ratings_record(rlog, model_log):
+    """How the power ratings' line has picked graded FBS games, and the same
+    games for our model and Vegas where the CFB picks also covered them."""
+    g = rlog.dropna(subset=["home_score", "away_score"]).copy()
+    g["margin"] = g["home_score"] - g["away_score"]
+    g = g[(g["margin"] != 0) & (g["rating_line"] != 0)]
+    if g.empty:
+        return None
+    g["hit"] = np.sign(g["rating_line"]) == np.sign(g["margin"])
+    out = {"wins": int(g["hit"].sum()), "losses": int((~g["hit"]).sum()),
+           "miss": float((g["rating_line"] - g["margin"]).abs().mean()), "since": str(g["start"].min())[:10]}
+    if not model_log.empty:
+        m = g.merge(model_log, on=["season", "week", "home_team", "away_team"], how="inner")
+        m = m[m["model_spread"].notna() & m["vegas_home_favored_by"].notna()]
+        if not m.empty:
+            out["shared"] = {"games": len(m),
+                             "ratings": float(m["hit"].mean()),
+                             "model": float((np.sign(m["model_spread"]) == np.sign(m["margin"])).mean()),
+                             "vegas": float((np.sign(m["vegas_home_favored_by"]) == np.sign(m["margin"])).mean())}
+    return out
+
+def build_ratings_page(sport, log):
+    path = os.path.join(TRACKING_DIR, "cfb_ratings.json")
+    if not os.path.exists(path):
+        body = card("Power Ratings", "Every FBS team", '<div class="empty-state">Ratings will appear after the next update.</div>')
+        return page_shell(sport, "Ratings", "ratings", body)
+    with open(path) as f:
+        data = json.load(f)
+    log_path = os.path.join(TRACKING_DIR, "cfb_ratings_log.csv")
+    rec = ratings_record(pd.read_csv(log_path), log) if os.path.exists(log_path) else None
+
+    if rec:
+        n = rec["wins"] + rec["losses"]
+        line = (f'<p class="lead"><b>{rec["wins"]}-{rec["losses"]}</b> ({rec["wins"] / n:.0%}) picking winners of '
+                f'FBS games since {day_label(rec["since"])}, missing the final margin by {rec["miss"]:.1f} points on average.')
+        if rec.get("shared"):
+            sh = rec["shared"]
+            line += (f' On the {sh["games"]} of those games our picks also covered: ratings {sh["ratings"]:.0%}, '
+                     f'our model {sh["model"]:.0%}, Vegas favorite {sh["vegas"]:.0%}.')
+        line += "</p>"
+    else:
+        line = '<p class="lead">The ratings\' record starts once this week\'s games are final.</p>'
+    intro = (f'{line}<p class="muted">Each team\'s offense is the points it would score against an average FBS '
+             f'defense, its defense the points it would allow to an average FBS offense (lower is better), and '
+             f'overall is the difference: its expected margin against an average FBS team on a neutral field. '
+             f'Every score is adjusted for who the team played, recent games count most, and last season fades '
+             f'out as this one goes. Home field is worth {data["home_field"]:.1f} points. These ratings are being '
+             f'tracked on their own and don\'t feed the picks yet.</p>')
+
+    rows = ""
+    for t in data["teams"]:
+        logo = f'<img src="{espn_logo(t["logo"])}" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display=\'none\'"> ' if t.get("logo") else ""
+        rows += f"""<tr>
+          <td data-key="overall_rank" data-value="{t["overall_rank"]}" data-label="Rank" class="num">{t["overall_rank"]}</td>
+          <td data-key="team" data-value="{t["team"]}">{logo}<b>{t["team"]}</b><div class="muted" style="font-size:13px;">{t.get("conference") or ""} &middot; {t["record"]}</div></td>
+          <td data-key="overall" data-value="{t["overall"]}" data-label="Overall" class="num"><b>{t["overall"]:+.1f}</b></td>
+          <td data-key="offense" data-value="{t["offense"]}" data-label="Offense" class="num">{t["offense"]:.1f} <span class="muted">({t["offense_rank"]})</span></td>
+          <td data-key="defense" data-value="{-t["defense"]}" data-label="Defense" class="num">{t["defense"]:.1f} <span class="muted">({t["defense_rank"]})</span></td>
+        </tr>"""
+    table = f"""<table class="data responsive-stack" data-sortable>
+      <thead><tr><th data-sort-key="overall_rank" class="num">#</th><th data-sort-key="team">Team</th>
+      <th data-sort-key="overall" class="num">Overall</th><th data-sort-key="offense" class="num">Offense</th>
+      <th data-sort-key="defense" class="num">Defense</th></tr></thead>
+      <tbody>{rows}</tbody></table>"""
+    sub = (f'All {len(data["teams"])} FBS teams through week {data["games_through_week"]}, '
+           f'updated {model_page.short_date(data["updated"])}. Tap a column to sort.')
+    return page_shell(sport, "Ratings", "ratings", card("Power Ratings", sub, intro + table))
+
 def build_history_page(sport, log):
     graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
     if graded.empty:
@@ -1350,6 +1422,7 @@ def build_sport_pages(sport):
         "history.html": build_history_page(sport, log),
         "accuracy.html": build_accuracy_page(sport, log, games),
         "model.html": build_model_page(sport),
+        **({"ratings.html": build_ratings_page(sport, log)} if sport.get("ratings") else {}),
         "schedule.html": games_mod.schedule_redirect(sport["slug"]),
     }
     if sport["player_props_csv"]:

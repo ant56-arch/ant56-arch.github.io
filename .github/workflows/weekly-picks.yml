@@ -134,6 +134,17 @@ jobs:
         continue-on-error: true
         run: python src/track_cfb_results.py
 
+      # Our own FBS power ratings (Ratings tab), tracked on their own and not
+      # yet used by the picks. Same runs as the CFB odds plus Saturday 11 PM
+      # ET, after the day's games, to keep CFBD calls down.
+      - name: Update CFB power ratings
+        id: cfb_ratings
+        if: github.event_name != 'schedule' || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5' || github.event.schedule == '5 3 * * 0'
+        continue-on-error: true
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: python src/cfb_ratings.py
+
       - name: Commit tracking data
         id: commit_tracking
         if: always() && steps.track_results.outcome == 'success'
