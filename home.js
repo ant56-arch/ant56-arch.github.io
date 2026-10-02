@@ -23,6 +23,10 @@ const EDGE_SITES = [
   // CBB Edge has no games.json yet, so it shows on the home page only.
   { sport: "CBB", summary: "/cbb/summary.json", games: null,
     href: "/cbb/index.html", schedule: "/cbb/index.html" },
+  // Soccer Edge: Premier League, La Liga and Champions League in one games.json
+  // with no single ESPN address, so it isn't in the score ticker.
+  { sport: "Soccer", summary: "/soccer/summary.json", games: "/soccer/games.json",
+    href: "/soccer/index.html", schedule: "/schedule.html#soccer" },
 ];
 const EDGE_LIVE_POLL = 30000;   // while a game is live
 const EDGE_IDLE_POLL = 120000;  // while a game starts within EDGE_SOON
@@ -608,7 +612,7 @@ initScoreboard();
 // refreshed every minute while a game is live. A pick is matched to its ESPN
 // game by start time and one shared team abbreviation. Below it, each site's
 // all-time record from summary.json.
-const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB"];
+const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB", "Soccer"];
 const HG_FAV_KEY = "edge-favs";
 const HG_LAYOUT_KEY = "edge-home-layout";
 const HG_SHOW = 9;  // games per sport group before "See more"
@@ -680,8 +684,11 @@ async function hgLoad() {
       const home = side(g.home, e && (flip ? e.away : e.home));
       const state = e ? e.state : "pre";
       let hit = null;
-      if (state === "post" && away.score != null && home.score != null && away.score !== home.score) {
-        hit = (g.pick === g.away) === (away.score > home.score);
+      // Soccer picks can be a draw ("Draw"), and a team pick loses on a draw.
+      if (state === "post" && away.score != null && home.score != null) {
+        if (g.pick === "Draw") hit = away.score === home.score;
+        else if (away.score !== home.score) hit = (g.pick === g.away) === (away.score > home.score);
+        else if (site.sport === "Soccer") hit = false;
       }
       games.push({ ...g, key: site.sport + ":" + g.id, date: edgeDayKey(new Date(g.start)), away, home, state,
                    detail: e ? e.detail : "", tv: e ? e.tv : "", hit });
@@ -760,7 +767,7 @@ function hgCard(g, top, withDay) {
   if (g.book != null) cell("Vegas gives", Math.round(g.book) + "%", "hg-vg");
   const pick = hgEl("div", "hg-pick");
   pick.append(hgEl("span", "hg-lbl", "Pick to win"),
-              hgEl("b", null, (g.pick === g.away.abbr ? g.away : g.home).name));
+              hgEl("b", null, g.pick === "Draw" ? "Draw" : (g.pick === g.away.abbr ? g.away : g.home).name));
   const res = hgResult(g);
   if (res) pick.append(res);
   const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
@@ -992,7 +999,7 @@ async function initHomeGames() {
 // favorites, underdogs and value picks) and "last" (the latest day's
 // results). Units and money show only on the Betting tab: a unit is $10.
 const EDGE_STAKE = 10;
-const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", NHL: "#c9d6e3", CBB: "#8fd3c4" };
+const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", NHL: "#c9d6e3", CBB: "#8fd3c4", Soccer: "#9fd39a" };
 const EDGE_ET = { timeZone: edgeTz().timeZone };  // the time zone picked in settings (Eastern unless changed)
 
 function edgeUnits(units) {
@@ -1036,12 +1043,17 @@ function edgeUpcoming(summaries) {
   return out.sort((a, b) => a.t - b.t);
 }
 
+// "over BOS" under a pick; a soccer draw pick names both teams instead.
+function edgeOverText(g) {
+  return g.pick === "Draw" ? `${g.away} vs ${g.home}` : `over ${g.other}`;
+}
+
 function edgeValueRow(g) {
   const row = edgeNode("a", "vb-row");
   row.href = g.url;
   row.append(edgeNode("span", "vb-sport", g.sport));
   const who = edgeNode("span", "vb-pick");
-  who.append(edgeNode("b", null, `${g.pick} ${edgePrice(g.price)}`), edgeNode("small", null, `over ${g.other}`));
+  who.append(edgeNode("b", null, `${g.pick} ${edgePrice(g.price)}`), edgeNode("small", null, edgeOverText(g)));
   const bar = edgeNode("span", "vb-bar");
   const track = edgeNode("span", "vb-track");
   track.setAttribute("aria-hidden", "true");
@@ -1098,7 +1110,7 @@ async function initBestBets() {
       const label = site.sport === "MLB" ? "MLB game" : site.sport;
       const when = edgeWhen(top.start);
       cards.push(edgeSureCard(`${label} · ${when.split(" ")[0] || "soon"}`, top.pick, top.prob,
-                              `${top.at === "vs" ? "vs" : (top.pick === top.home ? "vs" : "at")} ${top.other}${when ? ", " + when.split(" ").slice(1).join(" ") : ""}`,
+                              `${top.pick === "Draw" ? edgeOverText(top) : `${top.at === "vs" ? "vs" : (top.pick === top.home ? "vs" : "at")} ${top.other}`}${when ? ", " + when.split(" ").slice(1).join(" ") : ""}`,
                               top.url));
     }
   });

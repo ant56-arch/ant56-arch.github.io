@@ -182,6 +182,10 @@ const EDGE_SITES = [
   // CBB Edge has no games.json yet, so it shows on the home page only.
   { sport: "CBB", summary: "/cbb/summary.json", games: null,
     href: "/cbb/index.html", schedule: "/cbb/index.html" },
+  // Soccer Edge: Premier League, La Liga and Champions League in one games.json
+  // with no single ESPN address, so it isn't in the score ticker.
+  { sport: "Soccer", summary: "/soccer/summary.json", games: "/soccer/games.json",
+    href: "/soccer/index.html", schedule: "/schedule.html#soccer" },
 ];
 const EDGE_LIVE_POLL = 30000;   // while a game is live
 const EDGE_IDLE_POLL = 120000;  // while a game starts within EDGE_SOON
@@ -827,3 +831,21 @@ function initDayChips() {
   });
 }
 initDayChips();
+
+// --- Competition buttons over the game cards (Soccer Edge) ---
+// "All" shows every match; a competition's button shows only its cards (the
+// data-group extras.game_card puts on each), and hides a day with none left.
+function initCompChips() {
+  document.querySelectorAll(".comp-chips").forEach(group => {
+    const scope = group.parentElement;
+    group.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+      group.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      const comp = btn.dataset.group;
+      scope.querySelectorAll(".gc[data-group]").forEach(c => { c.hidden = comp !== "all" && c.dataset.group !== comp; });
+      scope.querySelectorAll(".gc-day").forEach(d => {
+        d.classList.toggle("is-empty", !d.querySelector(".gc:not([hidden])"));
+      });
+    }));
+  });
+}
+initCompChips();

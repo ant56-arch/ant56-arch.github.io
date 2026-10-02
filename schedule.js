@@ -16,10 +16,13 @@ const SCHED_SPORTS = [
     empty: "No NHL games on the schedule yet. The 2026-27 season opens on October 7." },
   { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
     note: "Games with a Top 25 team (AP poll). Our pick shows for games between teams we cover." },
+  { key: "soccer", sport: "Soccer", pickLabel: "Our pick",
+    empty: "No Premier League, La Liga or Champions League matches on the schedule today.",
+    note: "Premier League, La Liga and Champions League matches. A pick can be a draw." },
 ];
 const SCHED_MAX_NETWORKS = 6;
 // Typical game length in minutes, for the width of a guide block.
-const GUIDE_MINUTES = { nfl: 180, cfb: 210, mlb: 180, nba: 150, nhl: 150 };
+const GUIDE_MINUTES = { nfl: 180, cfb: 210, mlb: 180, nba: 150, nhl: 150, soccer: 115 };
 const GUIDE_SLOT = 30;
 const GUIDE_VIEW_KEY = "edge-schedule-view-2";  // new key so everyone starts on TV Guide
 

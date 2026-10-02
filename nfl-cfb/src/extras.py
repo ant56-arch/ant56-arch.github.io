@@ -16,6 +16,9 @@ Each builder turns its own picks into one game shape (a dict):
 and, for the game cards on each sport's Home tab (all optional): tv and venue
 (from ESPN's scoreboard), "proj" on away/home (projected points), and lines
 [(label, value html, "vegas"|"ours"|"", sub)] for the strip under the teams.
+Soccer adds (also optional): "chance" on away/home (that team's own chance to
+win, since a draw takes the rest), pick_name / pick_label / pick_sub for a pick
+that isn't a team ("Draw"), and group (data-group on the card, for filters).
 
 and this module renders the page, the cards and the JSON from it. Money
 (units, "$10 a pick") only ever shows on the home site's Betting tab, which
@@ -146,7 +149,7 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
     <div class="gh-teams">{_team(a, g["pick"] == a["abbr"])}<div class="gh-at">{at}</div>{_team(h, g["pick"] == h["abbr"])}</div>
     <div class="gh-verdict"><span class="rb-eyebrow">Our pick</span>
       <span class="gh-big">{escape(g["pick"])} {g["prob"]:.0f}<small>%</small></span>
-      <span class="gh-sub">chance to beat {escape(g["other"])}</span>{note}</div>
+      <span class="gh-sub">{escape(g.get("pick_sub") or f"chance to beat {g['other']}")}</span>{note}</div>
   </section>"""
     facts = [ml_fact(g)] + list(g.get("facts") or [])
     dl = "".join(f'<div><dt>{escape(label)}</dt><dd>{value}{f"<small>{escape(sub)}</small>" if sub else ""}</dd></div>'
@@ -204,6 +207,8 @@ def _side_number(g, side):
         return str(t["score"])
     if t.get("proj") is not None:
         return f"{t['proj']:.1f}"
+    if t.get("chance") is not None:
+        return f'{t["chance"]:.0f}<i>%</i>'
     chance = g["prob"] if g["pick"] == t["abbr"] else 100 - g["prob"]
     return f'{chance:.0f}<i>%</i>'
 
@@ -241,7 +246,7 @@ def game_card(g, top=False):
                         f'{f"<small>{sub}</small>" if sub else ""}</dd></div>'
                         for label, value, cls, sub in g["lines"])
         lines = f'<dl class="gc-lines" style="--cols:{len(g["lines"])}">{cells}</dl>'
-    pick_name = g["home"]["name"] if g["pick"] == g["home"]["abbr"] else g["away"]["name"]
+    pick_name = g.get("pick_name") or (g["home"]["name"] if g["pick"] == g["home"]["abbr"] else g["away"]["name"])
     ml = g.get("ml") or {}
     odds = f'<span class="gc-odds">{price_text(ml["price"])}</span>' if ml.get("price") is not None else ""
     value = '<span class="gc-value">Value</span>' if ml.get("value") else ""
@@ -251,9 +256,10 @@ def game_card(g, top=False):
     elif g.get("final") and g.get("hit") is not None:
         res = ('<span class="pill pill-positive">HIT</span>' if g["hit"]
                else '<span class="pill pill-danger">MISS</span>')
-    return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}">'
+    group = f' data-group="{escape(g["group"])}"' if g.get("group") else ""
+    return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}"{group}>'
             f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{rows}{lines}'
-            f'<div class="gc-pick"><span class="gc-label">Pick to win</span>'
+            f'<div class="gc-pick"><span class="gc-label">{escape(g.get("pick_label") or "Pick to win")}</span>'
             f'<b>{escape(pick_name or g["pick"])}</b>{odds}{value}{res}'
             f'<span class="gc-pct">{g["prob"]:.0f}<i>%</i></span></div></a>')
 

@@ -11,7 +11,10 @@ name: MLB, NBA and CBB Daily
 # (cbb/, men's college basketball) works like NBA: every run stores finished
 # games and box scores, refreshes the KenPom-style ratings and picks, and
 # cbb/research/train.py retrains weekly in season. NHL Edge (nhl/) works like
-# NBA. Every run rebuilds the sites
+# NBA. Soccer Edge (soccer/: Premier League, La Liga, Champions League) does
+# too: every run stores finished matches, grades, refits the club ratings and
+# refreshes today's and tomorrow's picks; soccer/research/train.py retrains
+# weekly with a promote-only-if-better guard. Every run rebuilds the sites
 # and (on main) publishes them to the site branch GitHub Pages serves
 # (publish_site.sh at the repo root).
 # Times are ET converted to UTC assuming EDT (UTC-4); they run an hour early
@@ -106,6 +109,16 @@ jobs:
         continue-on-error: true
         run: python cbb/research/train.py
 
+      # Soccer Edge (Premier League, La Liga, Champions League). Like NBA, its
+      # steps can't block the others.
+      - name: Run Soccer pipeline
+        continue-on-error: true
+        run: python soccer/predict.py
+
+      - name: Retrain Soccer model
+        continue-on-error: true
+        run: python soccer/research/train.py
+
       # Cold-stretch check (model_watch.py at the repo root): each sport's latest
       # live picks against what its model expected, saved to model_watch.json. The
       # game models above already retrain early on an alarm; the MLB hitter model
@@ -130,7 +143,8 @@ jobs:
           git add teams/picks_history.json teams/data/ teams/model_weights.json
           [ -f teams/model_history.json ] && git add teams/model_history.json
           for f in nhl/data nhl/picks_history.json nhl/model_weights.json nhl/model_history.json \
-                   cbb/data cbb/picks_history.json cbb/ratings.json cbb/model_weights.json cbb/model_history.json; do
+                   cbb/data cbb/picks_history.json cbb/ratings.json cbb/model_weights.json cbb/model_history.json \
+                   soccer/data soccer/picks_history.json soccer/ratings.json soccer/model_weights.json soccer/model_history.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           git diff --staged --quiet && exit 0
@@ -153,12 +167,16 @@ jobs:
         continue-on-error: true
         run: python nhl/build_pages.py
 
-      # MLB Edge's pages go to /mlb/, NBA and CBB to /nba/ and /cbb/. A build
+      - name: Build Soccer site
+        continue-on-error: true
+        run: python soccer/build_pages.py
+
+      # MLB Edge's pages go to /mlb/, NBA, CBB, NHL and Soccer to theirs. A build
       # that failed leaves that sport's last published pages up.
       - name: Publish site
         if: github.ref == 'refs/heads/main'
         run: |
           mkdir -p out
-          for s in nba cbb nhl; do if [ -d "dist/$s" ]; then mv "dist/$s" "out/$s"; fi; done
+          for s in nba cbb nhl soccer; do if [ -d "dist/$s" ]; then mv "dist/$s" "out/$s"; fi; done
           if [ -f dist/index.html ]; then mv dist out/mlb; fi
-          ../publish_site.sh out/mlb:mlb out/nba:nba out/cbb:cbb out/nhl:nhl
+          ../publish_site.sh out/mlb:mlb out/nba:nba out/cbb:cbb out/nhl:nhl out/soccer:soccer

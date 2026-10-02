@@ -220,6 +220,10 @@ const EDGE_SITES = [
   // CBB Edge has no games.json yet, so it shows on the home page only.
   { sport: "CBB", summary: "/cbb/summary.json", games: null,
     href: "/cbb/index.html", schedule: "/cbb/index.html" },
+  // Soccer Edge: Premier League, La Liga and Champions League in one games.json
+  // with no single ESPN address, so it isn't in the score ticker.
+  { sport: "Soccer", summary: "/soccer/summary.json", games: "/soccer/games.json",
+    href: "/soccer/index.html", schedule: "/schedule.html#soccer" },
 ];
 const EDGE_LIVE_POLL = 30000;   // while a game is live
 const EDGE_IDLE_POLL = 120000;  // while a game starts within EDGE_SOON

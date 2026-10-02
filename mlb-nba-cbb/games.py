@@ -34,11 +34,18 @@ SPORTS = {
     "mlb": {"path": "baseball/mlb", "params": {}},
     "nba": {"path": "basketball/nba", "params": {}},
     "nhl": {"path": "hockey/nhl", "params": {}},
+    # Soccer Edge: three competitions in one slate. With no single ESPN
+    # address, its games.json has no "espn" link and the browser shows the
+    # published file as is.
+    "soccer": {"paths": {"soccer/eng.1": "Premier League", "soccer/esp.1": "La Liga",
+                         "soccer/uefa.champions": "Champions League"}, "params": {}},
 }
 
 
 def espn_url(sport):
     s = SPORTS[sport]
+    if "path" not in s:
+        return ""
     query = "&".join(f"{k}={v}" for k, v in s["params"].items())
     return f"{ESPN}{s['path']}/scoreboard" + (f"?{query}" if query else "")
 
@@ -111,10 +118,20 @@ def is_top25(g):
 
 def load(sport):
     """The current slate: {"label", "week", "games"}, games sorted by start time."""
-    data = _get(espn_url(sport))
-    if not data:
-        return {"label": "", "week": None, "games": []}
-    games = [g for g in (parse(e) for e in data.get("events", [])) if g]
+    if "paths" in SPORTS[sport]:
+        games = []
+        for path, league in SPORTS[sport]["paths"].items():
+            data = _get(f"{ESPN}{path}/scoreboard") or {}
+            for g in (parse(e) for e in data.get("events", [])):
+                if g:
+                    g["league"] = league
+                    games.append(g)
+        data = {}
+    else:
+        data = _get(espn_url(sport))
+        if not data:
+            return {"label": "", "week": None, "games": []}
+        games = [g for g in (parse(e) for e in data.get("events", [])) if g]
     games.sort(key=lambda g: (g["start"] or "", g["id"]))
     week = (data.get("week") or {}).get("number")
     if sport in ("nfl", "cfb") and week:

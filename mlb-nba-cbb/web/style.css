@@ -121,7 +121,7 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
 .sport-switcher {
   display: flex;
   align-items: stretch;
-  gap: 4px;
+  gap: 3px;
   margin-left: auto;
   overflow-x: auto;
   scrollbar-width: none;
@@ -133,7 +133,7 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  padding: 0 14px;
+  padding: 0 11px;  /* ten tabs fit the top bar at 1100px+ */
   font-family: var(--font-head);
   font-size: 18px;
   font-weight: 700;
@@ -146,8 +146,8 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
 .sport-tab::after {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 8px;
+  right: 8px;
   bottom: 0;
   height: 3px;
   background: var(--ours);
@@ -1637,8 +1637,8 @@ header.masthead:not(.home-hero) .updated-chip { margin-top: 0; }
 }
 .slate-head p { margin: 0; max-width: 48ch; font-size: 14px; color: var(--text-muted); }
 
-.day-chips { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--rule); overflow-x: auto; scrollbar-width: none; }
-.day-chips button {
+.day-chips, .comp-chips { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--rule); overflow-x: auto; scrollbar-width: none; }
+.day-chips button, .comp-chips button {
   padding: 10px 14px;
   font: 600 14px var(--font);
   color: var(--text-muted);
@@ -1647,12 +1647,14 @@ header.masthead:not(.home-hero) .updated-chip { margin-top: 0; }
   border: 0;
   cursor: pointer;
 }
-.day-chips button span { margin-left: 6px; font-size: 12px; color: var(--text-faint); }
-.day-chips button:hover { color: var(--text); }
-.day-chips button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px var(--ours); }
+.day-chips button span, .comp-chips button span { margin-left: 6px; font-size: 12px; color: var(--text-faint); }
+.day-chips button:hover, .comp-chips button:hover { color: var(--text); }
+.day-chips button[aria-pressed="true"], .comp-chips button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px var(--ours); }
 
 .gc-day { margin-top: 26px; }
-.gc-day[hidden] { display: none; }
+.gc-day[hidden], .gc[hidden], .gc-day.is-empty { display: none; }
+/* Soccer Edge's competition buttons sit over the day buttons. */
+.comp-chips + .day-chips { margin-top: 6px; }
 .gc-day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
 .gc-day-head h3 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ours); }
 .gc-day-head span { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); }
