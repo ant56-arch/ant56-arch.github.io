@@ -7,8 +7,8 @@ catches up on whatever an earlier one missed:
   2. grade    - settles pending picks from those final scores; a postponed
                 game is voided rather than counted
   3. ratings  - every Division I team's KenPom-style ratings, four factors and
-                strength of schedule as of this morning, with Bart Torvik's
-                T-Rank alongside (cbb/ratings.json, the site's Ratings tab)
+                strength of schedule as of this morning (cbb/ratings.json,
+                the site's Ratings tab)
   4. picks    - gives every game today between two Division I teams a win
                 chance, a projected score and a pick, plus a moneyline pick
                 against the book price on ESPN's scoreboard (see
@@ -30,7 +30,6 @@ import espn  # noqa: E402
 import model as M  # noqa: E402
 import moneyline  # noqa: E402
 import store  # noqa: E402
-import torvik  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -123,19 +122,13 @@ def write_ratings(league, season, games, final=False):
     table = M.team_table(league, day)
     if not table:
         return
-    trank = torvik.fetch(season)
-    matched = torvik.attach(table, trank)
-    snapshot = torvik.by_team_id(trank, store.name_to_id(games, torvik.normalize))
-    if snapshot and not final:  # the model learns from these once enough games have one
-        store.save_trank(season, TODAY, snapshot)
     r = league.ratings(day)
     save(RATINGS_FILE, {
         "date": games[-1]["date"] if final else TODAY, "season": season, "final": final, "teams": table,
         "average": {"eff": round(r["mu"], 1), "tempo": round(r["mu_t"], 1),
                     "home_court": round(2 * r["h"] * r["mu_t"] / 100, 1)},
-        "trank_matched": matched,
     }, indent=1)
-    print(f"Ratings for {len(table)} teams ({matched} matched to T-Rank)")
+    print(f"Ratings for {len(table)} teams")
 
 
 # ── 4. picks ─────────────────────────────────────────────────────────────────
@@ -212,7 +205,7 @@ def main():
         store.roll_up_days()  # the season is over: its day files become one season file
         # Until the next season starts, the Ratings tab shows last season's final ratings.
         if games and load(RATINGS_FILE, {}).get("season") != games[-1]["season"]:
-            league = M.League((weights or {}).get("league"), M.division_one(games), store.load_trank())
+            league = M.League((weights or {}).get("league"), M.division_one(games))
             for g in games:
                 if g["home_pts"] != g["away_pts"]:
                     league.update(g, box.get(g["id"]))
@@ -221,7 +214,7 @@ def main():
             except Exception as e:
                 print(f"  ratings failed: {e}")
     elif games or weights:
-        league = M.League((weights or {}).get("league"), M.division_one(games), store.load_trank())
+        league = M.League((weights or {}).get("league"), M.division_one(games))
         for g in games:
             if g["date"] < TODAY and g["home_pts"] != g["away_pts"]:
                 league.update(g, box.get(g["id"]))

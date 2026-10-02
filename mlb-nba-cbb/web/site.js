@@ -201,13 +201,6 @@ function edgeFetchJson(url, ms) {
     .finally(() => clearTimeout(timer));
 }
 
-function edgeFetchSummaries() {
-  if (!window.edgeSummaries) {
-    window.edgeSummaries = Promise.all(EDGE_SITES.map(site => edgeFetchJson(site.summary)));
-  }
-  return window.edgeSummaries;
-}
-
 function edgeNode(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;

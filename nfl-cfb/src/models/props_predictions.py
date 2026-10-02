@@ -157,7 +157,7 @@ def project_player(row, team, opponent, team_stats, league_avgs, matchup_coefs, 
         "team": team, "opponent": opponent,
         "injury_status": injury_status if injury_status else "",
         "games_played": row.get("games_played", 0),
-        # Matchup multiplier BEFORE the injury discount, so the email can show
+        # Matchup multiplier BEFORE the injury discount, so the site can show
         # "tough/soft matchup" as a pure matchup signal, separate from injury risk.
         "matchup_mult_rec": round(pass_mult / injury_disc, 3) if injury_disc else None,
         "matchup_mult_rush": round(rush_mult / injury_disc, 3) if injury_disc else None,

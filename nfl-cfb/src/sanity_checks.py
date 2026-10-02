@@ -1,13 +1,12 @@
 """
 sanity_checks.py
-Runs basic plausibility checks on our own output before it goes out in an
-email. Catches the "something upstream broke and now every spread is 400
+Runs basic plausibility checks on our own output before it goes on the
+site. Catches the "something upstream broke and now every spread is 400
 points" class of bug, which a crashed script wouldn't catch (the script ran
 fine, it just produced nonsense).
 
 Exits with a non-zero status if something looks broken, which fails the
-GitHub Actions step and triggers the alert email instead of sending a
-garbage picks email.
+GitHub Actions step instead of publishing garbage picks.
 """
 
 import pandas as pd

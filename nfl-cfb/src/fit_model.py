@@ -254,7 +254,6 @@ def model_predict(feats, coefs):
 def evaluate_blend(model_spread, vegas_spread, actual_margin, model_wp, vegas_wp, home_won, sigma):
     """For every blend weight in BLEND_GRID, compute spread MAE and win-prob
     Brier score. Returns the grid as a DataFrame plus the best weight for each."""
-    from scipy.stats import norm
     rows = []
     for w in BLEND_GRID:
         blended_spread = w * model_spread + (1 - w) * vegas_spread
