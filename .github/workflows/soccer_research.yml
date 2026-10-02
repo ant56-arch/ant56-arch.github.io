@@ -14,6 +14,13 @@ on:
       seasons:
         description: "Season start years, comma-separated (2025 = 2025-26). Blank = 2015-16 through this season."
         required: false
+      experiments:
+        description: "Also compare model recipes on the last two finished seasons (research/experiments.py)"
+        type: boolean
+        default: false
+      recipes:
+        description: "Optional JSON list of {name, recipe} for the comparison (blank = the built-in list)"
+        required: false
 
 # This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
 defaults:
@@ -41,6 +48,12 @@ jobs:
         env:
           SEASONS: ${{ inputs.seasons }}
         run: python soccer/research/pull_data.py
+
+      - name: Compare recipes
+        if: ${{ inputs.experiments }}
+        env:
+          EXPERIMENTS: ${{ inputs.recipes }}
+        run: python soccer/research/experiments.py
 
       - name: Retrain model
         env:

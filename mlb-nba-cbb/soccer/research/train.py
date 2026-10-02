@@ -4,8 +4,9 @@ built when the change is proven on recent matches.
 
 The daily run (predict.py) refits every club's ratings each morning from the
 results so far, with the recipe saved in soccer/model_weights.json: how fast
-old results fade (half_life, in days) and how hard a club is pulled toward its
-league's average (reg). This script picks that recipe. Each run:
+old results fade (half_life, in days), how hard a club is pulled toward its
+league's average (reg), how much the rating target leans on shots on target
+(xg) and whether each competition has its own home edge (home_reg). This script picks that recipe. Each run:
 
   1. Holds out the most recent HOLDOUT_MATCHES matches (every league).
   2. Scores every candidate recipe in RECIPES, and the live one, on the
@@ -54,7 +55,11 @@ BACKTEST_COMPS = ("E0", "SP1", "UCL")
 COMP_NAMES = {"E0": "Premier League", "SP1": "La Liga", "UCL": "Champions League"}
 BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 
-RECIPES = [{"half_life": h, "reg": r, "years": 3} for h in (120, 180, 270, 400) for r in (2.0, 5.0, 10.0)]
+# Candidates: how fast results fade, how hard clubs are pulled to their league
+# average, and how much the rating target leans on the shots-on-target
+# expected-goals proxy (0 = goals only); every one has per-competition home edges.
+RECIPES = [{"half_life": h, "reg": r, "years": 3, "xg": x, "home_reg": 100.0}
+           for h in (270, 400, 550) for r in (3.0, 5.0, 10.0) for x in (0.0, 0.3)]
 
 
 def comp_of(m):
@@ -220,6 +225,8 @@ def coef(r):
     out = {"home": round(math.exp(r.mu + r.home) - math.exp(r.mu), 4), "rho": round(r.rho, 4),
            "goals": round(math.exp(r.mu), 4)}
     out.update({f"league_{k}": round(v, 4) for k, v in r.league_strengths().items()})
+    if r.recipe.get("home_reg") is not None:
+        out.update({f"home_{k}": round(v, 4) for k, v in r.home_edges().items()})
     return out
 
 
@@ -233,7 +240,8 @@ def summary(lines):
 
 
 def recipe_name(r):
-    return f"half-life {r['half_life']} days, pull {r['reg']:g}, {r['years']} years"
+    extra = (f", shots {r['xg']:g}" if r.get("xg") else "") + (", home by comp" if r.get("home_reg") is not None else "")
+    return f"half-life {r['half_life']} days, pull {r['reg']:g}, {r['years']} years{extra}"
 
 
 def main():
