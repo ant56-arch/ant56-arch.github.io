@@ -44,9 +44,13 @@ TRACKING_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "tracking")
 RATINGS_PATH = os.path.join(TRACKING_DIR, "cfb_ratings.json")
 LOG_PATH = os.path.join(TRACKING_DIR, "cfb_ratings_log.csv")
 
-HALF_LIFE_WEEKS = 6
-CARRYOVER = 0.5
-RIDGE = 3.0
+# Picked by the --backtest walk-forward on 2022-2026 (2,615 FBS-vs-FBS games):
+# 72.4% of winners picked, 12.7-point average miss (Vegas: 73.5%, 11.9).
+# Slow forgetting within a season and a light ridge did best; capping blowout
+# margins made it worse.
+HALF_LIFE_WEEKS = 30
+CARRYOVER = 0.6
+RIDGE = 0.5
 MARGIN_CAP = None            # blowouts beyond this margin count as this margin (None = no cap)
 FCS = "FCS"
 LOG_DAYS_AHEAD = 8
@@ -244,8 +248,8 @@ def backtest(seasons_back=4):
     done["t"] = _order(done)
     test = done[done["season"] > years[0]]
 
-    for hl, carry, ridge, cap in [(h, c, r, k) for h in (10, 16, 30) for c in (0.5, 0.7)
-                                  for r in (0.3, 1.0) for k in (None, 28)]:
+    for hl, carry, ridge, cap in [(h, c, r, None) for h in (16, HALF_LIFE_WEEKS, 60)
+                                  for c in (0.4, CARRYOVER, 0.8) for r in (0.2, RIDGE)]:
             if True:
                 rows = []
                 for (s, t), wk in test.groupby(["season", "t"]):

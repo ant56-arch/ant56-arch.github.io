@@ -940,8 +940,9 @@ def build_ratings_page(sport, log):
     intro = (f'{line}<p class="muted">Each team\'s offense is the points it would score against an average FBS '
              f'defense, its defense the points it would allow to an average FBS offense (lower is better), and '
              f'overall is the difference: its expected margin against an average FBS team on a neutral field. '
-             f'Every score is adjusted for who the team played, recent games count most, and last season fades '
-             f'out as this one goes. Home field is worth {data["home_field"]:.1f} points. These ratings are being '
+             f'Every score is adjusted for who the team played, recent games count a little more, and last '
+             f'season fades out as this one goes. Tested on 2022-2026 games, they picked 72% of FBS winners (the '
+             f'Vegas favorite: 74%). Home field is worth {data["home_field"]:.1f} points. These ratings are being '
              f'tracked on their own and don\'t feed the picks yet.</p>')
 
     rows = ""
