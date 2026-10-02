@@ -39,8 +39,9 @@ def get(path, **params):
             r.raise_for_status()
             return r.json()
         except requests.RequestException as e:
-            if attempt == 3:
-                raise
+            code = getattr(getattr(e, "response", None), "status_code", None)
+            if attempt == 3 or (code and 400 <= code < 500 and code != 429):
+                raise  # a bad request won't get better by asking again
             print(f"  retrying {path}: {e}")
             time.sleep(2 ** attempt)
 
@@ -204,8 +205,17 @@ def scoreboard_range(comp_code, first, last):
     end = date.fromisoformat(last)
     while d <= end:
         to = min(d + timedelta(days=6), end)
-        data = get(f"{COMPS[comp_code]['path']}/scoreboard", dates=f"{d:%Y%m%d}-{to:%Y%m%d}", limit=500)
-        for ev in data.get("events", []):
+        try:
+            events = get(f"{COMPS[comp_code]['path']}/scoreboard", dates=f"{d:%Y%m%d}-{to:%Y%m%d}",
+                         limit=100).get("events", [])
+        except requests.HTTPError:
+            # ESPN turns some date ranges down (400); ask one day at a time instead.
+            events = []
+            for i in range((to - d).days + 1):
+                day = d + timedelta(days=i)
+                events += get(f"{COMPS[comp_code]['path']}/scoreboard", dates=f"{day:%Y%m%d}",
+                              limit=100).get("events", [])
+        for ev in events:
             try:
                 m = parse_event(ev, comp_code)
             except Exception as e:
