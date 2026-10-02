@@ -30,19 +30,21 @@ import hashlib
 import json
 import os
 import shutil
+import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
-import extras
-import games as games_mod
-import model_page
-import moneyline
-
 ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "shared"))
+import assets  # noqa: E402
+import extras  # noqa: E402
+import games as games_mod  # noqa: E402
+import model_page  # noqa: E402
+import moneyline  # noqa: E402
+
 WEB_DIR = os.path.join(ROOT, "web")
-ASSETS = ("style.css", "site.js", "nba.js")  # nba.js also renders the Games tab's day picker
 DIST_DIR = os.path.join(ROOT, "dist")
 ET = ZoneInfo("America/New_York")
 NOW = datetime.now(ET)
@@ -74,12 +76,26 @@ def load_json(name, default):
         return json.load(f)
 
 
+def asset_files():
+    """What every MLB, NBA, NHL and CBB page loads: style.css and site.js built
+    from shared/ (see shared/assets.py), and nba.js, which also renders the
+    Games tab's day picker."""
+    return {"style.css": assets.style(os.path.join(WEB_DIR, "sport.css")),
+            "site.js": assets.script(os.path.join(WEB_DIR, "sport.js")),
+            "nba.js": assets.read(os.path.join(WEB_DIR, "nba.js"))}
+
+
 def asset_version():
     h = hashlib.md5()
-    for name in ASSETS:
-        with open(os.path.join(WEB_DIR, name), "rb") as f:
-            h.update(f.read())
+    for text in asset_files().values():
+        h.update(text.encode("utf-8"))
     return h.hexdigest()[:10]
+
+
+def write_assets(out_dir):
+    for name, text in asset_files().items():
+        with open(os.path.join(out_dir, name), "w", encoding="utf-8") as f:
+            f.write(text)
 
 
 def script_json(data):
@@ -250,15 +266,6 @@ def record_band_html(eyebrow, value=None, pct_text="", since="", side="", wait="
     </div></section>"""
 
 
-def game_res(p):
-    """HIT / MISS for a graded game pick, NO DECISION for a void one."""
-    if p.get("void"):
-        return pill("NO DECISION", "void")
-    if p.get("correct") is None:
-        return ""
-    return pill("HIT", "positive") if p["correct"] else pill("MISS", "danger")
-
-
 def result_html(p):
     if p.get("void"):
         return pill("NO DECISION", "void")
@@ -300,10 +307,6 @@ def picks_list(picks):
       <span class="pl-res">{result_html(p)}</span>
     </summary>{pick_details(p)}</details></li>"""
     return f'<ul class="pick-list ranked">{rows}</ul>'
-
-
-def game_file(p):
-    return f"game-{p['game_id']}.html"
 
 
 def hit_spark(g):
@@ -668,39 +671,10 @@ def starter_text(sp):
     return f"{name} ({sp['era']:.2f})" if sp.get("era") is not None else f"{name} (1st start)"
 
 
-def game_meta(p):
-    parts = []
-    if p.get("round"):
-        parts.append(p["round"])
-    if p.get("doubleheader"):
-        parts.append(f"Game {p['doubleheader']}")
-    parts.append(f"{first_pitch(p)} ET")
-    if p.get("type") == "regular":
-        parts.append(f"{p['away']} {p.get('away_record', '')}, {p['home']} {p.get('home_record', '')}")
-    return " · ".join(parts)
-
-
-def game_result_html(p):
-    if p.get("void"):
-        return pill("NO DECISION", "void")
-    if p.get("correct") is None:
-        return f'<span class="faint">{DASH}</span>'
-    score = f"{p['away']} {p['away_runs']}, {p['home']} {p['home_runs']} "
-    return escape(score) + (pill("WIN", "positive") if p["correct"] else pill("LOSS", "danger"))
-
-
 # ── Moneyline picks (moneyline.py), shared with NBA Edge ─────────────────────
 ML_NOTE = ("Moneyline bet is the model's pick to win at its moneyline price (from ESPN's scoreboard). Value "
            "means the model gives that team at least 6 points more win chance than the price implies (vig "
            "removed).")
-
-
-def ml_result_html(ml, void=False):
-    if void or ml.get("void"):
-        return pill("NO DECISION", "void")
-    if ml.get("won") is None:
-        return ""
-    return pill("WON", "positive") if ml["won"] else pill("LOST", "danger")
 
 
 def locked_text(p):
@@ -734,22 +708,6 @@ def lock_note(p):
     if start <= NOW or p.get("correct") is not None or p.get("void"):
         return f'<div class="lock-note locked">Locked {when}</div>'
     return f'<div class="lock-note">Set {when} &middot; locks at the start</div>'
-
-
-def ml_cell(p):
-    """The Moneyline bet column, spelled out: "BUF to win +135" (the model's
-    pick, VALUE at a 6+ point edge), what the price pays, our chance vs. the
-    price's, and once graded whether it won."""
-    ml = p.get("ml")
-    if not ml:
-        return '<td data-label="Moneyline bet" class="ml-cell"><div class="ml"><span class="faint">No odds</span></div></td>'
-    value = " " + pill("VALUE", "primary") if ml.get("value") else ""
-    res = ml_result_html(ml, p.get("void"))
-    other = p.get("home") if ml["team"] == p.get("away") else p.get("away")
-    subs = "".join(f'<div class="ml-sub">{escape(line)}</div>' for line in moneyline.detail_lines(ml, other))
-    return f"""<td data-label="Moneyline bet" class="ml-cell"><div class="ml">
-            <div class="ml-pick">{escape(moneyline.text(ml))}{value}{' ' + res if res else ''}</div>
-            {subs}{lock_note(p)}</div></td>"""
 
 
 def ml_record_html(picks, empty="No moneyline picks graded yet this season."):
@@ -1475,8 +1433,7 @@ def main():
     with open(os.path.join(DIST_DIR, "summary.json"), "w") as f:
         json.dump(build_summary(history, model, team_history), f, indent=1)
     games_mod.write_json(os.path.join(DIST_DIR, "games.json"), "mlb", games_slate, NOW.isoformat())
-    for asset in ASSETS:
-        shutil.copy(os.path.join(WEB_DIR, asset), os.path.join(DIST_DIR, asset))
+    write_assets(DIST_DIR)
     print(f"Built {len(pages)} pages in {DIST_DIR}")
 
 

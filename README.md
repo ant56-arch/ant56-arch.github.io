@@ -30,7 +30,18 @@ GitHub Pages serves the `site` branch. Nobody edits that branch by hand:
 Each workflow publishes only its own sports' folders, so one sport failing
 can't take another down; a sport whose build fails keeps its last pages up.
 
-The home page is plain static files with no build step. Each card fills in
+## Shared code
+
+`shared/` holds the one copy of what every site uses: the base stylesheet
+(`base.css`), the score ticker, settings and phone menu (`edge.js`), and the
+Python the builders import (`games.py`, `extras.py`, `model_page.py`).
+`shared/assets.py` puts each site's `style.css` and script together from those
+plus the site's own part (`home-page.css`/`home-page.js` for the home page,
+`web/sport.css`/`web/sport.js` in each sport folder). Change the shared files
+once and every site picks it up on its next publish.
+
+The home page is static files; `publish_site.sh` adds its `style.css` and
+`home.js` from `shared/assets.py`. Each card fills in
 from the `summary.json` each site publishes next to its pages
 (`/nfl/summary.json`, `/cfb/summary.json`, `/mlb/summary.json`,
 `/nba/summary.json`, `/cbb/summary.json`), and the scoreboard strip and

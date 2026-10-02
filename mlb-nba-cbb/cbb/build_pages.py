@@ -7,8 +7,8 @@ cbb/picks_history.json, cbb/ratings.json and cbb/model_weights.json and writes:
   index.html    - today's games between Division I teams with a pick, win
                   chance, projected score and moneyline pick for each, and the
                   record (game picks and moneyline)
-  ratings.html  - every Division I team's KenPom-style ratings, four factors,
-                  strength of schedule and T-Rank, sortable
+  ratings.html  - every Division I team's KenPom-style ratings, four factors and
+                  strength of schedule, sortable
   history.html  - any past day's picks and how they did
   accuracy.html - predicted vs. actual over the season, and last season's backtest
   model.html    - how the model retrains itself
@@ -30,16 +30,14 @@ from html import escape
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from build_site import (bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, DASH, ET,  # noqa: E402
+from build_site import (asset_version, write_assets, bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, DASH, ET,  # noqa: E402
                         NOW, card, ml_day, ml_history, pct, record_band_html, script_json, statline)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
 
-WEB_DIR = os.path.join(ROOT, "web")
 OUT_DIR = os.path.join(ROOT, "dist", "cbb")
-ASSETS = ("style.css", "site.js", "nba.js")
 
 HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
@@ -65,14 +63,6 @@ def load_json(path, default):
     with open(path) as f:
         return json.load(f)
 
-
-def asset_version():
-    import hashlib
-    h = hashlib.md5()
-    for name in ASSETS:
-        with open(os.path.join(WEB_DIR, name), "rb") as f:
-            h.update(f.read())
-    return h.hexdigest()[:10]
 
 
 def day_label(iso):
@@ -171,7 +161,7 @@ def page_shell(title, active, body_html, charts=False):
 
 
 def footer():
-    return slim_footer("CBB Edge", "Scores, box scores and moneyline prices via ESPN; T-Rank via barttorvik.com. Not affiliated with KenPom.")
+    return slim_footer("CBB Edge", "Scores, box scores and moneyline prices via ESPN. Not affiliated with KenPom.")
 
 
 # ── Home ─────────────────────────────────────────────────────────────────────
@@ -258,7 +248,7 @@ def ratings_preview(ratings, n=25):
     if not teams:
         return ""
     return card(f"Top {len(teams)} by Adjusted Efficiency",
-                f"{as_of(ratings)}. Every team, the four factors and T-Rank are on the Ratings tab.",
+                f"{as_of(ratings)}. Every team and the four factors are on the Ratings tab.",
                 ratings_table(teams, compact=True))
 
 
@@ -273,7 +263,6 @@ def ratings_table(teams, compact=False):
 
     rows = ""
     for t in teams:
-        tr = t.get("trank") or {}
         o, d = t["off"], t["def"]
         row = (cell("rank", t["rank"], t["rank"])
                + f'<td data-key="team" data-value="{escape(t["name"])}"><span class="matchup-team">{logo(t["id"])}'
@@ -287,9 +276,6 @@ def ratings_table(teams, compact=False):
                     + cell("tov_o", o["tov"], ff(o["tov"])) + cell("tov_d", d["tov"], ff(d["tov"]))
                     + cell("orb_o", o["orb"], ff(o["orb"])) + cell("orb_d", d["orb"], ff(d["orb"]))
                     + cell("ftr_o", o["ftr"], ff(o["ftr"])) + cell("ftr_d", d["ftr"], ff(d["ftr"])))
-        row += cell("trank", tr.get("rank") or "", tr.get("rank") or DASH)
-        if not compact:
-            row += cell("barthag", tr.get("barthag") or "", f"{tr['barthag']:.3f}" if tr.get("barthag") else DASH)
         rows += f"<tr>{row}</tr>"
 
     def th(key, label, title="", cls="num"):
@@ -305,9 +291,6 @@ def ratings_table(teams, compact=False):
         head += (th("sos", "SOS", "Average AdjEM of opponents played")
                  + th("efg_o", "eFG% O") + th("efg_d", "eFG% D") + th("tov_o", "TO% O") + th("tov_d", "TO% D")
                  + th("orb_o", "OR% O") + th("orb_d", "OR% D") + th("ftr_o", "FTR O") + th("ftr_d", "FTR D"))
-    head += th("trank", "T-Rank", "Bart Torvik's T-Rank ranking")
-    if not compact:
-        head += th("barthag", "Barthag", "T-Rank's chance of beating an average team on a neutral court")
     return f"""<table class="data ratings-table" data-sortable>
       <thead><tr>{head}</tr></thead>
       <tbody>{rows}</tbody>
@@ -329,7 +312,7 @@ def build_ratings(ratings):
       of {avg.get('tempo', DASH)}, and home court is worth about {avg.get('home_court', DASH)} points. The four
       factors are effective FG%, turnover rate, offensive rebound rate and free throw rate (FTA per FGA), for the
       team's offense (O) and what its defense allows (D), not adjusted for opponents. SOS is the average AdjEM of
-      the opponents played. T-Rank and Barthag are Bart Torvik's (barttorvik.com). Early in the season every team
+      the opponents played. Early in the season every team
       starts from part of last season's rating. Select a column header to sort.</div>"""
     body = card("Ratings", f"All {len(teams)} Division I teams, best first. {as_of(ratings)}.",
                 ratings_table(teams) + note)
@@ -483,7 +466,6 @@ FACTOR_LABELS = {
     "ftr": ("Free throw rate matchup", "points per percentage point of edge"),
     "recent": ("Last 5 games form gap", "points per point of differential"),
     "rest": ("Extra rest", "points per extra day off vs. the opponent"),
-    "trank": ("T-Rank vs. our ratings", "per point T-Rank's projected margin differs from ours"),
 }
 
 
@@ -622,8 +604,7 @@ def main():
             f.write(html)
     with open(os.path.join(OUT_DIR, "summary.json"), "w") as f:
         json.dump(build_summary(history, model), f, indent=1)
-    for asset in ASSETS:
-        shutil.copy(os.path.join(WEB_DIR, asset), os.path.join(OUT_DIR, asset))
+    write_assets(OUT_DIR)
     print(f"Built {len(pages)} CBB pages in {OUT_DIR}")
 
 

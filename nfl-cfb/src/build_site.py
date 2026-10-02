@@ -1,7 +1,7 @@
 """
 build_site.py
-Generates the static Edge website (dist/) from the same processed data the
-email used to read - the email is retired; this is the sole output now.
+Generates the static Edge website (dist/) from the processed data the
+pipeline writes.
 
 Two sports, same page structure, kept in separate subdirectories so each is
 independently browsable and linkable:
@@ -38,16 +38,19 @@ dist/ directory - the workflow's own steps upload and deploy it.
 from html import escape
 import math
 import re
+import sys
 import pandas as pd
 import numpy as np
-import extras
-import games as games_mod
-import model_page
-import moneyline
 import json
 import os
-import shutil
 import hashlib
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared"))
+import assets  # noqa: E402
+import extras  # noqa: E402
+import games as games_mod  # noqa: E402
+import model_page  # noqa: E402
+import moneyline  # noqa: E402
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -76,7 +79,6 @@ SPORTS = {
         "vegas_comparison_csv": "vegas_comparison.csv",
         "predictions_log_csv": "predictions_log.csv",
         "accuracy_summary_json": "accuracy_summary.json",
-        "top25_summary_json": None,
         "coefficients_json": "fitted_coefficients.json",
         "live_tracking_start_season": 2026,
         "ats_since_year": 2024,
@@ -95,7 +97,6 @@ SPORTS = {
         "vegas_comparison_csv": "cfb_vegas_comparison.csv",
         "predictions_log_csv": "cfb_predictions_log.csv",
         "accuracy_summary_json": "cfb_accuracy_summary.json",
-        "top25_summary_json": "cfb_top25_summary.json",
         "coefficients_json": "fitted_cfb_coefficients.json",
         "live_tracking_start_season": 2026,
         "ats_since_year": 2026,
@@ -234,15 +235,6 @@ def spread_result(r):
         return None
     return (cover > 0) == (float(model) > float(vegas))
 
-def spread_record(log, season):
-    """(wins, losses, pushes) for this season's spread picks against Vegas."""
-    if log is None or log.empty or "actual_margin" not in log.columns:
-        return 0, 0, 0
-    done = log[(log["season"] == season) & log["actual_margin"].notna() & log["vegas_home_favored_by"].notna()
-               & log["model_spread"].notna() & (log["model_spread"] != log["vegas_home_favored_by"])]
-    results = [spread_result(r) for _, r in done.iterrows()]
-    return results.count(True), results.count(False), results.count(None)
-
 def spread_sigma(sport):
     """The model's typical miss on the margin, in points (margin_std_dev)."""
     coefs = load_coefficients(sport)
@@ -286,11 +278,21 @@ def asset_version():
     global _ASSET_VERSION
     if _ASSET_VERSION is None:
         h = hashlib.md5()
-        for name in ("style.css", "site.js"):
-            with open(os.path.join(WEB_SRC_DIR, name), "rb") as f:
-                h.update(f.read())
+        for text in asset_files().values():
+            h.update(text.encode("utf-8"))
         _ASSET_VERSION = h.hexdigest()[:10]
     return _ASSET_VERSION
+
+def asset_files():
+    """style.css and site.js, built from shared/ plus web/sport.css and
+    web/sport.js (see shared/assets.py)."""
+    return {"style.css": assets.style(os.path.join(WEB_SRC_DIR, "sport.css")),
+            "site.js": assets.script(os.path.join(WEB_SRC_DIR, "sport.js"))}
+
+def write_assets(out_dir):
+    for name, text in asset_files().items():
+        with open(os.path.join(out_dir, name), "w", encoding="utf-8") as f:
+            f.write(text)
 
 def load_data(sport):
     games_path = os.path.join(PROCESSED_DIR, sport["game_predictions_csv"])
@@ -318,20 +320,7 @@ def load_data(sport):
     log_path = os.path.join(TRACKING_DIR, sport["predictions_log_csv"])
     log = pd.read_csv(log_path) if os.path.exists(log_path) else pd.DataFrame()
 
-    top25_summary = None
-    if sport.get("top25_summary_json"):
-        top25_path = os.path.join(TRACKING_DIR, sport["top25_summary_json"])
-        if os.path.exists(top25_path):
-            with open(top25_path) as f:
-                top25_summary = json.load(f)
-
-    return games, props, comparison, accuracy_summary, log, top25_summary
-
-def next_week_games(games):
-    if games.empty:
-        return games
-    nxt = games.sort_values(["season", "week"]).iloc[0][["season", "week"]]
-    return games[(games["season"] == nxt["season"]) & (games["week"] == nxt["week"])]
+    return games, props, comparison, accuracy_summary, log
 
 def format_kickoff(weekday, gametime):
     if not weekday or pd.isna(weekday) or not gametime or pd.isna(gametime):
@@ -416,7 +405,6 @@ def page_shell(sport, title, active_tab, body_html):
         for href, tab, label in tabs
     )
 
-    other_slug = "cfb" if sport["slug"] == "nfl" else "nfl"
     other_page = active_tab + ".html" if active_tab else "index.html"
     # The other football sport's tab keeps you on the same page when it has one.
     sport_switcher = sport_tabs(
@@ -598,73 +586,8 @@ def record_band(sport, rec):
       <div class="rb-side">{side_html}</div>
     </div></section>"""
 
-def build_edge_cards(sport, comparison, week_games, max_cards=3):
-    if comparison is None or comparison.empty:
-        return ""
-    week_comparison = comparison.merge(week_games[["home_team", "away_team"]], on=["home_team", "away_team"], how="inner")
-    notable = week_comparison[week_comparison["has_notable_edge"]].copy()
-    if notable.empty:
-        return ""
-    notable["sort_key"] = notable["spread_edge"].abs() + notable["picks_flip"].astype(int) * 10
-    top = notable.sort_values("sort_key", ascending=False).head(max_cards)
-
-    rows = ""
-    for _, g in top.iterrows():
-        flip = g["model_favored_team"] != g["vegas_favored_team"]
-        flip_tag = f' {pill("DIFFERENT PICK", "danger")}' if flip else ""
-        away_label, home_label = team_short(sport, g["away_team"]), team_short(sport, g["home_team"])
-        model_label, vegas_label = team_short(sport, g["model_favored_team"]), team_short(sport, g["vegas_favored_team"])
-        rows += f"""<tr>
-          <td><b>{away_label} @ {home_label}</b>{flip_tag}</td>
-          <td data-label="Our model" class="num accent">{model_label} -{g['model_favored_by']:.1f}</td>
-          <td data-label="Vegas" class="num market-color">{vegas_label} -{abs(g['vegas_home_favored_by']):.1f}</td>
-          <td data-label="Gap" class="num">{abs(g['spread_edge']):.1f} pts</td>
-        </tr>"""
-
-    table = f"""<table class="data responsive-stack">
-      <thead><tr><th>Matchup</th><th class="num">Our model</th><th class="num">Vegas</th><th class="num">Gap</th></tr></thead>
-      <tbody>{rows}</tbody>
-    </table>"""
-    return card("Biggest Gaps vs. Vegas", "This week's games where our model's line is furthest from the market's", table)
-
 def pct(x):
     return f"{x:.0%}" if x is not None else DASH
-
-def record_row(label, rec):
-    """One row of a straight-up / against-the-spread record table."""
-    ats = rec.get("ats_record") if rec.get("ats_accuracy") is not None else None
-    return f"""<tr>
-      <td class="row-label">{label}</td>
-      <td data-label="Straight-up" class="num">{rec['record']}</td>
-      <td data-label="Win %" class="num">{pct(rec.get('pick_accuracy'))}</td>
-      <td data-label="Against the spread" class="num">{ats or DASH}</td>
-      <td data-label="Cover %" class="num">{pct(rec.get('ats_accuracy'))}</td>
-      <td data-label="Avg. spread miss" class="num">{rec['spread_mae']:.1f} pts</td>
-    </tr>"""
-
-def record_table(rows_html):
-    return f"""<table class="data record-table responsive-stack">
-      <thead><tr><th></th><th class="num">Straight-up</th><th class="num">Win %</th>
-        <th class="num">Against the spread</th><th class="num">Cover %</th><th class="num">Avg. spread miss</th></tr></thead>
-      <tbody>{rows_html}</tbody>
-    </table>"""
-
-def build_top25_block(top25_summary):
-    """AP Top 25 teams' Vegas closing-line record since 2024 - a separate,
-    much larger historical sample than the CFB tracker's own live history
-    (which only starts whenever CFBD_API_KEY was added this season), seeded
-    by backfill_cfb_top25.py. Vegas's record, not ours, disclosed as such -
-    same framing as the main Track Record section."""
-    if not top25_summary:
-        return ""
-    since = top25_summary["since_year"]
-    poll_note = f" (as of the {top25_summary['poll_season']} week {top25_summary['poll_week']} poll)" if top25_summary.get("poll_week") else ""
-    table = record_table(record_row(f"{since} to now, {top25_summary['n_games']} games", top25_summary))
-    return f"""<div class="section-label">AP Top 25: Vegas record, {since} to now</div>
-    {table}
-    <div class="table-footnote">Vegas's closing-line record in games involving this week's AP Top 25 teams{poll_note}.
-      This is the betting market's record, not our model's, and it covers more seasons than our live tracking.
-      Straight-up means the favorite won. Against the spread means the favorite won by more than the line.</div>"""
 
 ML_EMPTY = "No moneyline picks graded yet this season."
 
@@ -1417,7 +1340,7 @@ def attach_game_picks(sport, slate, games, log, comparison):
 
 def build_sport_pages(sport):
     print(f"Loading {sport['wordmark']} data...")
-    games, props, comparison, accuracy_summary, log, top25_summary = load_data(sport)
+    games, props, comparison, accuracy_summary, log = load_data(sport)
     slate = attach_game_picks(sport, games_mod.load(sport["slug"]), games, log, comparison)
     espn = slate["games"]
 
@@ -1441,8 +1364,7 @@ def build_sport_pages(sport):
         print(f"  Wrote {sport['slug']}/{filename}")
     # Each sport folder carries its own copy of the assets, so it can be
     # published on its own (/nfl/ and /cfb/ on ant56-arch.github.io).
-    for asset in ["style.css", "site.js"]:
-        shutil.copy(os.path.join(WEB_SRC_DIR, asset), os.path.join(out_dir, asset))
+    write_assets(out_dir)
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump(build_summary(sport, games, log, comparison, accuracy_summary), f, indent=1)
     print(f"  Wrote {sport['slug']}/summary.json")
@@ -1466,8 +1388,7 @@ def main():
             f.write(html)
         print(f"  Wrote {filename}")
 
-    for asset in ["style.css", "site.js"]:
-        shutil.copy(os.path.join(WEB_SRC_DIR, asset), os.path.join(DIST_DIR, asset))
+    write_assets(DIST_DIR)
     print("  Copied static assets")
 
     print(f"\nSite built in {DIST_DIR}")

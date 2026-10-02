@@ -28,15 +28,10 @@ Features are home-minus-away and favor the home team when positive:
               team's defense, season to date, shrunk toward average early on
   recent      point differential over the last 5 games, shrunk the same way
   rest        days since the last game (capped at 4)
-  trank       how much Bart Torvik's T-Rank disagrees with our ratings: its
-              projected neutral-court margin minus em, from the latest T-Rank
-              snapshot before the game day; 0 when there isn't one, so the
-              model falls back on our ratings
 The model predicts the home team's margin; the win chance is the normal CDF of
 margin / sigma.
 """
 
-import bisect
 import math
 from collections import defaultdict
 from datetime import date
@@ -57,8 +52,7 @@ DI_MIN_GAMES = 5  # games in a season that make a team Division I (ESPN lists D-
 # values and saves the winners with the model as "league".
 DEFAULT_PARAMS = {"half_life": 60, "carry": 0.6, "prior": 4, "elo_k": ELO_K, "elo_carry": ELO_CARRY}
 
-FEATURES = ["home_court", "em", "elo", "efg", "tov", "orb", "ftr", "recent", "rest", "trank"]
-TRANK_MAX_AGE = 7  # days a T-Rank snapshot stays usable
+FEATURES = ["home_court", "em", "elo", "efg", "tov", "orb", "ftr", "recent", "rest"]
 
 # League-average four factors, used to shrink small samples.
 AVG = {"efg": 0.505, "tov": 0.175, "orb": 0.29, "ftr": 0.32}
@@ -110,11 +104,9 @@ def _solve(n, cols, vals, y, w, prior, lam, fixed_prior, fixed_lam):
 
 
 class League:
-    def __init__(self, params=None, di=None, trank=None):
+    def __init__(self, params=None, di=None):
         self.p = {**DEFAULT_PARAMS, **(params or {})}
         self.di = di or {}  # season -> Division I team ids (division_one)
-        self.trank = trank or {}  # date -> {team id: [adj_o, adj_d, barthag]} (store.load_trank)
-        self.trank_days = sorted(self.trank)
         self.season = None
         self.elo = defaultdict(lambda: ELO_START)
         self.names = {}  # team id -> (abbr, name)
@@ -257,17 +249,6 @@ class League:
             s[f"{side}_fta"] += fta
         self.factor_games[team] += 1
 
-    # ── T-Rank ──
-    def trank_snapshot(self, day):
-        """The latest T-Rank snapshot from before `day`, if it's recent enough."""
-        i = bisect.bisect_left(self.trank_days, day) - 1
-        if i < 0:
-            return None
-        d = self.trank_days[i]
-        if (date.fromisoformat(day) - date.fromisoformat(d)).days > TRANK_MAX_AGE:
-            return None
-        return self.trank[d]
-
     # ── other form ──
     def recent(self, team):
         last = self.margins[team][-RECENT_GAMES:]
@@ -297,10 +278,6 @@ class League:
             return 100 * sign * ((fh["off"][k] + fa["def"][k]) - (fa["off"][k] + fh["def"][k]))
 
         em = (em_h - em_a) * poss / 100
-        trank = 0.0
-        snap = self.trank_snapshot(g["date"])
-        if snap and h in snap and a in snap:
-            trank = ((snap[h][0] - snap[h][1]) - (snap[a][0] - snap[a][1])) * poss / 100 - em
         return {
             "home_court": 0.0 if g.get("neutral") else 1.0,
             "em": em,
@@ -311,7 +288,6 @@ class League:
             "ftr": matchup("ftr"),
             "recent": self.recent(h) - self.recent(a),
             "rest": float(self.rest_days(h, g["date"]) - self.rest_days(a, g["date"])),
-            "trank": trank,
         }
 
     # ── learning from a result ──

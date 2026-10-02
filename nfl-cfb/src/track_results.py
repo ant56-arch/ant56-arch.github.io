@@ -174,7 +174,7 @@ def grade_completed_games(log):
 def summarize(log):
     """
     "all_time" keeps the full graded history (including the 2024-2025
-    backfill) for internal/backend reference, but the email only ever shows
+    backfill) for internal/backend reference, but the site only ever shows
     "current_season" and "last_N_weeks" - both scoped to the live NFL season,
     since the point of the tracker going forward is "how are we doing THIS
     season," not diluting that with the backfilled seed data.

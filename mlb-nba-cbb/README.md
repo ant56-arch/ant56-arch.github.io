@@ -118,8 +118,7 @@ workflow. Every run (any mode) runs `cbb/predict.py`, which:
 1. stores each finished day's Division I scores and team box scores from ESPN
    (`cbb/data/days/`),
 2. grades pending picks against final scores,
-3. writes every Division I team's ratings to `cbb/ratings.json`, with Bart
-   Torvik's T-Rank alongside and a daily T-Rank snapshot in `cbb/data/trank/`, and
+3. writes every Division I team's ratings to `cbb/ratings.json`, and
 4. gives every game between two Division I teams a pick, a win chance, a
    projected score and a moneyline pick, refreshed until tip-off, then locked.
 
@@ -132,8 +131,8 @@ non-Division I teams count toward records but not ratings.
 
 The model predicts the home team's margin from the adjusted efficiency margin
 at the expected tempo, Elo, the four factors (shooting, turnovers, offensive
-rebounding, free throw rate) as matchups, last-5-game form, rest, home court,
-and how much T-Rank disagrees with our ratings. The win chance is the normal CDF
+rebounding, free throw rate) as matchups, last-5-game form, rest and home
+court. The win chance is the normal CDF
 of margin / sigma. Every feature is computed as of that morning.
 
 `cbb/build_pages.py` writes `dist/cbb/`: Home, Ratings (sortable, every team),
@@ -141,7 +140,7 @@ History, Accuracy and Model.
 
 ### Seeding and retraining
 Run **CBB Research Data Pull + Retrain** once to pull the last three seasons
-and T-Rank's daily history (Torvik's time machine) and fit the first model.
+and fit the first model.
 After that the daily run retrains at most once a week, only after 300+ new
 games, with the same promote-only-if-better guard as NBA. Recipes vary how much
 recent games count in the ratings, how much of last season's rating carries

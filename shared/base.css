@@ -166,82 +166,6 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
   border-bottom: 1px solid var(--rule);
 }
 .scoreboard[hidden] { display: none; }
-.scoreboard-track {
-  display: flex;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 24px;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule-strong) transparent;
-  /* Fade the right edge so it reads as "scroll for more". */
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
-  mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
-}
-.score-cell {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  flex-shrink: 0;
-  min-width: 168px;
-  max-width: 230px;
-  padding: 10px 16px;
-  border-right: 1px solid var(--rule);
-  text-decoration: none;
-  transition: background 0.15s ease;
-}
-.score-cell:first-child { padding-left: 0; }
-a.score-cell:hover { background: var(--surface-2); }
-.score-cell.score-sport {
-  min-width: 0;
-  padding-right: 16px;
-}
-.score-sport-name {
-  font-family: var(--font-head);
-  font-size: 20px;
-  font-weight: 800;
-  font-style: italic;
-  line-height: 1;
-  text-transform: uppercase;
-}
-.score-top {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  white-space: nowrap;
-}
-.score-main {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-.score-label {
-  font-size: 14px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.score-value {
-  font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ours);
-  white-space: nowrap;
-}
-.score-sub {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
 
 /* ---------- Hero masthead ---------- */
 
@@ -560,7 +484,6 @@ table.record-table td.row-label { font-weight: 700; }
   vertical-align: 1px;
 }
 .pill-primary { color: var(--ours); }
-.pill-market { color: var(--vegas); }
 .pill-danger { color: var(--miss); }
 .pill-positive { color: var(--hit); }
 
@@ -749,14 +672,13 @@ footer.site-footer {
   .masthead-inner > :nth-child(4) { animation-delay: 0.18s; }
   main .card { animation: edge-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both; }
   main .card + .card { animation-delay: 0.18s; }
-  .score-cell { animation: edge-rise 0.4s ease both; }
 }
 
 /* ---------- Small screens ---------- */
 
 @media (max-width: 700px) {
   .wrap { padding: 20px 16px 40px 16px; }
-  .topbar-inner, .scoreboard-track, .masthead-inner, .tabs-inner { padding-left: 16px; padding-right: 16px; }
+  .topbar-inner, .masthead-inner, .tabs-inner { padding-left: 16px; padding-right: 16px; }
   .topbar-inner { gap: 12px; }
   .brand { font-size: 19px; gap: 8px; }
   .brand-mark { width: 26px; height: 26px; }
@@ -774,22 +696,7 @@ footer.site-footer {
   .statline { grid-template-columns: 1fr 1fr; gap: 8px; }
   .stat { padding: 14px 14px 12px 16px; }
   .stat-value { font-size: 38px; }
-  .score-cell { min-width: 150px; }
 }
-
-/* Game cells: the latest games in every sport, ESPN style. */
-.game-cell { min-width: 150px; gap: 3px; }
-.game-cell .score-top { display: flex; justify-content: space-between; gap: 10px; }
-.game-cell.is-live .game-status { color: var(--miss); }
-.game-cell.is-live .game-status::before { content: "\25CF  "; }
-.game-tv { color: var(--text-faint); font-weight: 600; }
-.game-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--text-muted); }
-.game-row.is-winner { color: var(--text); font-weight: 700; }
-.game-team { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.game-logo { width: 18px; height: 18px; object-fit: contain; }
-.game-rank { font-size: 11px; color: var(--text-faint); }
-.game-score { font-family: var(--font-head); font-size: 17px; font-weight: 700; }
-.game-pick { color: var(--ours); font-weight: 600; }
 
 /* Score ticker: two scrolling bars under the top bar (MLB and NFL), the
    scores and a red one for scoring plays, plus a pop-up option. A gear in the
@@ -1379,17 +1286,6 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 
 .pick-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .pick-list > li { border-bottom: 1px solid var(--rule); }
-.pick-list > li.pl-day {
-  padding: 22px 0 8px 0;
-  font-family: var(--font-head);
-  font-size: 16px;
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--ours);
-}
-.pick-list > li.pl-day:first-child { padding-top: 6px; }
 .pl-line {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr) minmax(150px, 220px) 96px;
@@ -1407,16 +1303,6 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .pl-teams .team-logo { width: 22px; height: 22px; }
 .pl-teams i { font-style: normal; font-weight: 400; font-size: 13px; color: var(--text-faint); }
 .pl-sub { font-size: 13px; color: var(--text-muted); }
-.pl-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
-.pl-pick b {
-  font-family: var(--font-head);
-  font-size: 22px;
-  font-style: italic;
-  font-weight: 800;
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: var(--ours);
-}
 .pl-conf { display: flex; align-items: center; gap: 10px; }
 .pl-bar { position: relative; flex: 1; height: 6px; overflow: hidden; border-radius: 3px; background: var(--surface-2); }
 .pl-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
@@ -1430,17 +1316,6 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
   color: var(--ours);
 }
 .pl-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
-.pl-more {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px 20px;
-  margin: 0;
-  padding: 6px 8px 16px 8px;
-}
-.pl-more div { display: grid; gap: 2px; align-content: start; }
-.pl-more dt { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
-.pl-more dd { margin: 0; font-size: 15px; }
-.pl-more dd small { display: block; font-size: 13px; color: var(--text-muted); }
 .pl-note { padding: 0 8px 16px 8px; font-size: 14px; color: var(--text-muted); }
 .pl-rank {
   font-family: var(--font-head);
@@ -1450,7 +1325,6 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
   color: var(--text-faint);
 }
 .pick-list.ranked .pl-line { grid-template-columns: 32px minmax(0, 1fr) minmax(150px, 240px) 96px; }
-.list-note { margin: 0 0 12px 0; font-size: 14px; color: var(--text-faint); }
 
 /* "How to read this": the explanation, one tap away instead of always on. */
 details.how-to { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
@@ -1481,7 +1355,6 @@ details.how-to p { margin: 0 0 8px 0; }
     padding: 12px 4px;
   }
   .pl-match { grid-area: match; }
-  .pl-pick { grid-area: pick; }
   .pl-conf { grid-area: conf; min-width: 150px; }
   .pl-res { grid-area: res; }
   .pick-list.ranked .pl-line {
@@ -1489,7 +1362,6 @@ details.how-to p { margin: 0 0 8px 0; }
     grid-template-areas: "rank match res" "rank conf conf";
   }
   .pick-list.ranked .pl-rank { grid-area: rank; align-self: start; }
-  .pl-more { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px 4px 14px 4px; }
   .pl-note { padding: 0 4px 14px 4px; }
 }
 @media (max-width: 400px) {
@@ -1749,21 +1621,4 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
   .gc-lines dd { font-size: 14px; }
   .gc-venue { display: none; }
   .gc-label { display: none; }
-}
-
-/* ---------- Moneyline picks (NFL/CFB additions) ---------- */
-
-.ml-pick { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.ml-line { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-/* Home slate: pick cells may wrap long school names so every column fits. */
-table.data.slate td.num { white-space: normal; }
-.ml-sub { font-size: 12px; color: var(--text-muted); text-align: right; max-width: 30ch; line-height: 1.35; }
-.lock-note { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-.lock-note.locked::before { content: "\1F512\FE0E  "; }
-
-@media (max-width: 700px) {
-  table.responsive-stack tbody tr td.ml-cell { grid-column: 1 / -1; }
-  table.responsive-stack tbody tr td.ml-cell > span { white-space: normal; }
-  /* Home slate: one label/value pair per line on phones. */
-  table.responsive-stack.slate tbody tr { grid-template-columns: 1fr; }
 }

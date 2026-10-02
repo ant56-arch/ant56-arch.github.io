@@ -8,8 +8,7 @@
   "orb",
   "ftr",
   "recent",
-  "rest",
-  "trank"
+  "rest"
  ],
  "coef": {
   "home_court": 3.9168,
@@ -20,8 +19,7 @@
   "orb": 0.1091,
   "ftr": 0.054,
   "recent": 0.0559,
-  "rest": 0.2172,
-  "trank": 0.0
+  "rest": 0.2172
  },
  "sigma": 12.246,
  "league": {

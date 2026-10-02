@@ -242,10 +242,6 @@ def record(picks):
     return {"wins": w, "losses": len(g) - w, "units": units, "roi": units / len(g), "picks": len(g)}
 
 
-def units_text(u):
-    return f"{u:+.2f}u"
-
-
 def result(ml, void=False):
     """For the History day picker: {"text", "value", "detail", "won", "void", "units"}."""
     if not ml:

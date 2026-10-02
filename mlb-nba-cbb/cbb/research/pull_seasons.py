@@ -16,7 +16,6 @@ from datetime import date, timedelta
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import espn  # noqa: E402
 import store  # noqa: E402
-import torvik  # noqa: E402
 
 
 def default_seasons():
@@ -73,20 +72,6 @@ def main():
         if sg:
             store.save_season(s, sg, {g["id"]: boxes[g["id"]] for g in sg if g["id"] in boxes})
 
-    # T-Rank as it stood each game day, from Torvik's time machine, so the model
-    # can learn how much to trust it. Optional: skipped if Torvik can't be reached.
-    names = store.name_to_id(games, torvik.normalize)
-    game_days = sorted({g["date"] for g in games})
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        snaps = list(pool.map(torvik.fetch_day, game_days))
-    kept = 0
-    for day, snap in zip(game_days, snaps):
-        by_id = torvik.by_team_id(snap, names)
-        if len(by_id) >= 100:
-            year = date.fromisoformat(day)
-            store.save_trank(year.year + 1 if year.month >= 7 else year.year, day, by_id)
-            kept += 1
-    print(f"T-Rank snapshots for {kept} of {len(game_days)} game days")
 
 
 if __name__ == "__main__":
