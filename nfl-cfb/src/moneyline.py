@@ -244,10 +244,3 @@ def summarize(log, season):
 def is_value(v):
     return str(v).lower() in ("true", "1", "1.0")
 
-
-def fmt_units(u):
-    return f"{u:+.2f}u"
-
-
-def fmt_roi(r):
-    return f"{r * 100:+.1f}%" if r is not None else "-"

@@ -75,7 +75,7 @@ def build_rows(params=None):
     if key in _walks:
         return _walks[key]
     games, box = store.load_all()
-    league = M.League(params, M.division_one(games), store.load_trank())
+    league = M.League(params, M.division_one(games))
     rows = []
     for g in games:
         if g["home_pts"] == g["away_pts"]:

@@ -80,32 +80,3 @@ def roll_up_days():
         print(f"  rolled {len(games)} games into seasons/{season}.json")
     for path in paths:
         os.remove(path)
-
-
-# ── T-Rank snapshots ─────────────────────────────────────────────────────────
-# cbb/data/trank/<season>.json: {date: {team_id: [adj_o, adj_d, barthag]}},
-# T-Rank as it stood each morning (see torvik.py).
-TRANK_DIR = os.path.join(DATA, "trank")
-
-
-def load_trank():
-    out = {}
-    for path in sorted(glob.glob(os.path.join(TRANK_DIR, "*.json"))):
-        out.update(_read(path))
-    return out
-
-
-def save_trank(season, day, snapshot):
-    path = os.path.join(TRANK_DIR, f"{season}.json")
-    data = _read(path) if os.path.exists(path) else {}
-    data[day] = snapshot
-    _write(path, dict(sorted(data.items())))
-
-
-def name_to_id(games, normalize):
-    """{normalized ESPN school name: team id} from stored games."""
-    out = {}
-    for g in games:
-        out[normalize(g["home_name"])] = g["home"]
-        out[normalize(g["away_name"])] = g["away"]
-    return out
