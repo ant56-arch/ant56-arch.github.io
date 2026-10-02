@@ -38,6 +38,7 @@ HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", None), ("MLB", f"{MLB_EDGE}/"),
                ("NHL", f"{HOME_URL}nhl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
+               ("Soccer", f"{HOME_URL}soccer/index.html"),
                ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Who wins every NBA game tonight and how likely it is, from a model graded against every final score."
 TOP_N = 3

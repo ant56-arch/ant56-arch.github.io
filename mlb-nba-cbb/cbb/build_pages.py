@@ -43,6 +43,7 @@ HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"), ("MLB", f"{MLB_EDGE}/"),
                ("NHL", f"{HOME_URL}nhl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", None),
+               ("Soccer", f"{HOME_URL}soccer/index.html"),
                ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = ("Who wins every Division I men's basketball game and by how much, from KenPom-style team ratings "
            "graded against every final score.")

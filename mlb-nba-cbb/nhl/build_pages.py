@@ -39,6 +39,7 @@ MLB_EDGE = f"{HOME_URL}mlb"
 SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"),
                ("MLB", f"{MLB_EDGE}/"), ("NHL", None),
                ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
+               ("Soccer", f"{HOME_URL}soccer/index.html"),
                ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Who wins every NHL game tonight and how likely it is, from a model graded against every final score."
 TOP_N = 3

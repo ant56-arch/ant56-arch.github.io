@@ -47,6 +47,7 @@ SPORTS = {
     "nba": {"label": "NBA", "window": 50, "history": os.path.join(MLB, "nba", "model_history.json")},
     "nhl": {"label": "NHL", "window": 50, "history": os.path.join(MLB, "nhl", "model_history.json")},
     "cbb": {"label": "College basketball", "window": 150, "history": os.path.join(MLB, "cbb", "model_history.json")},
+    "soccer": {"label": "Soccer", "window": 60, "history": os.path.join(MLB, "soccer", "model_history.json")},
     "nfl": {"label": "NFL", "window": 30, "history": None},
     "cfb": {"label": "College football", "window": 60, "history": None},
 }
@@ -113,6 +114,7 @@ LOADERS = {
     "nba": lambda: game_picks("nba"),
     "nhl": lambda: game_picks("nhl"),
     "cbb": lambda: game_picks("cbb"),
+    "soccer": lambda: game_picks("soccer"),
     "nfl": lambda: football_picks("predictions_log.csv"),
     "cfb": lambda: football_picks("cfb_predictions_log.csv"),
 }

@@ -1,0 +1,61 @@
+name: Soccer Research Data Pull + Retrain
+
+# Pulls the results Soccer Edge's club ratings learn from - league results and
+# closing odds from football-data.co.uk (top five leagues plus Portugal, the
+# Netherlands, Belgium, Turkey and Scotland) and Champions League results from
+# ESPN - then picks the model's recipe on recent held-out matches and re-runs
+# the walk-forward backtest on the latest finished season. Run it once to start
+# Soccer Edge; after that the daily run keeps the current season's results up
+# to date and retrains weekly, so this is only needed to rebuild the data.
+
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "Season start years, comma-separated (2025 = 2025-26). Blank = 2015-16 through this season."
+        required: false
+
+# This site's code lives in mlb-nba-cbb/ of the one Sports Edge repo.
+defaults:
+  run:
+    working-directory: mlb-nba-cbb
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r research/requirements.txt
+
+      - name: Pull results
+        env:
+          SEASONS: ${{ inputs.seasons }}
+        run: python soccer/research/pull_data.py
+
+      - name: Retrain model
+        env:
+          FORCE: '1'
+        run: python soccer/research/train.py
+
+      - name: Commit data and model
+        run: |
+          git config user.name "Soccer Edge Bot"
+          git config user.email "actions@github.com"
+          git add soccer/data/
+          for f in soccer/model_weights.json soccer/model_history.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "Refresh Soccer research data and retrain model"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

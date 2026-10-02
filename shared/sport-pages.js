@@ -31,3 +31,21 @@ function initDayChips() {
   });
 }
 initDayChips();
+
+// --- Competition buttons over the game cards (Soccer Edge) ---
+// "All" shows every match; a competition's button shows only its cards (the
+// data-group extras.game_card puts on each), and hides a day with none left.
+function initCompChips() {
+  document.querySelectorAll(".comp-chips").forEach(group => {
+    const scope = group.parentElement;
+    group.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+      group.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      const comp = btn.dataset.group;
+      scope.querySelectorAll(".gc[data-group]").forEach(c => { c.hidden = comp !== "all" && c.dataset.group !== comp; });
+      scope.querySelectorAll(".gc-day").forEach(d => {
+        d.classList.toggle("is-empty", !d.querySelector(".gc:not([hidden])"));
+      });
+    }));
+  });
+}
+initCompChips();
