@@ -1,14 +1,13 @@
-// --- Scoreboard strip (shared by every Edge site) ---
-// A live score ticker under the top bar: only games in progress, in every
-// sport, each with our pick; a game opens the Schedule tab (schedule.html and
-// schedule.js on the home site). It stays hidden when nothing is live. Each
-// site's build publishes games.json (ESPN's current slate plus our picks) next
-// to its summary.json; the ticker asks ESPN for fresh scores in the browser
-// every 30 seconds while a game is live (every 2 minutes while today's games
-// are still to start) and pops up a toast when a team scores. Pages without a
-// <aside class="scoreboard"> get one added after the top bar. Keep this block
-// identical in home.js (repo root), nfl-cfb/web/site.js and
-// mlb-nba-cbb/web/site.js.
+// --- Score ticker (shared by every Edge site) ---
+// Two scrolling bars under the top bar, for MLB and the NFL only: a score
+// ticker (live games first, then games still to play, then finals; each opens
+// the Schedule tab) and a red bar of scoring plays seen in the last 3 hours.
+// Each site's build publishes games.json (ESPN's current slate plus our picks)
+// next to its summary.json; the ticker asks ESPN for fresh scores in the
+// browser every 30 seconds while a game is live (every 2 minutes while a game
+// starts within 6 hours). A gear in the top bar turns each bar, score pop-ups
+// and each sport on or off (saved in localStorage). Keep this block identical
+// in home.js (repo root), nfl-cfb/web/site.js and mlb-nba-cbb/web/site.js.
 const EDGE_SITES = [
   { sport: "NFL", summary: "/nfl/summary.json", games: "/nfl/games.json",
     href: "/nfl/index.html", schedule: "/schedule.html#nfl" },
@@ -27,7 +26,10 @@ const EDGE_SITES = [
 const EDGE_LIVE_POLL = 30000;   // while a game is live
 const EDGE_IDLE_POLL = 120000;  // while a game starts within EDGE_SOON
 const EDGE_SOON = 6 * 3600000;
-const edgeTicker = { scores: null, published: {}, toasts: null };
+const EDGE_TICKER_SPORTS = ["MLB", "NFL"];
+const EDGE_SCORES_KEY = "edge-ticker-scores";
+const EDGE_PLAYS_KEY = "edge-ticker-plays";
+const edgeTicker = { published: {}, slates: {}, plays: [], flash: new Set(), crawlStart: {}, toasts: null, settings: null };
 
 function edgeFetchJson(url, ms) {
   const ctrl = new AbortController();
@@ -79,7 +81,8 @@ function edgeParseEspn(ev) {
   };
   const tv = [];
   (comp.broadcasts || []).forEach(b => (b.names || []).forEach(n => { if (!tv.includes(n)) tv.push(n); }));
-  return { id: String(ev.id), start: ev.date, state: type.state || "pre", detail: type.shortDetail || type.detail || "",
+  const lastPlay = ((comp.situation || {}).lastPlay || {}).text || "";
+  return { id: String(ev.id), start: ev.date, lastPlay, state: type.state || "pre", detail: type.shortDetail || type.detail || "",
            tv: tv.slice(0, 2).join(", "), neutral: !!comp.neutralSite, away: team(sides.away), home: team(sides.home) };
 }
 
@@ -114,39 +117,78 @@ function edgeGameStatus(g) {
   return (day === today ? "" : day + " ") + time + " ET";
 }
 
-function edgeGameCell(site, g) {
-  const cell = edgeNode("a", "score-cell game-cell" + (g.state === "in" ? " is-live" : ""));
-  cell.href = site.schedule;
-  const top = edgeNode("span", "score-top");
-  top.append(edgeNode("span", "game-status", edgeGameStatus(g)));
-  if (g.tv) top.append(edgeNode("span", "game-tv", g.tv));
-  cell.append(top);
-  [g.away, g.home].forEach(t => {
-    const row = edgeNode("span", "game-row" + (g.state === "post" && t.winner ? " is-winner" : ""));
-    const name = edgeNode("span", "game-team");
-    if (t.logo) {
-      const img = edgeNode("img", "game-logo");
-      img.src = t.logo;
-      img.alt = "";
-      img.loading = "lazy";
-      name.append(img);
-    }
-    if (t.rank) name.append(edgeNode("span", "game-rank", String(t.rank)));
-    name.append(edgeNode("span", null, t.abbr || t.short));
-    row.append(name, edgeNode("span", "game-score", g.state !== "pre" && t.score != null ? String(t.score) : ""));
-    cell.append(row);
-  });
-  if (g.pick) {
-    const sub = edgeNode("span", "score-sub game-pick");
-    sub.append(edgeNode("span", null, g.pick.text));
-    const pill = edgeResultPill(g.pick.result);
-    if (pill) sub.append(pill);
-    cell.append(sub);
-  }
-  return cell;
+// --- Ticker settings: a gear in the top bar opens switches for each bar ---
+const EDGE_SETTINGS_KEY = "edge-ticker-settings";
+const EDGE_SETTINGS = [
+  { k: "ticker", label: "Score ticker", sub: "A scrolling bar of MLB and NFL games", on: true },
+  { k: "plays", label: "Scoring plays", sub: "A red bar with each run, touchdown and field goal", on: true },
+  { k: "popups", label: "Score pop-ups", sub: "A card in the corner when a team scores", on: false },
+  { k: "MLB", label: "MLB", sub: "Show baseball games", on: true, sport: true },
+  { k: "NFL", label: "NFL", sub: "Show NFL games", on: true, sport: true },
+];
+
+function edgeStore(key, value) {
+  try {
+    if (value === undefined) return JSON.parse(localStorage.getItem(key) || "null");
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) { /* private mode or blocked storage: settings last for this page only */ }
+  return null;
 }
 
-// What a score is called in the toast, by sport and points scored.
+function edgeSettings() {
+  if (!edgeTicker.settings) {
+    const saved = edgeStore(EDGE_SETTINGS_KEY) || {};
+    edgeTicker.settings = {};
+    EDGE_SETTINGS.forEach(s => { edgeTicker.settings[s.k] = typeof saved[s.k] === "boolean" ? saved[s.k] : s.on; });
+  }
+  return edgeTicker.settings;
+}
+
+function initTickerSettings() {
+  const bar = document.querySelector(".topbar-inner");
+  if (!bar || bar.querySelector(".ticker-gear")) return;
+  const wrap = edgeNode("div", "ticker-settings");
+  const btn = edgeNode("button", "ticker-gear");
+  btn.type = "button";
+  btn.setAttribute("aria-label", "Ticker settings");
+  btn.setAttribute("aria-expanded", "false");
+  btn.setAttribute("aria-controls", "ticker-panel");
+  btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1l-.4-2.6h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L4.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1l.4 2.6h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>';
+  const panel = edgeNode("div", "ticker-panel");
+  panel.id = "ticker-panel";
+  panel.hidden = true;
+  panel.append(edgeNode("div", "ticker-panel-title", "Ticker settings"));
+  const settings = edgeSettings();
+  EDGE_SETTINGS.forEach((s, i) => {
+    if (s.sport && !EDGE_SETTINGS[i - 1].sport) panel.append(edgeNode("div", "ticker-panel-sub", "Sports"));
+    const row = edgeNode("label", "ticker-switch");
+    const text = edgeNode("span", "ticker-switch-text");
+    text.append(edgeNode("span", "ticker-switch-label", s.label), edgeNode("span", "ticker-switch-sub", s.sub));
+    const input = edgeNode("input");
+    input.type = "checkbox";
+    input.setAttribute("role", "switch");
+    input.checked = settings[s.k];
+    input.addEventListener("change", () => {
+      settings[s.k] = input.checked;
+      edgeStore(EDGE_SETTINGS_KEY, settings);
+      edgeRenderTicker();
+    });
+    row.append(text, input, edgeNode("span", "ticker-switch-knob"));
+    panel.append(row);
+  });
+  const setOpen = open => {
+    panel.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+  };
+  btn.addEventListener("click", () => setOpen(panel.hidden));
+  document.addEventListener("click", e => { if (!wrap.contains(e.target)) setOpen(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) { setOpen(false); btn.focus(); } });
+  wrap.append(btn, panel);
+  bar.append(wrap);
+}
+
+// --- Score ticker and scoring plays (shared by every Edge site) ---
+// What a score is called, by sport and points scored.
 function edgeScoreWord(sport, pts) {
   if (sport === "NFL" || sport === "CFB") {
     return { 6: "Touchdown", 7: "Touchdown", 8: "Touchdown", 3: "Field goal", 2: "2 points", 1: "Extra point" }[pts] || `+${pts}`;
@@ -156,34 +198,31 @@ function edgeScoreWord(sport, pts) {
   return `+${pts}`;
 }
 
-// A pop-up when a team scores: the scoring team in its color, the new score
-// and the game clock. It leaves after 6 seconds; a tap opens the Schedule tab.
-function edgeScoreToast(site, g, side, pts) {
+// A pop-up when a team scores (off unless turned on in the ticker settings):
+// the scoring team in its color, the new score and the game clock.
+function edgeScoreToast(play) {
   if (document.hidden) return;
   if (!edgeTicker.toasts || !edgeTicker.toasts.isConnected) {
     edgeTicker.toasts = edgeNode("div", "score-toasts");
     edgeTicker.toasts.setAttribute("aria-live", "polite");
     document.body.append(edgeTicker.toasts);
   }
-  const team = g[side];
-  const other = g[side === "away" ? "home" : "away"];
   const toast = edgeNode("a", "score-toast");
-  toast.href = site.schedule;
-  if (team.color) toast.style.setProperty("--team", team.color);
+  toast.href = play.href;
+  if (play.color) toast.style.setProperty("--team", play.color);
   const head = edgeNode("span", "score-toast-head");
-  head.append(edgeNode("span", "score-toast-sport", site.sport), edgeNode("span", "score-toast-what", edgeScoreWord(site.sport, pts)));
+  head.append(edgeNode("span", "score-toast-sport", play.sport), edgeNode("span", "score-toast-what", play.what));
   const main = edgeNode("span", "score-toast-main");
-  if (team.logo) {
+  if (play.logo) {
     const img = edgeNode("img", "score-toast-logo");
-    img.src = team.logo;
+    img.src = play.logo;
     img.alt = "";
     main.append(img);
   }
-  main.append(edgeNode("span", "score-toast-team", `${team.short || team.abbr} score!`));
+  main.append(edgeNode("span", "score-toast-team", `${play.team} score!`));
   const line = edgeNode("span", "score-toast-line");
-  const us = edgeNode("b", null, `${team.abbr} ${team.score}`);
-  line.append(us, document.createTextNode(` · ${other.abbr} ${other.score}`));
-  if (g.detail) line.append(edgeNode("span", "score-toast-clock", g.detail));
+  line.append(edgeNode("b", null, play.score));
+  if (play.clock) line.append(edgeNode("span", "score-toast-clock", play.clock));
   toast.append(head, main, line);
   const close = edgeNode("button", "score-toast-close", "×");
   close.type = "button";
@@ -198,70 +237,148 @@ function edgeScoreToast(site, g, side, pts) {
   }, 6000);
 }
 
-async function initScoreboard() {
-  let board = document.querySelector(".scoreboard");
-  if (!board) {
-    const bar = document.querySelector(".topbar");
-    if (!bar) return;
-    board = edgeNode("aside", "scoreboard");
-    board.hidden = true;
-    bar.after(board);
+// One scrolling bar (the ticker or the red scoring-plays bar). Its items run
+// twice in a row and slide left forever; a rebuild keeps the bar where it was
+// in its loop, so a score update doesn't jump it back to the start.
+function edgeCrawl(cls, label, items) {
+  let bar = document.querySelector("." + cls);
+  if (!items.length) {
+    if (bar) bar.hidden = true;
+    return;
   }
-  board.setAttribute("aria-label", "Live scores");
-  const slates = await Promise.all(EDGE_SITES.map(edgeLoadGames));
-  const track = edgeNode("div", "scoreboard-track");
-  const scores = new Map();
-  const scored = [];
+  if (!bar) {
+    bar = edgeNode("aside", "crawl " + cls);
+    const anchor = (cls === "crawl-plays" && document.querySelector(".crawl-ticker")) || document.querySelector(".topbar");
+    if (!anchor) return;
+    anchor.after(bar);
+  }
+  bar.setAttribute("aria-label", label);
+  bar.hidden = false;
+  const tag = edgeNode("span", "crawl-tag", label);
+  const view = edgeNode("div", "crawl-view");
+  const run = edgeNode("div", "crawl-run");
+  [0, 1].forEach(copy => items.forEach(make => {
+    const item = make();
+    if (copy) item.setAttribute("aria-hidden", "true");
+    run.append(item);
+  }));
+  view.append(run);
+  bar.replaceChildren(tag, view);
+  // About 60px a second, measured once the items are on the page.
+  const width = run.scrollWidth / 2;
+  const secs = Math.max(20, width / 60);
+  const t0 = edgeTicker.crawlStart[cls] || (edgeTicker.crawlStart[cls] = Date.now());
+  run.style.animationDuration = secs + "s";
+  run.style.animationDelay = -(((Date.now() - t0) / 1000) % secs) + "s";
+}
+
+function edgeTickerItem(site, g) {
+  return () => {
+    const a = edgeNode("a", "crawl-item" + (g.state === "in" ? " is-live" : ""));
+    a.href = site.schedule;
+    a.append(edgeNode("span", "crawl-sport", site.sport));
+    [g.away, g.home].forEach(t => {
+      const team = edgeNode("span", "crawl-team" + (g.state === "post" && t.winner ? " is-winner" : "") +
+                            (edgeTicker.flash.has(`${site.sport}:${g.id}:${t === g.away ? "away" : "home"}`) ? " just-scored" : ""));
+      if (t.logo) {
+        const img = edgeNode("img", "crawl-logo");
+        img.src = t.logo;
+        img.alt = "";
+        team.append(img);
+      }
+      team.append(edgeNode("span", null, t.abbr || t.short));
+      if (g.state !== "pre" && t.score != null) team.append(edgeNode("b", null, String(t.score)));
+      a.append(team);
+    });
+    a.append(edgeNode("span", "crawl-status", edgeGameStatus(g)));
+    return a;
+  };
+}
+
+function edgePlayItem(play) {
+  return () => {
+    const a = edgeNode("a", "crawl-item play-item");
+    a.href = play.href;
+    a.append(edgeNode("span", "crawl-sport", play.sport), edgeNode("b", "play-what", play.what),
+             edgeNode("span", "play-score", play.score));
+    if (play.clock) a.append(edgeNode("span", "crawl-status", play.clock));
+    if (play.text) a.append(edgeNode("span", "play-text", play.text));
+    return a;
+  };
+}
+
+function edgeRenderTicker() {
+  const settings = edgeSettings();
   const t = g => new Date(g.start).getTime() || 0;
-  EDGE_SITES.forEach((site, i) => {
+  const items = [];
+  // Live games first, then games still to play, then finals.
+  ["in", "pre", "post"].forEach(state => {
+    EDGE_TICKER_SPORTS.forEach(sport => {
+      const slate = edgeTicker.slates[sport];
+      if (!settings[sport] || !slate) return;
+      const site = EDGE_SITES.find(s => s.sport === sport);
+      slate.games.filter(g => g.state === state)
+        .sort((a, b) => (state === "post" ? t(b) - t(a) : t(a) - t(b)))
+        .forEach(g => items.push(edgeTickerItem(site, g)));
+    });
+  });
+  edgeCrawl("crawl-ticker", "Scores", settings.ticker ? items : []);
+  const plays = edgeTicker.plays.filter(p => settings[p.sport]).map(edgePlayItem);
+  edgeCrawl("crawl-plays", "Scoring", settings.plays ? plays : []);
+}
+
+async function initScoreboard() {
+  // The old strip is replaced by the two bars.
+  document.querySelectorAll(".scoreboard").forEach(n => n.remove());
+  initTickerSettings();
+  const sites = EDGE_TICKER_SPORTS.map(sport => EDGE_SITES.find(s => s.sport === sport));
+  const slates = await Promise.all(sites.map(edgeLoadGames));
+  // Scores from the last read, kept across pages for 15 minutes so moving
+  // between pages doesn't miss a score or count one twice.
+  const saved = edgeStore(EDGE_SCORES_KEY);
+  const last = saved && Date.now() - saved.t < 15 * 60000 ? saved.scores : null;
+  const scores = Object.assign({}, last || {});
+  const fresh = [];
+  edgeTicker.flash = new Set();
+  sites.forEach((site, i) => {
     const slate = slates[i];
     if (!slate) return;
-    const cells = {};
-    const live = slate.games.filter(g => g.state === "in").sort((a, b) => t(a) - t(b));
-    if (live.length) {
-      const head = edgeNode("a", "score-cell score-sport");
-      head.href = site.schedule;
-      head.append(edgeNode("span", "score-sport-name", site.sport), edgeNode("span", "score-top", "Live"));
-      track.append(head);
-      live.forEach(g => { cells[g.id] = edgeGameCell(site, g); track.append(cells[g.id]); });
-    }
-    // Compare scores only between two fresh reads from ESPN; a game that went
-    // final since the last read (a walk-off, a buzzer beater) still counts.
+    edgeTicker.slates[site.sport] = slate;
+    // Compare only fresh reads from ESPN; a game that went final since the
+    // last read (a walk-off) still counts.
     if (!slate.live) return;
     slate.games.forEach(g => {
       if (g.state === "pre") return;
-      ["away", "home"].forEach((side, row) => {
+      ["away", "home"].forEach(side => {
         const key = `${site.sport}:${g.id}:${side}`;
         const now = g[side].score;
-        scores.set(key, now);
-        const before = edgeTicker.scores && edgeTicker.scores.get(key);
+        const before = last ? last[key] : null;
+        if (now != null) scores[key] = now;
         if (before == null || now == null || now <= before) return;
-        scored.push([site, g, side, now - before]);
-        const cell = cells[g.id];
-        if (cell) {
-          cell.classList.add("just-scored");
-          cell.querySelectorAll(".game-row")[row].classList.add("just-scored");
-        }
+        edgeTicker.flash.add(key);
+        const team = g[side];
+        const other = g[side === "away" ? "home" : "away"];
+        fresh.push({ id: `${key}:${now}`, sport: site.sport, href: site.schedule, t: Date.now(),
+                     what: edgeScoreWord(site.sport, now - before), team: team.short || team.abbr,
+                     logo: team.logo, color: team.color, text: g.lastPlay || "",
+                     score: `${team.abbr} ${now}, ${other.abbr} ${other.score}`,
+                     clock: g.state === "post" ? "Final" : g.detail });
       });
     });
   });
-  // Keep last reads for a sport ESPN didn't answer this time.
-  if (edgeTicker.scores) edgeTicker.scores.forEach((v, k) => { if (!scores.has(k)) scores.set(k, v); });
-  edgeTicker.scores = scores;
-  if (track.children.length) {
-    const scroll = board.firstChild ? board.firstChild.scrollLeft : 0;
-    board.replaceChildren(track);
-    track.scrollLeft = scroll;
-    board.hidden = false;
-  } else {
-    board.hidden = true;
-    board.replaceChildren();
-  }
-  scored.slice(0, 3).forEach(([site, g, side, pts]) => edgeScoreToast(site, g, side, pts));
+  edgeStore(EDGE_SCORES_KEY, { t: Date.now(), scores });
+  // Scoring plays from the last 3 hours, newest first, kept across pages.
+  const kept = (edgeStore(EDGE_PLAYS_KEY) || []).filter(p => Date.now() - p.t < 3 * 3600000);
+  const plays = fresh.reverse().concat(kept.filter(p => !fresh.some(f => f.id === p.id))).slice(0, 12);
+  edgeStore(EDGE_PLAYS_KEY, plays);
+  edgeTicker.plays = plays;
+  edgeRenderTicker();
+  if (edgeSettings().popups) fresh.slice(0, 3).forEach(edgeScoreToast);
   const now = Date.now();
   const all = slates.flatMap(s => (s ? s.games : []));
   if (all.some(g => g.state === "in")) setTimeout(initScoreboard, EDGE_LIVE_POLL);
   else if (all.some(g => g.state === "pre" && t(g) - now < EDGE_SOON && now - t(g) < EDGE_SOON)) setTimeout(initScoreboard, EDGE_IDLE_POLL);
+  function t(g) { return new Date(g.start).getTime() || 0; }
 }
 initScoreboard();
 
