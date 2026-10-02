@@ -4361,7 +4361,7 @@
     "starters": 0.027
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-01T20:11:00Z",
    "ml": {
     "team": "ATL",
@@ -4374,9 +4374,12 @@
     "home_ml": -109,
     "away_ml": -110,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.917
+   },
+   "home_runs": 6,
+   "away_runs": 2,
+   "winner": "ATL"
   }
  ]
 }
