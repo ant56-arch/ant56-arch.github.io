@@ -940,6 +940,69 @@ a.crawl-item:hover { background: var(--surface-2); }
   .crawl-tag { padding: 0 10px; font-size: 13px; }
   .crawl-item { padding: 0 14px; font-size: 13px; }
 }
+.crawl-rank { color: var(--text-faint); font-size: 11px; }
+.crawl-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--ours); font-size: 13px; font-weight: 600; }
+.ticker-panel { max-height: calc(100vh - 90px); overflow-y: auto; overscroll-behavior: contain; }
+.ticker-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 16px;
+}
+.ticker-choice select {
+  max-width: 170px;
+  padding: 6px 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+/* Light theme (Settings > Theme). The same layout on light surfaces; orange
+   and the hit/miss colors are darkened so text stays readable on white. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f3ef;
+  --bar: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eeede8;
+  --rule: #dedcd5;
+  --rule-strong: #b7b4ab;
+  --text: #17181a;
+  --text-muted: #4b4a45;
+  --text-faint: #66655f;
+  --ours: #b9531a;
+  --ours-hot: #c95f20;
+  --vegas: #2c6696;
+  --hit: #22773f;
+  --miss: #b8352d;
+}
+:root[data-theme="light"] nav.tabs { background: rgba(244, 243, 239, 0.9); }
+:root[data-theme="light"] header.masthead[data-sport]::after { -webkit-text-stroke-color: rgba(23, 24, 26, 0.07); }
+:root[data-theme="light"] table.data tbody tr:hover,
+:root[data-theme="light"] .pl-row > summary:hover,
+:root[data-theme="light"] .pl-row[open] > summary,
+:root[data-theme="light"] .vb-row:hover { background: rgba(23, 24, 26, 0.04); }
+:root[data-theme="light"] a.bet-card:hover { background: var(--surface-2); }
+:root[data-theme="light"] .card { background: var(--surface); }
+:root[data-theme="light"] .updated-chip { background: rgba(255, 255, 255, 0.7); }
+:root[data-theme="light"] header.masthead {
+  background:
+    radial-gradient(ellipse 60% 120% at 100% 0%, rgba(229, 121, 59, 0.16), transparent 60%),
+    radial-gradient(ellipse 40% 80% at 0% 100%, rgba(44, 102, 150, 0.06), transparent 70%),
+    repeating-linear-gradient(-60deg, rgba(0, 0, 0, 0.025) 0 2px, transparent 2px 16px),
+    var(--bg);
+}
+:root[data-theme="light"] .crawl-tag,
+:root[data-theme="light"] .hg-seg button[aria-pressed="true"],
+:root[data-theme="light"] .view-toggle button[aria-pressed="true"] { color: #fff; }
+:root[data-theme="light"] .hg-seg button[aria-pressed="true"] span { color: #ffe3cf; }
+:root[data-theme="light"] .score-toast,
+:root[data-theme="light"] .ticker-panel { box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16); }
 .score-toasts {
   position: fixed;
   top: 66px;

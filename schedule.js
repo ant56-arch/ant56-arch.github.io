@@ -31,7 +31,7 @@ function schedView() {
 function schedSetView(view) {
   try { localStorage.setItem(GUIDE_VIEW_KEY, view); } catch (e) { /* the choice just won't be remembered */ }
 }
-const SCHED_TZ = { timeZone: "America/New_York" };
+const SCHED_TZ = { timeZone: edgeTz().timeZone };  // picked in settings (home.js)
 
 function schedStartEt(g) {
   const d = new Date(g.start);
@@ -43,8 +43,8 @@ function schedStartEt(g) {
     minutes: (parts.hour || 0) * 60 + (parts.minute || 0),
     day: d.toLocaleDateString("en-US", { ...SCHED_TZ, weekday: "long", month: "long", day: "numeric" }),
     // ESPN lists games without a set time at midnight Eastern.
-    slot: parts.hour || parts.minute
-      ? d.toLocaleTimeString("en-US", { ...SCHED_TZ, hour: "numeric", minute: "2-digit" }) + " ET"
+    slot: d.toLocaleTimeString("en-US", { timeZone: "America/New_York", hourCycle: "h23", hour: "2-digit", minute: "2-digit" }) !== "00:00"
+      ? d.toLocaleTimeString("en-US", { ...SCHED_TZ, hour: "numeric", minute: "2-digit" }) + " " + edgeTz().label
       : "Time TBA",
   };
 }
@@ -205,7 +205,7 @@ function schedGuideDay(day, games, cfg, subtitle, isToday) {
     const grid = edgeNode("div", "guide-grid");
     grid.style.setProperty("--guide-slots", slots);
     const head = edgeNode("div", "guide-row guide-head");
-    head.append(edgeNode("div", "guide-net guide-corner", "ET"));
+    head.append(edgeNode("div", "guide-net guide-corner", edgeTz().label));
     for (let i = 0; i < slots; i++) {
       const at = first + i * GUIDE_SLOT;
       const tick = edgeNode("div", "guide-tick" + (at % 60 ? " is-half" : ""), at % 60 ? "" : guideClock(at));
