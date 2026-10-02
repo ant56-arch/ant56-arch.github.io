@@ -1,0 +1,76 @@
+/* ---------- MLB additions ---------- */
+
+/* MLB Home: the hitter and game records side by side, each opening its tab. */
+.duo-band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 40px; }
+a.duo { display: block; color: inherit; text-decoration: none; min-width: 0; }
+a.duo + a.duo { border-left: 1px solid var(--rule); padding-left: 40px; }
+a.duo:hover .rb-num { color: var(--ours); }
+.duo-band .rb-num { font-size: 72px; }
+.duo-band .rb-num.rb-wait { font-size: 36px; }
+.duo-note { margin: 18px 0 0 0; font-size: 14px; color: var(--text-muted); }
+.duo-note a, a.more-link { color: var(--ours); font-weight: 600; white-space: nowrap; }
+.duo-note a::after, a.more-link::after { content: " \2192"; }
+a.more-link { display: inline-block; margin-top: 16px; font-size: 15px; text-decoration: none; }
+a.more-link:hover, .duo-note a:hover { text-decoration: underline; }
+@media (max-width: 760px) {
+  .duo-band { grid-template-columns: minmax(0, 1fr); }
+  a.duo + a.duo { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 18px; }
+  .duo-band .rb-num { font-size: 56px; }
+}
+
+.pill-void { color: var(--text-faint); }
+
+.player-name { font-weight: 700; }
+.player-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; white-space: normal; }
+.why { font-size: 13px; color: var(--text-muted); white-space: normal; max-width: 44ch; }
+
+td.prob { font-family: var(--font-head); font-size: 24px; font-weight: 800; font-style: italic; color: var(--ours); }
+
+.player-cell { display: flex; align-items: center; gap: 10px; }
+
+@media (max-width: 700px) {
+  .why { max-width: none; }
+  td.prob { font-size: 20px; }
+}
+
+/* Model tab: the hit model and the team model, one after the other. */
+.model-jump { margin-bottom: 8px; }
+.model-jump .subtab { text-decoration: none; }
+.model-group {
+  font-family: var(--font-head);
+  font-size: 30px;
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 28px 0 14px;
+  scroll-margin-top: 16px;
+}
+.model-group span {
+  display: block;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+
+/* Moneyline picks (Games tab, NBA Home and History): "BUF +135" with its
+   VALUE tag, our chance vs. the book's, and the graded units. */
+.ml-pick { font-weight: 700; white-space: nowrap; }
+.ml-pick .pill { margin-left: 4px; }
+.ml-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; }
+.lock-note { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.lock-note.locked::before { content: "\1F512\FE0E  "; }
+
+@media (max-width: 700px) {
+  table.responsive-stack tbody tr td.ml-cell { grid-column: 1 / -1; align-items: flex-start; }
+  td.ml-cell .ml { text-align: right; min-width: 0; }
+  /* Equal columns however long a score runs, and on the Games tab the result
+     that follows the moneyline gets its own line. */
+  table.responsive-stack tbody tr:has(td.ml-cell) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  table.responsive-stack tbody tr td.ml-cell + td[data-label="Result"] { grid-column: 1 / -1; }
+  .ml-pick, .ml-sub { white-space: normal; }
+}

@@ -30,19 +30,21 @@ import hashlib
 import json
 import os
 import shutil
+import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
-import extras
-import games as games_mod
-import model_page
-import moneyline
-
 ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "shared"))
+import assets  # noqa: E402
+import extras  # noqa: E402
+import games as games_mod  # noqa: E402
+import model_page  # noqa: E402
+import moneyline  # noqa: E402
+
 WEB_DIR = os.path.join(ROOT, "web")
-ASSETS = ("style.css", "site.js", "nba.js")  # nba.js also renders the Games tab's day picker
 DIST_DIR = os.path.join(ROOT, "dist")
 ET = ZoneInfo("America/New_York")
 NOW = datetime.now(ET)
@@ -73,12 +75,26 @@ def load_json(name, default):
         return json.load(f)
 
 
+def asset_files():
+    """What every MLB, NBA, NHL and CBB page loads: style.css and site.js built
+    from shared/ (see shared/assets.py), and nba.js, which also renders the
+    Games tab's day picker."""
+    return {"style.css": assets.style(os.path.join(WEB_DIR, "sport.css")),
+            "site.js": assets.script(os.path.join(WEB_DIR, "sport.js")),
+            "nba.js": assets.read(os.path.join(WEB_DIR, "nba.js"))}
+
+
 def asset_version():
     h = hashlib.md5()
-    for name in ASSETS:
-        with open(os.path.join(WEB_DIR, name), "rb") as f:
-            h.update(f.read())
+    for text in asset_files().values():
+        h.update(text.encode("utf-8"))
     return h.hexdigest()[:10]
+
+
+def write_assets(out_dir):
+    for name, text in asset_files().items():
+        with open(os.path.join(out_dir, name), "w", encoding="utf-8") as f:
+            f.write(text)
 
 
 def script_json(data):
@@ -1416,8 +1432,7 @@ def main():
     with open(os.path.join(DIST_DIR, "summary.json"), "w") as f:
         json.dump(build_summary(history, model, team_history), f, indent=1)
     games_mod.write_json(os.path.join(DIST_DIR, "games.json"), "mlb", games_slate, NOW.isoformat())
-    for asset in ASSETS:
-        shutil.copy(os.path.join(WEB_DIR, asset), os.path.join(DIST_DIR, asset))
+    write_assets(DIST_DIR)
     print(f"Built {len(pages)} pages in {DIST_DIR}")
 
 

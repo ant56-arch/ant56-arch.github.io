@@ -30,16 +30,14 @@ from html import escape
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from build_site import (bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, DASH, ET,  # noqa: E402
+from build_site import (asset_version, write_assets, bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, DASH, ET,  # noqa: E402
                         NOW, card, ml_day, ml_history, pct, record_band_html, script_json, statline)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
 
-WEB_DIR = os.path.join(ROOT, "web")
 OUT_DIR = os.path.join(ROOT, "dist", "cbb")
-ASSETS = ("style.css", "site.js", "nba.js")
 
 HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
@@ -64,14 +62,6 @@ def load_json(path, default):
     with open(path) as f:
         return json.load(f)
 
-
-def asset_version():
-    import hashlib
-    h = hashlib.md5()
-    for name in ASSETS:
-        with open(os.path.join(WEB_DIR, name), "rb") as f:
-            h.update(f.read())
-    return h.hexdigest()[:10]
 
 
 def day_label(iso):
@@ -613,8 +603,7 @@ def main():
             f.write(html)
     with open(os.path.join(OUT_DIR, "summary.json"), "w") as f:
         json.dump(build_summary(history, model), f, indent=1)
-    for asset in ASSETS:
-        shutil.copy(os.path.join(WEB_DIR, asset), os.path.join(OUT_DIR, asset))
+    write_assets(OUT_DIR)
     print(f"Built {len(pages)} CBB pages in {OUT_DIR}")
 
 

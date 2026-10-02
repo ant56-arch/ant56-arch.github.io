@@ -11,10 +11,13 @@ on:
     paths:
       - index.html
       - bets.html
-      - home.js
+      - home-page.js
+      - home-page.css
       - schedule.html
       - schedule.js
-      - style.css
+      - shared/base.css
+      - shared/edge.js
+      - shared/assets.py
       - terms.html
       - privacy.html
       - publish_site.sh

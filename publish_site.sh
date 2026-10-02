@@ -15,7 +15,7 @@
 set -euo pipefail
 
 BRANCH=site
-HOME_FILES=".nojekyll index.html bets.html home.js schedule.html schedule.js style.css terms.html privacy.html"
+HOME_FILES=".nojekyll index.html bets.html schedule.html schedule.js terms.html privacy.html"
 
 root=$(git rev-parse --show-toplevel)
 git="git --git-dir=$root/.git"
@@ -48,6 +48,8 @@ for attempt in 1 2 3 4 5; do
   for f in $HOME_FILES; do
     cp "$root/$f" "$work/$f"
   done
+  # The home page's style.css and home.js are built from shared/ (see shared/assets.py).
+  python3 "$root/shared/assets.py" home "$work"
 
   export GIT_INDEX_FILE="$tmp/index"
   rm -f "$GIT_INDEX_FILE"
