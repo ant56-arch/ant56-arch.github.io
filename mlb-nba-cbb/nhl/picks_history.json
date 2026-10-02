@@ -350,7 +350,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-02T17:12:35Z",
+   "set_at": "2026-10-02T19:47:37Z",
    "ml": {
     "team": "DET",
     "side": "home",
@@ -361,7 +361,7 @@
     "value": false,
     "home_ml": -130,
     "away_ml": 110,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -388,7 +388,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-02T17:12:35Z",
+   "set_at": "2026-10-02T19:47:37Z",
    "ml": {
     "team": "CAR",
     "side": "home",
@@ -399,7 +399,7 @@
     "value": false,
     "home_ml": -142,
     "away_ml": 120,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -426,7 +426,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-02T17:12:35Z",
+   "set_at": "2026-10-02T19:47:37Z",
    "ml": {
     "team": "WPG",
     "side": "home",
@@ -437,7 +437,7 @@
     "value": false,
     "home_ml": -122,
     "away_ml": 102,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -464,7 +464,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-02T17:12:35Z",
+   "set_at": "2026-10-02T19:47:37Z",
    "ml": {
     "team": "DAL",
     "side": "home",
@@ -475,7 +475,7 @@
     "value": false,
     "home_ml": -185,
     "away_ml": 154,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -502,18 +502,18 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-02T17:12:35Z",
+   "set_at": "2026-10-02T19:47:37Z",
    "ml": {
     "team": "VGK",
     "side": "home",
-    "price": -192,
+    "price": -205,
     "prob": 58.1,
-    "book_prob": 63.1,
-    "edge": -5.0,
+    "book_prob": 64.5,
+    "edge": -6.4,
     "value": false,
-    "home_ml": -192,
-    "away_ml": 160,
-    "book": "DraftKings",
+    "home_ml": -205,
+    "away_ml": 170,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
