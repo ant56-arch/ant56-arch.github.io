@@ -38,16 +38,19 @@ dist/ directory - the workflow's own steps upload and deploy it.
 from html import escape
 import math
 import re
+import sys
 import pandas as pd
 import numpy as np
-import extras
-import games as games_mod
-import model_page
-import moneyline
 import json
 import os
-import shutil
 import hashlib
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared"))
+import assets  # noqa: E402
+import extras  # noqa: E402
+import games as games_mod  # noqa: E402
+import model_page  # noqa: E402
+import moneyline  # noqa: E402
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -275,11 +278,21 @@ def asset_version():
     global _ASSET_VERSION
     if _ASSET_VERSION is None:
         h = hashlib.md5()
-        for name in ("style.css", "site.js"):
-            with open(os.path.join(WEB_SRC_DIR, name), "rb") as f:
-                h.update(f.read())
+        for text in asset_files().values():
+            h.update(text.encode("utf-8"))
         _ASSET_VERSION = h.hexdigest()[:10]
     return _ASSET_VERSION
+
+def asset_files():
+    """style.css and site.js, built from shared/ plus web/sport.css and
+    web/sport.js (see shared/assets.py)."""
+    return {"style.css": assets.style(os.path.join(WEB_SRC_DIR, "sport.css")),
+            "site.js": assets.script(os.path.join(WEB_SRC_DIR, "sport.js"))}
+
+def write_assets(out_dir):
+    for name, text in asset_files().items():
+        with open(os.path.join(out_dir, name), "w", encoding="utf-8") as f:
+            f.write(text)
 
 def load_data(sport):
     games_path = os.path.join(PROCESSED_DIR, sport["game_predictions_csv"])
@@ -1351,8 +1364,7 @@ def build_sport_pages(sport):
         print(f"  Wrote {sport['slug']}/{filename}")
     # Each sport folder carries its own copy of the assets, so it can be
     # published on its own (/nfl/ and /cfb/ on ant56-arch.github.io).
-    for asset in ["style.css", "site.js"]:
-        shutil.copy(os.path.join(WEB_SRC_DIR, asset), os.path.join(out_dir, asset))
+    write_assets(out_dir)
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump(build_summary(sport, games, log, comparison, accuracy_summary), f, indent=1)
     print(f"  Wrote {sport['slug']}/summary.json")
@@ -1376,8 +1388,7 @@ def main():
             f.write(html)
         print(f"  Wrote {filename}")
 
-    for asset in ["style.css", "site.js"]:
-        shutil.copy(os.path.join(WEB_SRC_DIR, asset), os.path.join(DIST_DIR, asset))
+    write_assets(DIST_DIR)
     print("  Copied static assets")
 
     print(f"\nSite built in {DIST_DIR}")
