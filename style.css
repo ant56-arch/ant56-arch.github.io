@@ -1824,3 +1824,8 @@ a.money-tile:hover { border-color: var(--rule-strong); }
   .guide-net { padding: 0 8px; font-size: 14px; }
   .view-toggle button { padding: 0 14px; font-size: 15px; }
 }
+
+/* Home games: See more button under a long sport group (home.js HG_SHOW). */
+.hg-more { display: block; width: 100%; margin-top: 12px; padding: 11px 14px; font: 600 14px var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 10px; cursor: pointer; }
+.hg-more:hover { border-color: var(--ours); color: var(--ours); }
+.hg-more:focus-visible { outline: 2px solid var(--ours); outline-offset: 2px; }
