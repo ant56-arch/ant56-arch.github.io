@@ -42,7 +42,7 @@ document.querySelectorAll("table.data[data-sortable]").forEach(makeSortable);
 // --- Shared week-picker: populates a <select> from {week_order, weeks} and
 // re-renders a content div on change. Used by both history.html (every
 // graded week, all seasons - defaults to the most recent) and teams.html
-// (the full 2026 season, past + upcoming - defaults to the current week,
+// (the current season, past + upcoming - defaults to the current week,
 // picked via pickDefault since "most recent" there would land on the
 // season finale). ---
 function buildWeekPicker(data, selectId, contentId, renderWeek, pickDefault) {
@@ -90,7 +90,7 @@ function initHistoryPicker() {
 }
 initHistoryPicker();
 
-// --- Season week picker (teams.html) - 2026 only, past + upcoming ---
+// --- Season week picker (teams.html) - the current season, past + upcoming ---
 function initTeamsPicker() {
   if (typeof TEAMS_DATA === "undefined") return;
   buildWeekPicker(TEAMS_DATA, "teams-week-select", "teams-week-content", (week) => {

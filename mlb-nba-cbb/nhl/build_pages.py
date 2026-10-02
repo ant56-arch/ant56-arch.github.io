@@ -206,7 +206,7 @@ def build_index(history, model, espn_games=()):
         body += extras.board_section(f"{heading}: {day_label(latest)}", BOARD_NOTE,
                                      bb_board(day, {g["id"]: g for g in all_games(history)}, espn_games, "NHL"))
     else:
-        body += card("Today's Games", "", '<div class="empty-state">The season opens on October 7, and '
+        body += card("Today's Games", "", '<div class="empty-state">The season opens in early October, and '
                      'picks start on opening night. Until then, the <a href="accuracy.html">Accuracy tab</a> shows '
                      'how the model did on every game of last season.</div>')
     return page_shell("Home", "index.html", body)
