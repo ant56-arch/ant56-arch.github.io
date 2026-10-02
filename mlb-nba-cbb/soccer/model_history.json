@@ -1,0 +1,159 @@
+{
+ "runs": [
+  {
+   "run_at": "2026-10-02T17:06:59+00:00",
+   "data_through": "2026-09-20",
+   "holdout": {
+    "from": "2026-08-23",
+    "games": 417,
+    "home_rate_log_loss": 1.0741
+   },
+   "live_model": {
+    "trained_at": null,
+    "recipe": {
+     "half_life": 240,
+     "reg": 4.0,
+     "years": 3
+    },
+    "holdout_log_loss": null
+   },
+   "current_recipe_log_loss": 0.984,
+   "best_recipe": {
+    "recipe": {
+     "half_life": 400,
+     "reg": 10.0,
+     "years": 3
+    },
+    "log_loss": 0.9823
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "half_life": 120,
+      "reg": 2.0,
+      "years": 3
+     },
+     "log_loss": 0.9916
+    },
+    {
+     "recipe": {
+      "half_life": 120,
+      "reg": 5.0,
+      "years": 3
+     },
+     "log_loss": 0.9899
+    },
+    {
+     "recipe": {
+      "half_life": 120,
+      "reg": 10.0,
+      "years": 3
+     },
+     "log_loss": 0.9956
+    },
+    {
+     "recipe": {
+      "half_life": 180,
+      "reg": 2.0,
+      "years": 3
+     },
+     "log_loss": 0.9889
+    },
+    {
+     "recipe": {
+      "half_life": 180,
+      "reg": 5.0,
+      "years": 3
+     },
+     "log_loss": 0.9853
+    },
+    {
+     "recipe": {
+      "half_life": 180,
+      "reg": 10.0,
+      "years": 3
+     },
+     "log_loss": 0.9884
+    },
+    {
+     "recipe": {
+      "half_life": 270,
+      "reg": 2.0,
+      "years": 3
+     },
+     "log_loss": 0.9884
+    },
+    {
+     "recipe": {
+      "half_life": 270,
+      "reg": 5.0,
+      "years": 3
+     },
+     "log_loss": 0.9831
+    },
+    {
+     "recipe": {
+      "half_life": 270,
+      "reg": 10.0,
+      "years": 3
+     },
+     "log_loss": 0.984
+    },
+    {
+     "recipe": {
+      "half_life": 400,
+      "reg": 2.0,
+      "years": 3
+     },
+     "log_loss": 0.989
+    },
+    {
+     "recipe": {
+      "half_life": 400,
+      "reg": 5.0,
+      "years": 3
+     },
+     "log_loss": 0.9827
+    },
+    {
+     "recipe": {
+      "half_life": 400,
+      "reg": 10.0,
+      "years": 3
+     },
+     "log_loss": 0.9823
+    },
+    {
+     "recipe": {
+      "half_life": 240,
+      "reg": 4.0,
+      "years": 3
+     },
+     "log_loss": 0.984
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest matches",
+   "trigger": "manual",
+   "live_picks_last_14_days": null,
+   "weights_before": null,
+   "weights_after": {
+    "home": 0.3105,
+    "rho": -0.05,
+    "goals": 1.4194,
+    "league_B1": -0.2118,
+    "league_D1": -0.0584,
+    "league_E0": -0.1699,
+    "league_F1": -0.1469,
+    "league_I1": -0.2738,
+    "league_N1": -0.0387,
+    "league_P1": -0.2435,
+    "league_SC0": -0.1755,
+    "league_SP1": -0.2064,
+    "league_T1": -0.1719,
+    "league_OTHER": 0.0
+   }
+  }
+ ]
+}
