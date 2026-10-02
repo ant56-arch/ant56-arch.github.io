@@ -41,7 +41,7 @@ def _write(path, data):
         json.dump(data, f, separators=(",", ":"))
 
 
-FD_FIELDS = ("comp", "date", "home", "away", "hg", "ag", "odds")
+FD_FIELDS = ("comp", "date", "home", "away", "hg", "ag", "odds", "shots")
 
 
 def _fd_full(m, season):
@@ -49,7 +49,7 @@ def _fd_full(m, season):
 
 
 def save_fd(season, matches):
-    rows = sorted(({k: m[k] for k in FD_FIELDS} for m in matches), key=lambda m: (m["date"], m["comp"], m["home"]))
+    rows = sorted(({k: m.get(k) for k in FD_FIELDS} for m in matches), key=lambda m: (m["date"], m["comp"], m["home"]))
     _write(os.path.join(FD_DIR, f"{season}.json"), {"season": season, "matches": rows})
 
 

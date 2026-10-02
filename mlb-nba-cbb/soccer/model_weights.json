@@ -1,26 +1,39 @@
 {
  "recipe": {
-  "half_life": 400,
+  "half_life": 550,
   "reg": 10.0,
-  "years": 3
+  "years": 3,
+  "xg": 0.3,
+  "home_reg": 100.0
  },
  "coef": {
-  "home": 0.3276,
-  "rho": -0.04,
-  "goals": 1.432,
-  "league_B1": -0.6923,
-  "league_D1": 0.0289,
-  "league_E0": 0.7547,
-  "league_F1": 0.3106,
-  "league_I1": -0.0972,
-  "league_N1": -0.9263,
-  "league_P1": -0.5962,
-  "league_SC0": -0.8033,
-  "league_SP1": 0.157,
-  "league_T1": -0.6701,
-  "league_OTHER": -0.4808
+  "home": 0.3262,
+  "rho": -0.05,
+  "goals": 1.4168,
+  "league_B1": -0.6838,
+  "league_D1": 0.0518,
+  "league_E0": 0.7288,
+  "league_F1": 0.2625,
+  "league_I1": -0.0709,
+  "league_N1": -0.9036,
+  "league_P1": -0.5696,
+  "league_SC0": -0.8989,
+  "league_SP1": 0.1589,
+  "league_T1": -0.6402,
+  "league_OTHER": -0.4976,
+  "home_B1": 0.3461,
+  "home_D1": 0.331,
+  "home_E0": 0.2677,
+  "home_F1": 0.2949,
+  "home_I1": 0.2247,
+  "home_N1": 0.2852,
+  "home_P1": 0.2789,
+  "home_SC0": 0.3195,
+  "home_SP1": 0.4107,
+  "home_T1": 0.3988,
+  "home_OTHER": 0.4437
  },
- "trained_at": "2026-10-02T17:11:03+00:00",
+ "trained_at": "2026-10-02T17:56:06+00:00",
  "trained_through": "2026-09-20",
  "training_matches": 9795,
  "training_dates": [
@@ -31,36 +44,36 @@
   "from": "2026-08-27",
   "games": 401,
   "base_rate_log_loss": 1.0738,
-  "correct": 208,
-  "accuracy": 0.5187,
-  "predicted_accuracy": 0.5011,
-  "log_loss": 0.9758,
-  "brier": 0.5798,
+  "correct": 212,
+  "accuracy": 0.5287,
+  "predicted_accuracy": 0.4952,
+  "log_loss": 0.9737,
+  "brier": 0.5784,
   "draw_picks": 0,
   "draw_rate": 0.2369,
   "book": {
    "games": 383,
    "log_loss": 0.9696,
-   "model_log_loss": 0.9901,
+   "model_log_loss": 0.9881,
    "accuracy": 0.5091,
-   "model_accuracy": 0.5039
+   "model_accuracy": 0.5144
   }
  },
  "trained_on": "2022-23 to 2026-27",
  "backtest_season": "2025-26",
  "backtest": {
   "games": 949,
-  "correct": 497,
-  "accuracy": 0.5237,
-  "predicted_accuracy": 0.5069,
-  "log_loss": 0.9903,
-  "brier": 0.5893,
+  "correct": 494,
+  "accuracy": 0.5205,
+  "predicted_accuracy": 0.5039,
+  "log_loss": 0.9872,
+  "brier": 0.5873,
   "draw_picks": 0,
   "draw_rate": 0.2434,
   "book": {
    "games": 760,
    "log_loss": 0.9895,
-   "model_log_loss": 1.0029,
+   "model_log_loss": 1.0007,
    "accuracy": 0.5171,
    "model_accuracy": 0.5026
   },
@@ -70,145 +83,145 @@
      0.0,
      0.45
     ],
-    "n": 386,
-    "predicted": 0.4033,
-    "actual": 0.4197
+    "n": 378,
+    "predicted": 0.4036,
+    "actual": 0.4101
    },
    {
     "range": [
      0.45,
      0.55
     ],
-    "n": 274,
-    "predicted": 0.4971,
-    "actual": 0.4927
+    "n": 300,
+    "predicted": 0.4955,
+    "actual": 0.4967
    },
    {
     "range": [
      0.55,
      0.65
     ],
-    "n": 166,
-    "predicted": 0.5953,
-    "actual": 0.6566
+    "n": 154,
+    "predicted": 0.5922,
+    "actual": 0.6558
    },
    {
     "range": [
      0.65,
      1.0
     ],
-    "n": 123,
-    "predicted": 0.7343,
-    "actual": 0.7398
+    "n": 117,
+    "predicted": 0.7333,
+    "actual": 0.7607
    }
   ],
   "months": [
    {
     "month": "2025-08",
     "n": 61,
-    "correct": 33,
-    "predicted": 0.4921
+    "correct": 29,
+    "predicted": 0.4855
    },
    {
     "month": "2025-09",
     "n": 96,
-    "correct": 52,
-    "predicted": 0.5218
+    "correct": 53,
+    "predicted": 0.5204
    },
    {
     "month": "2025-10",
     "n": 88,
     "correct": 55,
-    "predicted": 0.5045
+    "predicted": 0.5031
    },
    {
     "month": "2025-11",
     "n": 114,
-    "correct": 70,
-    "predicted": 0.532
+    "correct": 69,
+    "predicted": 0.529
    },
    {
     "month": "2025-12",
     "n": 106,
-    "correct": 60,
-    "predicted": 0.5082
+    "correct": 57,
+    "predicted": 0.504
    },
    {
     "month": "2026-01",
     "n": 128,
-    "correct": 58,
-    "predicted": 0.5126
+    "correct": 59,
+    "predicted": 0.5097
    },
    {
     "month": "2026-02",
     "n": 98,
-    "correct": 49,
-    "predicted": 0.5146
+    "correct": 50,
+    "predicted": 0.5108
    },
    {
     "month": "2026-03",
     "n": 84,
-    "correct": 39,
-    "predicted": 0.4981
+    "correct": 41,
+    "predicted": 0.4955
    },
    {
     "month": "2026-04",
     "n": 80,
-    "correct": 40,
-    "predicted": 0.4804
+    "correct": 38,
+    "predicted": 0.4795
    },
    {
     "month": "2026-05",
     "n": 94,
-    "correct": 41,
-    "predicted": 0.4862
+    "correct": 43,
+    "predicted": 0.4822
    }
   ]
  },
  "backtest_by_comp": {
   "E0": {
    "games": 380,
-   "correct": 181,
-   "accuracy": 0.4763,
-   "predicted_accuracy": 0.4961,
-   "log_loss": 1.0239,
-   "brier": 0.614,
+   "correct": 180,
+   "accuracy": 0.4737,
+   "predicted_accuracy": 0.4868,
+   "log_loss": 1.0223,
+   "brier": 0.6128,
    "draw_picks": 0,
    "draw_rate": 0.2737,
    "book": {
     "games": 380,
     "log_loss": 1.0139,
-    "model_log_loss": 1.0239,
+    "model_log_loss": 1.0223,
     "accuracy": 0.4868,
-    "model_accuracy": 0.4763
+    "model_accuracy": 0.4737
    },
    "name": "Premier League"
   },
   "SP1": {
    "games": 380,
-   "correct": 201,
-   "accuracy": 0.5289,
-   "predicted_accuracy": 0.4862,
-   "log_loss": 0.9819,
-   "brier": 0.5827,
+   "correct": 202,
+   "accuracy": 0.5316,
+   "predicted_accuracy": 0.4867,
+   "log_loss": 0.9792,
+   "brier": 0.5809,
    "draw_picks": 0,
    "draw_rate": 0.2447,
    "book": {
     "games": 380,
     "log_loss": 0.965,
-    "model_log_loss": 0.9819,
+    "model_log_loss": 0.9792,
     "accuracy": 0.5474,
-    "model_accuracy": 0.5289
+    "model_accuracy": 0.5316
    },
    "name": "La Liga"
   },
   "UCL": {
    "games": 189,
-   "correct": 115,
-   "accuracy": 0.6085,
-   "predicted_accuracy": 0.5703,
-   "log_loss": 0.9394,
-   "brier": 0.5531,
+   "correct": 112,
+   "accuracy": 0.5926,
+   "predicted_accuracy": 0.5728,
+   "log_loss": 0.9326,
+   "brier": 0.5487,
    "draw_picks": 0,
    "draw_rate": 0.1799,
    "name": "Champions League"

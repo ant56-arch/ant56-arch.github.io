@@ -30,7 +30,20 @@ from datetime import date
 
 import numpy as np
 
-DEFAULT_RECIPE = {"half_life": 240, "reg": 4.0, "years": 3}
+DEFAULT_RECIPE = {"half_life": 400, "reg": 3.0, "years": 3, "xg": 0.3, "home_reg": 100.0}
+# Optional recipe keys (each absent = off, which is the original model):
+#   xg         0-1: weight on the shots-on-target expected-goals proxy in the
+#              rating target (the rest on actual goals); matches without shot
+#              counts (Champions League) use goals alone
+#   home_reg   per-competition home edges, each pulled toward the overall one
+#              with this many matches' worth of weight (None = one home edge)
+# The default (shots blend 0.3, per-competition home edges) beat the plain
+# goals model on both 2024-25 and 2025-26 walk-forward (research/experiments.py).
+#   promoted   prior for a club new to its league: its attack and defence are
+#              pulled toward -promoted instead of the league average
+#   draw       draw inflation: the draw chance is scaled by 1 + draw, then the
+#              three chances are renormalised
+#   rho        a fixed low-score correction instead of the fitted one
 LEAGUE_REG = 1.0  # a light pull on league levels, which have plenty of evidence
 OTHER = "OTHER"   # clubs seen only in the Champions League
 MAX_GOALS = 10
@@ -59,6 +72,10 @@ class Data:
         self.ag = np.array([m["ag"] for m in matches], dtype=float)
         self.hf = np.array([0.0 if m.get("neutral") else 1.0 for m in matches])
         self.lg = np.array([self.lidx[m["league"]] if m.get("league") else -1 for m in matches], dtype=np.int64)
+        # Home-edge group: the league, or OTHER for the Champions League.
+        self.grp = np.where(self.lg >= 0, self.lg, self.lidx[OTHER])
+        shots = [m.get("shots") or [np.nan] * 4 for m in matches]
+        self.shots = np.array(shots, dtype=float).reshape(n, 4)  # HS, AS, HST, AST
         self.n = n
 
     def team_leagues(self, mask):
@@ -92,7 +109,7 @@ def tau(lh, la, hg, ag, rho):
 class Ratings:
     def __init__(self, data, tl, params, rho, as_of, n_used, recipe):
         self.data, self.tl, self.rho, self.as_of, self.n_used, self.recipe = data, tl, rho, as_of, n_used, recipe
-        self.mu, self.home, self.A, self.D, self.att, self.dfn = params
+        self.mu, self.home, self.A, self.D, self.att, self.dfn, self.dh = params
 
     def _side(self, key, league):
         i = self.data.tidx.get(key)
@@ -109,14 +126,16 @@ class Ratings:
         for a league match, None for the Champions League."""
         ha, hd = self._side(hk, league)
         aa, ad = self._side(ak, league)
-        lh = math.exp(self.mu + (0.0 if neutral else self.home) + ha - ad)
+        g = self.data.lidx.get(league or OTHER, self.data.lidx[OTHER])
+        home = 0.0 if neutral else self.home + self.dh[g]
+        lh = math.exp(self.mu + home + ha - ad)
         la = math.exp(self.mu + aa - hd)
         return lh, la
 
     def probs(self, hk, ak, neutral=False, league=None):
         """{"home", "draw", "away"} chances (0-1) and the expected goals."""
         lh, la = self.expected_goals(hk, ak, neutral, league)
-        p = outcome_probs(lh, la, self.rho)
+        p = outcome_probs(lh, la, self.rho, self.recipe.get("draw") or 0.0)
         return {"home": p[0], "draw": p[1], "away": p[2], "xg": (lh, la)}
 
     def known(self, key):
@@ -139,6 +158,10 @@ class Ratings:
                         self.strength(self.A[li] + self.att[i], self.D[li] + self.dfn[i])))
         return sorted(out, key=lambda r: -r[2])
 
+    def home_edges(self):
+        """Each competition's home edge in goals a match (OTHER = Champions League)."""
+        return {l: math.exp(self.mu + self.home + self.dh[i]) - math.exp(self.mu) for l, i in self.data.lidx.items()}
+
     def league_strengths(self):
         return {l: self.strength(self.A[i], self.D[i]) for l, i in self.data.lidx.items()}
 
@@ -148,21 +171,25 @@ def poisson_pmf(lam):
     return np.exp(-lam + k * math.log(lam) - np.array([math.lgamma(x + 1) for x in k]))
 
 
-def outcome_probs(lh, la, rho):
-    """(home win, draw, away win) from expected goals and the low-score correction."""
+def outcome_probs(lh, la, rho, draw=0.0):
+    """(home win, draw, away win) from expected goals, the low-score correction
+    and the draw inflation."""
     m = np.outer(poisson_pmf(lh), poisson_pmf(la))
     m[0, 0] *= max(1 - lh * la * rho, 1e-6)
     m[0, 1] *= max(1 + lh * rho, 1e-6)
     m[1, 0] *= max(1 + la * rho, 1e-6)
     m[1, 1] *= max(1 - rho, 1e-6)
-    m /= m.sum()
-    return float(np.tril(m, -1).sum()), float(np.trace(m)), float(np.triu(m, 1).sum())
+    h, d, a = float(np.tril(m, -1).sum()), float(np.trace(m)) * (1 + draw), float(np.triu(m, 1).sum())
+    s = h + d + a
+    return h / s, d / s, a / s
 
 
 def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
     """Ratings fitted on every match before as_of (YYYY-MM-DD or an ordinal).
     warm: earlier Ratings on the same data to start from. None if too few matches."""
-    recipe = {**DEFAULT_RECIPE, **(recipe or {})}
+    # The optional keys stay off unless the recipe names them, so a stored
+    # recipe always means what it meant when it was chosen.
+    recipe = {**{k: DEFAULT_RECIPE[k] for k in ("half_life", "reg", "years")}, **(recipe or DEFAULT_RECIPE)}
     as_of = ordinal(as_of) if isinstance(as_of, str) else as_of
     mask, wm = weights(data, as_of, recipe)
     used = int(mask.sum())
@@ -174,34 +201,64 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
     att_i = np.concatenate([data.h[sel], data.a[sel]])
     def_i = np.concatenate([data.a[sel], data.h[sel]])
     y = np.concatenate([data.hg[sel], data.ag[sel]])
+    xw = float(recipe.get("xg") or 0.0)
+    if xw > 0:
+        # Expected-goals proxy: goals per shot on target and per other shot,
+        # fitted (weighted least squares) on the window's matches with shots.
+        sh = data.shots[sel]
+        sot = np.concatenate([sh[:, 2], sh[:, 3]])
+        off = np.concatenate([sh[:, 0], sh[:, 1]]) - sot
+        ok = np.isfinite(sot) & np.isfinite(off) & (off >= 0)
+        if ok.sum() > 100:
+            ww = np.concatenate([wm[sel], wm[sel]])[ok]
+            X = np.stack([sot[ok], off[ok]], 1)
+            coefs = np.linalg.solve((X * ww[:, None]).T @ X, (X * ww[:, None]).T @ y[ok])
+            proxy = np.maximum(coefs[0] * sot[ok] + coefs[1] * off[ok], 0.0)
+            y = y.copy()
+            y[ok] = (1 - xw) * y[ok] + xw * proxy
     hf = np.concatenate([data.hf[sel], np.zeros(len(sel))])
+    grp = np.concatenate([data.grp[sel], data.grp[sel]])
+    hreg = recipe.get("home_reg")
     w = np.concatenate([wm[sel], wm[sel]])
     la_i, ld_i = tl[att_i], tl[def_i]
     reg = float(recipe["reg"])
+    # A club new to its league (no match in it before the last 300 days of
+    # the window) is pulled toward -promoted rather than the league average.
+    prior = np.zeros(nt)
+    if recipe.get("promoted"):
+        seasoned = np.zeros(nt, dtype=bool)
+        old = sel[(as_of - data.ord[sel]) > 300]
+        seasoned[data.h[old][tl[data.h[old]] == data.lg[old]]] = True
+        seasoned[data.a[old][tl[data.a[old]] == data.lg[old]]] = True
+        seen = np.zeros(nt, dtype=bool)
+        seen[data.h[sel]] = seen[data.a[sel]] = True
+        newbie = seen & ~seasoned & (tl != data.lidx[OTHER])
+        prior[newbie] = -float(recipe["promoted"])
 
     if warm is not None:
         mu, home = warm.mu, warm.home
-        A, D, att, dfn = warm.A.copy(), warm.D.copy(), warm.att.copy(), warm.dfn.copy()
+        A, D, att, dfn, dh = warm.A.copy(), warm.D.copy(), warm.att.copy(), warm.dfn.copy(), warm.dh.copy()
     else:
         mu = math.log(max(np.average(y, weights=w), 0.1))
         home, A, D, att, dfn = 0.25, np.zeros(nl), np.zeros(nl), np.zeros(nt), np.zeros(nt)
+        dh = np.zeros(nl)
 
     def eta():
-        return mu + home * hf + A[la_i] + att[att_i] - D[ld_i] - dfn[def_i]
+        return mu + (home + dh[grp]) * hf + A[la_i] + att[att_i] - D[ld_i] - dfn[def_i]
 
     for _ in range(iters):
         biggest = 0.0
         # Each block's Newton step: gradient over curvature, capped for safety.
         lam = np.exp(eta())
         r, c = w * (y - lam), w * lam
-        step = (np.bincount(att_i, r, nt) - reg * att) / (np.bincount(att_i, c, nt) + reg)
+        step = (np.bincount(att_i, r, nt) - reg * (att - prior)) / (np.bincount(att_i, c, nt) + reg)
         step = np.clip(step, -1, 1)
         att += step
         biggest = max(biggest, float(np.abs(step).max()))
 
         lam = np.exp(eta())
         r, c = w * (y - lam), w * lam
-        step = (-np.bincount(def_i, r, nt) - reg * dfn) / (np.bincount(def_i, c, nt) + reg)
+        step = (-np.bincount(def_i, r, nt) - reg * (dfn - prior)) / (np.bincount(def_i, c, nt) + reg)
         step = np.clip(step, -1, 1)
         dfn += step
         biggest = max(biggest, float(np.abs(step).max()))
@@ -225,6 +282,12 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
         hs = float(np.clip((w * hf * (y - lam)).sum() / max((w * hf * lam).sum(), 1e-9), -1, 1))
         home += hs
         biggest = max(biggest, abs(s), abs(hs))
+        if hreg is not None:
+            lam = np.exp(eta())
+            r, c = w * hf * (y - lam), w * hf * lam
+            step = np.clip((np.bincount(grp, r, nl) - hreg * dh) / (np.bincount(grp, c, nl) + hreg), -1, 1)
+            dh += step
+            biggest = max(biggest, float(np.abs(step).max()))
         if biggest < tol:
             break
 
@@ -235,14 +298,14 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
     hg, ag, wmatch = data.hg[sel], data.ag[sel], wm[sel]
     low = (hg <= 1) & (ag <= 1)
     best, rho = -np.inf, 0.0
-    for r_ in RHO_GRID:
+    for r_ in ([recipe["rho"]] if recipe.get("rho") is not None else RHO_GRID):
         t = tau(lh[low], la[low], hg[low], ag[low], r_)
         if (t <= 0).any():
             continue
         ll = float((wmatch[low] * np.log(t)).sum())
         if ll > best:
             best, rho = ll, float(r_)
-    return Ratings(data, tl, (mu, home, A, D, att, dfn), rho, as_of, used, recipe)
+    return Ratings(data, tl, (mu, home, A, D, att, dfn, dh), rho, as_of, used, recipe)
 
 
 def pick_of(p):

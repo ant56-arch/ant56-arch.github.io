@@ -5,8 +5,9 @@ per league per season: https://www.football-data.co.uk/mmz4281/<YYZZ>/<code>.csv
 The top five leagues train the team ratings, with five more whose clubs are
 Champions League regulars (Portugal, the Netherlands, Belgium, Turkey and
 Scotland) so those clubs are rated from their own league too. Every match
-keeps its full-time score (league games have no extra time) and the
-bookmaker's closing odds, for the backtest's market comparison.
+keeps its full-time score (league games have no extra time), its shots and
+shots on target (the ratings' expected-goals proxy) and the bookmaker's
+closing odds, for the backtest's market comparison.
 """
 
 import csv
@@ -60,8 +61,16 @@ def _odds(row):
     return None
 
 
+def _shots(row):
+    """[home shots, away shots, home on target, away on target], or None."""
+    try:
+        return [int(row[c]) for c in ("HS", "AS", "HST", "AST")]
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 def parse(text, code, season):
-    """CSV text -> [{"id", "comp", "date", "season", "home", "away", "hg", "ag", "odds"}]."""
+    """CSV text -> [{"id", "comp", "date", "season", "home", "away", "hg", "ag", "odds", "shots"}]."""
     out = []
     for row in csv.DictReader(io.StringIO(text)):
         row = {(k or "").strip().lstrip("﻿"): (v or "").strip() for k, v in row.items()}
@@ -74,7 +83,7 @@ def parse(text, code, season):
         if not (d and home and away):
             continue
         out.append({"id": f"{code}-{d}-{home}-{away}".replace(" ", "_"), "comp": code, "date": d, "season": season,
-                    "home": home, "away": away, "hg": hg, "ag": ag, "odds": _odds(row), "src": "fd"})
+                    "home": home, "away": away, "hg": hg, "ag": ag, "odds": _odds(row), "shots": _shots(row), "src": "fd"})
     return out
 
 

@@ -512,7 +512,9 @@ def recipe_setup(recipe):
         ("Old results:", f"count half as much every {hl} days"),
         ("Pull to the league average:", f"as if every club had played {reg:g} extra average matches"),
         ("Refits:", "every club's ratings each morning, from the results so far"),
-    ]
+    ] + ([("Shots:", f"ratings learn {recipe['xg']:.0%} from shots on target, {1 - recipe['xg']:.0%} from goals")]
+         if recipe.get("xg") else []) + ([("Home edge:", "measured for each league and the Champions League")]
+                                         if recipe.get("home_reg") is not None else [])
 
 
 def factors(model, before):
@@ -521,6 +523,11 @@ def factors(model, before):
             "before": before.get("home"), "fmt": lambda v: f"{v:+.2f} goals"},
            {"label": "Draw adjustment (rho)", "note": "below zero means more 0-0 and 1-1 draws than plain odds",
             "now": now["rho"], "before": before.get("rho"), "fmt": lambda v: f"{v:+.2f}"}] if now else []
+    for code, name in (("E0", "Premier League"), ("SP1", "La Liga"), ("OTHER", "Champions League")):
+        k = f"home_{code}"
+        if k in now:
+            out.append({"label": f"{name} home edge", "note": "extra goals a match for the home side",
+                        "now": now[k], "before": before.get(k), "fmt": lambda v: f"{v:+.2f} goals"})
     for code, name in LEAGUE_NAMES.items():
         k = f"league_{code}"
         if k in now:

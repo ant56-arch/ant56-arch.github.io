@@ -223,7 +223,9 @@ def save_ratings(ratings):
     since = date.fromisoformat(TODAY).toordinal() - 365
     rows = [{"team": t, "league": lg, "strength": round(s, 3)} for t, lg, s in ratings.table(active_since=since)]
     save(RATINGS_FILE, {"as_of": TODAY, "leagues": {k: round(v, 3) for k, v in ratings.league_strengths().items()},
-                        "home": round(ratings.home, 4), "rho": ratings.rho, "teams": rows}, indent=1)
+                        "home": round(ratings.home, 4), "rho": ratings.rho,
+                        "home_edges": {k: round(v, 3) for k, v in ratings.home_edges().items()},
+                        "recipe": ratings.recipe, "teams": rows}, indent=1)
 
 
 def main():
