@@ -15830,9 +15830,9 @@
       "reason": "4.1 at-bats per game \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 3,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -15878,13 +15878,69 @@
       "reason": "4.0 at-bats per game \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     }
   ],
   "baselines": {
+    "2026-08-05": {
+      "hitters": 307,
+      "with_hit": 151
+    },
+    "2026-08-06": {
+      "hitters": 228,
+      "with_hit": 145
+    },
+    "2026-08-07": {
+      "hitters": 302,
+      "with_hit": 169
+    },
+    "2026-08-08": {
+      "hitters": 302,
+      "with_hit": 177
+    },
+    "2026-08-09": {
+      "hitters": 304,
+      "with_hit": 173
+    },
+    "2026-08-10": {
+      "hitters": 202,
+      "with_hit": 111
+    },
+    "2026-08-11": {
+      "hitters": 297,
+      "with_hit": 164
+    },
+    "2026-08-12": {
+      "hitters": 307,
+      "with_hit": 182
+    },
+    "2026-08-13": {
+      "hitters": 179,
+      "with_hit": 95
+    },
+    "2026-08-14": {
+      "hitters": 276,
+      "with_hit": 162
+    },
+    "2026-08-15": {
+      "hitters": 297,
+      "with_hit": 170
+    },
+    "2026-08-16": {
+      "hitters": 304,
+      "with_hit": 176
+    },
+    "2026-08-17": {
+      "hitters": 225,
+      "with_hit": 142
+    },
+    "2026-08-18": {
+      "hitters": 308,
+      "with_hit": 178
+    },
     "2026-08-19": {
       "hitters": 303,
       "with_hit": 169
@@ -16004,6 +16060,10 @@
     "2026-09-30": {
       "hitters": 85,
       "with_hit": 47
+    },
+    "2026-10-01": {
+      "hitters": 21,
+      "with_hit": 10
     }
   }
 }
