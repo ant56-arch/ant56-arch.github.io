@@ -1,68 +1,68 @@
 {
  "recipe": {
-  "half_life": 240,
-  "reg": 4.0,
+  "half_life": 400,
+  "reg": 10.0,
   "years": 3
  },
  "coef": {
-  "home": 0.3105,
-  "rho": -0.05,
-  "goals": 1.4194,
-  "league_B1": -0.2118,
-  "league_D1": -0.0584,
-  "league_E0": -0.1699,
-  "league_F1": -0.1469,
-  "league_I1": -0.2738,
-  "league_N1": -0.0387,
-  "league_P1": -0.2435,
-  "league_SC0": -0.1755,
-  "league_SP1": -0.2064,
-  "league_T1": -0.1719,
-  "league_OTHER": 0.0
+  "home": 0.3276,
+  "rho": -0.04,
+  "goals": 1.432,
+  "league_B1": -0.6923,
+  "league_D1": 0.0289,
+  "league_E0": 0.7547,
+  "league_F1": 0.3106,
+  "league_I1": -0.0972,
+  "league_N1": -0.9263,
+  "league_P1": -0.5962,
+  "league_SC0": -0.8033,
+  "league_SP1": 0.157,
+  "league_T1": -0.6701,
+  "league_OTHER": -0.4808
  },
- "trained_at": "2026-10-02T17:06:59+00:00",
+ "trained_at": "2026-10-02T17:11:03+00:00",
  "trained_through": "2026-09-20",
- "training_matches": 9290,
+ "training_matches": 9795,
  "training_dates": [
   "2023-09-22",
   "2026-09-20"
  ],
  "recent_holdout": {
-  "from": "2026-08-23",
-  "games": 417,
-  "base_rate_log_loss": 1.0741,
-  "correct": 217,
-  "accuracy": 0.5204,
-  "predicted_accuracy": 0.5066,
-  "log_loss": 0.984,
-  "brier": 0.5847,
-  "draw_picks": 1,
-  "draw_rate": 0.235,
+  "from": "2026-08-27",
+  "games": 401,
+  "base_rate_log_loss": 1.0738,
+  "correct": 208,
+  "accuracy": 0.5187,
+  "predicted_accuracy": 0.5011,
+  "log_loss": 0.9758,
+  "brier": 0.5798,
+  "draw_picks": 0,
+  "draw_rate": 0.2369,
   "book": {
-   "games": 417,
-   "log_loss": 0.9586,
-   "model_log_loss": 0.984,
-   "accuracy": 0.5204,
-   "model_accuracy": 0.5204
+   "games": 383,
+   "log_loss": 0.9696,
+   "model_log_loss": 0.9901,
+   "accuracy": 0.5091,
+   "model_accuracy": 0.5039
   }
  },
  "trained_on": "2022-23 to 2026-27",
  "backtest_season": "2025-26",
  "backtest": {
-  "games": 760,
-  "correct": 386,
-  "accuracy": 0.5079,
-  "predicted_accuracy": 0.4961,
-  "log_loss": 1.0054,
-  "brier": 0.6,
-  "draw_picks": 2,
-  "draw_rate": 0.2592,
+  "games": 949,
+  "correct": 497,
+  "accuracy": 0.5237,
+  "predicted_accuracy": 0.5069,
+  "log_loss": 0.9903,
+  "brier": 0.5893,
+  "draw_picks": 0,
+  "draw_rate": 0.2434,
   "book": {
    "games": 760,
    "log_loss": 0.9895,
-   "model_log_loss": 1.0054,
+   "model_log_loss": 1.0029,
    "accuracy": 0.5171,
-   "model_accuracy": 0.5079
+   "model_accuracy": 0.5026
   },
   "bands": [
    {
@@ -70,36 +70,36 @@
      0.0,
      0.45
     ],
-    "n": 326,
-    "predicted": 0.4014,
-    "actual": 0.408
+    "n": 386,
+    "predicted": 0.4033,
+    "actual": 0.4197
    },
    {
     "range": [
      0.45,
      0.55
     ],
-    "n": 206,
-    "predicted": 0.4931,
-    "actual": 0.4757
+    "n": 274,
+    "predicted": 0.4971,
+    "actual": 0.4927
    },
    {
     "range": [
      0.55,
      0.65
     ],
-    "n": 147,
-    "predicted": 0.5902,
-    "actual": 0.6395
+    "n": 166,
+    "predicted": 0.5953,
+    "actual": 0.6566
    },
    {
     "range": [
      0.65,
      1.0
     ],
-    "n": 81,
-    "predicted": 0.7138,
-    "actual": 0.7531
+    "n": 123,
+    "predicted": 0.7343,
+    "actual": 0.7398
    }
   ],
   "months": [
@@ -107,100 +107,111 @@
     "month": "2025-08",
     "n": 61,
     "correct": 33,
-    "predicted": 0.4969
+    "predicted": 0.4921
    },
    {
     "month": "2025-09",
-    "n": 69,
-    "correct": 34,
-    "predicted": 0.4974
+    "n": 96,
+    "correct": 52,
+    "predicted": 0.5218
    },
    {
     "month": "2025-10",
-    "n": 61,
-    "correct": 35,
-    "predicted": 0.4785
+    "n": 88,
+    "correct": 55,
+    "predicted": 0.5045
    },
    {
     "month": "2025-11",
-    "n": 78,
-    "correct": 49,
-    "predicted": 0.5098
+    "n": 114,
+    "correct": 70,
+    "predicted": 0.532
    },
    {
     "month": "2025-12",
-    "n": 88,
-    "correct": 49,
-    "predicted": 0.5007
+    "n": 106,
+    "correct": 60,
+    "predicted": 0.5082
    },
    {
     "month": "2026-01",
-    "n": 92,
-    "correct": 37,
-    "predicted": 0.4935
+    "n": 128,
+    "correct": 58,
+    "predicted": 0.5126
    },
    {
     "month": "2026-02",
-    "n": 82,
-    "correct": 39,
-    "predicted": 0.5114
+    "n": 98,
+    "correct": 49,
+    "predicted": 0.5146
    },
    {
     "month": "2026-03",
-    "n": 68,
-    "correct": 30,
-    "predicted": 0.4978
+    "n": 84,
+    "correct": 39,
+    "predicted": 0.4981
    },
    {
     "month": "2026-04",
-    "n": 70,
+    "n": 80,
     "correct": 40,
-    "predicted": 0.4801
+    "predicted": 0.4804
    },
    {
     "month": "2026-05",
-    "n": 91,
-    "correct": 40,
-    "predicted": 0.4899
+    "n": 94,
+    "correct": 41,
+    "predicted": 0.4862
    }
   ]
  },
  "backtest_by_comp": {
   "E0": {
    "games": 380,
-   "correct": 186,
-   "accuracy": 0.4895,
-   "predicted_accuracy": 0.4982,
-   "log_loss": 1.0237,
-   "brier": 0.6139,
+   "correct": 181,
+   "accuracy": 0.4763,
+   "predicted_accuracy": 0.4961,
+   "log_loss": 1.0239,
+   "brier": 0.614,
    "draw_picks": 0,
    "draw_rate": 0.2737,
    "book": {
     "games": 380,
     "log_loss": 1.0139,
-    "model_log_loss": 1.0237,
+    "model_log_loss": 1.0239,
     "accuracy": 0.4868,
-    "model_accuracy": 0.4895
+    "model_accuracy": 0.4763
    },
    "name": "Premier League"
   },
   "SP1": {
    "games": 380,
-   "correct": 200,
-   "accuracy": 0.5263,
-   "predicted_accuracy": 0.4939,
-   "log_loss": 0.9871,
-   "brier": 0.5861,
-   "draw_picks": 2,
+   "correct": 201,
+   "accuracy": 0.5289,
+   "predicted_accuracy": 0.4862,
+   "log_loss": 0.9819,
+   "brier": 0.5827,
+   "draw_picks": 0,
    "draw_rate": 0.2447,
    "book": {
     "games": 380,
     "log_loss": 0.965,
-    "model_log_loss": 0.9871,
+    "model_log_loss": 0.9819,
     "accuracy": 0.5474,
-    "model_accuracy": 0.5263
+    "model_accuracy": 0.5289
    },
    "name": "La Liga"
+  },
+  "UCL": {
+   "games": 189,
+   "correct": 115,
+   "accuracy": 0.6085,
+   "predicted_accuracy": 0.5703,
+   "log_loss": 0.9394,
+   "brier": 0.5531,
+   "draw_picks": 0,
+   "draw_rate": 0.1799,
+   "name": "Champions League"
   }
  }
 }

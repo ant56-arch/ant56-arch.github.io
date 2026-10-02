@@ -1,4 +1,26 @@
 {
  "note": "ESPN club names with no league-results match (names.py); rated from ESPN games only",
- "names": []
+ "names": [
+  "AEK Athens",
+  "Bodo/Glimt",
+  "Dinamo Zagreb",
+  "F.C. K\u00f8benhavn",
+  "FK Qarabag",
+  "Kairat Almaty",
+  "LASK Linz",
+  "Maccabi Haifa",
+  "Olympiacos",
+  "Pafos",
+  "RB Salzburg",
+  "Red Star Belgrade",
+  "SK Sturm Graz",
+  "Sabah FK",
+  "Shakhtar Donetsk",
+  "Slavia Prague",
+  "Slovan Bratislava",
+  "Sparta Prague",
+  "Viking FK",
+  "Viktoria Plzen",
+  "Young Boys"
+ ]
 }
