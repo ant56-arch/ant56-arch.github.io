@@ -4380,6 +4380,218 @@
    "home_runs": 6,
    "away_runs": 2,
    "winner": "ATL"
+  },
+  {
+   "date": "2026-10-03",
+   "game_id": "849829",
+   "start": "2026-10-03T13:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "CWS",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Chicago White Sox",
+   "home_id": 114,
+   "away_id": 145,
+   "home_record": "85-77",
+   "away_record": "84-78",
+   "home_sp": {
+    "id": 800048,
+    "name": "Parker Messick",
+    "era": 2.56,
+    "ip": 186.3
+   },
+   "away_sp": {
+    "id": 696146,
+    "name": "Hagen Smith",
+    "era": 0.0,
+    "ip": 5.0
+   },
+   "pick": "CLE",
+   "prob": 59.2,
+   "home_prob": 59.2,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.027,
+    "starters": 0.206
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-03T11:30:35Z",
+   "ml": {
+    "team": "CLE",
+    "side": "home",
+    "price": -156,
+    "prob": 59.2,
+    "book_prob": 58.3,
+    "edge": 0.9,
+    "value": false,
+    "home_ml": -156,
+    "away_ml": 129,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-03",
+   "game_id": "849828",
+   "start": "2026-10-03T16:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "LAD",
+   "away": "ATL",
+   "home_name": "Los Angeles Dodgers",
+   "away_name": "Atlanta Braves",
+   "home_id": 119,
+   "away_id": 144,
+   "home_record": "100-62",
+   "away_record": "94-68",
+   "home_sp": {
+    "id": 669373,
+    "name": "Tarik Skubal",
+    "era": 2.72,
+    "ip": 158.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "LAD",
+   "prob": 66.2,
+   "home_prob": 66.2,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.174,
+    "starters": 0.358
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-03T11:30:35Z",
+   "ml": {
+    "team": "LAD",
+    "side": "home",
+    "price": -212,
+    "prob": 66.2,
+    "book_prob": 65.0,
+    "edge": 1.2,
+    "value": false,
+    "home_ml": -212,
+    "away_ml": 173,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-03",
+   "game_id": "849835",
+   "start": "2026-10-03T18:30:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "NYY",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "New York Yankees",
+   "home_id": 139,
+   "away_id": 147,
+   "home_record": "98-64",
+   "away_record": "93-68",
+   "home_sp": {
+    "id": 656876,
+    "name": "Drew Rasmussen",
+    "era": 2.67,
+    "ip": 172.0
+   },
+   "away_sp": {
+    "id": 543037,
+    "name": "Gerrit Cole",
+    "era": 3.61,
+    "ip": 127.0
+   },
+   "pick": "TB",
+   "prob": 54.4,
+   "home_prob": 54.4,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.078,
+    "starters": 0.113
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-03T11:30:35Z",
+   "ml": {
+    "team": "TB",
+    "side": "home",
+    "price": -137,
+    "prob": 54.4,
+    "book_prob": 55.2,
+    "edge": -0.8,
+    "value": false,
+    "home_ml": -137,
+    "away_ml": 113,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-03",
+   "game_id": "849830",
+   "start": "2026-10-03T20:30:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "SD",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "San Diego Padres",
+   "home_id": 158,
+   "away_id": 135,
+   "home_record": "103-59",
+   "away_record": "91-71",
+   "home_sp": {
+    "id": 694819,
+    "name": "Jacob Misiorowski",
+    "era": 1.8,
+    "ip": 174.7
+   },
+   "away_sp": {
+    "id": 592662,
+    "name": "Robbie Ray",
+    "era": 3.73,
+    "ip": 159.3
+   },
+   "pick": "MIL",
+   "prob": 64.3,
+   "home_prob": 64.3,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.176,
+    "starters": 0.273
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-03T11:30:35Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": -203,
+    "prob": 64.3,
+    "book_prob": 64.1,
+    "edge": 0.2,
+    "value": false,
+    "home_ml": -203,
+    "away_ml": 166,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
