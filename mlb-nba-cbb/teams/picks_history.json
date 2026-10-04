@@ -4417,7 +4417,7 @@
     "starters": 0.206
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-03T11:30:35Z",
    "ml": {
     "team": "CLE",
@@ -4430,9 +4430,12 @@
     "home_ml": -156,
     "away_ml": 129,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 0,
+   "away_runs": 3,
+   "winner": "CWS"
   },
   {
    "date": "2026-10-03",
@@ -4470,7 +4473,7 @@
     "starters": 0.399
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-03T18:33:54Z",
    "ml": {
     "team": "LAD",
@@ -4483,9 +4486,12 @@
     "home_ml": -212,
     "away_ml": 173,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.472
+   },
+   "home_runs": 5,
+   "away_runs": 3,
+   "winner": "LAD"
   },
   {
    "date": "2026-10-03",
@@ -4523,7 +4529,7 @@
     "starters": 0.113
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-03T18:33:54Z",
    "ml": {
     "team": "TB",
@@ -4536,9 +4542,12 @@
     "home_ml": -135,
     "away_ml": 112,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.741
+   },
+   "home_runs": 1,
+   "away_runs": 0,
+   "winner": "TB"
   },
   {
    "date": "2026-10-03",
@@ -4576,7 +4585,7 @@
     "starters": 0.273
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-03T22:47:07Z",
    "ml": {
     "team": "MIL",
@@ -4588,6 +4597,115 @@
     "value": false,
     "home_ml": -209,
     "away_ml": 171,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.478
+   },
+   "home_runs": 3,
+   "away_runs": 2,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-04",
+   "game_id": "849825",
+   "start": "2026-10-04T16:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "SD",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "San Diego Padres",
+   "home_id": 158,
+   "away_id": 135,
+   "home_record": "103-59",
+   "away_record": "91-71",
+   "home_sp": {
+    "id": 701656,
+    "name": "Logan Henderson",
+    "era": 2.47,
+    "ip": 98.3
+   },
+   "away_sp": {
+    "id": 650633,
+    "name": "Michael King",
+    "era": 3.09,
+    "ip": 192.0
+   },
+   "pick": "MIL",
+   "prob": 59.0,
+   "home_prob": 59.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.184,
+    "starters": 0.04
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-04T12:11:22Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": -143,
+    "prob": 59.0,
+    "book_prob": 56.3,
+    "edge": 2.7,
+    "value": false,
+    "home_ml": -143,
+    "away_ml": 119,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-04",
+   "game_id": "849823",
+   "start": "2026-10-04T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "LAD",
+   "away": "ATL",
+   "home_name": "Los Angeles Dodgers",
+   "away_name": "Atlanta Braves",
+   "home_id": 119,
+   "away_id": 144,
+   "home_record": "100-62",
+   "away_record": "94-68",
+   "home_sp": {
+    "id": 605483,
+    "name": "Blake Snell",
+    "era": 1.9,
+    "ip": 42.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "LAD",
+   "prob": 65.0,
+   "home_prob": 65.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.187,
+    "starters": 0.289
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-04T12:11:22Z",
+   "ml": {
+    "team": "LAD",
+    "side": "home",
+    "price": -157,
+    "prob": 65.0,
+    "book_prob": 58.4,
+    "edge": 6.6,
+    "value": true,
+    "home_ml": -157,
+    "away_ml": 130,
     "book": "DraftKings",
     "won": null,
     "units": null

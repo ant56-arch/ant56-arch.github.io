@@ -15926,9 +15926,9 @@
       "reason": "3.8 at-bats per game \u00b7 .306 season average",
       "hit_streak": 0,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -15974,9 +15974,9 @@
       "reason": "4.0 at-bats per game \u00b7 .293 season average",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16022,9 +16022,9 @@
       "reason": "Batting 7th \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 1,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16070,9 +16070,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 0,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -16118,9 +16118,9 @@
       "reason": "Batting 1st \u00b7 .291 season average",
       "hit_streak": 5,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16166,13 +16166,53 @@
       "reason": "Batting 3rd \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 2,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 3,
       "void": false
     }
   ],
   "baselines": {
+    "2026-07-08": {
+      "hitters": 295,
+      "with_hit": 170
+    },
+    "2026-07-09": {
+      "hitters": 259,
+      "with_hit": 145
+    },
+    "2026-07-10": {
+      "hitters": 303,
+      "with_hit": 173
+    },
+    "2026-07-11": {
+      "hitters": 321,
+      "with_hit": 173
+    },
+    "2026-07-12": {
+      "hitters": 302,
+      "with_hit": 167
+    },
+    "2026-07-16": {
+      "hitters": 19,
+      "with_hit": 9
+    },
+    "2026-07-17": {
+      "hitters": 299,
+      "with_hit": 177
+    },
+    "2026-07-18": {
+      "hitters": 314,
+      "with_hit": 184
+    },
+    "2026-07-19": {
+      "hitters": 320,
+      "with_hit": 187
+    },
+    "2026-07-20": {
+      "hitters": 308,
+      "with_hit": 193
+    },
     "2026-07-21": {
       "hitters": 302,
       "with_hit": 176
@@ -16412,6 +16452,10 @@
     "2026-10-01": {
       "hitters": 21,
       "with_hit": 10
+    },
+    "2026-10-03": {
+      "hitters": 81,
+      "with_hit": 36
     }
   }
 }
