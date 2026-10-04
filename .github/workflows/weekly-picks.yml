@@ -85,6 +85,20 @@ jobs:
         id: player_props
         run: python src/models/props_predictions.py
 
+      # Anytime TD prices, only for games kicking off within 12 hours whose
+      # last pull is over 6 hours old (~18 credits a week, see the script).
+      - name: Fetch anytime TD odds
+        id: fetch_td_odds
+        continue-on-error: true
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python src/fetch_td_odds.py
+
+      - name: Track TD props
+        id: track_td_props
+        continue-on-error: true
+        run: python src/track_td_props.py
+
       - name: Compare to Vegas
         id: compare_vegas
         run: python src/models/compare_to_vegas.py

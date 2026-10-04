@@ -67,6 +67,10 @@ jobs:
       - name: Fit + validate props model coefficients
         run: python src/fit_props_model.py
 
+      - name: Fit + check anytime TD model
+        continue-on-error: true
+        run: python src/fit_td_model.py
+
       - name: Fit + validate CFB model coefficients
         continue-on-error: true
         env:
@@ -78,7 +82,7 @@ jobs:
         run: |
           git config user.name "nfl-edge-bot"
           git config user.email "actions@github.com"
-          git add src/models/fitted_coefficients.json src/models/fitted_props_coefficients.json src/models/fitted_cfb_coefficients.json
+          git add src/models/fitted_coefficients.json src/models/fitted_props_coefficients.json src/models/fitted_td_coefficients.json src/models/fitted_cfb_coefficients.json
           [ -f data/tracking/model_history.json ] && git add data/tracking/model_history.json
           git diff --cached --quiet && exit 0
           git commit -m "Refit model coefficients against latest historical data"

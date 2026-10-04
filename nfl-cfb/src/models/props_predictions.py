@@ -34,6 +34,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from team_overrides import apply_overrides
 from auto_defense_adjustments import apply_auto_adjustments
+import td_model
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
@@ -191,6 +192,71 @@ def project_player(row, team, opponent, team_stats, league_avgs, matchup_coefs, 
 
     return proj
 
+def team_matchups(schedules, team_next_game_cache):
+    """team -> (opponent, implied points) for its next game: DraftKings'
+    current spread and total when fetch_odds.py has them, else the schedule's
+    lines, else a league-average 22.5."""
+    lines = {}
+    sched = schedules[schedules["result"].isna()].dropna(subset=["spread_line", "total_line"])
+    for _, g in sched.iterrows():
+        lines.setdefault((g["home_team"], g["away_team"]), (g["total_line"], -g["spread_line"]))
+    odds_path = os.path.join(RAW_DIR, "odds.csv")
+    if os.path.exists(odds_path) and os.path.getsize(odds_path) > 1:
+        try:
+            odds = pd.read_csv(odds_path)
+        except pd.errors.EmptyDataError:
+            odds = pd.DataFrame()
+        for _, o in odds.iterrows():
+            if pd.notna(o.get("total_line")) and pd.notna(o.get("spread_home_point")):
+                lines[(o["home_team"], o["away_team"])] = (o["total_line"], o["spread_home_point"])
+    out = {}
+    for team, (opp, is_home, _, _) in team_next_game_cache.items():
+        if opp is None:
+            continue
+        key = (team, opp) if is_home else (opp, team)
+        total, home_spread = lines.get(key, (td_model.LEAGUE_POINTS * 2, 0.0))
+        out[team] = (opp, (total - home_spread) / 2 if is_home else (total + home_spread) / 2)
+    return out
+
+def add_td_model(result, schedules, current_roster, team_next_game_cache, injury_multipliers):
+    """Replace the simple TD projections with td_model's anytime-TD chance
+    (see src/td_model.py), split into rush and rec TDs by where his expected
+    TDs come from."""
+    fitted = td_model.load_coefficients()
+    pbp_path = os.path.join(RAW_DIR, "pbp_combined.parquet")
+    if not fitted or not os.path.exists(pbp_path) or result.empty:
+        print("  TD model: no fitted coefficients or play-by-play; keeping the simple TD projections")
+        return result
+    pbp = pd.read_parquet(pbp_path, columns=[c for c in td_model.PBP_COLUMNS])
+    pg = td_model.player_games(td_model.add_xtd(td_model.opportunities(pbp), fitted["xtd_table"]))
+    positions = {}
+    rosters_path = os.path.join(RAW_DIR, "rosters.parquet")
+    if os.path.exists(rosters_path):
+        ro = pd.read_parquet(rosters_path, columns=["season", "week", "gsis_id", "position"]).dropna()
+        positions = ro.sort_values(["season", "week"]).groupby("gsis_id")["position"].last().to_dict()
+    if "position" in current_roster.columns:
+        positions.update(current_roster.dropna(subset=["gsis_id", "position"]).set_index("gsis_id")["position"].to_dict())
+    positions = {k: td_model.norm_position(v) for k, v in positions.items()}
+
+    matchups = team_matchups(schedules, team_next_game_cache)
+    feats = td_model.upcoming_rows(pg, positions, dict(zip(result["player_id"], result["team"])), matchups)
+    if feats.empty:
+        return result
+    feats["td_lambda"] = td_model.predict_lambda(feats, fitted["coefficients"], fitted.get("features", td_model.FEATURES))
+    result = result.merge(feats[["player_id", "td_lambda", "xtd_pg", "rz_share", "rush_xtd_share",
+                                 "def_pos_factor", "implied", "pos"]], on="player_id", how="left")
+    disc = result["injury_status"].map(lambda s: injury_multipliers.get(s, 1.0) if s else 1.0)
+    has = result["td_lambda"].notna()
+    lam = result["td_lambda"] * disc
+    result.loc[has, "td_lambda"] = lam[has].round(3)
+    result.loc[has, "proj_rush_tds"] = (lam * result["rush_xtd_share"])[has].round(2)
+    result.loc[has, "proj_rec_tds"] = (lam * (1 - result["rush_xtd_share"]))[has].round(2)
+    result.loc[has, "td_prob"] = td_model.prob_from_lambda(lam[has]).round(3)
+    for c in ("xtd_pg", "rz_share", "def_pos_factor", "implied"):
+        result[c] = result[c].round(3)
+    print(f"  TD model: anytime-TD chance for {int(has.sum())} players")
+    return result
+
 def main():
     print("Loading data...")
     player_form, team_stats, schedules, current_roster, injuries = load_data()
@@ -250,6 +316,7 @@ def main():
         projections.append(proj)
 
     result = pd.DataFrame(projections)
+    result = add_td_model(result, schedules, current_roster, team_next_game_cache, injury_multipliers)
     out_path = os.path.join(PROCESSED_DIR, "player_props.csv")
     result.to_csv(out_path, index=False)
 
