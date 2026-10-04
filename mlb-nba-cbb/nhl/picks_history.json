@@ -1164,7 +1164,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-04T18:33:53Z",
+   "set_at": "2026-10-04T22:56:11Z",
    "ml": {
     "team": "ANA",
     "side": "home",
@@ -1175,7 +1175,7 @@
     "value": false,
     "home_ml": 114,
     "away_ml": -135,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -1202,18 +1202,18 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-04T18:33:53Z",
+   "set_at": "2026-10-04T22:56:11Z",
    "ml": {
     "team": "SEA",
     "side": "home",
-    "price": -155,
+    "price": -162,
     "prob": 57.3,
-    "book_prob": 58.3,
-    "edge": -1.0,
+    "book_prob": 59.3,
+    "edge": -2.0,
     "value": false,
-    "home_ml": -155,
-    "away_ml": 130,
-    "book": "DraftKings",
+    "home_ml": -162,
+    "away_ml": 136,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -1240,7 +1240,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-04T18:33:53Z",
+   "set_at": "2026-10-04T22:56:11Z",
    "ml": {
     "team": "VGK",
     "side": "away",
@@ -1251,7 +1251,7 @@
     "value": false,
     "home_ml": 235,
     "away_ml": -290,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
