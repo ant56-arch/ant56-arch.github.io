@@ -57,28 +57,34 @@ def load_pbp(seasons):
     return pbp[pbp["season"].isin(seasons)]
 
 
-def load_positions(seasons):
-    """gsis_id -> RB/WR/TE/QB, from each player's most recent roster entry."""
+def load_rosters(seasons):
+    """Weekly rosters (team, position, game-day status) for every season."""
+    cols = ["season", "week", "team", "gsis_id", "position", "status"]
     frames = []
     local = os.path.join(RAW_DIR, "rosters.parquet")
     have = set()
     if os.path.exists(local):
-        df = pd.read_parquet(local, columns=["season", "week", "gsis_id", "position"])
+        df = pd.read_parquet(local, columns=cols)
         frames.append(df)
         have = set(df["season"].unique())
     for season in seasons:
         if season in have:
             continue
         try:
-            frames.append(pd.read_csv(f"{BASE}/weekly_rosters/roster_weekly_{season}.csv",
-                                      usecols=["season", "week", "gsis_id", "position"], low_memory=False))
+            frames.append(pd.read_csv(f"{BASE}/weekly_rosters/roster_weekly_{season}.csv", usecols=cols, low_memory=False))
         except Exception as e:
             print(f"  Skipping roster {season}: {e}")
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_positions(rosters):
+    """gsis_id -> RB/WR/TE/QB, from each player's most recent roster entry."""
+    ro = rosters[["season", "week", "gsis_id", "position"]]
     current = os.path.join(RAW_DIR, "current_roster.csv")
     if os.path.exists(current):
         cur = pd.read_csv(current, usecols=["gsis_id", "position"], low_memory=False)
-        frames.append(cur.assign(season=9999, week=0))
-    ro = pd.concat(frames, ignore_index=True).dropna(subset=["gsis_id", "position"])
+        ro = pd.concat([ro, cur.assign(season=9999, week=0)], ignore_index=True)
+    ro = ro.dropna(subset=["gsis_id", "position"])
     return ro.sort_values(["season", "week"]).groupby("gsis_id")["position"].last().map(m.norm_position).to_dict()
 
 
@@ -93,8 +99,9 @@ def build_rows(seasons):
     pbp = load_pbp(seasons)
     opps = m.opportunities(pbp)
     table = m.xtd_table(opps)
-    pg = m.player_games(m.add_xtd(opps, table))
-    rows = m.walkforward_rows(pg, load_positions(seasons), m.implied_points(load_schedules(seasons)))
+    schedules, rosters = load_schedules(seasons), load_rosters(seasons)
+    pg = m.add_quiet_games(m.player_games(m.add_xtd(opps, table)), rosters, schedules)
+    rows = m.walkforward_rows(pg, load_positions(rosters), m.implied_points(schedules))
     return rows, table
 
 

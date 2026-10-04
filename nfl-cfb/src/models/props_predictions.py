@@ -232,7 +232,9 @@ def add_td_model(result, schedules, current_roster, team_next_game_cache, injury
     positions = {}
     rosters_path = os.path.join(RAW_DIR, "rosters.parquet")
     if os.path.exists(rosters_path):
-        ro = pd.read_parquet(rosters_path, columns=["season", "week", "gsis_id", "position"]).dropna()
+        ro = pd.read_parquet(rosters_path, columns=["season", "week", "team", "gsis_id", "position", "status"])
+        pg = td_model.add_quiet_games(pg, ro, schedules)
+        ro = ro.dropna(subset=["gsis_id", "position"])
         positions = ro.sort_values(["season", "week"]).groupby("gsis_id")["position"].last().to_dict()
     if "position" in current_roster.columns:
         positions.update(current_roster.dropna(subset=["gsis_id", "position"]).set_index("gsis_id")["position"].to_dict())

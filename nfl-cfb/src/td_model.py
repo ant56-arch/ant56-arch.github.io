@@ -17,6 +17,8 @@ model prices touches by where they happen and adds the game around them:
     more TDs to go around.
   - Defense vs position: TDs the opponent allowed to his position (RB, WR,
     TE, QB) over its last 8 games, against the league rate.
+  - Quiet games: games he was active for with no carry or target count as
+    zeros (add_quiet_games), so a backup isn't priced like he always plays.
 
 These combine in a Poisson regression on the TD count, fit by fit_td_model.py
 on past games with every feature built only from games before the one being
@@ -108,6 +110,37 @@ def player_games(opps):
     team_rz = g.groupby(["game_id", "team"])["rz"].transform("sum")
     g["team_rz"] = team_rz
     return g.sort_values(["season", "week"]).reset_index(drop=True)
+
+
+def add_quiet_games(pg, rosters, schedules):
+    """Add a zero row for every played game a skill player was active for but
+    got no carry or target. Without these the model only ever saw backups in
+    games where they touched the ball, so it priced a third-string back as if
+    he always plays (85 'Value' long shots on the first live run). Books grade
+    an active player with no touches as a loss, so these games count; game-day
+    inactives (roster status INA) don't, the same as a voided bet."""
+    if rosters is None or rosters.empty or "status" not in rosters.columns:
+        return pg
+    act = rosters[(rosters["status"] == "ACT") & rosters["gsis_id"].notna()
+                  & rosters["position"].map(norm_position).isin(POSITIONS)]
+    act = act[["season", "week", "team", "gsis_id"]].drop_duplicates()
+    act = act.rename(columns={"gsis_id": "player_id"})
+    played = schedules[schedules["result"].notna()]
+    games = pd.concat([
+        played[["season", "week", "game_id", "home_team", "away_team"]].rename(columns={"home_team": "team", "away_team": "opponent"}),
+        played[["season", "week", "game_id", "away_team", "home_team"]].rename(columns={"away_team": "team", "home_team": "opponent"}),
+    ], ignore_index=True)
+    team_rz = pg.groupby(["game_id", "team"])["team_rz"].first().reset_index()
+    quiet = act.merge(games, on=["season", "week", "team"]).merge(team_rz, on=["game_id", "team"])
+    quiet = quiet.merge(pg[["game_id", "player_id"]].assign(_had=1), on=["game_id", "player_id"], how="left")
+    quiet = quiet[quiet["_had"].isna()].drop(columns="_had")
+    names = pg.groupby("player_id")["player_name"].last()
+    quiet = quiet[quiet["player_id"].isin(names.index)]  # players with at least one touch on record
+    quiet["player_name"] = quiet["player_id"].map(names)
+    for c in ("carries", "targets", "rz", "xtd", "xtd_rush", "tds", "rush_tds", "rec_tds"):
+        quiet[c] = 0
+    out = pd.concat([pg, quiet[pg.columns]], ignore_index=True)
+    return out.sort_values(["season", "week"]).reset_index(drop=True)
 
 
 def implied_points(schedules):
