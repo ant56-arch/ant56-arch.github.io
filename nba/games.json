@@ -1,0 +1,42 @@
+{
+ "sport": "NBA",
+ "label": "Sat, Oct 3",
+ "updated": "2026-10-03T21:45:45.300509-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401902644",
+   "start": "2026-10-03T23:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "NBA TV",
+   "venue": "Videotron Centre",
+   "neutral": false,
+   "away": {
+    "abbr": "MIA",
+    "name": "Miami Heat",
+    "short": "Heat",
+    "location": "Miami",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/mia.png",
+    "rank": null,
+    "score": 129,
+    "record": "1-0",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "TOR",
+    "name": "Toronto Raptors",
+    "short": "Raptors",
+    "location": "Toronto",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/tor.png",
+    "rank": null,
+    "score": 105,
+    "record": "0-1",
+    "probable": null,
+    "winner": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betting | Sports Edge</title>
+<meta name="description" content="Every sport's value picks, where our chance beats the betting price, and each sport's surest pick, on one page.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=12">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport">
+      <a class="sport-tab" href="/">All</a>
+      <a class="sport-tab" href="/nfl/index.html">NFL</a>
+      <a class="sport-tab" href="/nba/index.html">NBA</a>
+      <a class="sport-tab" href="/mlb/">MLB</a>
+      <a class="sport-tab" href="/nhl/index.html">NHL</a>
+      <a class="sport-tab" href="/cfb/index.html">CFB</a>
+      <a class="sport-tab" href="/cbb/index.html">CBB</a>
+      <a class="sport-tab" href="/soccer/index.html">Soccer</a>
+      <a class="sport-tab active" href="/bets.html" aria-current="page">Betting</a>
+      <a class="sport-tab" href="/schedule.html">Schedule</a>
+    </nav>
+  </div>
+</header>
+
+<header class="masthead home-hero" data-sport="BETS">
+  <div class="masthead-inner">
+    <div class="hero-kicker">Every sport, one page</div>
+    <h1 class="wordmark">Bet<span>ting</span></h1>
+    <div class="tagline">What betting every pick would have made in each sport, where our chance beats the betting price today, and each sport's surest pick.</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main id="main-content">
+    <section class="card" id="dollars" hidden>
+      <div class="card-header"><h2>Units</h2>
+        <div class="subtitle">1 unit on our pick to win in every game, at its price right before the game started. Live picks only, so it shows the good and the bad.</div></div>
+      <div class="card-body"></div>
+    </section>
+    <section class="card">
+      <div class="card-header"><h2>Value picks</h2>
+        <div class="subtitle">Our chance beats the betting price by 6 points or more. Soonest first.</div></div>
+      <div class="card-body">
+        <div class="vb-list" id="value-picks" aria-live="polite"><div class="empty-state">Loading</div></div>
+        <details class="how-to"><summary>How to read this</summary><div>
+          <p>The orange bar is our chance to win. The blue tick is the chance the betting price implies, with the
+            bookmaker's cut taken out. When the bar runs 6 or more points past the tick, the price pays more than the
+            pick is worth to the model, and that's a value pick.</p>
+          <p>Prices are the ones we saw at our last update and lock when each game starts. Tap a pick for its game
+            page.</p>
+        </div></details>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header"><h2>Surest picks</h2>
+        <div class="subtitle" id="bets-updated">Each sport's most confident pick, whatever the price</div></div>
+      <div class="card-body"><div class="bet-cards sure-cards" id="surest-picks"><div class="empty-state">Loading</div></div></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">Sports <span>Edge</span></div>
+    <p class="footer-text">For entertainment and research only. This is not betting advice, and past results don't
+      predict future ones. If gambling is a problem for you or someone you know, call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="/terms.html">Terms of Use</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="https://github.com/ant56-arch">Source code</a>
+    </nav>
+  </footer>
+</div>
+<script src="home.js?v=14"></script>
+</body>
+</html>

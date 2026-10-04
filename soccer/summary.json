@@ -1,0 +1,16 @@
+{
+ "updated": "2026-10-03T21:45:45.889020-04:00",
+ "heading": null,
+ "picks": [],
+ "record": null,
+ "empty": "No soccer picks yet. They start once the model is trained.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-10-02T17:56:06+00:00",
+ "model_url": "model.html",
+ "slate": [],
+ "units": null,
+ "last": null
+}

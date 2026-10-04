@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuracy | CBB Edge</title>
+<meta name="description" content="Who wins every Division I men's basketball game and by how much, from KenPom-style team ratings graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M8 23V9h3.3l6.9 8.6V9H24v14h-3.3l-6.9-8.6V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=0860285390">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a href="https://ant56-arch.github.io/" class="sport-tab">All</a><a href="https://ant56-arch.github.io/nfl/index.html" class="sport-tab">NFL</a><a href="https://ant56-arch.github.io/nba/index.html" class="sport-tab">NBA</a><a href="https://ant56-arch.github.io/mlb/" class="sport-tab">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="https://ant56-arch.github.io/cfb/index.html" class="sport-tab">CFB</a><a href="#" class="sport-tab active" aria-current="page">CBB</a><a href="https://ant56-arch.github.io/soccer/index.html" class="sport-tab">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="CBB">
+  <div class="masthead-inner">
+    <h1 class="wordmark">CBB <span>EDGE</span></h1>
+    <div class="tagline">Who wins every Division I men's basketball game and by how much, from KenPom-style team ratings graded against every final score.</div>
+    <div class="updated-chip">Updated Oct 3, 2026 9:45 PM ET</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="ratings.html">Ratings</a><a href="history.html">History</a><a href="accuracy.html" class="active" aria-current="page">Accuracy</a><a href="model.html">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>Backtest Over Time</h2><div class="subtitle">Every regular-season game of 2025-26, picked by a model that never saw that season</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="chart-weekly" height="90"></canvas></div><div class="chart-card" data-state="loading"><canvas id="chart-cumulative" height="90"></canvas></div><script>const ACCURACY_DATA = {"labels": ["Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "actual": [0.778, 0.758, 0.697, 0.688, 0.676], "predicted": [0.745, 0.768, 0.708, 0.705, 0.692], "cumulative_actual": [0.778, 0.769, 0.74, 0.726, 0.721], "cumulative_predicted": [0.745, 0.755, 0.736, 0.728, 0.725], "titles": {"weekly": "2025-26 Backtest by Month: Actual vs. Predicted", "weekly_actual": "Actual win rate", "weekly_predicted": "Model's predicted win rate", "cumulative": "2025-26 Backtest, Season to Date"}};</script></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Backtest</h2><div class="subtitle">How the model did on a season it was never trained on</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">4119-1591</div><div class="stat-label">2025-26 backtest</div><div class="stat-sub">72.1% of every game</div></div><div class="stat"><div class="stat-value">92.9%</div><div class="stat-label">Top 5 picks each day</div><div class="stat-sub">599-46</div></div><div class="stat"><div class="stat-value">83.3%</div><div class="stat-label">Picks at 70%+</div><div class="stat-sub">2525-508</div></div></div><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Games</th><th class="num">Model said</th><th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-60%</td>
+      <td data-label="Games" class="num">1347</td>
+      <td data-label="Model said" class="num">54.9%</td>
+      <td data-label="Actually won" class="num accent">54.5%</td></tr><tr><td class="row-label">60%-70%</td>
+      <td data-label="Games" class="num">1330</td>
+      <td data-label="Model said" class="num">65.0%</td>
+      <td data-label="Actually won" class="num accent">64.7%</td></tr><tr><td class="row-label">70%-80%</td>
+      <td data-label="Games" class="num">1200</td>
+      <td data-label="Model said" class="num">74.9%</td>
+      <td data-label="Actually won" class="num accent">73.1%</td></tr><tr><td class="row-label">80% and up</td>
+      <td data-label="Games" class="num">1833</td>
+      <td data-label="Model said" class="num">89.2%</td>
+      <td data-label="Actually won" class="num accent">89.9%</td></tr></tbody></table><div class="table-footnote">Fit on 2023-24 through the season before 2025-26, then tested on all 5710 regular-season games of 2025-26. It picked 72.1% of them right (it expected 72.5%), and its projected margins were off by 9.7 points on average. In the postseason it went 72-33.</div></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Scores, box scores and moneyline prices via ESPN. Not affiliated with KenPom. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 CBB Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=0860285390"></script>
+<script src="nba.js?v=0860285390"></script>
+</body>
+</html>

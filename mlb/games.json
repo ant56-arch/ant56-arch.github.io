@@ -1,0 +1,157 @@
+{
+ "sport": "MLB",
+ "label": "Sat, Oct 3",
+ "updated": "2026-10-03T21:45:45.001141-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401907990",
+   "start": "2026-10-03T17:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "TBS, truTV",
+   "venue": "Progressive Field",
+   "neutral": false,
+   "away": {
+    "abbr": "CHW",
+    "name": "Chicago White Sox",
+    "short": "White Sox",
+    "location": "Chicago",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/chw.png",
+    "rank": null,
+    "score": 3,
+    "record": "84-78",
+    "probable": "H. Smith",
+    "winner": true
+   },
+   "home": {
+    "abbr": "CLE",
+    "name": "Cleveland Guardians",
+    "short": "Guardians",
+    "location": "Cleveland",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/cle.png",
+    "rank": null,
+    "score": 0,
+    "record": "85-77",
+    "probable": "P. Messick",
+    "winner": false
+   },
+   "pick": {
+    "text": "CLE 59%",
+    "result": null
+   }
+  },
+  {
+   "id": "401908007",
+   "start": "2026-10-03T20:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "FOX",
+   "venue": "Dodger Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "ATL",
+    "name": "Atlanta Braves",
+    "short": "Braves",
+    "location": "Atlanta",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/atl.png",
+    "rank": null,
+    "score": 3,
+    "record": "94-68",
+    "probable": "D. Dodd",
+    "winner": false
+   },
+   "home": {
+    "abbr": "LAD",
+    "name": "Los Angeles Dodgers",
+    "short": "Dodgers",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/lad.png",
+    "rank": null,
+    "score": 5,
+    "record": "100-62",
+    "probable": "T. Skubal",
+    "winner": true
+   },
+   "pick": {
+    "text": "LAD 67%",
+    "result": null
+   }
+  },
+  {
+   "id": "401907985",
+   "start": "2026-10-03T22:30Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "TBS, truTV",
+   "venue": "Tropicana Field",
+   "neutral": false,
+   "away": {
+    "abbr": "NYY",
+    "name": "New York Yankees",
+    "short": "Yankees",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/nyy.png",
+    "rank": null,
+    "score": 0,
+    "record": "93-68",
+    "probable": "G. Cole",
+    "winner": false
+   },
+   "home": {
+    "abbr": "TB",
+    "name": "Tampa Bay Rays",
+    "short": "Rays",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png",
+    "rank": null,
+    "score": 1,
+    "record": "98-64",
+    "probable": "D. Rasmussen",
+    "winner": true
+   },
+   "pick": {
+    "text": "TB 54%",
+    "result": null
+   }
+  },
+  {
+   "id": "401908002",
+   "start": "2026-10-04T00:30Z",
+   "state": "in",
+   "detail": "Bot 3rd",
+   "tv": "FS1",
+   "venue": "American Family Field",
+   "neutral": false,
+   "away": {
+    "abbr": "SD",
+    "name": "San Diego Padres",
+    "short": "Padres",
+    "location": "San Diego",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/sd.png",
+    "rank": null,
+    "score": 2,
+    "record": "91-71",
+    "probable": "R. Ray",
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIL",
+    "name": "Milwaukee Brewers",
+    "short": "Brewers",
+    "location": "Milwaukee",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/mil.png",
+    "rank": null,
+    "score": 2,
+    "record": "103-59",
+    "probable": "J. Misiorowski",
+    "winner": false
+   },
+   "pick": {
+    "text": "MIL 64%",
+    "result": null
+   }
+  }
+ ]
+}

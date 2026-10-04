@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model | Soccer Edge</title>
+<meta name="description" content="Home win, draw or away win for every Premier League, La Liga and Champions League match, from a model graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%229.5%22 fill=%22none%22 stroke=%22%23e5793b%22 stroke-width=%223%22/%3E%3Cpath d=%22M16 11.5l4.3 3.1-1.6 5h-5.4l-1.6-5z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=0860285390">
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a href="https://ant56-arch.github.io/" class="sport-tab">All</a><a href="https://ant56-arch.github.io/nfl/index.html" class="sport-tab">NFL</a><a href="https://ant56-arch.github.io/nba/index.html" class="sport-tab">NBA</a><a href="https://ant56-arch.github.io/mlb/" class="sport-tab">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="https://ant56-arch.github.io/cfb/index.html" class="sport-tab">CFB</a><a href="https://ant56-arch.github.io/cbb/index.html" class="sport-tab">CBB</a><a href="#" class="sport-tab active" aria-current="page">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="Soccer">
+  <div class="masthead-inner">
+    <h1 class="wordmark">SOCCER <span>EDGE</span></h1>
+    <div class="tagline">Home win, draw or away win for every Premier League, La Liga and Champions League match, from a model graded against every final score.</div>
+    <div class="updated-chip">Updated Oct 3, 2026 9:45 PM ET</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="history.html">History</a><a href="accuracy.html">Accuracy</a><a href="model.html" class="active" aria-current="page">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>How It Learns</h2><div class="subtitle">Every club gets an attack and a defence rating, its league&#x27;s level plus its own, so a Premier League side and a Portuguese side compare directly. Once a week it checks itself against the newest matches and only changes when a new version clearly predicts better.</div></div>
+    <div class="card-body"><div class="statline model-tiles"><div class="stat"><div class="stat-value">Oct 2</div><div class="stat-label">Last retrained</div><div class="stat-sub">matches through Sep 20, 2026</div></div><div class="stat"><div class="stat-value">9,795</div><div class="stat-label">Matches learned from</div><div class="stat-sub">Sep 22, 2023 to Sep 20, 2026</div></div><div class="stat"><div class="stat-value">Weekly</div><div class="stat-label">Next check</div><div class="stat-sub">once 150+ new matches are in</div></div><div class="stat"><div class="stat-value">Switched</div><div class="stat-label">Last decision</div><div class="stat-sub">19 versions tested</div></div></div><div class="section-label">Current setup</div><ul class="setup-list"><li><span class="setup-label">Learns from:</span> the last 3 seasons of ten European leagues and the Champions League</li><li><span class="setup-label">Old results:</span> count half as much every 550 days</li><li><span class="setup-label">Pull to the league average:</span> as if every club had played 10 extra average matches</li><li><span class="setup-label">Refits:</span> every club&#x27;s ratings each morning, from the results so far</li><li><span class="setup-label">Shots:</span> ratings learn 30% from shots on target, 70% from goals</li><li><span class="setup-label">Home edge:</span> measured for each league and the Champions League</li></ul></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Is It Getting Better?</h2><div class="subtitle">Score on recent games at each retrain</div></div>
+    <div class="card-body"><div class="statline "><div class="stat"><div class="stat-value">9.1%</div><div class="stat-label">Before last retrain</div><div class="stat-sub">live model on recent games</div></div><div class="stat"><div class="stat-value">9.3%</div><div class="stat-label">After last retrain</div><div class="stat-sub">same games, never trained on</div></div></div><svg class="trend-chart" viewBox="0 0 640 200" role="img" aria-label="Score on held-out games after each retrain. Higher is better."><polyline points="12.0,145.7 217.3,68.7 422.7,68.7 628.0,48.3" class="trend-line"/><circle cx="12.0" cy="145.7" r="4.5" class="trend-dot"/><text x="12.0" y="135.7" class="trend-value" text-anchor="middle">8.4%</text><text x="12.0" y="192" class="trend-label" text-anchor="middle">Oct 2, 2026</text><circle cx="217.3" cy="68.7" r="4.5" class="trend-dot"/><text x="217.3" y="58.7" class="trend-value" text-anchor="middle">9.1%</text><text x="217.3" y="192" class="trend-label" text-anchor="middle">Oct 2, 2026</text><circle cx="422.7" cy="68.7" r="4.5" class="trend-dot"/><text x="422.7" y="58.7" class="trend-value" text-anchor="middle">9.1%</text><text x="422.7" y="192" class="trend-label" text-anchor="middle">Oct 2, 2026</text><circle cx="628.0" cy="48.3" r="4.5" class="trend-dot"/><text x="628.0" y="38.3" class="trend-value" text-anchor="middle">9.3%</text><text x="628.0" y="192" class="trend-label" text-anchor="middle">Oct 2, 2026</text></svg><div class="table-footnote">Better than guessing on the most recent games, which each version is scored on before it's trained on them. Higher is better. Live results are on the Accuracy tab.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Retrain Log</h2><div class="subtitle">Every time the model checked itself against new games, newest first</div></div>
+    <div class="card-body"><table class="data responsive-stack retrain-log">
+          <thead><tr><th>Date</th><th>Games through</th><th class="num">Versions tested</th><th>Decision</th>
+          <th class="num">Better than guessing</th><th>Why</th></tr></thead>
+          <tbody><tr><td class="row-label">Oct 2, 2026</td>
+          <td data-label="Games through">Sep 20, 2026</td>
+          <td data-label="Versions tested" class="num">19</td>
+          <td data-label="Decision"><span class="pill pill-positive">Switched</span></td>
+          <td data-label="Better than guessing" class="num">9.1% → 9.3%</td>
+          <td data-label="Why" class="why-cell">New recipe beat the live one on held-out matches.</td></tr><tr><td class="row-label">Oct 2, 2026</td>
+          <td data-label="Games through">Sep 20, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Better than guessing" class="num">9.1% → 9.1%</td>
+          <td data-label="Why" class="why-cell">Kept the recipe, refit with the newest matches.</td></tr><tr><td class="row-label">Oct 2, 2026</td>
+          <td data-label="Games through">Sep 20, 2026</td>
+          <td data-label="Versions tested" class="num">13</td>
+          <td data-label="Decision"><span class="pill pill-positive">Switched</span></td>
+          <td data-label="Better than guessing" class="num">8.9% → 9.1%</td>
+          <td data-label="Why" class="why-cell">New recipe beat the live one on held-out matches.</td></tr><tr><td class="row-label">Oct 2, 2026</td>
+          <td data-label="Games through">Sep 20, 2026</td>
+          <td data-label="Versions tested" class="num">13</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Better than guessing" class="num">8.4%</td>
+          <td data-label="Why" class="why-cell">Kept the recipe, refit with the newest matches.</td></tr></tbody></table>
+          <div class="table-footnote">Each retrain fits several versions of the model on everything except the
+          most recent games, scores them on those games, and switches only if a new version is clearly better.
+          Then it refits on every game, and a safety check blocks anything that scores worse than the live
+          model.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>What It's Weighing</h2><div class="subtitle">The factors behind every pick, and how the last retrain moved them</div></div>
+    <div class="card-body"><table class="data responsive-stack factor-table">
+          <thead><tr><th>Factor</th><th class="num">Now</th><th class="num">Before last retrain</th><th class="num">Change</th></tr></thead>
+          <tbody><tr><td class="row-label">Home advantage<div class="factor-note">extra goals a match for the home side</div></td>
+          <td data-label="Now" class="num accent">+0.33 goals</td>
+          <td data-label="Before last retrain" class="num">+0.33 goals</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Draw adjustment (rho)<div class="factor-note">below zero means more 0-0 and 1-1 draws than plain odds</div></td>
+          <td data-label="Now" class="num accent">-0.05</td>
+          <td data-label="Before last retrain" class="num">-0.04</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.01</span></td></tr><tr><td class="row-label">Premier League home edge<div class="factor-note">extra goals a match for the home side</div></td>
+          <td data-label="Now" class="num accent">+0.27 goals</td>
+          <td data-label="Before last retrain" class="num">&mdash;</td>
+          <td data-label="Change" class="num"><span class="change-flat">new</span></td></tr><tr><td class="row-label">La Liga home edge<div class="factor-note">extra goals a match for the home side</div></td>
+          <td data-label="Now" class="num accent">+0.41 goals</td>
+          <td data-label="Before last retrain" class="num">&mdash;</td>
+          <td data-label="Change" class="num"><span class="change-flat">new</span></td></tr><tr><td class="row-label">Champions League home edge<div class="factor-note">extra goals a match for the home side</div></td>
+          <td data-label="Now" class="num accent">+0.44 goals</td>
+          <td data-label="Before last retrain" class="num">&mdash;</td>
+          <td data-label="Change" class="num"><span class="change-flat">new</span></td></tr><tr><td class="row-label">Premier League level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">+0.73 goals</td>
+          <td data-label="Before last retrain" class="num">+0.75 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.03 goals</span></td></tr><tr><td class="row-label">La Liga level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">+0.16 goals</td>
+          <td data-label="Before last retrain" class="num">+0.16 goals</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Bundesliga level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">+0.05 goals</td>
+          <td data-label="Before last retrain" class="num">+0.03 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.02 goals</span></td></tr><tr><td class="row-label">Serie A level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.07 goals</td>
+          <td data-label="Before last retrain" class="num">-0.10 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.03 goals</span></td></tr><tr><td class="row-label">Ligue 1 level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">+0.26 goals</td>
+          <td data-label="Before last retrain" class="num">+0.31 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.05 goals</span></td></tr><tr><td class="row-label">Primeira Liga level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.57 goals</td>
+          <td data-label="Before last retrain" class="num">-0.60 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.03 goals</span></td></tr><tr><td class="row-label">Eredivisie level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.90 goals</td>
+          <td data-label="Before last retrain" class="num">-0.93 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.02 goals</span></td></tr><tr><td class="row-label">Belgian Pro League level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.68 goals</td>
+          <td data-label="Before last retrain" class="num">-0.69 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.01 goals</span></td></tr><tr><td class="row-label">Super Lig level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.64 goals</td>
+          <td data-label="Before last retrain" class="num">-0.67 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.03 goals</span></td></tr><tr><td class="row-label">Scottish Premiership level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.90 goals</td>
+          <td data-label="Before last retrain" class="num">-0.80 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.10 goals</span></td></tr><tr><td class="row-label">Elsewhere (Champions League only) level<div class="factor-note">goal difference a match vs. an average side</div></td>
+          <td data-label="Now" class="num accent">-0.50 goals</td>
+          <td data-label="Before last retrain" class="num">-0.48 goals</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.02 goals</span></td></tr></tbody></table>
+          <div class="table-footnote">League levels come from Champions League results between their clubs. Before is the model that was live until the last retrain.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Strongest Clubs</h2><div class="subtitle">Ratings as of Oct 3, 2026</div></div>
+    <div class="card-body"><table class="data record-table responsive-stack">
+      <thead><tr><th>Club</th><th>League</th><th class="num">Rating</th></tr></thead><tbody><tr><td class="row-label">1. Bayern Munich</td>
+      <td data-label="League">Bundesliga</td>
+      <td data-label="Rating" class="num accent">+1.83</td></tr><tr><td class="row-label">2. Paris Saint-Germain</td>
+      <td data-label="League">Ligue 1</td>
+      <td data-label="Rating" class="num accent">+1.70</td></tr><tr><td class="row-label">3. Arsenal</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.69</td></tr><tr><td class="row-label">4. Manchester City</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.66</td></tr><tr><td class="row-label">5. Barcelona</td>
+      <td data-label="League">La Liga</td>
+      <td data-label="Rating" class="num accent">+1.65</td></tr><tr><td class="row-label">6. Liverpool</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.46</td></tr><tr><td class="row-label">7. Real Madrid</td>
+      <td data-label="League">La Liga</td>
+      <td data-label="Rating" class="num accent">+1.40</td></tr><tr><td class="row-label">8. Brighton</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.13</td></tr><tr><td class="row-label">9. Chelsea</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.13</td></tr><tr><td class="row-label">10. Newcastle United</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.12</td></tr><tr><td class="row-label">11. Manchester United</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.12</td></tr><tr><td class="row-label">12. Internazionale</td>
+      <td data-label="League">Serie A</td>
+      <td data-label="Rating" class="num accent">+1.05</td></tr><tr><td class="row-label">13. Bournemouth</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+1.01</td></tr><tr><td class="row-label">14. Aston Villa</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+0.99</td></tr><tr><td class="row-label">15. Brentford</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+0.97</td></tr><tr><td class="row-label">16. Atlético Madrid</td>
+      <td data-label="League">La Liga</td>
+      <td data-label="Rating" class="num accent">+0.96</td></tr><tr><td class="row-label">17. Sporting CP</td>
+      <td data-label="League">Primeira Liga</td>
+      <td data-label="Rating" class="num accent">+0.83</td></tr><tr><td class="row-label">18. Hull</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+0.83</td></tr><tr><td class="row-label">19. Borussia Dortmund</td>
+      <td data-label="League">Bundesliga</td>
+      <td data-label="Rating" class="num accent">+0.81</td></tr><tr><td class="row-label">20. Tottenham Hotspur</td>
+      <td data-label="League">Premier League</td>
+      <td data-label="Rating" class="num accent">+0.81</td></tr></tbody></table>
+      <div class="table-footnote">Rating is goal difference a match against an average club on neutral ground,
+      league level included, so clubs from different leagues compare directly. Champions League results are what
+      link the leagues.</div></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Scores and moneyline prices via ESPN; league results and closing odds via football-data.co.uk. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 Soccer Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=0860285390"></script>
+<script src="nba.js?v=0860285390"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{
+ "updated": "2026-10-03T21:45:45.001141-04:00",
+ "heading": "Today: Sat, Oct 3",
+ "picks": [
+  {
+   "label": "Jackson Chourio",
+   "sub": "MIL vs SD",
+   "value": "72%",
+   "result": null
+  },
+  {
+   "label": "William Contreras",
+   "sub": "MIL vs SD",
+   "value": "67%",
+   "result": null
+  },
+  {
+   "label": "Chandler Simpson",
+   "sub": "TB vs NYY",
+   "value": "65%",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "399-216",
+  "label": "top hitters who got a hit",
+  "sub": "64.9%",
+  "since": "Jul 8, 2026"
+ },
+ "empty": "No picks yet.",
+ "retrained": "2026-09-28T16:47:06+00:00",
+ "model_url": "model.html",
+ "games": {
+  "heading": "Today: Sat, Oct 3",
+  "picks": [
+   {
+    "label": "LAD over ATL",
+    "sub": "ATL @ LAD \u00b7 4:00 PM ET",
+    "value": "67%",
+    "result": null
+   },
+   {
+    "label": "MIL over SD",
+    "sub": "SD @ MIL \u00b7 8:30 PM ET",
+    "value": "64%",
+    "result": null
+   },
+   {
+    "label": "CLE over CWS",
+    "sub": "CWS @ CLE \u00b7 1:00 PM ET",
+    "value": "59%",
+    "result": null
+   }
+  ],
+  "record": {
+   "value": "53-28",
+   "label": "picking which team wins",
+   "sub": "65.4%",
+   "since": "Sep 23, 2026"
+  },
+  "empty": "No game picks yet.",
+  "result_labels": [
+   "WIN",
+   "LOSS"
+  ]
+ },
+ "slate": [
+  {
+   "sport": "MLB",
+   "id": "849829",
+   "url": "/mlb/game-849829.html",
+   "start": "2026-10-03T13:00:00-04:00",
+   "date": "2026-10-03",
+   "away": "CWS",
+   "home": "CLE",
+   "at": "@",
+   "pick": "CLE",
+   "other": "CWS",
+   "prob": 59.2,
+   "price": -156,
+   "book": 58.3,
+   "value": false
+  },
+  {
+   "sport": "MLB",
+   "id": "849828",
+   "url": "/mlb/game-849828.html",
+   "start": "2026-10-03T16:00:00-04:00",
+   "date": "2026-10-03",
+   "away": "ATL",
+   "home": "LAD",
+   "at": "@",
+   "pick": "LAD",
+   "other": "ATL",
+   "prob": 67.1,
+   "price": -212,
+   "book": 65.0,
+   "value": false
+  },
+  {
+   "sport": "MLB",
+   "id": "849835",
+   "url": "/mlb/game-849835.html",
+   "start": "2026-10-03T18:30:00-04:00",
+   "date": "2026-10-03",
+   "away": "NYY",
+   "home": "TB",
+   "at": "@",
+   "pick": "TB",
+   "other": "NYY",
+   "prob": 54.4,
+   "price": -135,
+   "book": 54.9,
+   "value": false
+  },
+  {
+   "sport": "MLB",
+   "id": "849830",
+   "url": "/mlb/game-849830.html",
+   "start": "2026-10-03T20:30:00-04:00",
+   "date": "2026-10-03",
+   "away": "SD",
+   "home": "MIL",
+   "at": "@",
+   "pick": "MIL",
+   "other": "SD",
+   "prob": 64.3,
+   "price": -209,
+   "book": 64.7,
+   "value": false
+  }
+ ],
+ "units": {
+  "picks": 67,
+  "wins": 45,
+  "losses": 22,
+  "units": 15.81,
+  "roi": 0.236,
+  "since": "2026-09-23",
+  "series": [
+   [
+    "2026-09-23",
+    1.63
+   ],
+   [
+    "2026-09-24",
+    1.78
+   ],
+   [
+    "2026-09-25",
+    7.38
+   ],
+   [
+    "2026-09-26",
+    9.9
+   ],
+   [
+    "2026-09-27",
+    12.63
+   ],
+   [
+    "2026-09-29",
+    13.64
+   ],
+   [
+    "2026-09-30",
+    14.9
+   ],
+   [
+    "2026-10-01",
+    15.81
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 50,
+    "wins": 35,
+    "losses": 15,
+    "units": 9.11,
+    "roi": 0.1823
+   },
+   "underdogs": {
+    "picks": 17,
+    "wins": 10,
+    "losses": 7,
+    "units": 6.7,
+    "roi": 0.3941
+   },
+   "value": {
+    "picks": 9,
+    "wins": 6,
+    "losses": 3,
+    "units": 3.05,
+    "roi": 0.3393
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-01",
+  "games": [
+   {
+    "pick": "ATL",
+    "other": "PHI",
+    "hit": true,
+    "text": "ATL 6-2",
+    "units": 0.917,
+    "url": "/mlb/game-849844.html"
+   }
+  ],
+  "hits": [
+   {
+    "name": "Trea Turner",
+    "hit": false,
+    "line": "0-for-3"
+   },
+   {
+    "name": "Drake Baldwin",
+    "hit": false,
+    "line": "0-for-4"
+   }
+  ]
+ }
+}

@@ -1,0 +1,593 @@
+{
+ "sport": "CFB",
+ "label": "Week 5",
+ "updated": "2026-10-03T22:52:52.852742+00:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=400",
+ "top25_only": true,
+ "games": [
+  {
+   "id": "401856707",
+   "start": "2026-10-03T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ABC",
+   "venue": "Davis Wade Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "ALA",
+    "name": "Alabama Crimson Tide",
+    "short": "Alabama",
+    "location": "Alabama",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
+    "rank": 7,
+    "score": 56,
+    "record": "5-0",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "MSST",
+    "name": "Mississippi State Bulldogs",
+    "short": "Mississippi St",
+    "location": "Mississippi State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/344.png",
+    "rank": 16,
+    "score": 23,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ALA -6.5, 65%",
+    "result": true
+   }
+  },
+  {
+   "id": "401856819",
+   "start": "2026-10-03T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN2",
+   "venue": "TDECU Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UCF",
+    "name": "UCF Knights",
+    "short": "UCF",
+    "location": "UCF",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
+    "rank": null,
+    "score": 17,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "HOU",
+    "name": "Houston Cougars",
+    "short": "Houston",
+    "location": "Houston",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png",
+    "rank": 20,
+    "score": 27,
+    "record": "4-1",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "HOU -8.7, 70%",
+    "result": true
+   }
+  },
+  {
+   "id": "401858246",
+   "start": "2026-10-03T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "CW",
+   "venue": "Gerald J. Ford Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "BC",
+    "name": "Boston College Eagles",
+    "short": "Boston College",
+    "location": "Boston College",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/103.png",
+    "rank": null,
+    "score": 16,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "SMU",
+    "name": "SMU Mustangs",
+    "short": "SMU",
+    "location": "SMU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
+    "rank": 21,
+    "score": 25,
+    "record": "4-1",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "SMU -14.0, 80%",
+    "result": true
+   }
+  },
+  {
+   "id": "401858250",
+   "start": "2026-10-03T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN, Disney+",
+   "venue": "Kenan Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "ND",
+    "name": "Notre Dame Fighting Irish",
+    "short": "Notre Dame",
+    "location": "Notre Dame",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
+    "rank": 3,
+    "score": 37,
+    "record": "5-0",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "UNC",
+    "name": "North Carolina Tar Heels",
+    "short": "North Carolina",
+    "location": "North Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/153.png",
+    "rank": null,
+    "score": 26,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ND -16.2, 83%",
+    "result": true
+   }
+  },
+  {
+   "id": "401856705",
+   "start": "2026-10-03T16:45Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "SEC Network",
+   "venue": "Sanford Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "VAN",
+    "name": "Vanderbilt Commodores",
+    "short": "Vanderbilt",
+    "location": "Vanderbilt",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/238.png",
+    "rank": null,
+    "score": 14,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "UGA",
+    "name": "Georgia Bulldogs",
+    "short": "Georgia",
+    "location": "Georgia",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png",
+    "rank": 2,
+    "score": 38,
+    "record": "5-0",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "UGA -10.6, 73%",
+    "result": true
+   }
+  },
+  {
+   "id": "401856710",
+   "start": "2026-10-03T19:30Z",
+   "state": "in",
+   "detail": "1:23 - 4th",
+   "tv": "ESPN",
+   "venue": "Neyland Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "AUB",
+    "name": "Auburn Tigers",
+    "short": "Auburn",
+    "location": "Auburn",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2.png",
+    "rank": null,
+    "score": 14,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TENN",
+    "name": "Tennessee Volunteers",
+    "short": "Tennessee",
+    "location": "Tennessee",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png",
+    "rank": 17,
+    "score": 24,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TENN -5.0, 62%",
+    "result": null
+   }
+  },
+  {
+   "id": "401858473",
+   "start": "2026-10-03T19:30Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "CBS",
+   "venue": "Kinnick Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "OSU",
+    "name": "Ohio State Buckeyes",
+    "short": "Ohio State",
+    "location": "Ohio State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
+    "rank": 5,
+    "score": 31,
+    "record": "4-1",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "IOWA",
+    "name": "Iowa Hawkeyes",
+    "short": "Iowa",
+    "location": "Iowa",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png",
+    "rank": 14,
+    "score": 14,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "OSU -4.6, 61%",
+    "result": true
+   }
+  },
+  {
+   "id": "401856708",
+   "start": "2026-10-03T19:50Z",
+   "state": "in",
+   "detail": "4:32 - 4th",
+   "tv": "ABC",
+   "venue": "Memorial Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "FLA",
+    "name": "Florida Gators",
+    "short": "Florida",
+    "location": "Florida",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/57.png",
+    "rank": 8,
+    "score": 10,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIZ",
+    "name": "Missouri Tigers",
+    "short": "Missouri",
+    "location": "Missouri",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png",
+    "rank": 25,
+    "score": 45,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "MIZ -0.7, 52%",
+    "result": null
+   }
+  },
+  {
+   "id": "401856709",
+   "start": "2026-10-03T20:15Z",
+   "state": "in",
+   "detail": "0:33 - 3rd",
+   "tv": "SEC Network",
+   "venue": "Williams-Brice Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UK",
+    "name": "Kentucky Wildcats",
+    "short": "Kentucky",
+    "location": "Kentucky",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
+    "rank": 24,
+    "score": 24,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "SC",
+    "name": "South Carolina Gamecocks",
+    "short": "South Carolina",
+    "location": "South Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png",
+    "rank": null,
+    "score": 20,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "UK -3.2, 57%",
+    "result": null
+   }
+  },
+  {
+   "id": "401856818",
+   "start": "2026-10-03T23:00Z",
+   "state": "pre",
+   "detail": "10/3 - 7:00 PM EDT",
+   "tv": "ESPN, Disney+",
+   "venue": "Amon G. Carter Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "BYU",
+    "name": "BYU Cougars",
+    "short": "BYU",
+    "location": "BYU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png",
+    "rank": 10,
+    "score": 0,
+    "record": "3-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TCU",
+    "name": "TCU Horned Frogs",
+    "short": "TCU",
+    "location": "TCU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2628.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "BYU -1.6, 54%",
+    "result": null
+   }
+  },
+  {
+   "id": "401856821",
+   "start": "2026-10-03T23:30Z",
+   "state": "pre",
+   "detail": "10/3 - 7:30 PM EDT",
+   "tv": "FOX",
+   "venue": "Folsom Field",
+   "neutral": false,
+   "away": {
+    "abbr": "TTU",
+    "name": "Texas Tech Red Raiders",
+    "short": "Texas Tech",
+    "location": "Texas Tech",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png",
+    "rank": 12,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "COLO",
+    "name": "Colorado Buffaloes",
+    "short": "Colorado",
+    "location": "Colorado",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/38.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TTU -17.1, 84%",
+    "result": null
+   }
+  },
+  {
+   "id": "401858249",
+   "start": "2026-10-03T23:30Z",
+   "state": "pre",
+   "detail": "10/3 - 7:30 PM EDT",
+   "tv": "ABC",
+   "venue": "Memorial Stadium (Clemson, SC)",
+   "neutral": false,
+   "away": {
+    "abbr": "MIA",
+    "name": "Miami Hurricanes",
+    "short": "Miami",
+    "location": "Miami",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png",
+    "rank": 4,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "CLEM",
+    "name": "Clemson Tigers",
+    "short": "Clemson",
+    "location": "Clemson",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/228.png",
+    "rank": null,
+    "score": 0,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "MIA -9.5, 71%",
+    "result": null
+   }
+  },
+  {
+   "id": "401858478",
+   "start": "2026-10-03T23:30Z",
+   "state": "pre",
+   "detail": "10/3 - 7:30 PM EDT",
+   "tv": "NBC",
+   "venue": "Los Angeles Memorial Coliseum",
+   "neutral": false,
+   "away": {
+    "abbr": "WASH",
+    "name": "Washington Huskies",
+    "short": "Washington",
+    "location": "Washington",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png",
+    "rank": null,
+    "score": 0,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "USC",
+    "name": "USC Trojans",
+    "short": "USC",
+    "location": "USC",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png",
+    "rank": 18,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "WASH -4.7, 61%",
+    "result": null
+   }
+  },
+  {
+   "id": "401860898",
+   "start": "2026-10-03T23:30Z",
+   "state": "pre",
+   "detail": "10/3 - 7:30 PM EDT",
+   "tv": "CBSSN",
+   "venue": "Albertsons Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "USU",
+    "name": "Utah State Aggies",
+    "short": "Utah State",
+    "location": "Utah State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/328.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "BOIS",
+    "name": "Boise State Broncos",
+    "short": "Boise St",
+    "location": "Boise State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/68.png",
+    "rank": 22,
+    "score": 0,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401856706",
+   "start": "2026-10-03T23:45Z",
+   "state": "pre",
+   "detail": "10/3 - 7:45 PM EDT",
+   "tv": "SEC Network",
+   "venue": "Tiger Stadium (LA)",
+   "neutral": false,
+   "away": {
+    "abbr": "MCN",
+    "name": "McNeese Cowboys",
+    "short": "McNeese",
+    "location": "McNeese",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2377.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "LSU",
+    "name": "LSU Tigers",
+    "short": "LSU",
+    "location": "LSU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png",
+    "rank": 11,
+    "score": 0,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401858477",
+   "start": "2026-10-04T00:00Z",
+   "state": "pre",
+   "detail": "10/3 - 8:00 PM EDT",
+   "tv": "BTN",
+   "venue": "SHI Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "IU",
+    "name": "Indiana Hoosiers",
+    "short": "Indiana",
+    "location": "Indiana",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png",
+    "rank": 6,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "RUTG",
+    "name": "Rutgers Scarlet Knights",
+    "short": "Rutgers",
+    "location": "Rutgers",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/164.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "IU -19.4, 87%",
+    "result": null
+   }
+  }
+ ]
+}
