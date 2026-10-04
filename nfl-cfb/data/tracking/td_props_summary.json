@@ -1,0 +1,20 @@
+{
+  "season": 2026,
+  "value": {
+    "wins": 0,
+    "losses": 0,
+    "profit": 0.0,
+    "risked": 0,
+    "roi": null
+  },
+  "top10": {
+    "scored": 0,
+    "graded": 0,
+    "predicted": null
+  },
+  "vs_book": {
+    "n": 0,
+    "our_brier": null,
+    "book_brier": null
+  }
+}
