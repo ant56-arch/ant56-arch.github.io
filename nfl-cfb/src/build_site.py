@@ -674,7 +674,7 @@ def td_scorers_table(props, td_log):
             'xTD/g: expected TDs per game from where his carries and targets happen. RZ share: his share of his '
             'team\'s carries and targets inside the 20. Book: DraftKings or FanDuel anytime TD price and its '
             'chance with the vig taken out, pulled the day of the game. Edge: our chance minus the book\'s, in '
-            'points; Value at +6 or more. Prices lock at kickoff.</div>')
+            'points; Value at +6 or more, on prices of +300 or shorter. Prices lock at kickoff.</div>')
     return f"""<div class="cat-panel" id="cat-td" hidden>
         <table class="data responsive-stack" data-sortable>
           <thead><tr><th data-sort-key="player">Player</th><th data-sort-key="xtd" class="num">xTD/g</th><th data-sort-key="rz" class="num">RZ share</th><th data-sort-key="prob" class="num">To score</th><th data-sort-key="price" class="num">Book</th><th data-sort-key="edge" class="num">Edge</th></tr></thead>

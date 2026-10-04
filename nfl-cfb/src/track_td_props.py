@@ -7,7 +7,8 @@ Each run:
   1. SNAPSHOT - every player with a book price this run (fetch_td_odds.py)
      plus our top 10 most likely scorers, with our chance, the book's
      no-vig chance, the edge (ours minus the book's) and a Value flag at an
-     edge of VALUE_EDGE or more (the same 6 points as the moneyline picks).
+     edge of VALUE_EDGE or more (the same 6 points as the moneyline picks)
+     at a price no longer than VALUE_MAX_PRICE.
      Rows update until kickoff, then lock. A price only changes when a new
      one was fetched; a player dropped from the projections before kickoff
      (ruled out) is dropped from the log.
@@ -36,6 +37,11 @@ ODDS_PATH = os.path.join(BASE, "raw", "td_odds.csv")
 LOG_PATH = os.path.join(BASE, "tracking", "td_props_log.csv")
 SUMMARY_PATH = os.path.join(BASE, "tracking", "td_props_summary.json")
 VALUE_EDGE = moneyline.VALUE_EDGE
+# Long shots never get a Value tag. Past +300 the book is usually pricing a
+# depth-chart change the play-by-play hasn't shown yet (a new starter, a back
+# who lost his job), and on the first live slate nearly every "edge" out there
+# was a backup we still rated on his old role.
+VALUE_MAX_PRICE = 300
 STAKE = 10
 TOP_N = 10
 KEY = ["season", "week", "player_id"]
@@ -106,7 +112,7 @@ def merge_snapshot(log, snap, now):
     for c in ("price", "book_prob", "our_prob"):
         fresh[c] = pd.to_numeric(fresh[c], errors="coerce")
     fresh["edge"] = (fresh["our_prob"] - fresh["book_prob"]).round(4)
-    fresh["value"] = fresh["price"].notna() & (fresh["edge"] >= VALUE_EDGE)
+    fresh["value"] = fresh["price"].notna() & (fresh["edge"] >= VALUE_EDGE) & (fresh["price"] <= VALUE_MAX_PRICE)
     fresh = fresh[fresh["top10"].astype(bool) | fresh["price"].notna()]
     out = pd.concat([locked, fresh.reset_index()], ignore_index=True)
     return out.reindex(columns=LOG_COLS).sort_values(["season", "week", "kickoff", "our_prob"],
