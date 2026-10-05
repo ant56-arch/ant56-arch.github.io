@@ -397,6 +397,7 @@ def page_shell(sport, title, active_tab, body_html):
         tabs.append(("ratings.html", "ratings", "Ratings"))
     if sport["player_props_csv"]:
         tabs.append(("players.html", "players", "Players"))
+        tabs.append(("td.html", "td", "TD Props"))
     tabs += [
         ("history.html", "history", "History"),
         ("accuracy.html", "accuracy", "Accuracy"),
@@ -411,7 +412,7 @@ def page_shell(sport, title, active_tab, body_html):
     other_page = active_tab + ".html" if active_tab else "index.html"
     # The other football sport's tab keeps you on the same page when it has one.
     def same_page(slug):
-        missing = ((other_page == "players.html" and not SPORTS[slug]["player_props_csv"])
+        missing = ((other_page in ("players.html", "td.html") and not SPORTS[slug]["player_props_csv"])
                    or (other_page == "ratings.html" and not SPORTS[slug].get("ratings")))
         return "../" + slug + "/" + ("index.html" if missing else other_page)
     sport_switcher = sport_tabs(same_page, active=sport["wordmark"])
@@ -630,56 +631,154 @@ def load_td_log():
         return pd.DataFrame()
     return pd.read_csv(TD_LOG_PATH)
 
-def td_scorers_table(props, td_log):
-    """TD Scorers tab: our 10 most likely scorers plus every upcoming Value
-    pick, with the book's anytime-TD price where we have one (see
-    src/td_model.py, src/fetch_td_odds.py and src/track_td_props.py)."""
-    if props.empty or "td_prob" not in props.columns:
+TD_RESULT_WEEKS = 3  # graded weeks shown on the TD Props page
+
+def td_row(rank, r, sport, right, note, tag=""):
+    """One TD pick in the shared tap-to-open pick list: rank, player, our
+    chance as a bar, and the price or result; the numbers behind it open
+    under the row."""
+    logo = team_logo(sport, r["team"])
+    img = f'<img class="team-logo" src="{logo}" alt="" loading="lazy" onerror="this.style.display=\'none\'">' if logo else ""
+    when = ""
+    k = pd.to_datetime(r.get("kickoff"), utc=True, errors="coerce", format="ISO8601")
+    if pd.notna(k):
+        et = k.tz_convert("America/New_York")
+        when = f" &middot; {et:%a} {et.strftime('%I:%M %p').lstrip('0')} ET"
+    prob = float(r["prob"]) * 100
+    return f"""<li><details class="pl-row"><summary class="pl-line">
+      <span class="pl-rank">{rank}</span>
+      <span class="pl-match"><span class="pl-teams">{img}{escape(str(r['player_name']))}</span>
+        <span class="pl-sub">{tag}{r['team']} vs {r['opponent']}{when}</span></span>
+      <span class="pl-conf"><span class="pl-bar" aria-hidden="true"><span style="width:{prob:.0f}%"></span></span><span class="pl-pct">{prob:.0f}%</span></span>
+      <span class="pl-res">{right}</span>
+    </summary><div class="pl-note">{note}</div></details></li>"""
+
+def td_price_bits(r):
+    """'Book -185, 60% without the vig. Edge +8 points.' or ''."""
+    if pd.isna(r.get("price")):
         return ""
+    edge = f" Our edge: {r['edge'] * 100:+.0f} points." if pd.notna(r.get("edge")) else ""
+    return f" Book: {moneyline.format_price(r['price'])}, {r['book_prob'] * 100:.0f}% with the vig taken out.{edge}"
+
+def td_upcoming_list(sport, props, td_log):
+    """Our 10 most likely scorers plus every upcoming Value pick."""
+    if props.empty or "td_prob" not in props.columns:
+        return '<div class="empty-state">No TD projections yet.</div>'
     p = props.dropna(subset=["td_prob"]).copy()
+    cols = ["player_id", "price", "book_prob", "edge", "value", "kickoff"]
     if not td_log.empty:
         up = td_log[pd.to_datetime(td_log["kickoff"], utc=True, errors="coerce", format="ISO8601") > pd.Timestamp.now(tz="UTC")]
-        p = p.merge(up[["player_id", "price", "book_prob", "edge", "value"]].drop_duplicates("player_id"),
-                    on="player_id", how="left")
-    for c in ("price", "book_prob", "edge", "value"):
+        p = p.merge(up[cols].drop_duplicates("player_id"), on="player_id", how="left")
+    for c in cols[1:]:
         if c not in p.columns:
             p[c] = np.nan
     p["value"] = p["value"].fillna(False).astype(bool)
     top_ids = set(p.nlargest(TOP_PLAYERS, "td_prob")["player_id"])
     p = p[p["player_id"].isin(top_ids) | p["value"]].sort_values("td_prob", ascending=False)
-    if p.empty:
-        return ""
     rows = ""
-    for _, r in p.iterrows():
-        tag = ""
+    for i, (_, r) in enumerate(p.iterrows(), 1):
+        r = r.copy()
+        r["prob"] = r["td_prob"]
+        if pd.notna(r["price"]):
+            right = f'<span class="td-price">{moneyline.format_price(r["price"])}</span>'
+            if r["value"]:
+                right = pill("VALUE", "positive") + " " + right
+        else:
+            right = '<span class="faint td-soon">Odds on game day</span>'
         if isinstance(r.get("injury_status"), str) and r["injury_status"]:
-            tag = " " + pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger")
-        if r["value"]:
-            tag += " " + pill("VALUE", "positive")
-        has_price = pd.notna(r["price"])
-        book = (f'{moneyline.format_price(r["price"])}<div class="faint" style="font-size:13px;">{r["book_prob"] * 100:.0f}%</div>'
-                if has_price else DASH)
-        edge = f'{r["edge"] * 100:+.0f}' if has_price and pd.notna(r["edge"]) else DASH
-        xtd = r.get("xtd_pg", np.nan)
-        rz = r.get("rz_share", np.nan)
-        rows += f"""<tr>
-          <td data-key="player" data-value="{r['player_name']}"><b>{r['player_name']}</b>{tag}<div class="muted" style="font-size:13px;">{r['team']} vs {r['opponent']}</div></td>
-          <td data-key="xtd" data-value="{xtd if pd.notna(xtd) else 0}" data-label="xTD/g" class="num">{f"{xtd:.2f}" if pd.notna(xtd) else DASH}</td>
-          <td data-key="rz" data-value="{rz if pd.notna(rz) else 0}" data-label="RZ share" class="num">{f"{rz * 100:.0f}%" if pd.notna(rz) else DASH}</td>
-          <td data-key="prob" data-value="{r['td_prob']}" data-label="To score" class="num"><b>{r['td_prob'] * 100:.0f}%</b></td>
-          <td data-key="price" data-value="{r['book_prob'] if has_price else -1}" data-label="Book" class="num">{book}</td>
-          <td data-key="edge" data-value="{r['edge'] if has_price and pd.notna(r['edge']) else -1}" data-label="Edge" class="num">{edge}</td>
-        </tr>"""
-    note = ('<div class="table-footnote">To score: our chance of a rushing or receiving TD (passing TDs don\'t count). '
-            'xTD/g: expected TDs per game from where his carries and targets happen. RZ share: his share of his '
-            'team\'s carries and targets inside the 20. Book: DraftKings or FanDuel anytime TD price and its '
-            'chance with the vig taken out, pulled the day of the game. Edge: our chance minus the book\'s, in '
-            'points; Value at +6 or more, on prices of +300 or shorter. Prices lock at kickoff.</div>')
-    return f"""<div class="cat-panel" id="cat-td" hidden>
-        <table class="data responsive-stack" data-sortable>
-          <thead><tr><th data-sort-key="player">Player</th><th data-sort-key="xtd" class="num">xTD/g</th><th data-sort-key="rz" class="num">RZ share</th><th data-sort-key="prob" class="num">To score</th><th data-sort-key="price" class="num">Book</th><th data-sort-key="edge" class="num">Edge</th></tr></thead>
-          <tbody>{rows}</tbody>
-        </table>{note}</div>"""
+            right = pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger") + " " + right
+        bits = []
+        if pd.notna(r.get("xtd_pg")):
+            bits.append(f"{r['xtd_pg']:.2f} expected TDs a game from where his touches happen")
+        if pd.notna(r.get("rz_share")):
+            bits.append(f"{r['rz_share'] * 100:.0f}% of his team's touches inside the 20")
+        if pd.notna(r.get("implied")):
+            bits.append(f"{r['team']} expected to score {r['implied']:.1f}")
+        note = ("; ".join(bits) + ".") if bits else ""
+        note += td_price_bits(r) or " The book's price is pulled the day of the game."
+        rows += td_row(i, r, sport, right, note.strip())
+    return f'<ul class="pick-list ranked td-list">{rows}</ul>'
+
+def td_results_list(sport, wk):
+    """One graded week: Value picks and our top 10, scored or not."""
+    rows = ""
+    for i, (_, r) in enumerate(wk.sort_values("our_prob", ascending=False).iterrows(), 1):
+        r = r.copy()
+        r["prob"] = r["our_prob"]
+        if r["result"] == "void":
+            right = pill("NO DECISION", "void")
+            outcome = "No carry or target, so no decision."
+        else:
+            hit = r["result"] == "W"
+            right = pill("SCORED", "positive") if hit else pill("NO TD", "danger")
+            tds = int(r["tds"]) if pd.notna(r.get("tds")) else 0
+            outcome = f"{tds} TD{'s' if tds != 1 else ''}." if hit else "No rushing or receiving TD."
+        tag = ""
+        if bool(r["value"]) and pd.notna(r.get("profit")):
+            cls = "is-up" if r["profit"] > 0 else ("is-down" if r["profit"] < 0 else "faint")
+            right = f'<span class="td-money {cls}">{money(r["profit"])}</span> ' + right
+            tag = '<b class="td-value">Value</b> &middot; '
+        note = outcome + td_price_bits(r)
+        if bool(r["value"]) and pd.notna(r.get("profit")):
+            note += f" $10 at {moneyline.format_price(r['price'])}: {money(r['profit'])}."
+        rows += td_row(i, r, sport, right, note, tag)
+    return f'<ul class="pick-list ranked td-list">{rows}</ul>'
+
+def td_record_band(summary):
+    v, top = summary["value"], summary["top10"]
+    n = v["wins"] + v["losses"]
+    eyebrow = f'<div class="rb-eyebrow">TD props &middot; {summary["season"]} Value picks</div>'
+    if not n:
+        return f"""<section class="card record-card"><div class="record-band"><div>{eyebrow}
+      <div class="rb-num rb-wait">Starts with the first final</div>
+      <div class="rb-since">Value picks are graded at $10 a pick at the price locked at kickoff.</div></div></div></section>"""
+    side = [(money(v["profit"]), "Profit", f"$10 a pick, {v['roi']:+.0%} on ${v['risked']}")]
+    if top["graded"]:
+        side.append((f"{top['scored']}/{top['graded']}", "Our top 10 scored", f"we expected {top['predicted'] * 100:.0f}%"))
+    side_html = "".join(f'<div class="stat"><div class="stat-value">{a}</div><div class="stat-label">{b}</div>'
+                        f'<div class="stat-sub">{c}</div></div>' for a, b, c in side)
+    return f"""<section class="card record-card"><div class="record-band">
+      <div>{eyebrow}
+        <div class="rb-num">{v['wins']}-{v['losses']}<small>{v['wins'] / n:.0%}</small></div>
+        <div class="rb-since">Value: our chance at least 6 points over the book's, at +300 or shorter. Graded at the price locked at kickoff.</div>
+      </div>
+      <div class="rb-side">{side_html}</div>
+    </div></section>"""
+
+def build_td_page(sport, props):
+    """TD Props tab: this week's most likely scorers against the books'
+    anytime TD prices, and the last few weeks' picks, scored or not."""
+    td_log = load_td_log()
+    summary = None
+    if os.path.exists(TD_SUMMARY_PATH):
+        with open(TD_SUMMARY_PATH) as f:
+            summary = json.load(f)
+    band = td_record_band(summary) if summary else ""
+    panels = [("td-week", "This week", td_upcoming_list(sport, props, td_log))]
+    if not td_log.empty:
+        g = td_log[td_log["result"].isin(["W", "L", "void"]) & (td_log["value"].astype(bool) | td_log["top10"].astype(bool))]
+        weeks = g[["season", "week"]].drop_duplicates().sort_values(["season", "week"], ascending=False).head(TD_RESULT_WEEKS)
+        for _, w in weeks.iterrows():
+            wk = g[(g["season"] == w["season"]) & (g["week"] == w["week"])]
+            scored = int((wk["result"] == "W").sum())
+            decided = int(wk["result"].isin(["W", "L"]).sum())
+            label = f"Week {int(w['week'])}"
+            head = f'<div class="td-week-head">{scored} of {decided} scored</div>'
+            panels.append((f"td-w{int(w['season'])}-{int(w['week'])}", label, head + td_results_list(sport, wk)))
+    tabs = "".join(
+        f'<button type="button" class="subtab{" active" if i == 0 else ""}" aria-pressed="{"true" if i == 0 else "false"}" '
+        f'data-target="{pid}">{label}</button>' for i, (pid, label, _) in enumerate(panels))
+    body = f'<div class="subtabs">{tabs}</div>' + "".join(
+        f'<div class="cat-panel" id="{pid}"{"" if i == 0 else " hidden"}>{html}</div>' for i, (pid, _, html) in enumerate(panels))
+    how = """<details class="how-to"><summary>How to read this</summary><div>
+      <p>The percentage is our chance he scores a rushing or receiving touchdown (passing TDs don't count, a quarterback's own runs do).
+      It comes from where his carries and targets happen, his share of his team's red-zone touches, how many points his team
+      is expected to score and the defense he faces. Tap a player for the numbers.</p>
+      <p>The price is DraftKings' (or FanDuel's) anytime TD price, pulled the day of the game. A <b>Value</b> pick is one where
+      our chance is at least 6 points over the book's with the vig taken out, at +300 or shorter. Prices lock at kickoff.
+      A player with no carry or target is no decision, like a voided bet.</p></div></details>"""
+    card_html = card("TD Props", "Who's most likely to score, against the books' anytime TD prices", body + how)
+    return page_shell(sport, "TD Props", "td", band + card_html)
 
 def money(x):
     return f"{'+' if x >= 0 else '-'}${abs(x):,.2f}"
@@ -775,20 +874,19 @@ def build_players_page(sport, props):
                       "headers": ["Car", "Yds", "TDs"], "matchup_col": "matchup_mult_rush"}, "rushing", False)
     receiving = table({"sort": "proj_rec_yards", "display": ["proj_targets", "proj_receptions", "proj_rec_yards", "proj_rec_tds"],
                         "headers": ["Tgt", "Rec", "Yds", "TDs"], "matchup_col": "matchup_mult_rec"}, "receiving", False)
-    scorers = td_scorers_table(props, load_td_log())
+    scorers = ""
 
     if not (passing or rushing or receiving or scorers):
         body = '<div class="empty-state">No player projections available yet.</div>'
         return page_shell(sport, "Players", "players", card("Player Projections", "Top 10 per category", body))
 
-    subtabs = f"""<div class="subtabs">
+    subtabs = """<div class="subtabs">
       <button type="button" class="subtab active" aria-pressed="true" data-target="cat-passing">Passing</button>
       <button type="button" class="subtab" aria-pressed="false" data-target="cat-rushing">Rushing</button>
       <button type="button" class="subtab" aria-pressed="false" data-target="cat-receiving">Receiving</button>
-      <button type="button" class="subtab" aria-pressed="false" data-target="cat-td">TD Scorers</button>
     </div>"""
     body = subtabs + passing + rushing + receiving + scorers
-    card_html = card("Player Projections", "Top 10 per category by projected yards. TD Scorers ranks the most likely rushing or receiving touchdowns against the books' anytime TD prices.", body)
+    card_html = card("Player Projections", "Top 10 per category by projected yards. Touchdown scorers are on the <a href=\"td.html\">TD Props</a> tab.", body)
     return page_shell(sport, "Players", "players", card_html)
 
 def display_season(sport, games, log):
@@ -1534,6 +1632,7 @@ def build_sport_pages(sport):
     }
     if sport["player_props_csv"]:
         pages["players.html"] = build_players_page(sport, props)
+        pages["td.html"] = build_td_page(sport, props)
     pages.update(build_game_pages(sport, season_games(sport, games, log, comparison)))
 
     out_dir = os.path.join(DIST_DIR, sport["slug"])
