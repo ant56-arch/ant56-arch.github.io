@@ -81,7 +81,13 @@ def snapshot(props, odds, kick):
     if props.empty or "td_prob" not in props.columns:
         return pd.DataFrame(columns=LOG_COLS)
     p = props.dropna(subset=["td_prob"]).copy()
-    p["top10"] = p["player_id"].isin(p.nlargest(TOP_N, "td_prob")["player_id"])
+    if p.empty:
+        return pd.DataFrame(columns=LOG_COLS)
+    # The top 10 is from the main slate: not a team on a bye (projected for its
+    # next game) or a Monday game left over from the week before
+    main = p.groupby(["season", "week"]).size().idxmax()
+    slate = p[(p["season"] == main[0]) & (p["week"] == main[1])]
+    p["top10"] = p["player_id"].isin(slate.nlargest(TOP_N, "td_prob")["player_id"])
     if not odds.empty:
         o = odds.dropna(subset=["player_id"]).drop_duplicates("player_id", keep="last")
         p = p.merge(o[["player_id"] + ODDS_COLS], on="player_id", how="left")
@@ -170,6 +176,15 @@ def summarize(log, season):
     }
 
 
+def record_season(log, current):
+    """The season the record shows: this one once it has a graded pick, else
+    the last one that did (so the offseason keeps last season's record up)."""
+    graded = log[log["result"].isin(["W", "L"])] if not log.empty else log
+    if graded.empty or (graded["season"] == current).any():
+        return current
+    return int(graded["season"].max())
+
+
 def main():
     now = pd.Timestamp.now(tz="UTC")
     schedules = pd.read_csv(os.path.join(BASE, "raw", "schedules.csv"))
@@ -180,7 +195,7 @@ def main():
     log = merge_snapshot(log, snap, now)
     log = grade(log, schedules, pbp)
     log.to_csv(LOG_PATH, index=False)
-    summary = summarize(log, current_nfl_season())
+    summary = summarize(log, record_season(log, current_nfl_season()))
     with open(SUMMARY_PATH, "w") as f:
         json.dump(summary, f, indent=2)
     up = log[kickoff_ts(log["kickoff"]) > now]

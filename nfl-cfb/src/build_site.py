@@ -796,8 +796,10 @@ def td_game_card(sport, g, rows_html, n_more_html, n, defense):
 def td_upcoming_list(sport, props, td_log):
     """This week's games as cards: each game's most likely scorers, ranked
     across the slate, with the book's price and the numbers behind them."""
-    if props.empty or "td_prob" not in props.columns:
-        return '<div class="empty-state">No TD projections yet.</div>'
+    empty = ('<div class="empty-state">No games to project right now. TD picks come back with the next NFL game; '
+             'last results are in the week tabs.</div>')
+    if props.empty or "td_prob" not in props.columns or props["td_prob"].notna().sum() == 0:
+        return empty
     p = props.dropna(subset=["td_prob"]).copy()
     cols = ["player_id", "price", "book_prob", "edge", "value", "kickoff"]
     if not td_log.empty:
@@ -810,15 +812,20 @@ def td_upcoming_list(sport, props, td_log):
         if c not in p.columns:
             p[c] = np.nan
     p["value"] = p["value"].fillna(False).astype(bool)
-    # Teams on a bye are projected for their next game; this page is this week's slate
-    p = p[p["week"] == p["week"].mode().iloc[0]]
+    # A team on a bye is projected for its next game, a week before its
+    # opponent is: keep a game only when both teams are projected for it
+    wk = p.groupby("team")["week"].first()
+    p = p[p["opponent"].map(wk) == p["week"]]
     p = p[(p["td_prob"] >= TD_MIN_PROB) | p["value"]].sort_values("td_prob", ascending=False)
     p = p.groupby("team", group_keys=False).head(TD_MAX_PER_TEAM).reset_index(drop=True)
+    if p.empty:
+        return empty
     p["rank"] = np.arange(1, len(p) + 1)
     details = load_td_details()
     players, defense = details.get("players", {}), details.get("defense", {})
-    season, week = int(p["season"].iloc[0]), int(p["week"].iloc[0])
-    sched = td_kickoffs(season, week)
+    sched = {}
+    for season, week in p[["season", "week"]].drop_duplicates().itertuples(index=False):
+        sched.update(td_kickoffs(int(season), int(week)))
     games = {}
     for _, r in p.iterrows():
         kick, home, away = sched.get(r["team"], (pd.NaT, None, None))
@@ -969,6 +976,13 @@ def td_record_band(summary):
       <div class="rb-side">{side_html}</div>
     </div></section>"""
 
+TD_PLAYOFF_WEEKS = {19: "Wild Card", 20: "Divisional", 21: "Conf. Champ.", 22: "Super Bowl"}
+
+def td_week_label(season, week, latest):
+    """'Week 4', 'Wild Card', or 'Week 18, 2026' once a newer season is in."""
+    label = TD_PLAYOFF_WEEKS.get(week, f"Week {week}")
+    return label if season == latest else f"{label}, {season}"
+
 def build_td_page(sport, props):
     """TD Props tab: this week's most likely scorers against the books'
     anytime TD prices, and the last few weeks' picks, scored or not."""
@@ -986,7 +1000,7 @@ def build_td_page(sport, props):
             wk = g[(g["season"] == w["season"]) & (g["week"] == w["week"])]
             scored = int((wk["result"] == "W").sum())
             decided = int(wk["result"].isin(["W", "L"]).sum())
-            label = f"Week {int(w['week'])}"
+            label = td_week_label(int(w["season"]), int(w["week"]), int(weeks["season"].max()))
             top = wk[wk["top10"].astype(bool) & wk["result"].isin(["W", "L"])]
             val = wk[wk["value"].astype(bool) & wk["result"].isin(["W", "L"])]
             stats = [(f"{int((top['result'] == 'W').sum())}/{len(top)}", "Our top 10 scored"),

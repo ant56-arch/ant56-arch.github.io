@@ -263,7 +263,11 @@ def add_td_model(result, schedules, current_roster, team_next_game_cache, injury
     for c in ("xtd_pg", "rz_share", "def_pos_factor", "implied"):
         result[c] = result[c].round(3)
     print(f"  TD model: anytime-TD chance for {int(has.sum())} players")
-    return add_td_breakdown(result, opps, pg, positions, current_roster)
+    try:
+        return add_td_breakdown(result, opps, pg, positions, current_roster)
+    except Exception as e:  # the breakdown only explains the chance; never lose the chance over it
+        print(f"  WARNING: TD breakdown failed, TD Props shows chances without it: {e!r}")
+        return result
 
 def add_td_breakdown(result, opps, pg, positions, current_roster):
     """The why behind each TD chance for the TD Props tab: full names and
@@ -354,7 +358,10 @@ def main():
         projections.append(proj)
 
     result = pd.DataFrame(projections)
-    result = add_td_model(result, schedules, current_roster, team_next_game_cache, injury_multipliers)
+    try:
+        result = add_td_model(result, schedules, current_roster, team_next_game_cache, injury_multipliers)
+    except Exception as e:  # keep the yards/receptions props even if the TD model breaks
+        print(f"  WARNING: anytime-TD model failed, keeping the simple TD projections: {e!r}")
     out_path = os.path.join(PROCESSED_DIR, "player_props.csv")
     result.to_csv(out_path, index=False)
 
