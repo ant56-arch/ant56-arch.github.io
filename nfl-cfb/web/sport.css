@@ -14,3 +14,9 @@ table.data.slate td.num { white-space: normal; }
   /* Home slate: one label/value pair per line on phones. */
   table.responsive-stack.slate tbody tr { grid-template-columns: 1fr; }
 }
+
+/* Accuracy tab week filter */
+.acc-weeks { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 16px; }
+.acc-weeks label { font-weight: 600; }
+.acc-weeks #acc-week-summary { flex-basis: 100%; font-size: 14px; }
+table.data tr[hidden] { display: none !important; }
