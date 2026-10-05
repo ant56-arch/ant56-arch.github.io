@@ -16214,9 +16214,9 @@
       "reason": "Batting 1st \u00b7 Hitting .450 over the last 2 weeks",
       "hit_streak": 5,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16262,9 +16262,9 @@
       "reason": "Batting 2nd \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 6,
       "model": "2026-09-28T16:47:06+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16310,9 +16310,9 @@
       "reason": "Batting 7th \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 1,
       "model": "2026-10-04T18:34:28+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -16358,9 +16358,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 0,
       "model": "2026-10-04T18:34:28+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 2,
       "void": false
     },
     {
@@ -16840,6 +16840,10 @@
     "2026-10-03": {
       "hitters": 81,
       "with_hit": 36
+    },
+    "2026-10-04": {
+      "hitters": 44,
+      "with_hit": 18
     }
   }
 }
