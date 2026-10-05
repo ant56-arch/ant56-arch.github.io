@@ -1611,8 +1611,17 @@ def attach_game_picks(sport, slate, games, log, comparison):
         a, h = espn_team_keys(eg["away"]), espn_team_keys(eg["home"])
         match = next((g for ak, hk, g in picks if ak & a and hk & h), None)
         if match:
-            eg["pick"] = {"text": f"{match['favored_team']} -{match['favored_by']:.1f}, {match['win_pct']:.0%}",
-                          "result": match["correct"] if match["graded"] and eg["state"] == "post" else None}
+            final = match["graded"] and eg["state"] == "post"
+            # Graded on the straight-up winner only, so the text says "to win"
+            # rather than showing our margin, which would read like a spread bet.
+            eg["pick"] = {"text": f"{match['favored_team']} to win, {match['win_pct']:.0%}",
+                          "result": match["correct"] if final else None, "labels": ["WON", "LOST"]}
+            sp = match.get("spread")
+            if sp:
+                eg["pick"]["spread"] = {"text": f"{sp['team']} {sp['line']}, {sp['prob']:.0%} to cover",
+                                        "short": f"{sp['team']} {sp['line']}",
+                                        "result": match.get("covered") if final else None,
+                                        "labels": ["COVERED", "MISSED"]}
     return slate
 
 def build_sport_pages(sport):
