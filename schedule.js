@@ -87,9 +87,17 @@ function schedGame(g, pickLabel) {
   if (g.pick) {
     const pick = edgeNode("div", "sched-pick");
     pick.append(edgeNode("span", "sched-pick-label", pickLabel), edgeNode("span", "sched-pick-text", g.pick.text));
-    const pill = edgeResultPill(g.pick.result);
+    const pill = edgeResultPill(g.pick.result, g.pick.labels);
     if (pill) pick.append(pill);
     card.append(pick);
+    const sp = g.pick.spread;  // NFL/CFB: our pick against the Vegas spread
+    if (sp) {
+      const row = edgeNode("div", "sched-pick sched-pick-more");
+      row.append(edgeNode("span", "sched-pick-label", "Spread"), edgeNode("span", "sched-pick-text", sp.text));
+      const spPill = edgeResultPill(sp.result, sp.labels);
+      if (spPill) row.append(spPill);
+      card.append(row);
+    }
   }
   return card;
 }
@@ -170,12 +178,21 @@ function guideBlock(g, cfg) {
   if (g.pick) {
     const pick = edgeNode("span", "guide-pick");
     pick.append(edgeNode("span", null, g.pick.text));
-    const pill = edgeResultPill(g.pick.result);
+    const pill = edgeResultPill(g.pick.result, g.pick.labels);
     if (pill) pick.append(pill);
     block.append(pick);
+    const sp = g.pick.spread;
+    if (sp) {
+      const row = edgeNode("span", "guide-pick");
+      row.append(edgeNode("span", null, "Spread " + (sp.short || sp.text)));  // guide blocks are narrow
+      const spPill = edgeResultPill(sp.result, sp.labels);
+      if (spPill) row.append(spPill);
+      block.append(row);
+    }
   }
   block.title = `${g.away.short || g.away.abbr} ${g.neutral ? "vs" : "at"} ${g.home.short || g.home.abbr}, ${status}` +
-                (g.tv ? `, ${g.tv}` : "") + (g.pick ? `. ${cfg.pickLabel}: ${g.pick.text}` : "");
+                (g.tv ? `, ${g.tv}` : "") + (g.pick ? `. ${cfg.pickLabel}: ${g.pick.text}` : "") +
+                (g.pick && g.pick.spread ? `. Spread: ${g.pick.spread.text}` : "");
   return block;
 }
 

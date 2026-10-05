@@ -1009,6 +1009,7 @@ a.crawl-item:hover { background: var(--surface-2); }
   border-top: 1px solid var(--rule); font-size: 13px; }
 .sched-pick-label { color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
 .sched-pick-text { color: var(--ours); font-weight: 700; flex: 1; }
+.sched-pick-more { margin-top: 0; padding-top: 4px; border-top: 0; }
 
 /* TV grid: a row per start time, a column per network (schedule.js). */
 .tv-grid { display: flex; flex-direction: column; gap: 8px; }

@@ -490,7 +490,7 @@ function edgeTickerItem(site, g) {
     if (edgeSettings().picks && g.pick && g.pick.text) {
       const pick = edgeNode("span", "crawl-pick");
       pick.append(edgeNode("span", null, "Pick: " + g.pick.text));
-      const pill = edgeResultPill(g.pick.result);
+      const pill = edgeResultPill(g.pick.result, g.pick.labels);
       if (pill) pick.append(pill);
       a.append(pick);
     }
