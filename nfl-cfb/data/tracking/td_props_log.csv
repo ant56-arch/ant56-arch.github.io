@@ -293,7 +293,7 @@ season,week,player_id,player_name,pos,team,opponent,kickoff,our_prob,top10,event
 2026,4,00-0036825,F.Franks,TE,CAR,DET,2026-10-05T00:20:00Z,0.024,False,a73a76599a4f3422803e57bd8f61b626,draftkings,3500.0,0.0257,2026-10-05T00:11:08Z,Feleipe Franks,-0.0017,False,,,
 2026,4,00-0038542,Bi.Robinson,RB,ATL,NO,2026-10-06T00:15:00Z,0.567,True,,,,,,,,False,,,
 2026,5,00-0036997,J.Williams,RB,DAL,TB,2026-10-09T00:15:00Z,0.669,True,,,,,,,,False,,,
-2026,5,00-0036223,J.Taylor,RB,IND,PIT,2026-10-11T17:00:00Z,0.585,True,,,,,,,,False,,,
+2026,5,00-0036223,J.Taylor,RB,IND,PIT,2026-10-11T17:00:00Z,0.58,True,,,,,,,,False,,,
 2026,5,00-0033280,C.McCaffrey,RB,SF,SEA,2026-10-11T20:25:00Z,0.648,True,,,,,,,,False,,,
 2026,5,00-0032764,D.Henry,RB,BAL,ATL,2026-10-12T00:20:00Z,0.705,True,,,,,,,,False,,,
 2026,5,00-0034857,J.Allen,QB,BUF,LA,2026-10-13T00:15:00Z,0.612,True,,,,,,,,False,,,
