@@ -1326,6 +1326,15 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 }
 .pick-list.ranked .pl-line { grid-template-columns: 32px minmax(0, 1fr) minmax(150px, 240px) 96px; }
 
+/* TD Props tab (nfl-cfb build_td_page): the book price or $ result on the right. */
+.td-price { font-family: var(--font-head); font-size: 20px; font-weight: 800; font-style: italic; }
+.td-money { font-weight: 700; white-space: nowrap; }
+.td-soon { font-size: 13px; white-space: nowrap; }
+.td-value { color: var(--hit); font-weight: 700; }
+.pick-list.ranked.td-list .pl-line { grid-template-columns: 32px minmax(0, 1fr) minmax(150px, 240px) 190px; }
+.td-week-head { margin: 4px 0 10px 0; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+.pill-void { color: var(--text-faint); }
+
 /* "How to read this": the explanation, one tap away instead of always on. */
 details.how-to { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
 details.how-to > summary { padding: 12px 16px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
@@ -1362,6 +1371,7 @@ details.how-to p { margin: 0 0 8px 0; }
     grid-template-areas: "rank match res" "rank conf conf";
   }
   .pick-list.ranked .pl-rank { grid-area: rank; align-self: start; }
+  .pick-list.ranked.td-list .pl-line { grid-template-columns: 26px minmax(0, 1fr) auto; }
   .pl-note { padding: 0 4px 14px 4px; }
 }
 @media (max-width: 400px) {
