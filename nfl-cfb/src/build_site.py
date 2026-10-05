@@ -660,8 +660,166 @@ def td_price_bits(r):
     edge = f" Our edge: {r['edge'] * 100:+.0f} points." if pd.notna(r.get("edge")) else ""
     return f" Book: {moneyline.format_price(r['price'])}, {r['book_prob'] * 100:.0f}% with the vig taken out.{edge}"
 
+TD_SHOW_PER_GAME = 5      # players shown on each game card before "Show all"
+TD_MIN_PROB = 0.10        # players under this chance are left off the cards
+TD_MAX_PER_TEAM = 8       # and no team lists more than this many
+TD_DETAILS_PATH = os.path.join(PROCESSED_DIR, "td_details.json")
+TD_ALLOWED = [("RB_tds", "TDs to RBs"), ("WR_tds", "TDs to WRs"), ("TE_tds", "TDs to TEs"), ("QB_tds", "Rushing TDs to QBs"),
+              ("RB_rush_yds", "Rushing yards to RBs"), ("WR_targets", "Targets to WRs"),
+              ("TE_targets", "Targets to TEs"), ("RB_targets", "Targets to RBs")]
+
+def load_td_details():
+    if not os.path.exists(TD_DETAILS_PATH):
+        return {"players": {}, "defense": {}}
+    with open(TD_DETAILS_PATH) as f:
+        return json.load(f)
+
+def td_kickoffs(season, week):
+    """team -> (kickoff in UTC, home team, away team) for this week's games."""
+    path = os.path.join(PROCESSED_DIR, "..", "raw", "schedules.csv")
+    if not os.path.exists(path):
+        return {}
+    s = pd.read_csv(path)
+    s = s[(s["season"] == season) & (s["week"] == week)].dropna(subset=["gameday"])
+    when = pd.to_datetime(s["gameday"].astype(str) + " " + s["gametime"].fillna("13:00").astype(str), errors="coerce")
+    when = when.dt.tz_localize("America/New_York", nonexistent="shift_forward", ambiguous="NaT")
+    out = {}
+    for (_, g), k in zip(s.iterrows(), when):
+        for t in (g["home_team"], g["away_team"]):
+            out[t] = (k, g["home_team"], g["away_team"])
+    return out
+
+def td_chance_class(p):
+    return "hot" if p >= 0.5 else ("warm" if p >= 0.35 else ("mid" if p >= 0.2 else "cool"))
+
+def fmt_spread(x):
+    return "PK" if x == 0 else f"{x:+g}".replace("-", "&minus;")
+
+def td_ordinal(n):
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+def td_player_detail(r, b, defense):
+    """What opens under a player: his role, the game script, expected TDs vs
+    scored, where his touches happen and what his opponent has allowed."""
+    pos, opp = r.get("pos") or "", r["opponent"]
+    parts = []
+    if b:
+        tiles = [(f"{b['touches_pg']:.1f}", "Touches a game", f"{b['carries_pg']:.1f} carries, {b['targets_pg']:.1f} targets"),
+                 (f"{b['rz_share'] * 100:.0f}%", "Red-zone share", f"{b['rz_pg']:.1f} red-zone touches a game"),
+                 (f"{b['gl_pg']:.1f}", "Goal line a game", "touches inside the 5"),
+                 (f"{b['target_share'] * 100:.0f}%", "Target share", "of his team's targets")]
+        parts.append('<div class="tdp-tiles">' + "".join(
+            f'<div class="tdp-tile"><b>{v}</b><span>{lab}</span><small>{sub}</small></div>' for v, lab, sub in tiles) + "</div>")
+    script = []
+    if pd.notna(r.get("team_spread")):
+        sp = r["team_spread"]
+        script.append(("Favored by " + f"{-sp:g}") if sp < 0 else ("Underdog by " + f"{sp:g}" if sp > 0 else "Pick'em"))
+    if pd.notna(r.get("game_total")):
+        script.append(f"Total {r['game_total']:g}")
+    if pd.notna(r.get("implied")):
+        script.append(f"{r['team']} implied {r['implied']:.1f} pts")
+    if pd.notna(r.get("def_pos_factor")) and pos:
+        script.append(f"{opp} vs {pos}s: {r['def_pos_factor']:.2f}x league TDs")
+    if script:
+        parts.append('<div class="tdp-chips">' + "".join(f'<span class="tdp-chip">{escape(c)}</span>' for c in script) + "</div>")
+    if b:
+        debt = b["debt"]
+        lean = ("the ball has found him in scoring spots more than his TD count shows" if debt >= 0.5 else
+                "he has scored more than where his touches happen would suggest" if debt <= -0.5 else "about what his touches were worth")
+        parts.append(f'<p class="tdp-debt"><b>TD debt {debt:+.1f}</b> &middot; {b["xtd"]:.1f} expected TDs from his touches over his last '
+                     f'{b["games"]} games ({b["span"]}), {b["tds"]} scored: {lean}.</p>')
+        zrows = "".join(f'<tr><td>{z["zone"]}</td><td class="num">{z["carries"]}</td><td class="num">{z["targets"]}</td>'
+                        f'<td class="num">{z["xtd"]:.2f}</td></tr>' for z in b["zones"])
+        parts.append(f'<div class="tdp-tables"><table class="tdp-table"><caption>Expected TDs by field zone, last {b["games"]} games</caption>'
+                     f'<thead><tr><th>Zone</th><th class="num">Carries</th><th class="num">Targets</th><th class="num">xTD</th></tr></thead>'
+                     f'<tbody>{zrows}</tbody></table>' + td_allowed_table(opp, pos, defense) + "</div>")
+    return "".join(parts)
+
+def td_allowed_table(opp, pos, defense):
+    d = defense.get(opp)
+    if not d:
+        return ""
+    rows = ""
+    for key, label in TD_ALLOWED:
+        a = d["allowed"].get(key)
+        if not a:
+            continue
+        mine = key.startswith(pos + "_") if pos else False
+        rank = a["rank"]
+        cls = "is-soft" if rank <= 8 else ("is-tough" if rank >= 25 else "")
+        rows += (f'<tr class="{"is-mine" if mine else ""}"><td>{label}</td><td class="num">{a["value"]}</td>'
+                 f'<td class="num {cls}">{td_ordinal(rank)}</td></tr>')
+    return (f'<table class="tdp-table"><caption>What {opp} has allowed, last 8 games</caption>'
+            f'<thead><tr><th>Allowed</th><th class="num">Total</th><th class="num">Rank</th></tr></thead><tbody>{rows}</tbody></table>')
+
+def td_player_row(rank, r, sport, b, defense):
+    p = float(r["td_prob"])
+    name = r.get("full_name") if isinstance(r.get("full_name"), str) and r.get("full_name").strip() else r["player_name"]
+    initials = "".join(w[0] for w in str(name).split()[:2]).upper()
+    face = f'<span class="tdp-face" data-i="{escape(initials)}">'
+    if isinstance(r.get("headshot"), str) and r["headshot"].startswith("http"):
+        face += f'<img src="{escape(r["headshot"])}" alt="" loading="lazy" onerror="this.remove()">'
+    face += "</span>"
+    tags = [t for t in str(r.get("td_tags") or "").split("|") if t and t != "nan"]
+    tag_html = "".join(f'<span class="tdp-tag{" is-due" if t.startswith("Due") else ""}">{escape(t)}</span>' for t in tags)
+    inj = ""
+    if isinstance(r.get("injury_status"), str) and r["injury_status"]:
+        inj = " " + pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger")
+    if pd.notna(r.get("price")):
+        book = f'<span class="tdp-book-price">{moneyline.format_price(r["price"])}</span><span class="tdp-book-sub">book {r["book_prob"] * 100:.0f}%</span>'
+        if r["value"]:
+            book = '<span class="tdp-value">VALUE</span>' + book
+    else:
+        book = '<span class="tdp-book-sub">Odds on <br>game day</span>'
+    pos = r.get("pos") if isinstance(r.get("pos"), str) else ""
+    detail = td_player_detail(r, b, defense)
+    price_note = td_price_bits(r).strip()
+    if price_note:
+        detail += f'<p class="tdp-foot">{price_note}</p>'
+    return f"""<details class="tdp"><summary>
+      <span class="tdp-rank">{rank}</span>{face}
+      <span class="tdp-who"><span class="tdp-name">{escape(str(name))}{inj}</span>
+        <span class="tdp-meta">{pos} &middot; {r['team']} vs {r['opponent']}</span>
+        <span class="tdp-tags">{tag_html}</span></span>
+      <span class="tdp-book">{book}</span>
+      <span class="tdp-pct is-{td_chance_class(p)}"><b>{p * 100:.0f}%</b><small>TD</small></span>
+    </summary><div class="tdp-body">{detail}</div></details>"""
+
+def td_game_card(sport, g, rows_html, n_more_html, n, defense):
+    away, home, kick = g["away"], g["home"], g["kickoff"]
+    def logo(t):
+        u = team_logo(sport, t)
+        return f'<img class="team-logo" src="{u}" alt="" loading="lazy" onerror="this.style.display=\'none\'">' if u else ""
+    when = ""
+    if pd.notna(kick):
+        et = kick.tz_convert("America/New_York")
+        when = f"{et:%a} {et.strftime('%I:%M %p').lstrip('0')} ET"
+    chips = []
+    if pd.notna(g["home_spread"]):
+        fav, line = (home, g["home_spread"]) if g["home_spread"] <= 0 else (away, -g["home_spread"])
+        chips.append(f"{fav} {fmt_spread(line)}")
+    if pd.notna(g["total"]):
+        chips.append(f"O/U {g['total']:g}")
+    if pd.notna(g["home_implied"]) and pd.notna(g["away_implied"]):
+        chips.append(f"{away} {g['away_implied']:.1f} &middot; {home} {g['home_implied']:.1f}")
+    if not chips:
+        chips.append("No line yet")
+    notes = []
+    for d in (home, away):  # what each defense gives up, read by the other offense
+        notes += (defense.get(d) or {}).get("notes", [])[:2]
+    notes_html = ("<ul class=\"tdg-notes\">" + "".join(f"<li>{escape(x)}</li>" for x in notes) + "</ul>") if notes else ""
+    return f"""<section class="tdg">
+      <header class="tdg-head">
+        <div class="tdg-teams">{logo(away)}<b>{away}</b><span class="faint">@</span>{logo(home)}<b>{home}</b></div>
+        <div class="tdg-when">{when} &middot; {n} player{'s' if n != 1 else ''}</div>
+        <div class="tdg-chips">{''.join(f'<span class="tdp-chip">{c}</span>' for c in chips)}</div>
+      </header>{notes_html}
+      <div class="tdg-list">{rows_html}{n_more_html}</div>
+    </section>"""
+
 def td_upcoming_list(sport, props, td_log):
-    """Our 10 most likely scorers plus every upcoming Value pick."""
+    """This week's games as cards: each game's most likely scorers, ranked
+    across the slate, with the book's price and the numbers behind them."""
     if props.empty or "td_prob" not in props.columns:
         return '<div class="empty-state">No TD projections yet.</div>'
     p = props.dropna(subset=["td_prob"]).copy()
@@ -672,32 +830,44 @@ def td_upcoming_list(sport, props, td_log):
     for c in cols[1:]:
         if c not in p.columns:
             p[c] = np.nan
+    for c in ("full_name", "headshot", "td_tags", "game_total", "team_spread", "implied", "def_pos_factor", "pos"):
+        if c not in p.columns:
+            p[c] = np.nan
     p["value"] = p["value"].fillna(False).astype(bool)
-    top_ids = set(p.nlargest(TOP_PLAYERS, "td_prob")["player_id"])
-    p = p[p["player_id"].isin(top_ids) | p["value"]].sort_values("td_prob", ascending=False)
-    rows = ""
-    for i, (_, r) in enumerate(p.iterrows(), 1):
-        r = r.copy()
-        r["prob"] = r["td_prob"]
-        if pd.notna(r["price"]):
-            right = f'<span class="td-price">{moneyline.format_price(r["price"])}</span>'
-            if r["value"]:
-                right = pill("VALUE", "positive") + " " + right
-        else:
-            right = '<span class="faint td-soon">Odds on game day</span>'
-        if isinstance(r.get("injury_status"), str) and r["injury_status"]:
-            right = pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger") + " " + right
-        bits = []
-        if pd.notna(r.get("xtd_pg")):
-            bits.append(f"{r['xtd_pg']:.2f} expected TDs a game from where his touches happen")
-        if pd.notna(r.get("rz_share")):
-            bits.append(f"{r['rz_share'] * 100:.0f}% of his team's touches inside the 20")
+    # Teams on a bye are projected for their next game; this page is this week's slate
+    p = p[p["week"] == p["week"].mode().iloc[0]]
+    p = p[(p["td_prob"] >= TD_MIN_PROB) | p["value"]].sort_values("td_prob", ascending=False)
+    p = p.groupby("team", group_keys=False).head(TD_MAX_PER_TEAM).reset_index(drop=True)
+    p["rank"] = np.arange(1, len(p) + 1)
+    details = load_td_details()
+    players, defense = details.get("players", {}), details.get("defense", {})
+    season, week = int(p["season"].iloc[0]), int(p["week"].iloc[0])
+    sched = td_kickoffs(season, week)
+    games = {}
+    for _, r in p.iterrows():
+        kick, home, away = sched.get(r["team"], (pd.NaT, None, None))
+        if home is None:
+            home, away = (r["team"], r["opponent"]) if bool(r.get("is_home")) else (r["opponent"], r["team"])
+        key = (away, home)
+        g = games.setdefault(key, {"away": away, "home": home, "kickoff": kick, "rows": [],
+                                   "home_spread": np.nan, "total": np.nan, "home_implied": np.nan, "away_implied": np.nan})
+        g["rows"].append(r)
+        side = "home" if r["team"] == home else "away"
+        if pd.notna(r.get("team_spread")) and pd.isna(g["home_spread"]):
+            g["home_spread"] = r["team_spread"] if side == "home" else -r["team_spread"]
+        if pd.notna(r.get("game_total")):
+            g["total"] = r["game_total"]
         if pd.notna(r.get("implied")):
-            bits.append(f"{r['team']} expected to score {r['implied']:.1f}")
-        note = ("; ".join(bits) + ".") if bits else ""
-        note += td_price_bits(r) or " The book's price is pulled the day of the game."
-        rows += td_row(i, r, sport, right, note.strip())
-    return f'<ul class="pick-list ranked td-list">{rows}</ul>'
+            g[f"{side}_implied"] = r["implied"]
+    order = sorted(games.values(), key=lambda g: (g["kickoff"] if pd.notna(g["kickoff"]) else pd.Timestamp.max.tz_localize("UTC"),
+                                                  -g["rows"][0]["td_prob"]))
+    html = ""
+    for g in order:
+        rows = [td_player_row(int(r["rank"]), r, sport, players.get(r["player_id"]), defense) for r in g["rows"]]
+        shown, rest = rows[:TD_SHOW_PER_GAME], rows[TD_SHOW_PER_GAME:]
+        more = (f'<details class="tdg-more"><summary>Show all {len(rows)} players</summary>{"".join(rest)}</details>' if rest else "")
+        html += td_game_card(sport, g, "".join(shown), more, len(rows), defense)
+    return f'<div class="tdg-grid">{html}</div>'
 
 def td_results_list(sport, wk):
     """One graded week: Value picks and our top 10, scored or not."""
@@ -773,7 +943,13 @@ def build_td_page(sport, props):
     how = """<details class="how-to"><summary>How to read this</summary><div>
       <p>The percentage is our chance he scores a rushing or receiving touchdown (passing TDs don't count, a quarterback's own runs do).
       It comes from where his carries and targets happen, his share of his team's red-zone touches, how many points his team
-      is expected to score and the defense he faces. Tap a player for the numbers.</p>
+      is expected to score and the defense he faces. Tap a player for the numbers: his role, the game script, expected TDs
+      by field zone and what his opponent has allowed.</p>
+      <p>Tags: <b>Goal Line Back</b> a goal-line touch a game or more; <b>Elite Red Zone Role</b> a third or more of his team's
+      touches inside the 20; <b>Target Monster</b> 24%+ of his team's targets; <b>High Volume</b> 18+ touches a game;
+      <b>Shootout Script</b> a total of 47.5+ with his team expected to score 25+; <b>Soft TD Defense</b> his opponent has allowed
+      25%+ more TDs to his position than average; <b>Due For TD</b> at least one more expected TD than he has scored over his last
+      10 games (TD debt). Tags explain the chance; they don't add to it.</p>
       <p>The price is DraftKings' (or FanDuel's) anytime TD price, pulled the day of the game. A <b>Value</b> pick is one where
       our chance is at least 6 points over the book's with the vig taken out, at +300 or shorter. Prices lock at kickoff.
       A player with no carry or target is no decision, like a voided bet.</p></div></details>"""

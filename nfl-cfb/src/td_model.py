@@ -46,7 +46,7 @@ POSITIONS = ("RB", "WR", "TE", "QB")
 
 PBP_COLUMNS = ["season", "week", "game_id", "posteam", "defteam", "yardline_100", "play_type",
                "rusher_player_id", "rusher_player_name", "receiver_player_id", "receiver_player_name",
-               "rush_touchdown", "pass_touchdown", "two_point_attempt"]
+               "rush_touchdown", "pass_touchdown", "two_point_attempt", "yards_gained"]
 
 # Yardline buckets (yards from the end zone) for the xTD table
 YARD_BINS = [0, 1, 2, 3, 5, 10, 20, 40, 100]
@@ -74,6 +74,7 @@ def opportunities(pbp):
     for part, src in ((rush, runs), (rec, passes)):
         for col in ("season", "week", "game_id", "posteam", "defteam", "yardline_100"):
             part[col] = src[col].values
+        part["yards"] = src["yards_gained"].values if "yards_gained" in src else np.nan
         out.append(part)
     opps = pd.concat(out, ignore_index=True).rename(columns={"posteam": "team", "defteam": "opponent"})
     opps["bucket"] = _bucket(opps["yardline_100"])
