@@ -1,14 +1,14 @@
 // --- Score ticker and site settings (shared by every Edge site) ---
 // Two scrolling bars under the top bar: a score ticker (live games first,
 // then games still to play, then finals; each opens the Schedule tab) and a
-// red bar of scoring plays seen in the last 3 hours. Each site's build
-// publishes games.json (ESPN's current slate plus our picks) next to its
-// summary.json; the ticker asks ESPN for fresh scores in the browser every 30
-// seconds while a game is live (every 2 minutes while a game starts within 6
-// hours). A gear in the top bar opens the site settings: what the ticker
-// shows, which sports, time zone, odds format, theme and home page defaults,
-// saved in localStorage. Every Edge site's script starts from this file (see
-// shared/assets.py).
+// red bar of scoring plays seen in the last 3 hours (for basketball, only
+// standout finals). Each site's build publishes games.json (ESPN's current
+// slate plus our picks) next to its summary.json; the ticker asks ESPN for
+// fresh scores in the browser every 30 seconds while a game is live (every 2
+// minutes while a game starts within 6 hours). A gear in the top bar opens
+// the site settings: what the ticker shows, which sports, time zone, odds
+// format, theme and home page defaults, saved in localStorage. Every Edge
+// site's script starts from this file (see shared/assets.py).
 const EDGE_SITES = [
   { sport: "NFL", summary: "/nfl/summary.json", games: "/nfl/games.json",
     href: "/nfl/index.html", schedule: "/schedule.html#nfl" },
@@ -73,7 +73,11 @@ function edgeParseEspn(ev) {
     const score = c.score === undefined || c.score === "" ? null : Number(c.score);
     const record = (c.records || []).find(r => !r.type || r.type === "total");
     const probable = ((c.probables || [])[0] || {}).athlete;
-    return { abbr: t.abbreviation || "", short: t.shortDisplayName || t.name || "", logo: t.logo || "",
+    // The team's top scorer (basketball), for standout games in the red bar.
+    const pts = ((c.leaders || []).find(l => l.name === "points") || {}).leaders;
+    const top = pts && pts[0];
+    const leader = top && top.athlete ? { name: top.athlete.shortName || top.athlete.displayName || "", pts: Number(top.value || top.displayValue) || 0 } : null;
+    return { leader, abbr: t.abbreviation || "", short: t.shortDisplayName || t.name || "", logo: t.logo || "",
              rank: rank >= 1 && rank <= 25 ? rank : null, score: Number.isFinite(score) ? score : null,
              winner: !!c.winner, record: record ? record.summary : null,
              probable: probable ? probable.shortName : null, color: t.color ? "#" + t.color : "" };
@@ -112,7 +116,7 @@ const EDGE_SETTINGS_KEY = "edge-ticker-settings";
 const EDGE_SETTINGS = [
   { group: "Ticker" },
   { k: "ticker", label: "Score ticker", sub: "A scrolling bar of games", on: true },
-  { k: "plays", label: "Scoring plays", sub: "A red bar with each score", on: true },
+  { k: "plays", label: "Scoring plays", sub: "A red bar with each score (NBA: big finals only)", on: true },
   { k: "popups", label: "Score pop-ups", sub: "A card in the corner when a team scores", on: false },
   { k: "sound", label: "Sound", sub: "A short chime when a team scores", on: false },
   { k: "liveOnly", label: "Live games only", sub: "Hide games still to play and finals", on: false },
@@ -538,6 +542,30 @@ function edgeRenderTicker() {
   edgeCrawl("crawl-plays", "Scoring", settings.plays ? plays : []);
 }
 
+// Sports whose red-bar entries are standout finals instead of every score.
+const EDGE_FINALS_ONLY = ["NBA"];
+
+// A basketball final worth a line in the red bar: a blowout (20+ points), a
+// big scoring night for a team (130+) or a player (40+), or overtime. Only
+// games that started in the last 4 hours, so an old final doesn't come back
+// after its line has expired.
+function edgeStandout(site, g) {
+  if (g.state !== "post" || g.away.score == null || g.home.score == null) return null;
+  if (Date.now() - new Date(g.start).getTime() > 4 * 3600000) return null;
+  const [win, lose] = g.away.score > g.home.score ? [g.away, g.home] : [g.home, g.away];
+  const notes = [];
+  if (/OT/.test(g.detail || "")) notes.push(g.detail.replace(/^Final\/?/i, "").trim() || "OT");
+  if (win.score - lose.score >= 20) notes.push(`Won by ${win.score - lose.score}`);
+  [win, lose].filter(t => t.score >= 130).forEach(t => notes.push(`${t.abbr} scored ${t.score}`));
+  const stars = [g.away, g.home].map(t => t.leader).filter(l => l && l.pts >= 40);
+  stars.forEach(l => notes.push(`${l.name} ${l.pts} pts`));
+  if (!notes.length) return null;
+  const what = stars.length ? `${stars[0].pts}-point night` : /OT/.test(g.detail || "") ? "Overtime final" : win.score - lose.score >= 20 ? "Blowout" : "Big final";
+  return { id: `${site.sport}:${g.id}:final`, sport: site.sport, href: site.schedule, t: Date.now(),
+           teams: [g.away.abbr, g.home.abbr], what, team: win.short || win.abbr, logo: win.logo, color: win.color,
+           text: notes.join(" \u00b7 "), score: `${win.abbr} ${win.score}, ${lose.abbr} ${lose.score}`, clock: "Final" };
+}
+
 async function initScoreboard() {
   // The old strip is replaced by the two bars.
   document.querySelectorAll(".scoreboard").forEach(n => n.remove());
@@ -549,6 +577,7 @@ async function initScoreboard() {
   const last = saved && Date.now() - saved.t < 15 * 60000 ? saved.scores : null;
   const scores = Object.assign({}, last || {});
   const fresh = [];
+  const finals = [];
   edgeTicker.flash = new Set();
   sites.forEach((site, i) => {
     const slate = slates[i];
@@ -559,6 +588,13 @@ async function initScoreboard() {
     if (!slate.live) return;
     slate.games.forEach(g => {
       if (g.state === "pre") return;
+      // Basketball scores too often for a play per basket: the red bar only
+      // gets its big finals (see edgeStandout).
+      if (EDGE_FINALS_ONLY.includes(site.sport)) {
+        const standout = edgeStandout(site, g);
+        if (standout) finals.push(standout);
+        return;
+      }
       ["away", "home"].forEach(side => {
         const key = `${site.sport}:${g.id}:${side}`;
         const now = g[side].score;
@@ -580,7 +616,8 @@ async function initScoreboard() {
   edgeStore(EDGE_SCORES_KEY, { t: Date.now(), scores });
   // Scoring plays from the last 3 hours, newest first, kept across pages.
   const kept = (edgeStore(EDGE_PLAYS_KEY) || []).filter(p => Date.now() - p.t < 3 * 3600000);
-  const plays = fresh.reverse().concat(kept.filter(p => !fresh.some(f => f.id === p.id))).slice(0, 12);
+  const newFinals = finals.filter(f => !kept.some(p => p.id === f.id));
+  const plays = fresh.reverse().concat(newFinals, kept.filter(p => !fresh.some(f => f.id === p.id))).slice(0, 12);
   edgeStore(EDGE_PLAYS_KEY, plays);
   edgeTicker.plays = plays;
   edgeRenderTicker();
