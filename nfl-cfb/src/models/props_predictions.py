@@ -35,6 +35,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from team_overrides import apply_overrides
 from auto_defense_adjustments import apply_auto_adjustments
 import td_model
+import td_breakdown
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
@@ -209,13 +210,17 @@ def team_matchups(schedules, team_next_game_cache):
         for _, o in odds.iterrows():
             if pd.notna(o.get("total_line")) and pd.notna(o.get("spread_home_point")):
                 lines[(o["home_team"], o["away_team"])] = (o["total_line"], o["spread_home_point"])
-    out = {}
+    out, game_lines = {}, {}
     for team, (opp, is_home, _, _) in team_next_game_cache.items():
         if opp is None:
             continue
         key = (team, opp) if is_home else (opp, team)
+        known = key in lines
         total, home_spread = lines.get(key, (td_model.LEAGUE_POINTS * 2, 0.0))
         out[team] = (opp, (total - home_spread) / 2 if is_home else (total + home_spread) / 2)
+        # team_spread < 0 = favored, like a sportsbook line
+        game_lines[team] = (total, home_spread if is_home else -home_spread) if known else (np.nan, np.nan)
+    team_matchups.lines = game_lines
     return out
 
 def add_td_model(result, schedules, current_roster, team_next_game_cache, injury_multipliers):
@@ -228,7 +233,8 @@ def add_td_model(result, schedules, current_roster, team_next_game_cache, injury
         print("  TD model: no fitted coefficients or play-by-play; keeping the simple TD projections")
         return result
     pbp = pd.read_parquet(pbp_path, columns=[c for c in td_model.PBP_COLUMNS])
-    pg = td_model.player_games(td_model.add_xtd(td_model.opportunities(pbp), fitted["xtd_table"]))
+    opps = td_model.add_xtd(td_model.opportunities(pbp), fitted["xtd_table"])
+    pg = td_model.player_games(opps)
     positions = {}
     rosters_path = os.path.join(RAW_DIR, "rosters.parquet")
     if os.path.exists(rosters_path):
@@ -257,6 +263,36 @@ def add_td_model(result, schedules, current_roster, team_next_game_cache, injury
     for c in ("xtd_pg", "rz_share", "def_pos_factor", "implied"):
         result[c] = result[c].round(3)
     print(f"  TD model: anytime-TD chance for {int(has.sum())} players")
+    return add_td_breakdown(result, opps, pg, positions, current_roster)
+
+def add_td_breakdown(result, opps, pg, positions, current_roster):
+    """The why behind each TD chance for the TD Props tab: full names and
+    headshots, game lines, tags, and td_details.json with each player's
+    field-zone breakdown and each defense's allowed-by-position ranks."""
+    lines = getattr(team_matchups, "lines", {})
+    result["game_total"] = result["team"].map(lambda t: lines.get(t, (np.nan, np.nan))[0])
+    result["team_spread"] = result["team"].map(lambda t: lines.get(t, (np.nan, np.nan))[1])
+    if "gsis_id" in current_roster.columns:
+        cr = current_roster.dropna(subset=["gsis_id"]).drop_duplicates("gsis_id").set_index("gsis_id")
+        first = cr["football_name"].fillna(cr.get("first_name")) if "football_name" in cr else cr.get("first_name")
+        full = (first.fillna("") + " " + cr["last_name"].fillna("")).str.strip()
+        result["full_name"] = result["player_id"].map(full)
+        if "headshot_url" in cr:
+            result["headshot"] = result["player_id"].map(cr["headshot_url"])
+    ids = set(result.loc[result["td_prob"].notna(), "player_id"]) if "td_prob" in result else set()
+    breakdowns = td_breakdown.player_breakdowns(opps, pg, ids)
+    defense = td_breakdown.defense_notes(opps, positions)
+    tag_col, debt = [], []
+    for _, r in result.iterrows():
+        b = breakdowns.get(r["player_id"])
+        tag_col.append("|".join(td_breakdown.tags(b, r.get("pos"), r.get("implied"), r.get("game_total"),
+                                                  r.get("def_pos_factor"))) if b else "")
+        debt.append(b["debt"] if b else np.nan)
+    result["td_tags"] = tag_col
+    result["td_debt"] = debt
+    with open(os.path.join(PROCESSED_DIR, "td_details.json"), "w") as f:
+        json.dump(td_breakdown.json_safe({"players": breakdowns, "defense": defense}), f)
+    print(f"  TD breakdowns for {len(breakdowns)} players, matchup notes for {len(defense)} defenses")
     return result
 
 def main():
