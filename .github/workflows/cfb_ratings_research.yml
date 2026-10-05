@@ -1,15 +1,16 @@
 name: CFB Ratings Backtest
 
-# Scores the CFB power-rating settings (src/cfb_ratings.py) on past seasons:
-# before each week, fit on the games before it, predict that week. Only prints
-# results; nothing is committed. Runs by hand, or when a work branch changes
-# the ratings code.
+# Scores the CFB power-rating settings on past seasons (src/cfb_ratings_lab.py):
+# before each week, fit on the games before it, predict that week. Then does a
+# dry run of src/cfb_ratings.py to show today's top teams. Only prints results;
+# nothing is committed. Runs by hand, or when a work branch changes the
+# ratings code.
 
 on:
   workflow_dispatch:
   push:
     branches: ["claude/**"]
-    paths: ["nfl-cfb/src/cfb_ratings.py"]
+    paths: ["nfl-cfb/src/cfb_ratings.py", "nfl-cfb/src/cfb_ratings_lab.py"]
 
 defaults:
   run:
@@ -33,4 +34,11 @@ jobs:
       - name: Backtest
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
-        run: python src/cfb_ratings.py --backtest
+        run: python src/cfb_ratings_lab.py
+
+      - name: Dry run of today's ratings
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: |
+          python src/cfb_ratings.py
+          python -c "import json; d = json.load(open('data/tracking/cfb_ratings.json')); [print(t['overall_rank'], t['team'], t['record'], t['overall'], t['offense'], t['defense']) for t in d['teams'][:25]]"
