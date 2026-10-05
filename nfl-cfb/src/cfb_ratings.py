@@ -5,14 +5,20 @@ check of how well they'd have picked each week's FBS games. The CFB picks
 don't use them yet: they're tracked on their own first (Ratings tab) and can
 join the model once they've proven themselves.
 
-THE RATINGS, rebuilt each run from this season's and last season's games:
-  points a team scores = league average + its offense rating + the
-                         opponent's defense rating + home field
-fit by a weighted ridge regression over every game an FBS team played, so
-each number is adjusted for who the team actually faced. FCS opponents all
-share one "FCS" rating. Recent games count more (weight halves every
-HALF_LIFE_WEEKS weeks) and last season's games count CARRYOVER as much, so
-week 1 starts from last year's team and fades as this year's games come in.
+THE RATINGS, rebuilt each run, blend two opponent-adjusted ratings:
+  1. Points: points a team scores = league average + its offense rating +
+     the opponent's defense rating + home field, fit by a weighted ridge
+     regression over this season's games. Instead of last season's games,
+     each team starts from a PRESEASON RATING: last season's final rating,
+     kept more for teams returning more of their production, plus roster
+     talent. That start counts as PRIOR_WEIGHT games, so it fades as this
+     season's games come in.
+  2. Efficiency: the same regression on EPA per play with garbage time
+     removed (CFBD advanced stats), over this season and last season's
+     games (last season at EFF_CARRY).
+Overall = POINTS_BLEND x points rating + EFF_BLEND x efficiency rating, on the
+points scale. FCS opponents all share one "FCS" rating. Recent games count
+more (weight halves every HALF_LIFE_WEEKS weeks).
 
   Offense = points the team would score against an average FBS defense
   Defense = points it would allow to an average FBS offense (lower is better)
@@ -25,8 +31,8 @@ game is final it's graded. build_site.py shows the record next to our model
 and Vegas on the same games.
 
 Usage:
-  python src/cfb_ratings.py             # refresh ratings + log + grade
-  python src/cfb_ratings.py --backtest  # score settings on past seasons
+  python src/cfb_ratings.py          # refresh ratings + log + grade
+  python src/cfb_ratings_lab.py      # walk-forward test of settings on past seasons
 """
 
 import json
@@ -44,14 +50,21 @@ TRACKING_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "tracking")
 RATINGS_PATH = os.path.join(TRACKING_DIR, "cfb_ratings.json")
 LOG_PATH = os.path.join(TRACKING_DIR, "cfb_ratings_log.csv")
 
-# Picked by the --backtest walk-forward on 2022-2026 (2,615 FBS-vs-FBS games):
-# 72.4% of winners picked, 12.7-point average miss (Vegas: 73.5%, 11.9).
-# Slow forgetting within a season and a light ridge did best; capping blowout
-# margins made it worse.
+# Picked by the cfb_ratings_lab.py walk-forward on 2022-2026 (3,443 FBS games
+# with a Vegas line): 72.1% of winners picked, 12.61-point average miss, vs
+# 71.6% / 12.72 for the old points-only ratings that carried last season's
+# games (Vegas: 73.2% / 11.97). Fading last season faster, or a heavier
+# preseason rating, both did worse.
 HALF_LIFE_WEEKS = 30
-CARRYOVER = 0.6
 RIDGE = 0.5
-MARGIN_CAP = None            # blowouts beyond this margin count as this margin (None = no cap)
+PRIOR_WEIGHT = 3             # the preseason rating counts as this many games
+EFF_CARRY = 0.3              # last season's games in the efficiency rating
+POINTS_BLEND, EFF_BLEND = 0.87, 9.2
+# Preseason rating (deviation from an average FBS team), fit in the lab on
+# 2022-2025: a x last season + b x last season x (returning production -
+# that year's average) + c x roster talent (z-score).
+PRIOR_OFFENSE = (0.401, 0.242, 2.569)
+PRIOR_DEFENSE = (0.536, 0.264, -1.646)
 FCS = "FCS"
 LOG_DAYS_AHEAD = 8
 
@@ -90,19 +103,23 @@ def _order(games):
     return games["season"].astype(float) * 40 + wk
 
 
-def fit_ratings(done, fbs, t_now, season_now, half_life=HALF_LIFE_WEEKS, carryover=CARRYOVER, ridge=RIDGE,
-                cap=MARGIN_CAP):
-    """Offense/defense/overall for every FBS team from completed games `done`
-    (each game's weight from its distance to t_now)."""
+def fit_side(done, fbs, t_now, season_now, home_col, away_col, carry, prior=None, prior_w=0.0,
+             half_life=HALF_LIFE_WEEKS, ridge=RIDGE):
+    """Offense/defense ridge for one per-side stat (points, EPA/play) over the
+    completed games `done`. Returns per-team offense/defense deviations from
+    an average FBS team, home field, and the average FBS team's level.
+    prior: team -> (offense dev, defense dev) to shrink toward instead of 0.
+    carry 0 still keeps last season at a token weight so home field and the
+    league average are defined before week 1."""
     teams = sorted(fbs) + [FCS]
     idx = {t: i for i, t in enumerate(teams)}
     n = len(teams)
-    g = done.copy()
+    g = done.dropna(subset=[home_col, away_col]).copy()
     for side in ("home", "away"):
         g[side] = g[f"{side}_team"].where(g[f"{side}_team"].isin(fbs), FCS)
     g = g[(g["home"] != FCS) | (g["away"] != FCS)]
-    t = _order(g).values
-    w = 0.5 ** ((t_now - t) / half_life) * carryover ** (season_now - g["season"].values)
+    past = season_now - g["season"].values
+    w = 0.5 ** ((t_now - _order(g).values) / half_life) * np.where(past == 0, 1.0, max(carry, 1e-3) ** past)
     h = np.where(g["neutral"].fillna(False).astype(bool).values, 0.0, 1.0)
 
     m = len(g)
@@ -116,27 +133,94 @@ def fit_ratings(done, fbs, t_now, season_now, half_life=HALF_LIFE_WEEKS, carryov
     X[m + rows, n + hi] = 1
     X[m + rows, 2 * n] = -h / 2
     X[:, 2 * n + 1] = 1
-    hs, aws = g["home_score"].values.astype(float), g["away_score"].values.astype(float)
-    if cap:
-        total, margin = hs + aws, np.clip(hs - aws, -cap, cap)
-        hs, aws = (total + margin) / 2, (total - margin) / 2
-    y = np.concatenate([hs, aws])
+    y = np.concatenate([g[home_col].values, g[away_col].values]).astype(float)
     ww = np.concatenate([w, w])
 
-    A = X.T @ (X * ww[:, None])
-    R = np.eye(2 * n + 2) * ridge
-    R[2 * n, 2 * n] = R[2 * n + 1, 2 * n + 1] = 0
-    beta = np.linalg.solve(A + R, X.T @ (ww * y))
+    lam = np.full(2 * n + 2, float(ridge))
+    lam[2 * n:] = 0
+    target = np.zeros(2 * n + 2)
+    if prior:
+        lam[:2 * n] += prior_w
+        for t, (po, pdf) in prior.items():
+            if t in idx:
+                target[idx[t]], target[n + idx[t]] = po, pdf
+    beta = np.linalg.solve(X.T @ (X * ww[:, None]) + np.diag(lam), X.T @ (ww * y) + lam * target)
     off, dfn, hfa, mu = beta[:n], beta[n:2 * n], beta[2 * n], beta[2 * n + 1]
-
-    # Center on the average FBS team so "average" means average FBS, not the
-    # average of everyone in the regression (FCS included).
     f = np.array([idx[x] for x in sorted(fbs)])
-    off_c, def_c = off - off[f].mean(), dfn - dfn[f].mean()
-    base = mu + off[f].mean() + dfn[f].mean()
-    out = pd.DataFrame({"team": teams, "offense": base + off_c, "defense": base + def_c})
+    out = pd.DataFrame({"team": teams, "off": off - off[f].mean(), "def": dfn - dfn[f].mean()}).set_index("team")
+    return out, float(hfa), float(mu + off[f].mean() + dfn[f].mean())
+
+
+def preseason_prior(games, fbs_last, season, returning, talent):
+    """team -> (offense dev, defense dev) to start `season` from: last
+    season's final points rating scaled by returning production, plus
+    roster talent. Teams new to FBS start halfway to last season's FCS level."""
+    last_games = games[games["season"] == season - 1].dropna(subset=["home_score", "away_score"])
+    if last_games.empty:
+        return None
+    last, _, _ = fit_side(last_games, fbs_last, _order(last_games).max() + 1, season - 1,
+                          "home_score", "away_score", carry=0.0, half_life=1e9)
+    ret = pd.Series(returning, dtype=float)
+    ret_c = ret - ret.mean() if len(ret) else ret
+    tal = pd.Series(talent, dtype=float)
+    tal_z = (tal - tal.mean()) / tal.std() if len(tal) > 1 else tal * 0
+    prior = {}
+    for t in games.loc[games["season"] == season, ["home_team", "away_team"]].stack().unique():
+        lo, ld = (last.at[t, "off"], last.at[t, "def"]) if t in last.index else \
+                 (last.at[FCS, "off"] / 2, last.at[FCS, "def"] / 2)
+        r, z = float(ret_c.get(t, 0.0)), float(tal_z.get(t, 0.0))
+        prior[t] = (PRIOR_OFFENSE[0] * lo + PRIOR_OFFENSE[1] * lo * r + PRIOR_OFFENSE[2] * z,
+                    PRIOR_DEFENSE[0] * ld + PRIOR_DEFENSE[1] * ld * r + PRIOR_DEFENSE[2] * z)
+    prior[FCS] = (last.at[FCS, "off"], last.at[FCS, "def"])
+    return prior
+
+
+def fit_ratings(done, fbs, t_now, season_now, prior):
+    """Offense/defense/overall for every FBS team (points scale) and home field.
+    `done` needs home_score/away_score and, for the efficiency half,
+    home_ppa/away_ppa; without efficiency data it falls back to points only."""
+    recent = done[done["season"] >= season_now - 1]
+    pts, hfa_p, base = fit_side(recent, fbs, t_now, season_now, "home_score", "away_score", carry=0.0,
+                                prior=prior, prior_w=PRIOR_WEIGHT if prior else 0.0)
+    off, dfn, hfa = pts["off"], pts["def"], hfa_p
+    if "home_ppa" in done and done.loc[done["season"] == season_now, "home_ppa"].notna().any():
+        eff, hfa_e, _ = fit_side(done, fbs, t_now, season_now, "home_ppa", "away_ppa", carry=EFF_CARRY)
+        off = POINTS_BLEND * off + EFF_BLEND * eff["off"]
+        dfn = POINTS_BLEND * dfn + EFF_BLEND * eff["def"]
+        hfa = POINTS_BLEND * hfa_p + EFF_BLEND * hfa_e
+    out = pd.DataFrame({"team": off.index, "offense": base + off.values, "defense": base + dfn.values})
     out["overall"] = out["offense"] - out["defense"]
     return out[out["team"] != FCS].reset_index(drop=True), float(hfa)
+
+
+def season_efficiency(season):
+    """(game id, team) -> offensive EPA per play with garbage time removed."""
+    out = {}
+    for season_type in ("regular", "postseason"):
+        try:
+            for r in _get("/stats/game/advanced", {"year": season, "seasonType": season_type,
+                                                    "excludeGarbageTime": "true"}):
+                ppa = (r.get("offense") or {}).get("ppa")
+                if ppa is not None:
+                    out[(r.get("gameId"), r.get("team"))] = float(ppa)
+        except Exception as e:  # noqa: BLE001 - ratings fall back to points only
+            print(f"  Skipping {season_type} {season} efficiency: {e}")
+    return out
+
+
+def team_values(path, season, key, value_keys):
+    try:
+        rows = _get(path, {"year": season})
+    except Exception as e:  # noqa: BLE001 - the preseason rating just skips this input
+        print(f"  Skipping {path} {season}: {e}")
+        return {}
+    out = {}
+    for r in rows:
+        team = r.get(key) or r.get("school")
+        val = next((r[k] for k in value_keys if r.get(k) is not None), None)
+        if team and val is not None:
+            out[team] = float(val)
+    return out
 
 
 def rating_line(ratings, hfa, home, away, neutral):
@@ -195,14 +279,25 @@ def run():
     season = current_cfb_season()
     teams = fbs_teams(season)
     fbs = set(teams["team"])
+    fbs_last = set(fbs_teams(season - 1)["team"])
     games = pd.concat([season_games(season - 1), season_games(season)], ignore_index=True)
-    done = games.dropna(subset=["home_score", "away_score"])
+    done = games.dropna(subset=["home_score", "away_score"]).copy()
+    eff = {**season_efficiency(season - 1), **season_efficiency(season)}
+    done["home_ppa"] = [eff.get((i, t), np.nan) for i, t in zip(done["id"], done["home_team"])]
+    done["away_ppa"] = [eff.get((i, t), np.nan) for i, t in zip(done["id"], done["away_team"])]
     upcoming = games[games["season"] == season].copy()
     now = datetime.now(timezone.utc)
 
+    returning = {t: v for t, v in team_values("/player/returning", season, "team",
+                                              ("percentPPA", "percent_ppa")).items() if t in fbs}
+    talent = {t: v for t, v in team_values("/talent", season, "team", ("talent",)).items() if t in fbs}
+    prior = preseason_prior(games, fbs_last, season, returning, talent)
+    print(f"  Efficiency on {done['home_ppa'].notna().mean():.0%} of games; returning production for "
+          f"{len(returning)} teams, talent for {len(talent)}")
+
     cur = done[done["season"] == season]
     t_now = (_order(cur).max() + 1) if not cur.empty else season * 40
-    ratings, hfa = fit_ratings(done, fbs, t_now, season)
+    ratings, hfa = fit_ratings(done, fbs, t_now, season, prior)
     ratings = ratings.merge(teams, on="team", how="left")
     for col in ("overall", "offense"):
         ratings[f"{col}_rank"] = ratings[col].rank(ascending=False, method="min").astype(int)
@@ -213,7 +308,7 @@ def run():
     os.makedirs(TRACKING_DIR, exist_ok=True)
     out = {"updated": now.isoformat(timespec="seconds"), "season": season,
            "games_through_week": int(cur["week"].max()) if not cur.empty else 0,
-           "home_field": round(hfa, 2), "half_life_weeks": HALF_LIFE_WEEKS, "carryover": CARRYOVER,
+           "home_field": round(hfa, 2), "half_life_weeks": HALF_LIFE_WEEKS, "preseason_weight": PRIOR_WEIGHT,
            "teams": [{k: (round(v, 2) if isinstance(v, float) else v) for k, v in r.items()}
                      for r in ratings[["team", "conference", "abbreviation", "logo", "record", "overall", "offense",
                                        "defense", "overall_rank", "offense_rank", "defense_rank"]].to_dict("records")]}
@@ -224,55 +319,5 @@ def run():
     update_log(upcoming, done, ratings, hfa, now)
 
 
-def backtest(seasons_back=4):
-    """Walk-forward: before each week of the last few seasons, fit on the
-    games before it and predict that week. Prints straight-up accuracy and
-    average miss for each setting, and Vegas on the games CFBD has a line for."""
-    if _headers() is None:
-        print("CFBD_API_KEY not set.")
-        return
-    season = current_cfb_season()
-    years = list(range(season - seasons_back, season + 1))
-    games = pd.concat([season_games(y) for y in years], ignore_index=True)
-    fbs_by_year = {y: set(fbs_teams(y)["team"]) for y in years}
-    lines = []
-    for y in years:
-        for st in ("regular", "postseason"):
-            for g in _get("/lines", {"year": y, "seasonType": st}):
-                ls = g.get("lines") or []
-                pick = next((x for x in ls if x.get("provider") == "consensus"), ls[0] if ls else None)
-                if pick and pick.get("spread") is not None:
-                    lines.append({"id": g.get("id"), "vegas": -float(pick["spread"])})
-    lines = pd.DataFrame(lines).drop_duplicates("id")
-    done = games.dropna(subset=["home_score", "away_score"]).copy()
-    done["t"] = _order(done)
-    test = done[done["season"] > years[0]]
-
-    for hl, carry, ridge, cap in [(h, c, r, None) for h in (16, HALF_LIFE_WEEKS, 60)
-                                  for c in (0.4, CARRYOVER, 0.8) for r in (0.2, RIDGE)]:
-            if True:
-                rows = []
-                for (s, t), wk in test.groupby(["season", "t"]):
-                    fbs = fbs_by_year[s]
-                    hist = done[(done["t"] < t) & (done["season"] >= s - 1)]
-                    if len(hist) < 200:
-                        continue
-                    r, hfa = fit_ratings(hist, fbs, t, s, hl, carry, ridge, cap)
-                    for g in wk.itertuples():
-                        if g.home_team in fbs and g.away_team in fbs:
-                            rows.append((g.id, rating_line(r, hfa, g.home_team, g.away_team, bool(g.neutral)),
-                                         g.home_score - g.away_score))
-                p = pd.DataFrame(rows, columns=["id", "line", "margin"]).dropna()
-                p = p[p["margin"] != 0]
-                acc = (np.sign(p["line"]) == np.sign(p["margin"])).mean()
-                mae = (p["line"] - p["margin"]).abs().mean()
-                v = p.merge(lines, on="id")
-                print(f"half-life {hl:>2} carry {carry} ridge {ridge:>4} cap {cap}: {len(p)} FBS games, picks {acc:.1%}, "
-                      f"miss {mae:.2f} | lined {len(v)}: ours {(np.sign(v['line']) == np.sign(v['margin'])).mean():.1%} "
-                      f"miss {(v['line'] - v['margin']).abs().mean():.2f}, Vegas "
-                      f"{(np.sign(v['vegas']) == np.sign(v['margin'])).mean():.1%} miss {(v['vegas'] - v['margin']).abs().mean():.2f}",
-                      flush=True)
-
-
 if __name__ == "__main__":
-    backtest() if "--backtest" in sys.argv else run()
+    run()

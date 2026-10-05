@@ -23,7 +23,8 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(__file__))
 from fetch_cfb_data import _get, current_cfb_season
-from cfb_ratings import FCS, _order, fbs_teams, fit_ratings, rating_line, season_games
+import cfb_ratings
+from cfb_ratings import FCS, _order, fbs_teams, season_games
 
 SEASON = current_cfb_season()
 YEARS = list(range(SEASON - 5, SEASON + 1))          # 2021-2026; 2021 only feeds 2022
@@ -229,7 +230,18 @@ def main():
         "eff only":                dict(kind="eff", half_life=30, carry=0.6),
     }
     test = done[done["season"].isin(TEST)]
+    # what cfb_ratings.py ships (its prior coefficients were fit on 2022-2025, so
+    # those seasons are in-sample for it; 2026 is not)
+    shipped_prior = {}
+    for s in TEST:
+        rt = ret[ret.season == s].dropna().drop_duplicates("team")
+        tl = tal[tal.season == s].dropna().drop_duplicates("team")
+        shipped_prior[s] = cfb_ratings.preseason_prior(
+            done, fbs[s - 1], s,
+            {t: float(v) for t, v in zip(rt["team"], rt["ret"]) if t in fbs[s]},
+            {t: float(v) for t, v in zip(tl["team"], tl["talent"]) if t in fbs[s]})
     preds = {k: [] for k in variants}
+    preds["shipped (cfb_ratings.py)"] = []
     preds["_eff_prior"] = []
     for (s, t), wk in test.groupby(["season", "t"]):
         hist = done[(done["t"] < t) & (done["season"] >= s - 1)]
@@ -243,6 +255,8 @@ def main():
                              prior=priors[s] if pw else None, prior_w=pw)
         # efficiency with an efficiency-scale prior isn't available; reuse eff with carry 0.3
         fits["_eff_prior"] = fit(hist, fbs[s], t, s, *EFF, half_life=30, carry=0.3)
+        sr, sh = cfb_ratings.fit_ratings(hist, fbs[s], t, s, shipped_prior[s])
+        fits["shipped (cfb_ratings.py)"] = (sr.set_index("team"), sh)
         for g in wk.itertuples():
             if g.home_team in fbs[s] and g.away_team in fbs[s] and g.home_score != g.away_score:
                 for name, (r, h) in fits.items():
@@ -284,7 +298,7 @@ def main():
         if not k.startswith("_"):
             print(f"{k:<24} {score(p)}", flush=True)
     print("\n=== by season, miss (ours / Vegas) ===")
-    for k in ("base (live)", best_prior, "base + eff blend", "prior + eff blend"):
+    for k in ("base (live)", best_prior, "base + eff blend", "prior + eff blend", "shipped (cfb_ratings.py)"):
         v = frames[k].merge(lines, on="id")
         parts = [f"{s}: {(q['line'] - q['margin']).abs().mean():.2f}/{(q['vegas'] - q['margin']).abs().mean():.2f}"
                  for s, q in v.groupby("season")]
