@@ -544,6 +544,12 @@ function edgeRenderTicker() {
 
 // Sports whose red-bar entries are standout finals instead of every score.
 const EDGE_FINALS_ONLY = ["NBA"];
+// The red bar stays short: one line per game, the newest few games only.
+const EDGE_PLAYS_MAX = 6;
+// ESPN's "last play" is often a later, non-scoring play ("X pitches to Y");
+// it is shown only when it reads like the score itself.
+const EDGE_SCORING_TEXT = /\b(homer(s|ed)?|home run|grand slam|scores?|scored|runs? in|walk-off|sacrifice fly|touchdown|field goal|safety|extra point|two-point|goal)\b/i;
+const edgePlayGame = p => p.id.split(":").slice(0, 2).join(":");
 
 // A basketball final worth a line in the red bar: a blowout (20+ points), a
 // big scoring night for a team (130+) or a player (40+), or overtime. Only
@@ -607,7 +613,7 @@ async function initScoreboard() {
         fresh.push({ id: `${key}:${now}`, sport: site.sport, href: site.schedule, t: Date.now(),
                      teams: [g.away.abbr, g.home.abbr],
                      what: edgeScoreWord(site.sport, now - before), team: team.short || team.abbr,
-                     logo: team.logo, color: team.color, text: g.lastPlay || "",
+                     logo: team.logo, color: team.color, text: EDGE_SCORING_TEXT.test(g.lastPlay || "") ? g.lastPlay : "",
                      score: `${team.abbr} ${now}, ${other.abbr} ${other.score}`,
                      clock: g.state === "post" ? "Final" : g.detail });
       });
@@ -615,9 +621,16 @@ async function initScoreboard() {
   });
   edgeStore(EDGE_SCORES_KEY, { t: Date.now(), scores });
   // Scoring plays from the last 3 hours, newest first, kept across pages.
-  const kept = (edgeStore(EDGE_PLAYS_KEY) || []).filter(p => Date.now() - p.t < 3 * 3600000);
+  // Lines saved by older versions (every basket, any last play) are dropped.
+  const kept = (edgeStore(EDGE_PLAYS_KEY) || [])
+    .filter(p => p && p.id && Date.now() - p.t < 3 * 3600000)
+    .filter(p => !EDGE_FINALS_ONLY.includes(p.sport) || /:final$/.test(p.id))
+    .map(p => Object.assign({}, p, { text: /:final$/.test(p.id) || EDGE_SCORING_TEXT.test(p.text || "") ? p.text : "" }));
   const newFinals = finals.filter(f => !kept.some(p => p.id === f.id));
-  const plays = fresh.reverse().concat(newFinals, kept.filter(p => !fresh.some(f => f.id === p.id))).slice(0, 12);
+  const seen = new Set();
+  const plays = fresh.reverse().concat(newFinals, kept)
+    .filter(p => !seen.has(edgePlayGame(p)) && seen.add(edgePlayGame(p)))
+    .slice(0, EDGE_PLAYS_MAX);
   edgeStore(EDGE_PLAYS_KEY, plays);
   edgeTicker.plays = plays;
   edgeRenderTicker();
