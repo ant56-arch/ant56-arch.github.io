@@ -1,0 +1,48 @@
+# Weekly Python shadow test, ahead of moving the live workflows off Python 3.11
+# (support ends October 2027; the plan is to switch sport by sport in early
+# 2027). Runs every sport's pipeline step by step on OLD and NEW side by side
+# and diffs the output (.github/python-shadow-test.sh). Commits and publishes
+# nothing, and spends no Odds API credits. A red run means NEW broke a step
+# that works on OLD; a warning means some output differs.
+# NEW stays 3.12 while numpy 1.26.4 (mlb-nba-cbb/research) has no 3.13 wheels.
+
+name: Python shadow test
+
+on:
+  schedule:
+    - cron: '0 8 * * 3'   # Wednesdays 4am ET, clear of the pick runs
+  workflow_dispatch:
+  pull_request:   # and whenever the test itself changes
+    paths:
+      - .github/python-shadow-test.sh
+      - .github/python-shadow-compare.py
+      - .github/workflows/python-shadow-test.yml
+
+permissions:
+  contents: read
+
+env:
+  OLD: '3.11'
+  NEW: '3.12'
+
+jobs:
+  shadow:
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [mlb-nba-cbb, nfl-cfb]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: |
+            ${{ env.OLD }}
+            ${{ env.NEW }}
+
+      - name: Run both versions and diff
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: .github/python-shadow-test.sh ${{ matrix.group }}
