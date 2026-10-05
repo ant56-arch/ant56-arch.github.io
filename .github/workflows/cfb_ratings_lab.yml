@@ -1,0 +1,29 @@
+name: CFB Ratings Lab
+
+# Research only: runs src/cfb_ratings_lab.py, which scores candidate upgrades
+# to the CFB power ratings on past seasons. Prints results; commits nothing.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths: ["nfl-cfb/src/cfb_ratings_lab.py", ".github/workflows/cfb_ratings_lab.yml"]
+
+defaults:
+  run:
+    working-directory: nfl-cfb
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Lab
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: python src/cfb_ratings_lab.py
