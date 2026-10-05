@@ -1398,6 +1398,24 @@ details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255,
 .tdp-table tr.is-mine td { font-weight: 700; color: var(--text); background: rgba(229, 121, 59, 0.08); }
 .tdp-table td.is-soft { color: var(--hit); font-weight: 700; }
 .tdp-table td.is-tough { color: var(--miss); }
+/* TD Props results weeks: the same game cards, graded. */
+.tdr-week { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 4px 0 16px; }
+.tdr-week > div { display: grid; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--rule); }
+.tdr-week b { font-family: var(--font-head); font-size: 26px; font-weight: 800; line-height: 1.1; }
+.tdr-week span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.tdr-score { font-size: 22px; margin-left: 2px; color: var(--text-muted); }
+.tdr-res-wrap { margin-top: 3px; }
+.tdr-res { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
+.tdr-res.is-hit { background: var(--hit); color: #fff; }
+.tdr-res.is-miss { background: rgba(226, 102, 95, 0.16); color: var(--miss); }
+.tdr-res.is-void { background: var(--surface-2); color: var(--text-faint); }
+details.tdr.is-w { box-shadow: inset 3px 0 0 var(--hit); }
+details.tdr.is-l { box-shadow: inset 3px 0 0 var(--miss); }
+details.tdr.is-void { opacity: 0.7; }
+details.tdr .tdp-book { grid-auto-flow: row; }
+details.tdr .td-money { font-size: 13px; }
+.tdp-chip.is-up { border-color: var(--hit); color: var(--hit); }
+.tdp-chip.is-down { border-color: var(--miss); color: var(--miss); }
 
 /* "How to read this": the explanation, one tap away instead of always on. */
 details.how-to { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
@@ -1450,6 +1468,11 @@ details.how-to p { margin: 0 0 8px 0; }
   .tdp-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tdp-tables { grid-template-columns: minmax(0, 1fr); }
   .tdg-chips { margin-left: 0; }
+  details.tdr .tdp-book { grid-auto-flow: column; }
+  .tdr-week { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .tdr-week > div { padding: 8px; }
+  .tdr-week b { font-size: 22px; }
+  .tdr-week span { font-size: 10px; }
   .pl-note { padding: 0 4px 14px 4px; }
 }
 @media (max-width: 400px) {
