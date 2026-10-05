@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-05T00:10:04Z",
+ "updated": "2026-10-05T00:26:43Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -89,10 +89,10 @@
   "nfl": {
    "label": "NFL",
    "picks": 30,
-   "won": 18,
-   "expected": 19.5,
-   "z": -0.59,
-   "from": "2026-09-20",
+   "won": 22,
+   "expected": 19.2,
+   "z": 1.09,
+   "from": "2026-09-24",
    "through": "2026-10-04",
    "alarm": false,
    "last_retrain": null,

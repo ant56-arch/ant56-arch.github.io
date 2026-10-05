@@ -1240,7 +1240,7 @@
    },
    "model": "2026-09-30T15:55:28+00:00",
    "correct": null,
-   "set_at": "2026-10-05T00:09:49Z",
+   "set_at": "2026-10-05T00:26:23Z",
    "ml": {
     "team": "VGK",
     "side": "away",
@@ -1251,7 +1251,7 @@
     "value": false,
     "home_ml": 235,
     "away_ml": -290,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
