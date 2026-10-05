@@ -633,26 +633,6 @@ def load_td_log():
 
 TD_RESULT_WEEKS = 3  # graded weeks shown on the TD Props page
 
-def td_row(rank, r, sport, right, note, tag=""):
-    """One TD pick in the shared tap-to-open pick list: rank, player, our
-    chance as a bar, and the price or result; the numbers behind it open
-    under the row."""
-    logo = team_logo(sport, r["team"])
-    img = f'<img class="team-logo" src="{logo}" alt="" loading="lazy" onerror="this.style.display=\'none\'">' if logo else ""
-    when = ""
-    k = pd.to_datetime(r.get("kickoff"), utc=True, errors="coerce", format="ISO8601")
-    if pd.notna(k):
-        et = k.tz_convert("America/New_York")
-        when = f" &middot; {et:%a} {et.strftime('%I:%M %p').lstrip('0')} ET"
-    prob = float(r["prob"]) * 100
-    return f"""<li><details class="pl-row"><summary class="pl-line">
-      <span class="pl-rank">{rank}</span>
-      <span class="pl-match"><span class="pl-teams">{img}{escape(str(r['player_name']))}</span>
-        <span class="pl-sub">{tag}{r['team']} vs {r['opponent']}{when}</span></span>
-      <span class="pl-conf"><span class="pl-bar" aria-hidden="true"><span style="width:{prob:.0f}%"></span></span><span class="pl-pct">{prob:.0f}%</span></span>
-      <span class="pl-res">{right}</span>
-    </summary><div class="pl-note">{note}</div></details></li>"""
-
 def td_price_bits(r):
     """'Book -185, 60% without the vig. Edge +8 points.' or ''."""
     if pd.isna(r.get("price")):
@@ -755,11 +735,7 @@ def td_allowed_table(opp, pos, defense):
 def td_player_row(rank, r, sport, b, defense):
     p = float(r["td_prob"])
     name = r.get("full_name") if isinstance(r.get("full_name"), str) and r.get("full_name").strip() else r["player_name"]
-    initials = "".join(w[0] for w in str(name).split()[:2]).upper()
-    face = f'<span class="tdp-face" data-i="{escape(initials)}">'
-    if isinstance(r.get("headshot"), str) and r["headshot"].startswith("http"):
-        face += f'<img src="{escape(r["headshot"])}" alt="" loading="lazy" onerror="this.remove()">'
-    face += "</span>"
+    face = td_face(name, r.get("headshot"))
     tags = [t for t in str(r.get("td_tags") or "").split("|") if t and t != "nan"]
     tag_html = "".join(f'<span class="tdp-tag{" is-due" if t.startswith("Due") else ""}">{escape(t)}</span>' for t in tags)
     inj = ""
@@ -869,30 +845,108 @@ def td_upcoming_list(sport, props, td_log):
         html += td_game_card(sport, g, "".join(shown), more, len(rows), defense)
     return f'<div class="tdg-grid">{html}</div>'
 
-def td_results_list(sport, wk):
-    """One graded week: Value picks and our top 10, scored or not."""
-    rows = ""
-    for i, (_, r) in enumerate(wk.sort_values("our_prob", ascending=False).iterrows(), 1):
-        r = r.copy()
-        r["prob"] = r["our_prob"]
-        if r["result"] == "void":
-            right = pill("NO DECISION", "void")
-            outcome = "No carry or target, so no decision."
-        else:
-            hit = r["result"] == "W"
-            right = pill("SCORED", "positive") if hit else pill("NO TD", "danger")
-            tds = int(r["tds"]) if pd.notna(r.get("tds")) else 0
-            outcome = f"{tds} TD{'s' if tds != 1 else ''}." if hit else "No rushing or receiving TD."
-        tag = ""
-        if bool(r["value"]) and pd.notna(r.get("profit")):
+def td_roster_faces():
+    """gsis_id -> (full name, headshot url) from the current roster."""
+    path = os.path.join(PROCESSED_DIR, "..", "raw", "current_roster.csv")
+    if not os.path.exists(path):
+        return {}
+    cr = pd.read_csv(path, low_memory=False)
+    if "gsis_id" not in cr.columns:
+        return {}
+    cr = cr.dropna(subset=["gsis_id"]).drop_duplicates("gsis_id")
+    first = cr["football_name"].fillna(cr["first_name"]) if "football_name" in cr else cr.get("first_name", "")
+    full = (first.fillna("") + " " + cr["last_name"].fillna("")).str.strip()
+    shot = cr["headshot_url"] if "headshot_url" in cr else pd.Series("", index=cr.index)
+    return {g: (n, h) for g, n, h in zip(cr["gsis_id"], full, shot)}
+
+def td_face(name, headshot):
+    initials = "".join(w[0] for w in str(name).split()[:2]).upper()
+    img = (f'<img src="{escape(headshot)}" alt="" loading="lazy" onerror="this.remove()">'
+           if isinstance(headshot, str) and headshot.startswith("http") else "")
+    return f'<span class="tdp-face" data-i="{escape(initials)}">{img}</span>'
+
+def td_finals(season, week):
+    """team -> (away, home, away score, home score) for finished games."""
+    path = os.path.join(PROCESSED_DIR, "..", "raw", "schedules.csv")
+    if not os.path.exists(path):
+        return {}
+    s = pd.read_csv(path)
+    s = s[(s["season"] == season) & (s["week"] == week)]
+    out = {}
+    for _, g in s.iterrows():
+        v = (g["away_team"], g["home_team"], g.get("away_score"), g.get("home_score"))
+        out[g["home_team"]] = out[g["away_team"]] = v
+    return out
+
+def td_result_row(r, faces):
+    name, shot = faces.get(r["player_id"], (None, None))
+    name = name or r["player_name"]
+    p = float(r["our_prob"])
+    if r["result"] == "void":
+        res, outcome = '<span class="tdr-res is-void">NO DECISION</span>', "No carry or target, so no decision."
+    elif r["result"] == "W":
+        tds = int(r["tds"]) if pd.notna(r.get("tds")) else 1
+        res = f'<span class="tdr-res is-hit">{"SCORED" if tds == 1 else f"{tds} TDS"}</span>'
+        outcome = f"Scored {tds} rushing or receiving TD{'s' if tds != 1 else ''}."
+    else:
+        res, outcome = '<span class="tdr-res is-miss">NO TD</span>', "No rushing or receiving TD."
+    is_value = bool(r["value"]) and pd.notna(r.get("profit"))
+    book = ""
+    if pd.notna(r.get("price")):
+        book = f'<span class="tdp-book-price">{moneyline.format_price(r["price"])}</span>'
+        if is_value:
             cls = "is-up" if r["profit"] > 0 else ("is-down" if r["profit"] < 0 else "faint")
-            right = f'<span class="td-money {cls}">{money(r["profit"])}</span> ' + right
-            tag = '<b class="td-value">Value</b> &middot; '
-        note = outcome + td_price_bits(r)
-        if bool(r["value"]) and pd.notna(r.get("profit")):
-            note += f" $10 at {moneyline.format_price(r['price'])}: {money(r['profit'])}."
-        rows += td_row(i, r, sport, right, note, tag)
-    return f'<ul class="pick-list ranked td-list">{rows}</ul>'
+            book = '<span class="tdp-value">VALUE</span>' + book + f'<span class="td-money {cls}">{money(r["profit"])}</span>'
+    note = outcome + td_price_bits(r)
+    if is_value:
+        note += f" $10 at {moneyline.format_price(r['price'])}: {money(r['profit'])}."
+    pos = r["pos"] if isinstance(r.get("pos"), str) else ""
+    return f"""<details class="tdp tdr is-{str(r['result']).lower()}"><summary>
+      <span class="tdp-rank">{int(r['rank'])}</span>{td_face(name, shot)}
+      <span class="tdp-who"><span class="tdp-name">{escape(str(name))}</span>
+        <span class="tdp-meta">{pos} &middot; {r['team']} vs {r['opponent']}</span>
+        <span class="tdr-res-wrap">{res}</span></span>
+      <span class="tdp-book">{book}</span>
+      <span class="tdp-pct is-{td_chance_class(p)}"><b>{p * 100:.0f}%</b><small>OURS</small></span>
+    </summary><div class="tdp-body"><p class="tdp-foot">{note.strip()}</p></div></details>"""
+
+def td_results_list(sport, wk):
+    """One graded week as game cards: final score, then each pick we made
+    in that game (our top 10 and Value picks), scored or not."""
+    wk = wk.sort_values("our_prob", ascending=False).reset_index(drop=True)
+    wk["rank"] = np.arange(1, len(wk) + 1)
+    faces = td_roster_faces()
+    finals = td_finals(int(wk["season"].iloc[0]), int(wk["week"].iloc[0]))
+    games = {}
+    for _, r in wk.iterrows():
+        away, home, a_sc, h_sc = finals.get(r["team"], (r["opponent"], r["team"], np.nan, np.nan))
+        g = games.setdefault((away, home), {"away": away, "home": home, "a": a_sc, "h": h_sc,
+                                            "kick": r.get("kickoff") or "", "rows": []})
+        g["rows"].append(r)
+    def logo(t):
+        u = team_logo(sport, t)
+        return f'<img class="team-logo" src="{u}" alt="" loading="lazy" onerror="this.style.display=\'none\'">' if u else ""
+    html = ""
+    for g in sorted(games.values(), key=lambda g: str(g["kick"])):
+        rows = g["rows"]
+        hit = sum(r["result"] == "W" for r in rows)
+        dec = sum(r["result"] in ("W", "L") for r in rows)
+        score = (f'<span class="tdr-score">{int(g["a"])}</span>' if pd.notna(g["a"]) else "")
+        hscore = (f'<span class="tdr-score">{int(g["h"])}</span>' if pd.notna(g["h"]) else "")
+        vals = [r for r in rows if bool(r["value"]) and pd.notna(r.get("profit"))]
+        chips = f'<span class="tdp-chip">{hit} of {dec} scored</span>'
+        if vals:
+            pr = sum(float(r["profit"]) for r in vals)
+            chips += f'<span class="tdp-chip {"is-up" if pr > 0 else "is-down" if pr < 0 else ""}">Value {money(pr)}</span>'
+        html += f"""<section class="tdg">
+      <header class="tdg-head">
+        <div class="tdg-teams">{logo(g['away'])}<b>{g['away']}</b>{score}<span class="faint">@</span>{logo(g['home'])}<b>{g['home']}</b>{hscore}</div>
+        <div class="tdg-when">Final</div>
+        <div class="tdg-chips">{chips}</div>
+      </header>
+      <div class="tdg-list">{"".join(td_result_row(r, faces) for r in rows)}</div>
+    </section>"""
+    return f'<div class="tdg-grid">{html}</div>'
 
 def td_record_band(summary):
     v, top = summary["value"], summary["top10"]
@@ -933,7 +987,16 @@ def build_td_page(sport, props):
             scored = int((wk["result"] == "W").sum())
             decided = int(wk["result"].isin(["W", "L"]).sum())
             label = f"Week {int(w['week'])}"
-            head = f'<div class="td-week-head">{scored} of {decided} scored</div>'
+            top = wk[wk["top10"].astype(bool) & wk["result"].isin(["W", "L"])]
+            val = wk[wk["value"].astype(bool) & wk["result"].isin(["W", "L"])]
+            stats = [(f"{int((top['result'] == 'W').sum())}/{len(top)}", "Our top 10 scored"),
+                     (f"{scored}/{decided}", "All picks scored")]
+            if len(val):
+                vp = float(val["profit"].fillna(0).sum())
+                stats.insert(1, (f"{int((val['result'] == 'W').sum())}-{int((val['result'] == 'L').sum())}",
+                                 f"Value picks, {money(vp)} at $10"))
+            head = '<div class="tdr-week">' + "".join(
+                f'<div><b>{a}</b><span>{b}</span></div>' for a, b in stats) + "</div>"
             panels.append((f"td-w{int(w['season'])}-{int(w['week'])}", label, head + td_results_list(sport, wk)))
     tabs = "".join(
         f'<button type="button" class="subtab{" active" if i == 0 else ""}" aria-pressed="{"true" if i == 0 else "false"}" '
