@@ -4641,7 +4641,7 @@
     "starters": 0.04
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-04T18:33:52Z",
    "ml": {
     "team": "MIL",
@@ -4654,9 +4654,12 @@
     "home_ml": -136,
     "away_ml": 113,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.735
+   },
+   "home_runs": 4,
+   "away_runs": 3,
+   "winner": "MIL"
   },
   {
    "date": "2026-10-04",
@@ -4694,7 +4697,7 @@
     "starters": 0.243
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-04T22:56:11Z",
    "ml": {
     "team": "LAD",
@@ -4706,6 +4709,115 @@
     "value": false,
     "home_ml": -212,
     "away_ml": 173,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 2,
+   "away_runs": 3,
+   "winner": "ATL"
+  },
+  {
+   "date": "2026-10-05",
+   "game_id": "849834",
+   "start": "2026-10-05T17:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "CWS",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Chicago White Sox",
+   "home_id": 114,
+   "away_id": 145,
+   "home_record": "85-77",
+   "away_record": "84-78",
+   "home_sp": {
+    "id": 668909,
+    "name": "Gavin Williams",
+    "era": 3.76,
+    "ip": 184.3
+   },
+   "away_sp": {
+    "id": 641743,
+    "name": "Anthony Kay",
+    "era": 4.47,
+    "ip": 151.0
+   },
+   "pick": "CLE",
+   "prob": 56.6,
+   "home_prob": 56.6,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.005,
+    "starters": 0.121
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-05T13:27:28Z",
+   "ml": {
+    "team": "CLE",
+    "side": "home",
+    "price": -157,
+    "prob": 56.6,
+    "book_prob": 58.4,
+    "edge": -1.8,
+    "value": false,
+    "home_ml": -157,
+    "away_ml": 130,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-05",
+   "game_id": "849839",
+   "start": "2026-10-05T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "NYY",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "New York Yankees",
+   "home_id": 139,
+   "away_id": 147,
+   "home_record": "98-64",
+   "away_record": "93-68",
+   "home_sp": {
+    "id": 642547,
+    "name": "Freddy Peralta",
+    "era": 4.42,
+    "ip": 169.0
+   },
+   "away_sp": {
+    "id": 693645,
+    "name": "Cam Schlittler",
+    "era": 1.89,
+    "ip": 200.0
+   },
+   "pick": "NYY",
+   "prob": 54.2,
+   "home_prob": 45.8,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.068,
+    "starters": -0.241
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-05T13:27:28Z",
+   "ml": {
+    "team": "NYY",
+    "side": "away",
+    "price": -131,
+    "prob": 54.2,
+    "book_prob": 54.2,
+    "edge": -0.0,
+    "value": false,
+    "home_ml": 109,
+    "away_ml": -131,
     "book": "DraftKings",
     "won": null,
     "units": null
