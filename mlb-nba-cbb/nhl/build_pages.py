@@ -466,7 +466,7 @@ def build_summary(history, model):
     """summary.json for the NHL row on the home page (github.com/ant56-arch/ant56-arch.github.io)."""
     picks = history["picks"]
     summary = {"updated": NOW.isoformat(), "heading": None, "picks": [], "record": None,
-               "empty": "No NHL picks yet. They start on opening night, October 7.", "result_labels": ["WIN", "LOSS"],
+               "empty": "No NHL picks yet. They start on opening night.", "result_labels": ["WIN", "LOSS"],
                "retrained": model.get("trained_at"), "model_url": "model.html"}
     if picks:
         latest = max(p["date"] for p in picks)
