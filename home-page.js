@@ -53,13 +53,24 @@ function hgDays() {
   ];
 }
 
-async function hgLoadEspn(site) {
+// ESPN's default scoreboard keeps showing yesterday until late morning ET, so any
+// slate day it doesn't cover is fetched by date (dates=YYYYMMDD, an ET day).
+async function hgLoadEspn(site, summary) {
   if (!site.games) return [];
   const published = await edgeFetchJson(site.games);
   if (!published) return [];
-  const live = published.espn ? await edgeFetchJson(published.espn, 6000) : null;
-  if (live && Array.isArray(live.events)) return live.events.map(edgeParseEspn).filter(Boolean);
-  return published.games || [];
+  if (!published.espn) return published.games || [];
+  const parse = data => data && Array.isArray(data.events) ? data.events.map(edgeParseEspn).filter(Boolean) : null;
+  const live = parse(await edgeFetchJson(published.espn, 6000));
+  const events = live || [];
+  const ids = new Set(events.map(e => e.id));
+  const covered = new Set(events.map(e => new Date(e.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" })));
+  const days = [...new Set((summary && summary.slate || []).map(g => g.date).filter(Boolean))]
+    .filter(d => !covered.has(d)).slice(0, 4);
+  const sep = published.espn.includes("?") ? "&" : "?";
+  const extra = await Promise.all(days.map(d => edgeFetchJson(published.espn + sep + "dates=" + d.replace(/-/g, ""), 6000)));
+  extra.forEach(data => (parse(data) || []).forEach(e => { if (!ids.has(e.id)) { ids.add(e.id); events.push(e); } }));
+  return live || days.length ? events : published.games || [];
 }
 
 function hgMatch(g, espn) {
@@ -70,7 +81,8 @@ function hgMatch(g, espn) {
 }
 
 async function hgLoad() {
-  const [summaries, espn] = await Promise.all([edgeFetchSummaries(), Promise.all(EDGE_SITES.map(hgLoadEspn))]);
+  const summaries = await edgeFetchSummaries();
+  const espn = await Promise.all(EDGE_SITES.map((site, i) => hgLoadEspn(site, summaries[i])));
   hg.summaries = summaries;
   const games = [];
   EDGE_SITES.forEach((site, i) => {
