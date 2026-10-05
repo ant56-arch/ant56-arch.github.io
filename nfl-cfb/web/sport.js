@@ -90,6 +90,44 @@ function initHistoryPicker() {
 }
 initHistoryPicker();
 
+// --- Accuracy tab week filter: one week of moneyline and TD picks at a
+// time (newest by default), or every week, with that week's record. ---
+function initAccuracyWeeks() {
+  const picker = document.getElementById("acc-week-select");
+  if (!picker) return;
+  const rows = Array.from(document.querySelectorAll("tr[data-week]"));
+  const weeks = [...new Set(rows.map(r => r.dataset.week))];
+  [...weeks, "all"].forEach(wk => {
+    const opt = document.createElement("option");
+    opt.value = wk;
+    opt.textContent = wk === "all" ? "All weeks" : wk;
+    picker.appendChild(opt);
+  });
+  const summary = document.getElementById("acc-week-summary");
+  function record(kind, shown) {
+    const r = shown.filter(x => x.dataset.kind === kind);
+    if (!r.length) return "";
+    const w = r.filter(x => x.dataset.res === "W").length;
+    const l = r.filter(x => x.dataset.res === "L").length;
+    const p = r.length - w - l;
+    return `${w}-${l}${p ? "-" + p : ""}`;
+  }
+  function show(wk) {
+    const shown = rows.filter(r => wk === "all" || r.dataset.week === wk);
+    rows.forEach(r => { r.hidden = !shown.includes(r); });
+    // A table with nothing from that week (no TD picks before they started) hides too.
+    new Set(rows.map(r => r.closest("table"))).forEach(t => {
+      t.hidden = !t.querySelector("tr[data-week]:not([hidden])");
+    });
+    const ml = record("ml", shown), td = record("td", shown);
+    const parts = [ml && `Moneyline ${ml}`, td && `TD Value picks ${td}`].filter(Boolean);
+    summary.textContent = parts.length ? `${wk === "all" ? "All weeks" : wk}: ${parts.join(", ")}` : "No graded picks that week.";
+  }
+  picker.addEventListener("change", () => show(picker.value));
+  if (weeks.length) { picker.value = weeks[0]; show(weeks[0]); }
+}
+initAccuracyWeeks();
+
 // --- Season week picker (teams.html) - the current season, past + upcoming ---
 function initTeamsPicker() {
   if (typeof TEAMS_DATA === "undefined") return;

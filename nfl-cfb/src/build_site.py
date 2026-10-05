@@ -711,7 +711,7 @@ def build_td_record_card():
     rows = ""
     for _, r in picks.sort_values(["week", "our_prob"], ascending=[False, False]).iterrows():
         res = pill("SCORED", "positive") if r["result"] == "W" else pill("NO TD", "danger")
-        rows += f"""<tr>
+        rows += f"""<tr data-week="Week {int(r['week'])}" data-res="{r['result']}" data-kind="td">
           <td>Week {int(r['week'])}<div class="faint" style="font-size:13px;">{r['player_name']}, {r['team']} vs {r['opponent']}</div></td>
           <td data-label="Price" class="num">{moneyline.format_price(r['price'])}<div class="faint" style="font-size:13px;">ours {r['our_prob'] * 100:.0f}%, book {r['book_prob'] * 100:.0f}%</div></td>
           <td data-label="Result" class="num">{res}<div class="faint" style="font-size:13px;">{money(r['profit'])}</div></td>
@@ -1106,7 +1106,8 @@ def build_moneyline_card(sport, games, log):
         rows = ""
         for _, r in picks.iterrows():
             view = ml_view(sport, r)
-            rows += f"""<tr>
+            res = "P" if r.get("ml_push") == 1 else ("W" if r["ml_won"] == 1 else "L")
+            rows += f"""<tr data-week="{week_label(r["week"], r.get("game_type"))}" data-res="{res}" data-kind="ml">
           <td>{week_label(r["week"], r.get("game_type"))}<div class="faint" style="font-size:13px;">{team_short(sport, r["away_team"])} @ {team_short(sport, r["home_team"])}, final {int(r["away_score"])}-{int(r["home_score"])}</div></td>
           <td data-label="Pick" class="num ml-cell">{ml_cell_html(view)}</td>
         </tr>"""
@@ -1121,6 +1122,12 @@ def build_accuracy_page(sport, log, games=None):
     ml_card = build_moneyline_card(sport, games, log)
     if sport.get("player_props_csv"):
         ml_card += build_td_record_card()
+    if "data-week=" in ml_card:
+        # sport.js fills this with the weeks found in the pick tables and
+        # shows one week at a time (or all of them).
+        ml_card = ('<div class="acc-weeks"><label for="acc-week-select">Show picks from</label> '
+                   '<select id="acc-week-select" class="week-picker"></select>'
+                   '<div id="acc-week-summary" class="muted"></div></div>') + ml_card
     live_start = sport["live_tracking_start_season"]
     graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
     if not graded.empty:
