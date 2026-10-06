@@ -159,17 +159,6 @@ jobs:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: python src/cfb_ratings.py
 
-      # Trends tab: this season's stats against every season since 1989. Same
-      # runs as the ratings; about 1 new CFBD call (the AP poll), since the
-      # games, lines and FBS list are shared through fetch_cfb_data's cache.
-      - name: Update CFB trends
-        id: cfb_trends
-        if: github.event_name != 'schedule' || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5' || github.event.schedule == '5 3 * * 0'
-        continue-on-error: true
-        env:
-          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
-        run: python src/cfb_trends.py
-
       - name: Commit tracking data
         id: commit_tracking
         if: always() && steps.track_results.outcome == 'success'
