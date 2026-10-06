@@ -9,7 +9,8 @@ against history so the page can lead with whatever is most unusual.
 Data (CollegeFootballData.com): games, FBS membership by season, the AP
 poll (rank at kickoff), and the consensus Vegas line (2013 on). Finished
 seasons are cached in data/tracking/cfb_trends_history.csv so a normal run
-only pulls the current season (about 4 calls).
+only pulls the current season, and fetch_cfb_data's cache shares the games,
+lines and FBS list with the other CFB steps (about 1 new CFBD call a run).
 
 Usage:
   python src/cfb_trends.py            # refresh data/tracking/cfb_trends.json
@@ -38,31 +39,69 @@ COLS = ["id", "season", "week", "date", "neutral", "home_team", "away_team", "ho
 # ---------------------------------------------------------------- data
 
 def _poll_ranks(season):
-    """[(week, {team: rank})] for the AP poll, preseason first. CFBD labels
-    the poll released after week N's games as week N+1, so the poll with
-    week W is the one in force at kickoff of week W games."""
+    """[(week, {team: rank})] for the AP poll. CFBD labels the poll released
+    after week N's games as week N+1 (week 1 is the preseason poll), so the
+    poll with week W is the one in force at kickoff of week W games. Checked
+    against the published record: 70-6 in 2026 and 85-6 in 2006 through the
+    first weekend of October."""
     out = []
-    for season_type in ("preseason", "regular"):
-        try:
-            rows = _get("/rankings", {"year": season, "seasonType": season_type})
-        except Exception as e:  # noqa: BLE001
-            print(f"  No {season_type} rankings {season}: {e}")
-            continue
-        for wk in rows:
-            for poll in wk.get("polls") or []:
-                if poll.get("poll") == "AP Top 25":
-                    ranks = {(r.get("school") or r.get("team")): r.get("rank") for r in poll.get("ranks") or []}
-                    out.append((0 if season_type == "preseason" else int(wk.get("week") or 0), ranks))
+    try:
+        rows = _get("/rankings", {"year": season, "seasonType": "regular"})
+    except Exception as e:  # noqa: BLE001
+        print(f"  No rankings {season}: {e}")
+        rows = []
+    for wk in rows:
+        for poll in wk.get("polls") or []:
+            if poll.get("poll") == "AP Top 25":
+                ranks = {(r.get("school") or r.get("team")): r.get("rank") for r in poll.get("ranks") or []}
+                out.append((int(wk.get("week") or 0), ranks))
     return sorted(out, key=lambda x: x[0])
 
 
-def _rank_at_kickoff(polls, week):
+# Seasons where CFBD labels each AP poll one week later than usual (the
+# poll after week N's games carries week N), found because the usual
+# mapping gave 1990 a 4.8% and 1998 a 1.3% upset rate: post-game polls drop
+# the ranked losers. Their ranks are rebuilt with a one-week shift once.
+POLL_SHIFTED = {1990: 1, 1998: 1}
+FIXED_PATH = os.path.join(TRACKING_DIR, "cfb_trends_poll_fixes.json")
+
+
+def _rank_at_kickoff(polls, week, shift=0):
     """Most recent AP poll labeled at or before this game's week."""
     ranks = {}
     for w, r in polls:
-        if w <= week:
+        if w <= week - shift:
             ranks = r
     return ranks
+
+
+def fix_shifted_polls(hist):
+    """Re-ranks the POLL_SHIFTED seasons (2 CFBD calls, once). Until that
+    works, their rank-based stats are left out."""
+    done = set(json.load(open(FIXED_PATH))) if os.path.exists(FIXED_PATH) else set()
+    bad = set()
+    for season, shift in POLL_SHIFTED.items():
+        if season in done or season not in set(hist["season"]):
+            continue
+        try:
+            polls = _poll_ranks(season)
+        except Exception as e:  # noqa: BLE001
+            polls = []
+            print(f"  Can't re-rank {season} yet: {e}")
+        if not polls:
+            bad.add(season)
+            continue
+        rows = hist["season"] == season
+        for i in hist.index[rows]:
+            ranks = _rank_at_kickoff(polls, int(hist.at[i, "week"]), shift)
+            hist.at[i, "home_rank"] = ranks.get(hist.at[i, "home_team"])
+            hist.at[i, "away_rank"] = ranks.get(hist.at[i, "away_team"])
+        done.add(season)
+        hist.to_csv(HISTORY_PATH, index=False)
+        with open(FIXED_PATH, "w") as f:
+            json.dump(sorted(done), f)
+        print(f"  Re-ranked {season} with the poll one week earlier")
+    return bad
 
 
 def fetch_season(season):
@@ -85,7 +124,7 @@ def fetch_season(season):
             print(f"  No lines {season}: {e}")
     rows = []
     for g in games.to_dict("records"):
-        ranks = _rank_at_kickoff(polls, int(g.get("week") or 0))
+        ranks = _rank_at_kickoff(polls, int(g.get("week") or 0), POLL_SHIFTED.get(season, 0))
         spread, total = lines.get(g["id"], (None, None))
         start = pd.to_datetime(g.get("startDate"), utc=True, errors="coerce")
         # US kickoff date: late kickoffs are already the next day in UTC
@@ -109,8 +148,16 @@ def load_games(season_now):
         fresh = [fetch_season(y) for y in missing]
         hist = pd.concat([hist] + fresh, ignore_index=True).sort_values(["season", "date", "id"])
         hist.to_csv(HISTORY_PATH, index=False)
+        if any(y in POLL_SHIFTED for y in missing):
+            with open(FIXED_PATH, "w") as f:
+                json.dump(sorted(set(POLL_SHIFTED) & (set(missing) | _fixed())), f)
+    bad = fix_shifted_polls(hist)
     cur = fetch_season(season_now)
-    return pd.concat([hist, cur], ignore_index=True)
+    return pd.concat([hist, cur], ignore_index=True), bad
+
+
+def _fixed():
+    return set(json.load(open(FIXED_PATH))) if os.path.exists(FIXED_PATH) else set()
 
 
 # ---------------------------------------------------------------- the cutoff
@@ -234,10 +281,11 @@ def describe(key, cur, hist, label, first):
     beat = sorted(((s, v) for s, v in vals.items() if (v > cur["value"] if side == "highest" else v < cur["value"])),
                   key=lambda x: -x[1] if side == "highest" else x[1])
     avg = float(np.mean(list(vals.values())))
-    # extremeness 0..1: 1 = a record
-    score = 1 - (rank - 1) / (n - 1)
+    # how unusual: share of seasons at least this extreme (a record over 38
+    # seasons beats a record over 14)
+    score = 1 - rank / n
     return {"rank": rank, "side": side, "seasons": n, "since": min(seasons), "avg": avg, "score": score,
-            "beaten_by": [{"season": s, "value": v, "record": hist[s].get("record")} for s, v in beat[:3]],
+            "beaten_by": [{"season": s, "value": v, "record": hist[s].get("record")} for s, v in beat[:4]],
             "label": label}
 
 
@@ -259,7 +307,11 @@ def run():
         print("CFBD_API_KEY not set - skipping CFB trends.")
         return
     season = current_cfb_season()
-    games = load_games(season)
+    try:
+        games, unranked_seasons = load_games(season)
+    except Exception as e:  # noqa: BLE001 - keep the last trends file
+        print(f"  Couldn't load games, keeping the last trends: {e}")
+        return
     games["date"] = pd.to_datetime(games["date"]).dt.date
     cur = games[games["season"] == season]
     if cur.empty:
@@ -273,6 +325,9 @@ def run():
     for y, g in games.groupby("season"):
         cut = cutoff_for(int(y), anchor)
         stats, ups = season_stats(g[g["date"] <= cut])
+        if y in unranked_seasons:
+            for key in ("upset_rate", "top10_loss", "rvr_upset"):
+                stats.pop(key, None)
         per_season[int(y)] = stats
         if y == season:
             upsets = ups

@@ -61,7 +61,7 @@ svg.trend-bars text.strong { font-weight: 700; fill: var(--text); }
 .trend-note { font-size: 13px; margin: 4px 4px 0; }
 @media (max-width: 560px) {
   .trend-lead { font-size: 16px; }
-  svg.trend-bars text { font-size: 34px; }
+  svg.trend-bars text { font-size: 40px; }
   .upsets { grid-template-columns: repeat(2, 1fr); }
   .trend-grid { grid-template-columns: 1fr; }
 }

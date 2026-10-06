@@ -3,14 +3,11 @@ name: CFB Ratings Backtest
 # Scores the CFB power-rating settings on past seasons (src/cfb_ratings_lab.py):
 # before each week, fit on the games before it, predict that week. Then does a
 # dry run of src/cfb_ratings.py to show today's top teams. Only prints results;
-# nothing is committed. Runs by hand, or when a work branch changes the
-# ratings code.
+# nothing is committed. Runs by hand only.
 
+# By hand only: a run costs dozens of CFBD calls against the monthly quota.
 on:
   workflow_dispatch:
-  push:
-    branches: ["claude/**"]
-    paths: ["nfl-cfb/src/cfb_ratings.py", "nfl-cfb/src/cfb_ratings_lab.py"]
 
 defaults:
   run:

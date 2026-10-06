@@ -1449,7 +1449,7 @@ def trend_sentence(s, season):
         text += (f' That {trend_value(s)} {what} is the {NTH[s["rank"]]}{s["side"]} at this point of a season '
                  f'since {since}.')
         beat = s.get("beaten_by") or []
-        if beat:
+        if beat and len(beat) == s["rank"] - 1 <= 3:
             names = [f'{b["season"]} ({b["record"] or trend_value(s, b["value"])})' for b in beat]
             joined = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
             more = "higher" if s["side"] == "highest" else "lower"
@@ -1480,16 +1480,21 @@ def trend_bars(s, season, tall=False):
         bh = max(2, (h - top_pad - bottom) * x["value"] / vmax)
         xx = i * (bw + gap)
         y = h - bottom - bh
-        cls = "tb-now" if x["season"] == season else ("tb-rec" if x["season"] == extreme["season"] else "tb")
+        crowded = min(abs(extreme["season"] - season), abs(extreme["season"] - hist[0]["season"])) <= 2
+        cls = ("tb-now" if x["season"] == season
+               else "tb-rec" if x["season"] == extreme["season"] and not crowded else "tb")
         tip = f'{x["season"]}: {trend_value(s, x["value"])}' + (f' ({x["record"]})' if x.get("record") else "")
         bars.append(f'<rect class="{cls}" x="{xx:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="2"><title>{tip}</title></rect>')
+        # end labels hug the chart's edges so they aren't cut off
+        anchor, tx = (("end", xx + bw) if i == n - 1 else ("start", xx) if i == 0 else ("middle", xx + bw / 2))
         if cls != "tb":
-            labels.append(f'<text class="tb-val {cls}" x="{xx + bw / 2:.1f}" y="{y - 6:.1f}" text-anchor="middle">{trend_value(s, x["value"])}</text>')
-        if x["season"] % 10 == 0 or x["season"] in (hist[0]["season"], season) or cls == "tb-rec":
-            if x["season"] == season - 1:
-                continue
-            yr = str(x["season"]) if x["season"] in (season, extreme["season"]) else f"'{str(x['season'])[2:]}"
-            labels.append(f'<text class="tb-year{" strong" if cls != "tb" else ""}" x="{xx + bw / 2:.1f}" y="{h - 6}" text-anchor="middle">{yr}</text>')
+            labels.append(f'<text class="tb-val {cls}" x="{tx:.1f}" y="{y - 6:.1f}" text-anchor="{anchor}">{trend_value(s, x["value"])}</text>')
+        first, rec = hist[0]["season"], (season if crowded else extreme["season"])
+        named = x["season"] in (first, season, rec)
+        decade = (x["season"] % 10 == 0 and all(abs(x["season"] - k) > 3 for k in (first, season, rec)))
+        if named or decade:
+            yr = str(x["season"]) if x["season"] != first or x["season"] == rec else f"'{str(x['season'])[2:]}"
+            labels.append(f'<text class="tb-year{" strong" if cls != "tb" else ""}" x="{tx:.1f}" y="{h - 6}" text-anchor="{anchor}">{yr}</text>')
     return (f'<svg class="trend-bars{" tall" if tall else ""}" viewBox="0 0 {w} {h}" role="img" '
             f'aria-label="{escape(s["title"])} at this point of every season since {hist[0]["season"]}">'
             f'<line class="tb-axis" x1="0" x2="{w}" y1="{h - bottom}" y2="{h - bottom}"/>{"".join(bars)}{"".join(labels)}</svg>')
