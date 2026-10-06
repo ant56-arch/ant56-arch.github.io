@@ -1,0 +1,1850 @@
+{
+ "updated": "2026-10-06T16:04:08+00:00",
+ "season": 2026,
+ "through": "2026-10-03",
+ "label": "first weekend of October",
+ "first_season": 1989,
+ "stats": [
+  {
+   "key": "fav_win",
+   "title": "Vegas favorites",
+   "kind": "pct",
+   "noun": "favorite wins",
+   "value": 0.8155,
+   "n": 271,
+   "record": "221-50",
+   "hits": 221,
+   "rank": 1,
+   "side": "highest",
+   "seasons": 14,
+   "since": 2013,
+   "avg": 0.7607,
+   "score": 1.0,
+   "beaten_by": [],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 2013,
+     "value": 0.7899,
+     "record": "218-58"
+    },
+    {
+     "season": 2014,
+     "value": 0.7474,
+     "record": "216-73"
+    },
+    {
+     "season": 2015,
+     "value": 0.7976,
+     "record": "201-51"
+    },
+    {
+     "season": 2016,
+     "value": 0.8063,
+     "record": "204-49"
+    },
+    {
+     "season": 2017,
+     "value": 0.7961,
+     "record": "242-62"
+    },
+    {
+     "season": 2018,
+     "value": 0.7346,
+     "record": "227-82"
+    },
+    {
+     "season": 2019,
+     "value": 0.7762,
+     "record": "222-64"
+    },
+    {
+     "season": 2020,
+     "value": 0.6966,
+     "record": "62-27"
+    },
+    {
+     "season": 2021,
+     "value": 0.7218,
+     "record": "192-74"
+    },
+    {
+     "season": 2022,
+     "value": 0.7566,
+     "record": "202-65"
+    },
+    {
+     "season": 2023,
+     "value": 0.7806,
+     "record": "249-70"
+    },
+    {
+     "season": 2024,
+     "value": 0.722,
+     "record": "213-82"
+    },
+    {
+     "season": 2025,
+     "value": 0.7635,
+     "record": "226-70"
+    }
+   ]
+  },
+  {
+   "key": "rvr_upset",
+   "title": "Ranked vs ranked",
+   "kind": "pct",
+   "noun": "upsets",
+   "value": 0.5,
+   "n": 14,
+   "record": "7-7",
+   "hits": 7,
+   "rank": 3,
+   "side": "highest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.3505,
+   "score": 0.9459,
+   "beaten_by": [
+    {
+     "season": 2025,
+     "value": 0.7059,
+     "record": "5-12"
+    },
+    {
+     "season": 1996,
+     "value": 0.6923,
+     "record": "4-9"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.3846,
+     "record": "8-5"
+    },
+    {
+     "season": 1990,
+     "value": 0.0833,
+     "record": "11-1"
+    },
+    {
+     "season": 1991,
+     "value": 0.1,
+     "record": "18-2"
+    },
+    {
+     "season": 1992,
+     "value": 0.4,
+     "record": "9-6"
+    },
+    {
+     "season": 1993,
+     "value": 0.4286,
+     "record": "8-6"
+    },
+    {
+     "season": 1994,
+     "value": 0.4118,
+     "record": "10-7"
+    },
+    {
+     "season": 1995,
+     "value": 0.35,
+     "record": "13-7"
+    },
+    {
+     "season": 1996,
+     "value": 0.6923,
+     "record": "4-9"
+    },
+    {
+     "season": 1997,
+     "value": 0.3333,
+     "record": "10-5"
+    },
+    {
+     "season": 1998,
+     "value": 0.0714,
+     "record": "13-1"
+    },
+    {
+     "season": 1999,
+     "value": 0.3333,
+     "record": "10-5"
+    },
+    {
+     "season": 2000,
+     "value": 0.4444,
+     "record": "10-8"
+    },
+    {
+     "season": 2001,
+     "value": 0.125,
+     "record": "14-2"
+    },
+    {
+     "season": 2002,
+     "value": 0.4,
+     "record": "9-6"
+    },
+    {
+     "season": 2003,
+     "value": 0.4615,
+     "record": "7-6"
+    },
+    {
+     "season": 2004,
+     "value": 0.5,
+     "record": "3-3"
+    },
+    {
+     "season": 2005,
+     "value": 0.3333,
+     "record": "10-5"
+    },
+    {
+     "season": 2006,
+     "value": 0.3158,
+     "record": "13-6"
+    },
+    {
+     "season": 2007,
+     "value": 0.2353,
+     "record": "13-4"
+    },
+    {
+     "season": 2008,
+     "value": 0.3077,
+     "record": "9-4"
+    },
+    {
+     "season": 2009,
+     "value": 0.3636,
+     "record": "7-4"
+    },
+    {
+     "season": 2010,
+     "value": 0.2941,
+     "record": "12-5"
+    },
+    {
+     "season": 2011,
+     "value": 0.3077,
+     "record": "9-4"
+    },
+    {
+     "season": 2012,
+     "value": 0.3125,
+     "record": "11-5"
+    },
+    {
+     "season": 2013,
+     "value": 0.2857,
+     "record": "10-4"
+    },
+    {
+     "season": 2014,
+     "value": 0.4,
+     "record": "9-6"
+    },
+    {
+     "season": 2015,
+     "value": 0.3333,
+     "record": "10-5"
+    },
+    {
+     "season": 2016,
+     "value": 0.375,
+     "record": "10-6"
+    },
+    {
+     "season": 2017,
+     "value": 0.3125,
+     "record": "11-5"
+    },
+    {
+     "season": 2018,
+     "value": 0.4211,
+     "record": "11-8"
+    },
+    {
+     "season": 2019,
+     "value": 0.3636,
+     "record": "7-4"
+    },
+    {
+     "season": 2020,
+     "value": 0.0,
+     "record": "6-0"
+    },
+    {
+     "season": 2021,
+     "value": 0.4375,
+     "record": "9-7"
+    },
+    {
+     "season": 2022,
+     "value": 0.4375,
+     "record": "9-7"
+    },
+    {
+     "season": 2023,
+     "value": 0.4706,
+     "record": "9-8"
+    },
+    {
+     "season": 2024,
+     "value": 0.4375,
+     "record": "9-7"
+    },
+    {
+     "season": 2025,
+     "value": 0.7059,
+     "record": "5-12"
+    }
+   ]
+  },
+  {
+   "key": "dog_10",
+   "title": "Double-digit underdogs",
+   "kind": "pct",
+   "noun": "outright upsets",
+   "value": 0.0725,
+   "n": 138,
+   "hits": 10,
+   "record": "10-128",
+   "rank": 2,
+   "side": "lowest",
+   "seasons": 14,
+   "since": 2013,
+   "avg": 0.1212,
+   "score": 0.9231,
+   "beaten_by": [
+    {
+     "season": 2013,
+     "value": 0.0671,
+     "record": "10-139"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 2013,
+     "value": 0.0671,
+     "record": "10-139"
+    },
+    {
+     "season": 2014,
+     "value": 0.119,
+     "record": "20-148"
+    },
+    {
+     "season": 2015,
+     "value": 0.1119,
+     "record": "15-119"
+    },
+    {
+     "season": 2016,
+     "value": 0.126,
+     "record": "16-111"
+    },
+    {
+     "season": 2017,
+     "value": 0.0904,
+     "record": "15-151"
+    },
+    {
+     "season": 2018,
+     "value": 0.1313,
+     "record": "21-139"
+    },
+    {
+     "season": 2019,
+     "value": 0.0921,
+     "record": "14-138"
+    },
+    {
+     "season": 2020,
+     "value": 0.2157,
+     "record": "11-40"
+    },
+    {
+     "season": 2021,
+     "value": 0.1286,
+     "record": "18-122"
+    },
+    {
+     "season": 2022,
+     "value": 0.1633,
+     "record": "24-123"
+    },
+    {
+     "season": 2023,
+     "value": 0.0943,
+     "record": "15-144"
+    },
+    {
+     "season": 2024,
+     "value": 0.1192,
+     "record": "18-133"
+    },
+    {
+     "season": 2025,
+     "value": 0.1164,
+     "record": "17-129"
+    }
+   ]
+  },
+  {
+   "key": "upset_rate",
+   "title": "Ranked vs unranked",
+   "kind": "pct",
+   "noun": "upsets",
+   "value": 0.0789,
+   "n": 76,
+   "record": "70-6",
+   "hits": 6,
+   "rank": 4,
+   "side": "lowest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.1568,
+   "score": 0.9189,
+   "beaten_by": [
+    {
+     "season": 1998,
+     "value": 0.0127,
+     "record": "78-1"
+    },
+    {
+     "season": 1990,
+     "value": 0.0482,
+     "record": "79-4"
+    },
+    {
+     "season": 2006,
+     "value": 0.0659,
+     "record": "85-6"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.1889,
+     "record": "73-17"
+    },
+    {
+     "season": 1990,
+     "value": 0.0482,
+     "record": "79-4"
+    },
+    {
+     "season": 1991,
+     "value": 0.1765,
+     "record": "56-12"
+    },
+    {
+     "season": 1992,
+     "value": 0.137,
+     "record": "63-10"
+    },
+    {
+     "season": 1993,
+     "value": 0.1084,
+     "record": "74-9"
+    },
+    {
+     "season": 1994,
+     "value": 0.1304,
+     "record": "60-9"
+    },
+    {
+     "season": 1995,
+     "value": 0.2184,
+     "record": "68-19"
+    },
+    {
+     "season": 1996,
+     "value": 0.1279,
+     "record": "75-11"
+    },
+    {
+     "season": 1997,
+     "value": 0.1429,
+     "record": "72-12"
+    },
+    {
+     "season": 1998,
+     "value": 0.0127,
+     "record": "78-1"
+    },
+    {
+     "season": 1999,
+     "value": 0.2381,
+     "record": "64-20"
+    },
+    {
+     "season": 2000,
+     "value": 0.1856,
+     "record": "79-18"
+    },
+    {
+     "season": 2001,
+     "value": 0.1169,
+     "record": "68-9"
+    },
+    {
+     "season": 2002,
+     "value": 0.1684,
+     "record": "79-16"
+    },
+    {
+     "season": 2003,
+     "value": 0.2143,
+     "record": "77-21"
+    },
+    {
+     "season": 2004,
+     "value": 0.1011,
+     "record": "80-9"
+    },
+    {
+     "season": 2005,
+     "value": 0.2222,
+     "record": "56-16"
+    },
+    {
+     "season": 2006,
+     "value": 0.0659,
+     "record": "85-6"
+    },
+    {
+     "season": 2007,
+     "value": 0.2258,
+     "record": "72-21"
+    },
+    {
+     "season": 2008,
+     "value": 0.2184,
+     "record": "68-19"
+    },
+    {
+     "season": 2009,
+     "value": 0.1728,
+     "record": "67-14"
+    },
+    {
+     "season": 2010,
+     "value": 0.087,
+     "record": "63-6"
+    },
+    {
+     "season": 2011,
+     "value": 0.1667,
+     "record": "65-13"
+    },
+    {
+     "season": 2012,
+     "value": 0.1364,
+     "record": "76-12"
+    },
+    {
+     "season": 2013,
+     "value": 0.1034,
+     "record": "78-9"
+    },
+    {
+     "season": 2014,
+     "value": 0.1463,
+     "record": "70-12"
+    },
+    {
+     "season": 2015,
+     "value": 0.1282,
+     "record": "68-10"
+    },
+    {
+     "season": 2016,
+     "value": 0.1972,
+     "record": "57-14"
+    },
+    {
+     "season": 2017,
+     "value": 0.1277,
+     "record": "82-12"
+    },
+    {
+     "season": 2018,
+     "value": 0.1978,
+     "record": "73-18"
+    },
+    {
+     "season": 2019,
+     "value": 0.1753,
+     "record": "80-17"
+    },
+    {
+     "season": 2020,
+     "value": 0.2564,
+     "record": "29-10"
+    },
+    {
+     "season": 2021,
+     "value": 0.2237,
+     "record": "59-17"
+    },
+    {
+     "season": 2022,
+     "value": 0.1818,
+     "record": "63-14"
+    },
+    {
+     "season": 2023,
+     "value": 0.1111,
+     "record": "80-10"
+    },
+    {
+     "season": 2024,
+     "value": 0.1882,
+     "record": "69-16"
+    },
+    {
+     "season": 2025,
+     "value": 0.1538,
+     "record": "66-12"
+    }
+   ]
+  },
+  {
+   "key": "home_win",
+   "title": "Home field",
+   "kind": "pct",
+   "noun": "home wins",
+   "value": 0.6528,
+   "n": 265,
+   "record": "173-92",
+   "hits": 173,
+   "rank": 5,
+   "side": "highest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.6224,
+   "score": 0.8919,
+   "beaten_by": [
+    {
+     "season": 2004,
+     "value": 0.6888,
+     "record": "166-75"
+    },
+    {
+     "season": 2000,
+     "value": 0.6804,
+     "record": "198-93"
+    },
+    {
+     "season": 1991,
+     "value": 0.6594,
+     "record": "151-78"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.6461,
+     "record": "157-86"
+    },
+    {
+     "season": 1990,
+     "value": 0.6314,
+     "record": "149-87"
+    },
+    {
+     "season": 1991,
+     "value": 0.6594,
+     "record": "151-78"
+    },
+    {
+     "season": 1992,
+     "value": 0.6498,
+     "record": "141-76"
+    },
+    {
+     "season": 1993,
+     "value": 0.6438,
+     "record": "141-78"
+    },
+    {
+     "season": 1994,
+     "value": 0.6027,
+     "record": "135-89"
+    },
+    {
+     "season": 1995,
+     "value": 0.6122,
+     "record": "161-102"
+    },
+    {
+     "season": 1996,
+     "value": 0.6468,
+     "record": "163-89"
+    },
+    {
+     "season": 1997,
+     "value": 0.65,
+     "record": "169-91"
+    },
+    {
+     "season": 1998,
+     "value": 0.6398,
+     "record": "151-85"
+    },
+    {
+     "season": 1999,
+     "value": 0.6527,
+     "record": "156-83"
+    },
+    {
+     "season": 2000,
+     "value": 0.6804,
+     "record": "198-93"
+    },
+    {
+     "season": 2001,
+     "value": 0.592,
+     "record": "148-102"
+    },
+    {
+     "season": 2002,
+     "value": 0.6585,
+     "record": "187-97"
+    },
+    {
+     "season": 2003,
+     "value": 0.6304,
+     "record": "174-102"
+    },
+    {
+     "season": 2004,
+     "value": 0.6888,
+     "record": "166-75"
+    },
+    {
+     "season": 2005,
+     "value": 0.625,
+     "record": "145-87"
+    },
+    {
+     "season": 2006,
+     "value": 0.6275,
+     "record": "187-111"
+    },
+    {
+     "season": 2007,
+     "value": 0.6358,
+     "record": "192-110"
+    },
+    {
+     "season": 2008,
+     "value": 0.5821,
+     "record": "156-112"
+    },
+    {
+     "season": 2009,
+     "value": 0.6026,
+     "record": "141-93"
+    },
+    {
+     "season": 2010,
+     "value": 0.6205,
+     "record": "139-85"
+    },
+    {
+     "season": 2011,
+     "value": 0.615,
+     "record": "139-87"
+    },
+    {
+     "season": 2012,
+     "value": 0.6029,
+     "record": "167-110"
+    },
+    {
+     "season": 2013,
+     "value": 0.6217,
+     "record": "166-101"
+    },
+    {
+     "season": 2014,
+     "value": 0.5899,
+     "record": "164-114"
+    },
+    {
+     "season": 2015,
+     "value": 0.5779,
+     "record": "141-103"
+    },
+    {
+     "season": 2016,
+     "value": 0.625,
+     "record": "150-90"
+    },
+    {
+     "season": 2017,
+     "value": 0.5556,
+     "record": "165-132"
+    },
+    {
+     "season": 2018,
+     "value": 0.604,
+     "record": "180-118"
+    },
+    {
+     "season": 2019,
+     "value": 0.6159,
+     "record": "170-106"
+    },
+    {
+     "season": 2020,
+     "value": 0.5056,
+     "record": "45-44"
+    },
+    {
+     "season": 2021,
+     "value": 0.6172,
+     "record": "158-98"
+    },
+    {
+     "season": 2022,
+     "value": 0.65,
+     "record": "169-91"
+    },
+    {
+     "season": 2023,
+     "value": 0.6206,
+     "record": "193-118"
+    },
+    {
+     "season": 2024,
+     "value": 0.605,
+     "record": "170-111"
+    },
+    {
+     "season": 2025,
+     "value": 0.6436,
+     "record": "186-103"
+    }
+   ]
+  },
+  {
+   "key": "overs",
+   "title": "Over/under",
+   "kind": "pct",
+   "noun": "overs",
+   "value": 0.5222,
+   "n": 270,
+   "record": "141-129",
+   "hits": 141,
+   "rank": 2,
+   "side": "highest",
+   "seasons": 10,
+   "since": 2017,
+   "avg": 0.4818,
+   "score": 0.8889,
+   "beaten_by": [
+    {
+     "season": 2018,
+     "value": 0.5229,
+     "record": "160-146"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 2017,
+     "value": 0.4371,
+     "record": "132-170"
+    },
+    {
+     "season": 2018,
+     "value": 0.5229,
+     "record": "160-146"
+    },
+    {
+     "season": 2019,
+     "value": 0.4648,
+     "record": "132-152"
+    },
+    {
+     "season": 2020,
+     "value": 0.4943,
+     "record": "43-44"
+    },
+    {
+     "season": 2021,
+     "value": 0.4389,
+     "record": "115-147"
+    },
+    {
+     "season": 2022,
+     "value": 0.4943,
+     "record": "129-132"
+    },
+    {
+     "season": 2023,
+     "value": 0.5113,
+     "record": "158-151"
+    },
+    {
+     "season": 2024,
+     "value": 0.4898,
+     "record": "144-150"
+    },
+    {
+     "season": 2025,
+     "value": 0.483,
+     "record": "142-152"
+    }
+   ]
+  },
+  {
+   "key": "blowouts",
+   "title": "Blowouts",
+   "kind": "pct",
+   "noun": "blowouts",
+   "value": 0.2657,
+   "n": 271,
+   "hits": 72,
+   "rank": 9,
+   "side": "highest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.2373,
+   "score": 0.7838,
+   "beaten_by": [
+    {
+     "season": 1996,
+     "value": 0.2857,
+     "record": null
+    },
+    {
+     "season": 2004,
+     "value": 0.2816,
+     "record": null
+    },
+    {
+     "season": 1998,
+     "value": 0.2754,
+     "record": null
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.2311,
+     "record": null
+    },
+    {
+     "season": 1990,
+     "value": 0.2245,
+     "record": null
+    },
+    {
+     "season": 1991,
+     "value": 0.2051,
+     "record": null
+    },
+    {
+     "season": 1992,
+     "value": 0.1794,
+     "record": null
+    },
+    {
+     "season": 1993,
+     "value": 0.2489,
+     "record": null
+    },
+    {
+     "season": 1994,
+     "value": 0.2301,
+     "record": null
+    },
+    {
+     "season": 1995,
+     "value": 0.2276,
+     "record": null
+    },
+    {
+     "season": 1996,
+     "value": 0.2857,
+     "record": null
+    },
+    {
+     "season": 1997,
+     "value": 0.2577,
+     "record": null
+    },
+    {
+     "season": 1998,
+     "value": 0.2754,
+     "record": null
+    },
+    {
+     "season": 1999,
+     "value": 0.272,
+     "record": null
+    },
+    {
+     "season": 2000,
+     "value": 0.2749,
+     "record": null
+    },
+    {
+     "season": 2001,
+     "value": 0.236,
+     "record": null
+    },
+    {
+     "season": 2002,
+     "value": 0.2535,
+     "record": null
+    },
+    {
+     "season": 2003,
+     "value": 0.2319,
+     "record": null
+    },
+    {
+     "season": 2004,
+     "value": 0.2816,
+     "record": null
+    },
+    {
+     "season": 2005,
+     "value": 0.2672,
+     "record": null
+    },
+    {
+     "season": 2006,
+     "value": 0.2349,
+     "record": null
+    },
+    {
+     "season": 2007,
+     "value": 0.2185,
+     "record": null
+    },
+    {
+     "season": 2008,
+     "value": 0.2674,
+     "record": null
+    },
+    {
+     "season": 2009,
+     "value": 0.1597,
+     "record": null
+    },
+    {
+     "season": 2010,
+     "value": 0.2085,
+     "record": null
+    },
+    {
+     "season": 2011,
+     "value": 0.2189,
+     "record": null
+    },
+    {
+     "season": 2012,
+     "value": 0.216,
+     "record": null
+    },
+    {
+     "season": 2013,
+     "value": 0.2717,
+     "record": null
+    },
+    {
+     "season": 2014,
+     "value": 0.2388,
+     "record": null
+    },
+    {
+     "season": 2015,
+     "value": 0.2302,
+     "record": null
+    },
+    {
+     "season": 2016,
+     "value": 0.253,
+     "record": null
+    },
+    {
+     "season": 2017,
+     "value": 0.2573,
+     "record": null
+    },
+    {
+     "season": 2018,
+     "value": 0.2524,
+     "record": null
+    },
+    {
+     "season": 2019,
+     "value": 0.2474,
+     "record": null
+    },
+    {
+     "season": 2020,
+     "value": 0.2135,
+     "record": null
+    },
+    {
+     "season": 2021,
+     "value": 0.2368,
+     "record": null
+    },
+    {
+     "season": 2022,
+     "value": 0.2434,
+     "record": null
+    },
+    {
+     "season": 2023,
+     "value": 0.1838,
+     "record": null
+    },
+    {
+     "season": 2024,
+     "value": 0.2271,
+     "record": null
+    },
+    {
+     "season": 2025,
+     "value": 0.2196,
+     "record": null
+    }
+   ]
+  },
+  {
+   "key": "one_score",
+   "title": "Close games",
+   "kind": "pct",
+   "noun": "one-score games",
+   "value": 0.3469,
+   "n": 271,
+   "hits": 94,
+   "rank": 15,
+   "side": "highest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.3396,
+   "score": 0.6216,
+   "beaten_by": [
+    {
+     "season": 2011,
+     "value": 0.4034,
+     "record": null
+    },
+    {
+     "season": 2021,
+     "value": 0.4023,
+     "record": null
+    },
+    {
+     "season": 2020,
+     "value": 0.382,
+     "record": null
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.3705,
+     "record": null
+    },
+    {
+     "season": 1990,
+     "value": 0.3388,
+     "record": null
+    },
+    {
+     "season": 1991,
+     "value": 0.3376,
+     "record": null
+    },
+    {
+     "season": 1992,
+     "value": 0.3453,
+     "record": null
+    },
+    {
+     "season": 1993,
+     "value": 0.3122,
+     "record": null
+    },
+    {
+     "season": 1994,
+     "value": 0.3407,
+     "record": null
+    },
+    {
+     "season": 1995,
+     "value": 0.3358,
+     "record": null
+    },
+    {
+     "season": 1996,
+     "value": 0.3095,
+     "record": null
+    },
+    {
+     "season": 1997,
+     "value": 0.3269,
+     "record": null
+    },
+    {
+     "season": 1998,
+     "value": 0.2966,
+     "record": null
+    },
+    {
+     "season": 1999,
+     "value": 0.3013,
+     "record": null
+    },
+    {
+     "season": 2000,
+     "value": 0.3058,
+     "record": null
+    },
+    {
+     "season": 2001,
+     "value": 0.312,
+     "record": null
+    },
+    {
+     "season": 2002,
+     "value": 0.3239,
+     "record": null
+    },
+    {
+     "season": 2003,
+     "value": 0.3333,
+     "record": null
+    },
+    {
+     "season": 2004,
+     "value": 0.3102,
+     "record": null
+    },
+    {
+     "season": 2005,
+     "value": 0.3448,
+     "record": null
+    },
+    {
+     "season": 2006,
+     "value": 0.3591,
+     "record": null
+    },
+    {
+     "season": 2007,
+     "value": 0.3212,
+     "record": null
+    },
+    {
+     "season": 2008,
+     "value": 0.348,
+     "record": null
+    },
+    {
+     "season": 2009,
+     "value": 0.3697,
+     "record": null
+    },
+    {
+     "season": 2010,
+     "value": 0.3277,
+     "record": null
+    },
+    {
+     "season": 2011,
+     "value": 0.4034,
+     "record": null
+    },
+    {
+     "season": 2012,
+     "value": 0.3589,
+     "record": null
+    },
+    {
+     "season": 2013,
+     "value": 0.2826,
+     "record": null
+    },
+    {
+     "season": 2014,
+     "value": 0.346,
+     "record": null
+    },
+    {
+     "season": 2015,
+     "value": 0.3651,
+     "record": null
+    },
+    {
+     "season": 2016,
+     "value": 0.3518,
+     "record": null
+    },
+    {
+     "season": 2017,
+     "value": 0.329,
+     "record": null
+    },
+    {
+     "season": 2018,
+     "value": 0.3204,
+     "record": null
+    },
+    {
+     "season": 2019,
+     "value": 0.331,
+     "record": null
+    },
+    {
+     "season": 2020,
+     "value": 0.382,
+     "record": null
+    },
+    {
+     "season": 2021,
+     "value": 0.4023,
+     "record": null
+    },
+    {
+     "season": 2022,
+     "value": 0.3558,
+     "record": null
+    },
+    {
+     "season": 2023,
+     "value": 0.3583,
+     "record": null
+    },
+    {
+     "season": 2024,
+     "value": 0.3525,
+     "record": null
+    },
+    {
+     "season": 2025,
+     "value": 0.3547,
+     "record": null
+    }
+   ]
+  },
+  {
+   "key": "top10_loss",
+   "title": "AP top 10 vs unranked",
+   "kind": "pct",
+   "noun": "losses",
+   "value": 0.0606,
+   "n": 33,
+   "record": "31-2",
+   "hits": 2,
+   "rank": 16,
+   "side": "lowest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 0.0903,
+   "score": 0.5946,
+   "beaten_by": [
+    {
+     "season": 1992,
+     "value": 0.0,
+     "record": "31-0"
+    },
+    {
+     "season": 1993,
+     "value": 0.0,
+     "record": "31-0"
+    },
+    {
+     "season": 1994,
+     "value": 0.0,
+     "record": "28-0"
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 0.1622,
+     "record": "31-6"
+    },
+    {
+     "season": 1990,
+     "value": 0.0294,
+     "record": "33-1"
+    },
+    {
+     "season": 1991,
+     "value": 0.087,
+     "record": "21-2"
+    },
+    {
+     "season": 1992,
+     "value": 0.0,
+     "record": "31-0"
+    },
+    {
+     "season": 1993,
+     "value": 0.0,
+     "record": "31-0"
+    },
+    {
+     "season": 1994,
+     "value": 0.0,
+     "record": "28-0"
+    },
+    {
+     "season": 1995,
+     "value": 0.1471,
+     "record": "29-5"
+    },
+    {
+     "season": 1996,
+     "value": 0.0,
+     "record": "29-0"
+    },
+    {
+     "season": 1997,
+     "value": 0.0,
+     "record": "31-0"
+    },
+    {
+     "season": 1998,
+     "value": 0.0,
+     "record": "29-0"
+    },
+    {
+     "season": 1999,
+     "value": 0.1,
+     "record": "27-3"
+    },
+    {
+     "season": 2000,
+     "value": 0.1951,
+     "record": "33-8"
+    },
+    {
+     "season": 2001,
+     "value": 0.1026,
+     "record": "35-4"
+    },
+    {
+     "season": 2002,
+     "value": 0.1,
+     "record": "36-4"
+    },
+    {
+     "season": 2003,
+     "value": 0.1351,
+     "record": "32-5"
+    },
+    {
+     "season": 2004,
+     "value": 0.0938,
+     "record": "29-3"
+    },
+    {
+     "season": 2005,
+     "value": 0.1481,
+     "record": "23-4"
+    },
+    {
+     "season": 2006,
+     "value": 0.05,
+     "record": "38-2"
+    },
+    {
+     "season": 2007,
+     "value": 0.1951,
+     "record": "33-8"
+    },
+    {
+     "season": 2008,
+     "value": 0.1515,
+     "record": "28-5"
+    },
+    {
+     "season": 2009,
+     "value": 0.1875,
+     "record": "26-6"
+    },
+    {
+     "season": 2010,
+     "value": 0.0345,
+     "record": "28-1"
+    },
+    {
+     "season": 2011,
+     "value": 0.0385,
+     "record": "25-1"
+    },
+    {
+     "season": 2012,
+     "value": 0.0938,
+     "record": "29-3"
+    },
+    {
+     "season": 2013,
+     "value": 0.0,
+     "record": "33-0"
+    },
+    {
+     "season": 2014,
+     "value": 0.1471,
+     "record": "29-5"
+    },
+    {
+     "season": 2015,
+     "value": 0.0625,
+     "record": "30-2"
+    },
+    {
+     "season": 2016,
+     "value": 0.0714,
+     "record": "26-2"
+    },
+    {
+     "season": 2017,
+     "value": 0.0465,
+     "record": "41-2"
+    },
+    {
+     "season": 2018,
+     "value": 0.05,
+     "record": "38-2"
+    },
+    {
+     "season": 2019,
+     "value": 0.0256,
+     "record": "38-1"
+    },
+    {
+     "season": 2020,
+     "value": 0.2308,
+     "record": "10-3"
+    },
+    {
+     "season": 2021,
+     "value": 0.1429,
+     "record": "24-4"
+    },
+    {
+     "season": 2022,
+     "value": 0.1333,
+     "record": "26-4"
+    },
+    {
+     "season": 2023,
+     "value": 0.0256,
+     "record": "38-1"
+    },
+    {
+     "season": 2024,
+     "value": 0.1951,
+     "record": "33-8"
+    },
+    {
+     "season": 2025,
+     "value": 0.16,
+     "record": "21-4"
+    }
+   ]
+  },
+  {
+   "key": "points",
+   "title": "Scoring",
+   "kind": "num",
+   "noun": "points",
+   "value": 26.2509,
+   "n": 271,
+   "rank": 19,
+   "side": "highest",
+   "seasons": 38,
+   "since": 1989,
+   "avg": 25.9777,
+   "score": 0.5135,
+   "beaten_by": [
+    {
+     "season": 2016,
+     "value": 29.1897,
+     "record": null
+    },
+    {
+     "season": 2018,
+     "value": 28.9644,
+     "record": null
+    },
+    {
+     "season": 2013,
+     "value": 28.5054,
+     "record": null
+    }
+   ],
+   "label": "first weekend of October",
+   "history": [
+    {
+     "season": 1989,
+     "value": 23.2749,
+     "record": null
+    },
+    {
+     "season": 1990,
+     "value": 23.3,
+     "record": null
+    },
+    {
+     "season": 1991,
+     "value": 22.7265,
+     "record": null
+    },
+    {
+     "season": 1992,
+     "value": 22.7152,
+     "record": null
+    },
+    {
+     "season": 1993,
+     "value": 24.0792,
+     "record": null
+    },
+    {
+     "season": 1994,
+     "value": 23.5243,
+     "record": null
+    },
+    {
+     "season": 1995,
+     "value": 24.7052,
+     "record": null
+    },
+    {
+     "season": 1996,
+     "value": 24.6052,
+     "record": null
+    },
+    {
+     "season": 1997,
+     "value": 24.925,
+     "record": null
+    },
+    {
+     "season": 1998,
+     "value": 25.3453,
+     "record": null
+    },
+    {
+     "season": 1999,
+     "value": 25.046,
+     "record": null
+    },
+    {
+     "season": 2000,
+     "value": 24.4519,
+     "record": null
+    },
+    {
+     "season": 2001,
+     "value": 24.662,
+     "record": null
+    },
+    {
+     "season": 2002,
+     "value": 26.8327,
+     "record": null
+    },
+    {
+     "season": 2003,
+     "value": 25.1087,
+     "record": null
+    },
+    {
+     "season": 2004,
+     "value": 25.3816,
+     "record": null
+    },
+    {
+     "season": 2005,
+     "value": 26.1013,
+     "record": null
+    },
+    {
+     "season": 2006,
+     "value": 23.1057,
+     "record": null
+    },
+    {
+     "season": 2007,
+     "value": 27.2914,
+     "record": null
+    },
+    {
+     "season": 2008,
+     "value": 25.8132,
+     "record": null
+    },
+    {
+     "season": 2009,
+     "value": 25.5084,
+     "record": null
+    },
+    {
+     "season": 2010,
+     "value": 26.3979,
+     "record": null
+    },
+    {
+     "season": 2011,
+     "value": 27.1223,
+     "record": null
+    },
+    {
+     "season": 2012,
+     "value": 27.8118,
+     "record": null
+    },
+    {
+     "season": 2013,
+     "value": 28.5054,
+     "record": null
+    },
+    {
+     "season": 2014,
+     "value": 28.3754,
+     "record": null
+    },
+    {
+     "season": 2015,
+     "value": 27.4623,
+     "record": null
+    },
+    {
+     "season": 2016,
+     "value": 29.1897,
+     "record": null
+    },
+    {
+     "season": 2017,
+     "value": 28.184,
+     "record": null
+    },
+    {
+     "season": 2018,
+     "value": 28.9644,
+     "record": null
+    },
+    {
+     "season": 2019,
+     "value": 27.8746,
+     "record": null
+    },
+    {
+     "season": 2020,
+     "value": 28.3371,
+     "record": null
+    },
+    {
+     "season": 2021,
+     "value": 26.9286,
+     "record": null
+    },
+    {
+     "season": 2022,
+     "value": 27.6816,
+     "record": null
+    },
+    {
+     "season": 2023,
+     "value": 26.9019,
+     "record": null
+    },
+    {
+     "season": 2024,
+     "value": 26.6746,
+     "record": null
+    },
+    {
+     "season": 2025,
+     "value": 26.2601,
+     "record": null
+    }
+   ]
+  }
+ ],
+ "upsets": [
+  {
+   "winner": "Oklahoma State",
+   "loser": "Oregon",
+   "winner_score": 39,
+   "loser_score": 31,
+   "loser_rank": 6,
+   "date": "2026-09-12",
+   "site": "at Oklahoma State"
+  },
+  {
+   "winner": "Michigan",
+   "loser": "Oklahoma",
+   "winner_score": 17,
+   "loser_score": 10,
+   "loser_rank": 11,
+   "date": "2026-09-12",
+   "site": "at Michigan"
+  },
+  {
+   "winner": "Kentucky",
+   "loser": "Texas A&M",
+   "winner_score": 31,
+   "loser_score": 21,
+   "loser_rank": 9,
+   "date": "2026-09-19",
+   "site": "at Texas A&M"
+  },
+  {
+   "winner": "West Virginia",
+   "loser": "Virginia",
+   "winner_score": 38,
+   "loser_score": 27,
+   "loser_rank": 25,
+   "date": "2026-09-19",
+   "site": "neutral site"
+  },
+  {
+   "winner": "Wake Forest",
+   "loser": "Louisville",
+   "winner_score": 30,
+   "loser_score": 27,
+   "loser_rank": 16,
+   "date": "2026-09-26",
+   "site": "at Louisville"
+  },
+  {
+   "winner": "Wisconsin",
+   "loser": "Penn State",
+   "winner_score": 24,
+   "loser_score": 20,
+   "loser_rank": 13,
+   "date": "2026-09-26",
+   "site": "at Penn State"
+  }
+ ]
+}
