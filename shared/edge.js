@@ -121,7 +121,8 @@ const EDGE_SETTINGS = [
   { k: "sound", label: "Sound", sub: "A short chime when a team scores", on: false },
   { k: "liveOnly", label: "Live games only", sub: "Hide games still to play and finals", on: false },
   { k: "picks", label: "Our picks", sub: "Show the model's pick next to each game", on: true },
-  { k: "myTeams", label: "My teams only", sub: "Teams you star on the home page", on: false },
+  { k: "myTeams", label: "My teams only", sub: "Only games with teams you pick below", on: false },
+  { button: "pickTeams", label: "Pick my teams" },
   { k: "speed", label: "Ticker speed", on: "normal", choices: [["slow", "Slow"], ["normal", "Normal"], ["fast", "Fast"]] },
   { group: "Sports in the ticker" },
   { k: "MLB", label: "MLB", on: true, sport: true },
@@ -283,8 +284,19 @@ function initSiteSettings() {
     }
     edgeRenderTicker();
   };
+  window.addEventListener("edge-favs-change", () => edgeRenderTicker());
   EDGE_SETTINGS.forEach(s => {
     if (s.group) { panel.append(edgeNode("div", "ticker-panel-sub", s.group)); return; }
+    if (s.button === "pickTeams") {
+      const b = edgeNode("button", "ticker-teams-btn");
+      b.type = "button";
+      const count = () => { const n = edgeFavs().size; b.textContent = n ? `★ ${s.label} (${n})` : `☆ ${s.label}`; };
+      count();
+      window.addEventListener("edge-favs-change", count);
+      b.addEventListener("click", () => { setOpen(false); edgeOpenTeamPicker(); });
+      panel.append(b);
+      return;
+    }
     if (s.choices) {
       const row = edgeNode("label", "ticker-choice");
       row.append(edgeNode("span", "ticker-switch-label", s.label));
@@ -510,12 +522,182 @@ function edgePlayItem(play) {
   };
 }
 
-// Teams starred on the home page ("NFL:KC"), for "My teams only".
+// --- My teams: favorite teams in any league ("NFL:KC"), saved per device ---
+// Picked from the gear menu or the home page's "My teams" button, or starred on
+// a home game card. Keys use ESPN's abbreviations; a few of our data sources
+// spell some teams differently, so those are mapped onto ESPN's.
+const EDGE_FAV_KEY = "edge-favs";
+const EDGE_FAV_ALIAS = { "MLB:AZ": "MLB:ARI", "MLB:CWS": "MLB:CHW", "NFL:LA": "NFL:LAR", "NFL:WAS": "NFL:WSH" };
+// ESPN team lists per sport: [path, query] for each list.
+const EDGE_TEAM_LISTS = {
+  NFL: [["football/nfl", ""]],
+  CFB: [["football/college-football", "groups=80&limit=300"]],
+  MLB: [["baseball/mlb", ""]],
+  NBA: [["basketball/nba", ""]],
+  NHL: [["hockey/nhl", ""]],
+  CBB: [["basketball/mens-college-basketball", "groups=50&limit=500"]],
+  Soccer: [["soccer/eng.1", ""], ["soccer/esp.1", ""], ["soccer/uefa.champions", ""]],
+};
+const EDGE_TEAM_SPORT_NAMES = { CFB: "College football", CBB: "College basketball" };
+
+function edgeFavKey(sport, abbr) {
+  const k = `${sport}:${abbr}`;
+  return EDGE_FAV_ALIAS[k] || k;
+}
+
+function edgeFavs() {
+  const favs = edgeStore(EDGE_FAV_KEY);
+  return new Set(Array.isArray(favs) ? favs.map(k => EDGE_FAV_ALIAS[k] || k) : []);
+}
+
+function edgeIsFav(sport, ...abbrs) {
+  const favs = edgeFavs();
+  return abbrs.some(a => a && favs.has(edgeFavKey(sport, a)));
+}
+
+function edgeSetFav(sport, abbr, on) {
+  const favs = edgeFavs();
+  const k = edgeFavKey(sport, abbr);
+  if (on) favs.add(k); else favs.delete(k);
+  edgeStore(EDGE_FAV_KEY, [...favs]);
+  window.dispatchEvent(new CustomEvent("edge-favs-change"));
+}
+
+// Teams starred, for "My teams only" in the ticker.
 function edgeMyTeams() {
   const settings = edgeSettings();
   if (!settings.myTeams) return null;
-  const favs = edgeStore("edge-favs");
-  return Array.isArray(favs) && favs.length ? new Set(favs) : null;
+  const favs = edgeFavs();
+  return favs.size ? favs : null;
+}
+
+const edgeTeamCache = {};
+async function edgeLoadTeams(sport) {
+  if (!edgeTeamCache[sport]) {
+    edgeTeamCache[sport] = Promise.all((EDGE_TEAM_LISTS[sport] || []).map(([path, q]) =>
+      edgeFetchJson(`https://site.api.espn.com/apis/site/v2/sports/${path}/teams${q ? "?" + q : ""}`, 8000)))
+      .then(lists => {
+        const seen = new Map();
+        lists.forEach(data => {
+          const teams = (((((data || {}).sports || [])[0] || {}).leagues || [])[0] || {}).teams || [];
+          teams.forEach(({ team: t }) => {
+            if (!t || !t.abbreviation || seen.has(t.abbreviation)) return;
+            seen.set(t.abbreviation, { abbr: t.abbreviation, name: t.displayName || t.shortDisplayName || t.abbreviation,
+                                       logo: ((t.logos || [])[0] || {}).href || "" });
+          });
+        });
+        return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+      });
+  }
+  const teams = await edgeTeamCache[sport];
+  if (!teams.length) delete edgeTeamCache[sport];  // try again next time
+  return teams;
+}
+
+// A sheet to pick favorite teams: a tab per sport, a search box and every team.
+function edgeOpenTeamPicker(startSport) {
+  if (document.querySelector(".team-picker")) return;
+  const sports = Object.keys(EDGE_TEAM_LISTS);
+  let sport = sports.includes(startSport) ? startSport : sports[0];
+  const opener = document.activeElement;
+  const back = edgeNode("div", "team-picker");
+  const box = edgeNode("div", "team-picker-box");
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  box.setAttribute("aria-label", "My teams");
+  const head = edgeNode("div", "team-picker-head");
+  const close = edgeNode("button", "team-picker-close", "Done");
+  close.type = "button";
+  head.append(edgeNode("div", "team-picker-title", "My teams"), close);
+  const note = edgeNode("p", "team-picker-note", "Star teams in any league. Their games go to the top of the home page, and the ticker can show only them.");
+  const mine = edgeNode("div", "team-picker-mine");
+  const tabs = edgeNode("div", "team-picker-tabs");
+  tabs.setAttribute("role", "tablist");
+  const search = edgeNode("input", "team-picker-search");
+  search.type = "search";
+  search.placeholder = "Search teams";
+  search.setAttribute("aria-label", "Search teams");
+  const list = edgeNode("div", "team-picker-list");
+  box.append(head, note, mine, tabs, search, list);
+  back.append(box);
+
+  const drawMine = () => {
+    const favs = [...edgeFavs()];
+    mine.replaceChildren();
+    if (!favs.length) { mine.append(edgeNode("span", "team-picker-none", "No teams yet.")); return; }
+    favs.sort().forEach(k => {
+      const [sp, abbr] = k.split(":");
+      const chip = edgeNode("button", "team-picker-chip", `${sp === "Soccer" ? "" : sp + " "}${abbr} ×`);
+      chip.type = "button";
+      chip.setAttribute("aria-label", `Remove ${sp} ${abbr}`);
+      chip.addEventListener("click", () => { edgeSetFav(sp, abbr, false); drawMine(); drawList(); });
+      mine.append(chip);
+    });
+  };
+  let token = 0;
+  const drawList = async () => {
+    const mineToken = ++token;
+    if (!list.childElementCount) list.append(edgeNode("p", "team-picker-none", "Loading teams."));
+    const teams = await edgeLoadTeams(sport);
+    if (mineToken !== token) return;
+    const q = search.value.trim().toLowerCase();
+    const shown = teams.filter(t => !q || t.name.toLowerCase().includes(q) || t.abbr.toLowerCase() === q);
+    list.replaceChildren();
+    if (!teams.length) { list.append(edgeNode("p", "team-picker-none", "Couldn't load teams. Check your connection and try again.")); return; }
+    if (!shown.length) { list.append(edgeNode("p", "team-picker-none", "No team matches that.")); return; }
+    shown.forEach(t => {
+      const on = edgeIsFav(sport, t.abbr);
+      const b = edgeNode("button", "team-picker-team");
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(on));
+      if (t.logo) {
+        const img = edgeNode("img");
+        img.src = t.logo; img.alt = ""; img.loading = "lazy";
+        img.addEventListener("error", () => img.remove());
+        b.append(img);
+      }
+      b.append(edgeNode("span", "team-picker-name", t.name), edgeNode("span", "team-picker-star", on ? "★" : "☆"));
+      b.addEventListener("click", () => {
+        const now = !edgeIsFav(sport, t.abbr);
+        edgeSetFav(sport, t.abbr, now);
+        b.setAttribute("aria-pressed", String(now));
+        b.lastChild.textContent = now ? "★" : "☆";
+        drawMine();
+      });
+      list.append(b);
+    });
+  };
+  sports.forEach(sp => {
+    const t = edgeNode("button", null, sp);
+    t.type = "button";
+    t.setAttribute("role", "tab");
+    if (EDGE_TEAM_SPORT_NAMES[sp]) t.title = EDGE_TEAM_SPORT_NAMES[sp];
+    t.setAttribute("aria-selected", String(sp === sport));
+    t.addEventListener("click", () => {
+      sport = sp;
+      tabs.querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", String(x === t)));
+      search.value = "";
+      list.replaceChildren();
+      drawList();
+    });
+    tabs.append(t);
+  });
+  search.addEventListener("input", drawList);
+  const done = () => {
+    back.remove();
+    document.removeEventListener("keydown", onKey);
+    document.documentElement.classList.remove("team-picker-open");
+    if (opener && opener.focus) opener.focus();
+  };
+  const onKey = e => { if (e.key === "Escape") done(); };
+  close.addEventListener("click", done);
+  back.addEventListener("click", e => { if (e.target === back) done(); });
+  document.addEventListener("keydown", onKey);
+  document.documentElement.classList.add("team-picker-open");
+  document.body.append(back);
+  drawMine();
+  drawList();
+  close.focus();
 }
 
 function edgeRenderTicker() {
@@ -530,14 +712,14 @@ function edgeRenderTicker() {
       if (!settings[sport] || !slate) return;
       const site = EDGE_SITES.find(s => s.sport === sport);
       slate.games.filter(g => g.state === state)
-        .filter(g => !mine || mine.has(`${sport}:${g.away.abbr}`) || mine.has(`${sport}:${g.home.abbr}`))
+        .filter(g => !mine || mine.has(edgeFavKey(sport, g.away.abbr)) || mine.has(edgeFavKey(sport, g.home.abbr)))
         .sort((a, b) => (state === "post" ? t(b) - t(a) : t(a) - t(b)))
         .forEach(g => items.push(edgeTickerItem(site, g)));
     });
   });
   edgeCrawl("crawl-ticker", "Scores", settings.ticker ? items : []);
   const plays = edgeTicker.plays
-    .filter(p => settings[p.sport] && (!mine || (p.teams || []).some(a => mine.has(`${p.sport}:${a}`))))
+    .filter(p => settings[p.sport] && (!mine || (p.teams || []).some(a => mine.has(edgeFavKey(p.sport, a)))))
     .map(edgePlayItem);
   edgeCrawl("crawl-plays", "Scoring", settings.plays ? plays : []);
 }
@@ -636,7 +818,7 @@ async function initScoreboard() {
   edgeRenderTicker();
   const settings = edgeSettings();
   const mine = edgeMyTeams();
-  const shown = fresh.filter(p => settings[p.sport] && (!mine || p.teams.some(a => mine.has(`${p.sport}:${a}`))));
+  const shown = fresh.filter(p => settings[p.sport] && (!mine || p.teams.some(a => mine.has(edgeFavKey(p.sport, a)))));
   if (settings.popups) shown.slice(0, 3).forEach(edgeScoreToast);
   if (settings.sound && shown.length && !document.hidden) edgeChime();
   const now = Date.now();
