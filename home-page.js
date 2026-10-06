@@ -17,10 +17,9 @@ function edgeFetchSummaries() {
 // game by start time and one shared team abbreviation. Below it, each site's
 // all-time record from summary.json.
 const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB", "Soccer"];
-const HG_FAV_KEY = "edge-favs";
 const HG_LAYOUT_KEY = "edge-home-layout";
 const HG_SHOW = 9;  // games per sport group before "See more"
-const hg = { day: null, sport: "all", value: false, open: new Set(), layout: null, favs: new Set(), games: [], summaries: [] };
+const hg = { day: null, sport: "all", value: false, open: new Set(), layout: null, games: [], summaries: [] };
 
 function hgStore(key, value) {
   try {
@@ -92,7 +91,7 @@ async function hgLoad() {
       const e = hgMatch(g, espn[i]);
       const flip = e && !(e.away.abbr === g.away || e.home.abbr === g.home);  // ESPN lists them the other way
       const side = (ours, theirs) => ({
-        abbr: ours, name: theirs ? theirs.short || theirs.name || ours : ours, logo: theirs ? theirs.logo : "",
+        abbr: ours, espn: theirs ? theirs.abbr : "", name: theirs ? theirs.short || theirs.name || ours : ours, logo: theirs ? theirs.logo : "",
         rank: theirs ? theirs.rank : null, record: theirs ? theirs.record : null,
         score: theirs && e.state !== "pre" ? theirs.score : null,
       });
@@ -114,7 +113,7 @@ async function hgLoad() {
 }
 
 function hgIsFav(g) {
-  return hg.favs.has(g.sport + ":" + g.away.abbr) || hg.favs.has(g.sport + ":" + g.home.abbr);
+  return edgeIsFav(g.sport, g.away.abbr, g.away.espn, g.home.abbr, g.home.espn);
 }
 
 function hgTime(g, withDay) {
@@ -262,9 +261,11 @@ function hgRender() {
     if (done.length) tally.append("So far: ", hgEl("b", null, `${won}-${done.length - won}`), " on finished games");
     if (live) tally.append(done.length ? ", " : "", hgEl("b", null, String(live)), " live now");
     tally.append(".");
-  } else if (!hg.favs.size && inDay.length) {
-    tally.textContent = "Tap ☆ on any game to pin your teams to the top.";
+  } else if (!edgeFavs().size && inDay.length) {
+    tally.textContent = "Tap ★ My teams to pick your teams in any league. Their games go to the top.";
   }
+  const favCount = edgeFavs().size;
+  document.getElementById("hg-teams").textContent = favCount ? `★ My teams (${favCount})` : "☆ My teams";
 
   let list = inDay.filter(g => (hg.sport === "all" || g.sport === hg.sport) && (!hg.value || g.value));
   const byTime = (a, b) => new Date(a.start) - new Date(b.start);
@@ -359,8 +360,6 @@ function hgRecords() {
 
 async function initHomeGames() {
   if (!document.getElementById("hg-out")) return;
-  const saved = hgStore(HG_FAV_KEY);
-  try { const f = JSON.parse(saved); if (Array.isArray(f)) hg.favs = new Set(f); } catch (e) { /* no favorites yet */ }
   hg.layout = hgStore(HG_LAYOUT_KEY) || (matchMedia("(max-width: 560px)").matches ? "list" : "cards");
   const pick = (id, key, save) => document.getElementById(id).addEventListener("click", e => {
     const b = e.target.closest("button");
@@ -373,6 +372,8 @@ async function initHomeGames() {
   pick("hg-sports", "sport");
   pick("hg-layout", "layout", HG_LAYOUT_KEY);
   document.getElementById("hg-value").addEventListener("click", () => { hg.value = !hg.value; hgRender(); });
+  document.getElementById("hg-teams").addEventListener("click", () => edgeOpenTeamPicker(hg.sport === "all" ? null : hg.sport));
+  window.addEventListener("edge-favs-change", () => hgRender());
   document.getElementById("hg-out").addEventListener("click", e => {
     const more = e.target.closest(".hg-more");
     if (more) {
@@ -392,10 +393,9 @@ async function initHomeGames() {
     if (!b) return;
     const g = hg.games.find(x => x.key === b.dataset.key);
     if (!g) return;
-    if (hgIsFav(g)) [g.away.abbr, g.home.abbr].forEach(a => hg.favs.delete(g.sport + ":" + a));
-    else hg.favs.add(g.sport + ":" + g.pick);
-    hgStore(HG_FAV_KEY, JSON.stringify([...hg.favs]));
-    hgRender();
+    // The star adds the team we pick; on a starred game it clears both teams.
+    if (hgIsFav(g)) [g.away, g.home].forEach(t => [t.abbr, t.espn].forEach(a => a && edgeSetFav(g.sport, a, false)));
+    else { const t = g.pick === g.away.abbr ? g.away : g.home; edgeSetFav(g.sport, t.espn || t.abbr, true); }
   });
   hgHero();
   const refresh = async () => {

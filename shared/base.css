@@ -869,6 +869,115 @@ a.crawl-item:hover { background: var(--surface-2); }
   font-size: 14px;
 }
 
+/* My teams picker (gear menu, home page "My teams" button). */
+.ticker-teams-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 4px 16px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--ours);
+  border-radius: 8px;
+  background: none;
+  color: var(--ours);
+  font: 600 14px var(--font);
+  cursor: pointer;
+}
+.ticker-teams-btn:hover { background: var(--surface); }
+.team-picker-open, .team-picker-open body { overflow: hidden; }
+.team-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6vh 16px 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.team-picker-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  border: 1px solid var(--rule-strong);
+  border-radius: 14px;
+  background: var(--bar);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.team-picker-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 4px; }
+.team-picker-title { font: italic 800 26px var(--font-head); text-transform: uppercase; color: var(--text); }
+.team-picker-close {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ours);
+  color: #16110d;
+  font: 700 14px var(--font);
+  cursor: pointer;
+}
+.team-picker-note { margin: 0; padding: 0 16px 10px; font-size: 13px; color: var(--text-muted); }
+.team-picker-mine { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+.team-picker-chip {
+  padding: 5px 10px;
+  border: 1px solid #f2c14e;
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+  font: 600 12px var(--font);
+  cursor: pointer;
+}
+.team-picker-none { margin: 0; padding: 4px 0; font-size: 13px; color: var(--text-faint); }
+.team-picker-list .team-picker-none { padding: 14px 16px; }
+.team-picker-tabs { display: flex; gap: 4px; padding: 0 16px; overflow-x: auto; border-bottom: 1px solid var(--rule); scrollbar-width: none; }
+.team-picker-tabs button {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font: 600 14px var(--font);
+  cursor: pointer;
+}
+.team-picker-tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--ours); }
+.team-picker-search {
+  margin: 10px 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: 15px var(--font);
+}
+.team-picker-list { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 12px; }
+.team-picker-team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: 500 15px var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+.team-picker-team:hover { background: var(--surface); }
+.team-picker-team img { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; }
+.team-picker-name { flex: 1; }
+.team-picker-star { font-size: 20px; color: var(--text-faint); }
+.team-picker-team[aria-pressed="true"] .team-picker-star { color: #f2c14e; }
+.team-picker button:focus-visible, .team-picker-search:focus-visible, .ticker-teams-btn:focus-visible { outline: 2px solid var(--ours); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .team-picker { padding: 0; align-items: stretch; }
+  .team-picker-box { max-width: none; max-height: none; border-radius: 0; border: 0; }
+}
+
 /* Light theme (Settings > Theme). The same layout on light surfaces; orange
    and the hit/miss colors are darkened so text stays readable on white. */
 :root[data-theme="light"] {
