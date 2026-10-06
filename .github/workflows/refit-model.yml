@@ -84,6 +84,8 @@ jobs:
           git config user.email "actions@github.com"
           git add src/models/fitted_coefficients.json src/models/fitted_props_coefficients.json src/models/fitted_td_coefficients.json src/models/fitted_cfb_coefficients.json
           [ -f data/tracking/model_history.json ] && git add data/tracking/model_history.json
+          # CFBD responses for finished seasons, kept so they're never fetched twice
+          [ -d data/tracking/cfbd_cache ] && git add data/tracking/cfbd_cache
           git diff --cached --quiet && exit 0
           git commit -m "Refit model coefficients against latest historical data"
           git pull --rebase origin main

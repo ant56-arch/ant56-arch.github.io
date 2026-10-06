@@ -21,11 +21,16 @@ Output: raw CSVs saved to data/raw/ (cfb_games.csv, cfb_advanced_stats.csv,
 cfb_teams.csv), the same directory the NFL raw data lives in.
 """
 
-import requests
-import pandas as pd
+import atexit
+import gzip
+import json
 import os
+import re
 import time
 from datetime import datetime
+
+import pandas as pd
+import requests
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 os.makedirs(RAW_DIR, exist_ok=True)
@@ -47,14 +52,65 @@ def _headers():
         return None
     return {"Authorization": f"Bearer {key}"}
 
+# CFBD's free key has a monthly call quota (it ran out on 2026-10-06), so
+# every call goes through a cache:
+#  - finished seasons, and lists that don't change during a season (FBS teams,
+#    roster talent, returning production), are kept for good in
+#    data/tracking/cfbd_cache/, which the workflows commit;
+#  - everything else is reused for RUN_CACHE_HOURS from data/raw/cfbd_cache/,
+#    so the steps of one workflow run share a single fetch;
+#  - the current season's postseason isn't asked for before December.
+TRACKING_CACHE = os.path.join(os.path.dirname(__file__), "..", "data", "tracking", "cfbd_cache")
+RUN_CACHE = os.path.join(RAW_DIR, "cfbd_cache")
+RUN_CACHE_HOURS = 3
+STATIC_PATHS = {"/teams/fbs", "/talent", "/player/returning"}
+_calls = {"made": 0, "remaining": None}
+
+
+def _cache_policy(path, params):
+    season, now = current_cfb_season(), datetime.utcnow()
+    year = params.get("year")
+    year = int(year) if year is not None else None
+    if year == season and params.get("seasonType") == "postseason" and 3 <= now.month <= 11:
+        return "skip"
+    if year is not None and (year < season or path in STATIC_PATHS):
+        return "keep"
+    return "run"
+
+
+def _cache_file(folder, path, params):
+    key = path.strip("/").replace("/", "_") + "_" + "_".join(f"{k}-{params[k]}" for k in sorted(params))
+    return os.path.join(folder, re.sub(r"[^A-Za-z0-9_.-]", "", key) + ".json.gz")
+
+
 def _get(path, params):
-    """GET with a few retries: CFBD sometimes drops a large response midway
-    ("Response ended prematurely") or answers 502/503 for a minute, which
-    used to leave a run with no CFB picks at all. A client error (bad key,
-    season not out yet) is raised right away."""
+    """CFBD GET through the cache above. A live call is retried a few times:
+    CFBD sometimes drops a large response midway ("Response ended
+    prematurely") or answers 502/503 for a minute, which used to leave a run
+    with no CFB picks at all. A client error (bad key, season not out yet,
+    quota used up) is raised right away."""
+    policy = _cache_policy(path, params)
+    if policy == "skip":
+        return []
+    folder = TRACKING_CACHE if policy == "keep" else RUN_CACHE
+    cached = _cache_file(folder, path, params)
+    if os.path.exists(cached) and (policy == "keep" or
+                                   time.time() - os.path.getmtime(cached) < RUN_CACHE_HOURS * 3600):
+        with gzip.open(cached, "rt") as f:
+            return json.load(f)
+    data = _get_live(path, params)
+    os.makedirs(folder, exist_ok=True)
+    with gzip.open(cached, "wt") as f:
+        json.dump(data, f, separators=(",", ":"))
+    return data
+
+
+def _get_live(path, params):
     for attempt in range(4):
         try:
             r = requests.get(f"{BASE}{path}", params=params, headers=_headers(), timeout=60)
+            _calls["made"] += 1
+            _calls["remaining"] = r.headers.get("X-CallLimit-Remaining", _calls["remaining"])
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
@@ -67,6 +123,14 @@ def _get(path, params):
                 raise
             print(f"  retrying {path} {params}: {e}")
             time.sleep(2 ** attempt * 5)
+
+
+def _report_calls():
+    if _calls["made"]:
+        print(f"  CFBD calls this step: {_calls['made']}, left this month: {_calls['remaining']}")
+
+
+atexit.register(_report_calls)
 
 def fetch_team_info(season):
     data = _get("/teams/fbs", {"year": season})
