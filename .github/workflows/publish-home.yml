@@ -20,6 +20,7 @@ on:
       - shared/assets.py
       - terms.html
       - privacy.html
+      - teams.json
       - publish_site.sh
   workflow_dispatch:
 

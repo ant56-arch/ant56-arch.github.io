@@ -1,0 +1,39 @@
+name: Update team lists
+
+# Refreshes teams.json (every team in each league, for the My teams picker)
+# from ESPN once a week, then republishes the home page files.
+
+on:
+  schedule:
+    - cron: '17 9 * * 1'  # Mondays 5:17am ET
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: team-lists
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch team lists
+        run: python3 shared/teams.py
+
+      - name: Commit teams.json
+        run: |
+          git config user.name "Sports Edge Bot"
+          git config user.email "actions@github.com"
+          git add teams.json
+          git diff --staged --quiet && exit 0
+          git commit -m "Update team lists $(TZ=America/New_York date '+%Y-%m-%d')"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
+
+      - name: Publish home page
+        if: github.ref == 'refs/heads/main'
+        run: ./publish_site.sh
