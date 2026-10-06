@@ -531,7 +531,7 @@ const EDGE_FAV_ALIAS = { "MLB:AZ": "MLB:ARI", "MLB:CWS": "MLB:CHW", "NFL:LA": "N
 // ESPN team lists per sport: [path, query] for each list.
 const EDGE_TEAM_LISTS = {
   NFL: [["football/nfl", ""]],
-  CFB: [["football/college-football", "groups=80&limit=300"]],
+  CFB: [["football/college-football", "limit=1000"]],
   MLB: [["baseball/mlb", ""]],
   NBA: [["basketball/nba", ""]],
   NHL: [["hockey/nhl", ""]],
