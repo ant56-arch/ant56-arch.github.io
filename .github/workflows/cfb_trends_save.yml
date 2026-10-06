@@ -1,0 +1,28 @@
+name: CFB Trends Save
+# Temporary: copies the trends history already pulled in run 37492120716 into
+# this branch so it never has to be pulled from CFBD again. No CFBD calls.
+on:
+  push:
+    branches: ["claude/**"]
+    paths: [".github/workflows/cfb_trends_save.yml"]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: trends
+          run-id: 37492120716
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: nfl-cfb/data/tracking
+      - run: |
+          ls -la nfl-cfb/data/tracking/cfb_trends*
+          git config user.name "nfl-edge-bot"
+          git config user.email "actions@github.com"
+          git add nfl-cfb/data/tracking/cfb_trends.json nfl-cfb/data/tracking/cfb_trends_history.csv
+          git commit -m "CFB trends: save history pulled in run 37492120716"
+          git push
