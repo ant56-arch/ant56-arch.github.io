@@ -741,6 +741,158 @@
     "blend_weight_on_model_winprob": 0.1,
     "blend_weight_on_model_total": 0.2
    }
+  },
+  {
+   "sport": "nfl",
+   "run_at": "2026-10-06T16:48:31+00:00",
+   "data_through": "2026-10-05",
+   "holdout_games": 256,
+   "live_recipe": {
+    "team_half_life": 4,
+    "rating_half_life": 4,
+    "seasons": "all"
+   },
+   "live_model_on_holdout": {
+    "games": 256,
+    "brier": 0.214,
+    "spread_mae": 10.0343,
+    "accuracy": 0.6289
+   },
+   "current_recipe_refit_on_holdout": {
+    "recipe": {
+     "team_half_life": 4,
+     "rating_half_life": 4,
+     "seasons": "all"
+    },
+    "games": 256,
+    "brier": 0.2144,
+    "spread_mae": 10.0507,
+    "accuracy": 0.6328
+   },
+   "best_candidate": {
+    "recipe": {
+     "team_half_life": 4,
+     "rating_half_life": 4,
+     "seasons": 8
+    },
+    "games": 256,
+    "brier": 0.2142,
+    "spread_mae": 10.0903,
+    "accuracy": 0.6328
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 4,
+      "seasons": "all"
+     },
+     "games": 256,
+     "brier": 0.2144,
+     "spread_mae": 10.0507,
+     "accuracy": 0.6328
+    },
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 4,
+      "seasons": 8
+     },
+     "games": 256,
+     "brier": 0.2142,
+     "spread_mae": 10.0903,
+     "accuracy": 0.6328
+    },
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 8,
+      "seasons": "all"
+     },
+     "games": 256,
+     "brier": 0.2159,
+     "spread_mae": 10.1797,
+     "accuracy": 0.6328
+    },
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 8,
+      "seasons": 8
+     },
+     "games": 256,
+     "brier": 0.2159,
+     "spread_mae": 10.2254,
+     "accuracy": 0.625
+    },
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 16,
+      "seasons": "all"
+     },
+     "games": 256,
+     "brier": 0.2197,
+     "spread_mae": 10.3728,
+     "accuracy": 0.6328
+    },
+    {
+     "recipe": {
+      "team_half_life": 4,
+      "rating_half_life": 16,
+      "seasons": 8
+     },
+     "games": 256,
+     "brier": 0.2199,
+     "spread_mae": 10.4026,
+     "accuracy": 0.625
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "holdout_validation": {
+    "seasons": [
+     2025,
+     2026
+    ],
+    "n_games": 349,
+    "model_only_spread_mae": 9.897048144814418,
+    "vegas_only_spread_mae": 9.663323782234958,
+    "blended_spread_mae": 9.663323782234958,
+    "model_only_total_mae": 10.889976498508187,
+    "vegas_only_total_mae": 10.479942693409741,
+    "blended_total_mae": 10.479942693409741,
+    "model_only_brier": 0.21730944447658906,
+    "vegas_only_brier": 0.213878898065184,
+    "blended_brier": 0.21351244681676446
+   },
+   "weights_before": {
+    "points_rating_weight": 1.932,
+    "success_rating_weight": 22.713,
+    "qb_weight": 22.1786,
+    "home_field_advantage": 1.9247,
+    "margin_std_dev": 13.1473,
+    "total_coef": 33.3561,
+    "total_intercept": 46.0863,
+    "total_std_dev": 13.6725,
+    "blend_weight_on_model_spread": 0.0,
+    "blend_weight_on_model_winprob": 0.1,
+    "blend_weight_on_model_total": 0.2
+   },
+   "weights_after": {
+    "points_rating_weight": 1.9276,
+    "success_rating_weight": 22.7753,
+    "qb_weight": 22.157,
+    "home_field_advantage": 1.9154,
+    "margin_std_dev": 13.1283,
+    "total_coef": 33.1518,
+    "total_intercept": 46.0937,
+    "total_std_dev": 13.6682,
+    "blend_weight_on_model_spread": 0.0,
+    "blend_weight_on_model_winprob": 0.25,
+    "blend_weight_on_model_total": 0.0
+   }
   }
  ]
 }

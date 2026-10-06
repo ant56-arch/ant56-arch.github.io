@@ -1,5 +1,5 @@
 {
-  "fitted_at": "2026-10-01T14:21:12.657654+00:00",
+  "fitted_at": "2026-10-06T16:48:31.111844+00:00",
   "train_seasons": [
     2013,
     2014,
@@ -16,36 +16,36 @@
     2025,
     2026
   ],
-  "n_games_used": 3342,
+  "n_games_used": 3358,
   "coefficients": {
-    "points_rating_weight": 1.9319921494412988,
-    "success_rating_weight": 22.713019198449246,
-    "qb_weight": 22.17862668338709,
-    "home_field_advantage": 1.9247243009485608,
-    "margin_std_dev": 13.147269498611598,
-    "total_coef": 33.356103081782564,
-    "total_intercept": 46.086264713356584,
-    "total_std_dev": 13.672493429680014,
-    "n_games": 3342
+    "points_rating_weight": 1.9276263101369717,
+    "success_rating_weight": 22.7752922214554,
+    "qb_weight": 22.157047903433085,
+    "home_field_advantage": 1.9154038122267094,
+    "margin_std_dev": 13.128290077630322,
+    "total_coef": 33.15184478432019,
+    "total_intercept": 46.093704881633734,
+    "total_std_dev": 13.668233530627829,
+    "n_games": 3358
   },
   "blend_weight_on_model_spread": 0.0,
-  "blend_weight_on_model_winprob": 0.1,
-  "blend_weight_on_model_total": 0.2,
+  "blend_weight_on_model_winprob": 0.25,
+  "blend_weight_on_model_total": 0.0,
   "holdout_validation": {
     "seasons": [
       2025,
       2026
     ],
-    "n_games": 333,
-    "model_only_spread_mae": 10.079064587934205,
-    "vegas_only_spread_mae": 9.776276276276276,
-    "blended_spread_mae": 9.776276276276276,
-    "model_only_total_mae": 10.858048497678183,
-    "vegas_only_total_mae": 10.52102102102102,
-    "blended_total_mae": 10.51320079016513,
-    "model_only_brier": 0.2186544844412766,
-    "vegas_only_brier": 0.21361723897629298,
-    "blended_brier": 0.21354021775843401
+    "n_games": 349,
+    "model_only_spread_mae": 9.897048144814418,
+    "vegas_only_spread_mae": 9.663323782234958,
+    "blended_spread_mae": 9.663323782234958,
+    "model_only_total_mae": 10.889976498508187,
+    "vegas_only_total_mae": 10.479942693409741,
+    "blended_total_mae": 10.479942693409741,
+    "model_only_brier": 0.21730944447658906,
+    "vegas_only_brier": 0.213878898065184,
+    "blended_brier": 0.21351244681676446
   },
   "recipe": {
     "team_half_life": 4,
@@ -54,5 +54,5 @@
   },
   "team_half_life_games": 4,
   "rating_half_life_weeks": 4,
-  "trained_through": "2026-09-28"
+  "trained_through": "2026-10-05"
 }
