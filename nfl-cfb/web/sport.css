@@ -20,3 +20,48 @@ table.data.slate td.num { white-space: normal; }
 .acc-weeks label { font-weight: 600; }
 .acc-weeks #acc-week-summary { flex-basis: 100%; font-size: 14px; }
 table.data tr[hidden] { display: none !important; }
+
+/* ---------- Trends tab (CFB) ---------- */
+.trend-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ours); }
+.trend-big {
+  font-family: var(--font-head); font-weight: 800; font-style: italic; line-height: 0.9;
+  font-size: clamp(64px, 14vw, 128px); letter-spacing: -1px; margin-top: 10px; font-variant-numeric: tabular-nums;
+}
+.trend-kicker {
+  font-family: var(--font-head); font-weight: 800; font-style: italic; text-transform: uppercase;
+  font-size: clamp(28px, 6vw, 48px); line-height: 1; color: var(--ours);
+}
+.trend-lead { font-size: 18px; line-height: 1.5; max-width: 62ch; margin: 14px 0 18px; }
+.trend-lead b, .trend-tile p b { color: var(--text); }
+svg.trend-bars { display: block; width: 100%; height: auto; overflow: visible; }
+svg.trend-bars .tb { fill: var(--rule-strong); }
+svg.trend-bars .tb-rec { fill: var(--text-muted); }
+svg.trend-bars .tb-now { fill: var(--ours); }
+svg.trend-bars .tb-axis { stroke: var(--rule-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+svg.trend-bars text { font-family: var(--font); font-size: 26px; fill: var(--text-muted); }
+svg.trend-bars:not(.tall) text { font-size: 30px; }
+svg.trend-bars text.tb-val { font-weight: 700; fill: var(--text); }
+svg.trend-bars text.tb-val.tb-now { fill: var(--ours); }
+svg.trend-bars text.strong { font-weight: 700; fill: var(--text); }
+.upsets { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.upset {
+  background: var(--surface-2); border: 1px solid var(--rule); border-top: 3px solid var(--miss);
+  border-radius: var(--radius-sm); padding: 14px 12px; text-align: center;
+}
+.upset img { display: block; margin: 0 auto 6px; }
+.upset-score { font-family: var(--font-head); font-weight: 800; font-style: italic; font-size: 34px; line-height: 1; }
+.upset-teams { font-size: 14px; margin-top: 6px; line-height: 1.35; }
+.upset-when { font-size: 12px; margin-top: 6px; }
+.trend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.trend-tile { background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 16px 18px; }
+.trend-tile-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.trend-tile-head .stat-label { margin-top: 0; }
+.trend-tile-value { font-family: var(--font-head); font-weight: 800; font-style: italic; font-size: 44px; line-height: 1; margin-top: 8px; }
+.trend-tile p { font-size: 14px; line-height: 1.45; color: var(--text-muted); margin: 8px 0 12px; }
+.trend-note { font-size: 13px; margin: 4px 4px 0; }
+@media (max-width: 560px) {
+  .trend-lead { font-size: 16px; }
+  svg.trend-bars text { font-size: 34px; }
+  .upsets { grid-template-columns: repeat(2, 1fr); }
+  .trend-grid { grid-template-columns: 1fr; }
+}

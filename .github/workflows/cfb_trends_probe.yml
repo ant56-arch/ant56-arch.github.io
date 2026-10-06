@@ -21,15 +21,3 @@ jobs:
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: python src/cfb_trends_probe.py
-      - name: Trends
-        env:
-          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
-        run: |
-          python src/cfb_trends.py
-          ls -la data/tracking/cfb_trends*
-      - uses: actions/upload-artifact@v4
-        with:
-          name: trends
-          path: |
-            nfl-cfb/data/tracking/cfb_trends.json
-            nfl-cfb/data/tracking/cfb_trends_history.csv

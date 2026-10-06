@@ -302,9 +302,18 @@ def run():
                 "site": "neutral site" if r["neutral"] else f"at {r['home_team']}"}
 
     ups = _prep(upsets).sort_values("date") if upsets is not None and len(upsets) else pd.DataFrame()
+    logos = {}
+    try:
+        for t in _get("/teams/fbs", {"year": season}):
+            if t.get("logos"):
+                logos[t.get("school")] = t["logos"][0]
+    except Exception as e:  # noqa: BLE001 - the page falls back to names only
+        print(f"  No team logos: {e}")
     out = {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "season": season,
            "through": anchor.isoformat(), "label": label, "first_season": FIRST_SEASON,
            "stats": out_stats, "upsets": [game_row(r) for _, r in ups.iterrows()]}
+    teams = {t for u in out["upsets"] for t in (u["winner"], u["loser"])}
+    out["logos"] = {t: logos[t] for t in teams if t in logos}
     with open(OUT_PATH, "w") as f:
         json.dump(_clean(out), f, indent=1)
     print(f"  Trends through the {label}: " + "; ".join(

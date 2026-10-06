@@ -103,6 +103,7 @@ SPORTS = {
         "data_source_text": "Team efficiency (PPA, success rate, explosiveness) via CollegeFootballData.com. Vegas lines via the-odds-api.com, where available. Covers SEC, Big Ten, Big 12, ACC and FBS independent teams.",
         "no_games_note": "Covers Power-conference and independent FBS teams only.",
         "ratings": True,
+        "trends": True,
     },
 }
 
@@ -395,6 +396,8 @@ def page_shell(sport, title, active_tab, body_html):
     ]
     if sport.get("ratings"):
         tabs.append(("ratings.html", "ratings", "Ratings"))
+    if sport.get("trends"):
+        tabs.append(("trends.html", "trends", "Trends"))
     if sport["player_props_csv"]:
         tabs.append(("players.html", "players", "Players"))
         tabs.append(("td.html", "td", "TD Props"))
@@ -413,7 +416,8 @@ def page_shell(sport, title, active_tab, body_html):
     # The other football sport's tab keeps you on the same page when it has one.
     def same_page(slug):
         missing = ((other_page in ("players.html", "td.html") and not SPORTS[slug]["player_props_csv"])
-                   or (other_page == "ratings.html" and not SPORTS[slug].get("ratings")))
+                   or (other_page == "ratings.html" and not SPORTS[slug].get("ratings"))
+                   or (other_page == "trends.html" and not SPORTS[slug].get("trends")))
         return "../" + slug + "/" + ("index.html" if missing else other_page)
     sport_switcher = sport_tabs(same_page, active=sport["wordmark"])
 
@@ -1414,6 +1418,141 @@ def build_ratings_page(sport, log):
            f'updated {model_page.short_date(data["updated"])}. Tap a column to sort.')
     return page_shell(sport, "Ratings", "ratings", card("Power Ratings", sub, intro + table))
 
+# ---------- Trends tab (CFB): this season against every season since 1989 ----------
+
+TREND_TEXT = {
+    # key: (lead sentence, what the percentage counts)
+    "upset_rate": ("AP-ranked teams are <b>{record}</b> against unranked FBS opponents.", "upset rate"),
+    "top10_loss": ("AP top-10 teams are <b>{record}</b> against unranked FBS opponents.", "loss rate"),
+    "rvr_upset": ("In ranked-vs-ranked games, the higher-ranked team is <b>{record}</b>.", "upset rate"),
+    "home_win": ("Home teams are <b>{record}</b> in FBS-vs-FBS games.", "home win rate"),
+    "points": ("FBS teams are scoring <b>{value:.1f}</b> points per game against each other.", "scoring average"),
+    "one_score": ("<b>{hits}</b> of {n} FBS-vs-FBS games have been decided by 8 points or fewer.", "share of one-score games"),
+    "blowouts": ("<b>{hits}</b> of {n} FBS-vs-FBS games have been decided by 28 points or more.", "blowout share"),
+    "fav_win": ("Vegas favorites are <b>{record}</b> straight up.", "favorite win rate"),
+    "dog_10": ("Underdogs of 10 or more points have won <b>{hits}</b> of {n} games outright.", "upset rate"),
+    "overs": ("Overs are <b>{record}</b> against the closing total.", "over rate"),
+}
+NTH = {1: "", 2: "second-", 3: "third-", 4: "fourth-", 5: "fifth-"}
+
+
+def trend_value(s, v=None):
+    v = s["value"] if v is None else v
+    return f"{v:.1f}" if s["kind"] == "num" else f"{v * 100:.1f}%"
+
+
+def trend_sentence(s, season):
+    lead, what = TREND_TEXT[s["key"]]
+    text = lead.format(record=s.get("record") or "", value=s["value"], hits=s.get("hits", 0), n=s.get("n", 0))
+    since = s["since"]
+    if s["rank"] <= 5:
+        text += (f' That {trend_value(s)} {what} is the {NTH[s["rank"]]}{s["side"]} at this point of a season '
+                 f'since {since}.')
+        beat = s.get("beaten_by") or []
+        if beat:
+            names = [f'{b["season"]} ({b["record"] or trend_value(s, b["value"])})' for b in beat]
+            joined = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+            more = "higher" if s["side"] == "highest" else "lower"
+            text += f' Only {joined} {"was" if len(names) == 1 else "were"} {more}.'
+    else:
+        text += f' That {trend_value(s)} {what} is close to normal (the {since}-{season - 1} average is {trend_value(s, s["avg"])}).'
+    return text
+
+
+def trend_badge(s):
+    nth = {1: "", 2: "2nd-", 3: "3rd-"}[s["rank"]]
+    return f'{nth}{s["side"]} since {s["since"]}'.upper()
+
+
+def trend_bars(s, season, tall=False):
+    """History as an inline SVG bar chart, this season highlighted and the
+    season that holds the record labeled."""
+    hist = s["history"] + [{"season": season, "value": s["value"]}]
+    n = len(hist)
+    w, h, gap = 1000, 260 if tall else 150, 3
+    top_pad, bottom = 40, 36
+    vals = [x["value"] for x in hist]
+    vmax = max(vals) or 1
+    bw = (w - gap * (n - 1)) / n
+    extreme = (max if s["side"] == "highest" else min)(s["history"], key=lambda x: x["value"])
+    bars, labels = [], []
+    for i, x in enumerate(hist):
+        bh = max(2, (h - top_pad - bottom) * x["value"] / vmax)
+        xx = i * (bw + gap)
+        y = h - bottom - bh
+        cls = "tb-now" if x["season"] == season else ("tb-rec" if x["season"] == extreme["season"] else "tb")
+        tip = f'{x["season"]}: {trend_value(s, x["value"])}' + (f' ({x["record"]})' if x.get("record") else "")
+        bars.append(f'<rect class="{cls}" x="{xx:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="2"><title>{tip}</title></rect>')
+        if cls != "tb":
+            labels.append(f'<text class="tb-val {cls}" x="{xx + bw / 2:.1f}" y="{y - 6:.1f}" text-anchor="middle">{trend_value(s, x["value"])}</text>')
+        if x["season"] % 10 == 0 or x["season"] in (hist[0]["season"], season) or cls == "tb-rec":
+            if x["season"] == season - 1:
+                continue
+            yr = str(x["season"]) if x["season"] in (season, extreme["season"]) else f"'{str(x['season'])[2:]}"
+            labels.append(f'<text class="tb-year{" strong" if cls != "tb" else ""}" x="{xx + bw / 2:.1f}" y="{h - 6}" text-anchor="middle">{yr}</text>')
+    return (f'<svg class="trend-bars{" tall" if tall else ""}" viewBox="0 0 {w} {h}" role="img" '
+            f'aria-label="{escape(s["title"])} at this point of every season since {hist[0]["season"]}">'
+            f'<line class="tb-axis" x1="0" x2="{w}" y1="{h - bottom}" y2="{h - bottom}"/>{"".join(bars)}{"".join(labels)}</svg>')
+
+
+def build_trends_page(sport):
+    path = os.path.join(TRACKING_DIR, "cfb_trends.json")
+    if not os.path.exists(path):
+        body = card("Trends", "This season against every season since 1989",
+                    '<div class="empty-state">Trends will appear after the next update.</div>')
+        return page_shell(sport, "Trends", "trends", body)
+    with open(path) as f:
+        data = json.load(f)
+    season, stats = data["season"], data["stats"]
+    if not stats:
+        body = card("Trends", "This season against every season since 1989",
+                    '<div class="empty-state">Not enough games yet this season.</div>')
+        return page_shell(sport, "Trends", "trends", body)
+    through = datetime.fromisoformat(data["through"]).strftime("%b %-d")
+    eyebrow = f'FBS vs. FBS &middot; through the {data["label"]} &middot; since {data["first_season"]}'
+
+    hero = stats[0]
+    big = hero.get("record") or trend_value(hero)
+    hero_html = f"""<div class="trend-hero">
+      <div class="trend-eyebrow">{eyebrow}</div>
+      <div class="trend-big">{escape(big)}</div>
+      <div class="trend-kicker">{escape(hero["title"])}</div>
+      <p class="trend-lead">{trend_sentence(hero, season)}</p>
+      {trend_bars(hero, season, tall=True)}
+    </div>"""
+
+    ups = data.get("upsets") or []
+    logos = data.get("logos") or {}
+    def logo(team):
+        url = logos.get(team)
+        return (f'<img src="{espn_logo(url)}" alt="" width="40" height="40" loading="lazy" '
+                f'onerror="this.style.display=\'none\'">' if url else "")
+    up_cards = "".join(f"""<div class="upset">
+        {logo(u["winner"])}
+        <div class="upset-score">{u["winner_score"]}-{u["loser_score"]}</div>
+        <div class="upset-teams"><b>{escape(u["winner"])}</b> over<br>No. {u["loser_rank"]} {escape(u["loser"])}</div>
+        <div class="upset-when muted">{datetime.fromisoformat(u["date"]).strftime("%b %-d")} &middot; {escape(u["site"])}</div>
+      </div>""" for u in ups)
+    upset_card = card(f'The {len(ups)} upset{"s" if len(ups) != 1 else ""}',
+                      f"Unranked FBS teams over AP-ranked teams this season (rank at kickoff)",
+                      f'<div class="upsets">{up_cards}</div>') if ups else ""
+
+    tiles = "".join(f"""<div class="trend-tile">
+        <div class="trend-tile-head"><span class="stat-label">{escape(s["title"])}</span>
+          {pill(trend_badge(s), "primary") if s["rank"] <= 3 else ""}</div>
+        <div class="trend-tile-value">{escape(s.get("record") or trend_value(s))}</div>
+        <p>{trend_sentence(s, season)}</p>
+        {trend_bars(s, season)}
+      </div>""" for s in stats[1:])
+    more = card("More this season", f"Each one measured at the same point of every season since it has data. "
+                f"Lines start in 2013.", f'<div class="trend-grid">{tiles}</div>')
+
+    note = (f'<p class="muted trend-note">FBS-vs-FBS regular-season games through {through} each season '
+            f'(the same weekend of the calendar), FBS membership by season. AP rank at kickoff. Vegas lines are the '
+            f'consensus closing line. Data: CollegeFootballData.com. Updated {model_page.short_date(data["updated"])}.</p>')
+    body = card("Trends", "This season against every season since 1989", hero_html) + upset_card + more + note
+    return page_shell(sport, "Trends", "trends", body)
+
 def build_history_page(sport, log):
     graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
     if graded.empty:
@@ -1892,6 +2031,7 @@ def build_sport_pages(sport):
         "accuracy.html": build_accuracy_page(sport, log, games),
         "model.html": build_model_page(sport),
         **({"ratings.html": build_ratings_page(sport, log)} if sport.get("ratings") else {}),
+        **({"trends.html": build_trends_page(sport)} if sport.get("trends") else {}),
         "schedule.html": games_mod.schedule_redirect(sport["slug"]),
     }
     if sport["player_props_csv"]:
