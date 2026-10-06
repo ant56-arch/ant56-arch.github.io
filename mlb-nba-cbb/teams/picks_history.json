@@ -4753,7 +4753,7 @@
     "starters": 0.121
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-05T14:21:34Z",
    "ml": {
     "team": "CLE",
@@ -4766,9 +4766,12 @@
     "home_ml": -157,
     "away_ml": 130,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 3,
+   "away_runs": 4,
+   "winner": "CWS"
   },
   {
    "date": "2026-10-05",
@@ -4806,7 +4809,7 @@
     "starters": -0.241
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-05T21:51:44Z",
    "ml": {
     "team": "NYY",
@@ -4818,6 +4821,115 @@
     "value": false,
     "home_ml": 104,
     "away_ml": -125,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 5,
+   "away_runs": 2,
+   "winner": "TB"
+  },
+  {
+   "date": "2026-10-06",
+   "game_id": "849819",
+   "start": "2026-10-06T18:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "ATL",
+   "away": "LAD",
+   "home_name": "Atlanta Braves",
+   "away_name": "Los Angeles Dodgers",
+   "home_id": 144,
+   "away_id": 119,
+   "home_record": "94-68",
+   "away_record": "100-62",
+   "home_sp": {
+    "id": 519242,
+    "name": "Chris Sale",
+    "era": 2.24,
+    "ip": 169.0
+   },
+   "away_sp": {
+    "id": 808967,
+    "name": "Yoshinobu Yamamoto",
+    "era": 2.53,
+    "ip": 185.0
+   },
+   "pick": "ATL",
+   "prob": 51.0,
+   "home_prob": 51.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.175,
+    "starters": 0.074
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-06T13:11:29Z",
+   "ml": {
+    "team": "ATL",
+    "side": "home",
+    "price": -109,
+    "prob": 51.0,
+    "book_prob": 49.9,
+    "edge": 1.1,
+    "value": false,
+    "home_ml": -109,
+    "away_ml": -110,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-06",
+   "game_id": "849826",
+   "start": "2026-10-06T21:30:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "SD",
+   "away": "MIL",
+   "home_name": "San Diego Padres",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 135,
+   "away_id": 158,
+   "home_record": "91-71",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 601713,
+    "name": "Nick Pivetta",
+    "era": 2.84,
+    "ip": 38.0
+   },
+   "away_sp": {
+    "id": 669160,
+    "name": "Dustin May",
+    "era": 4.7,
+    "ip": 145.7
+   },
+   "pick": "SD",
+   "prob": 52.4,
+   "home_prob": 52.4,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.192,
+    "starters": 0.148
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-06T13:11:29Z",
+   "ml": {
+    "team": "SD",
+    "side": "home",
+    "price": -136,
+    "prob": 52.4,
+    "book_prob": 55.1,
+    "edge": -2.7,
+    "value": false,
+    "home_ml": -136,
+    "away_ml": 113,
     "book": "DraftKings",
     "won": null,
     "units": null
