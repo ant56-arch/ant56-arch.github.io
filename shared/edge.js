@@ -571,8 +571,15 @@ function edgeMyTeams() {
   return favs.size ? favs : null;
 }
 
+// teams.json is built weekly from ESPN (shared/teams.py), since ESPN's team
+// lists can't be read from the browser; ESPN is only a fallback.
 const edgeTeamCache = {};
+let edgeTeamFile = null;
 async function edgeLoadTeams(sport) {
+  if (!edgeTeamFile) edgeTeamFile = edgeFetchJson("/teams.json");
+  const file = await edgeTeamFile;
+  if (!file) edgeTeamFile = null;
+  if (file && Array.isArray(file[sport]) && file[sport].length) return file[sport];
   if (!edgeTeamCache[sport]) {
     edgeTeamCache[sport] = Promise.all((EDGE_TEAM_LISTS[sport] || []).map(([path, q]) =>
       edgeFetchJson(`https://site.api.espn.com/apis/site/v2/sports/${path}/teams${q ? "?" + q : ""}`, 8000)))

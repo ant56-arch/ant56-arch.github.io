@@ -48,6 +48,8 @@ for attempt in 1 2 3 4 5; do
   for f in $HOME_FILES; do
     cp "$root/$f" "$work/$f"
   done
+  # Every team in each league, for the My teams picker (Update team lists workflow).
+  if [ -f "$root/teams.json" ]; then cp "$root/teams.json" "$work/teams.json"; fi
   # The home page's style.css and home.js are built from shared/ (see shared/assets.py).
   python3 "$root/shared/assets.py" home "$work"
 
