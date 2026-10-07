@@ -319,5 +319,5 @@ season,week,player_id,player_name,pos,team,opponent,kickoff,our_prob,top10,event
 2026,5,00-0036963,A.St. Brown,WR,DET,ARI,2026-10-11T20:25:00Z,0.609,True,,,,,,,,False,,,
 2026,5,00-0032764,D.Henry,RB,BAL,ATL,2026-10-12T00:20:00Z,0.656,True,,,,,,,,False,,,
 2026,5,00-0038542,Bi.Robinson,RB,ATL,BAL,2026-10-12T00:20:00Z,0.594,True,,,,,,,,False,,,
-2026,5,00-0034857,J.Allen,QB,BUF,LA,2026-10-13T00:15:00Z,0.617,True,,,,,,,,False,,,
-2026,5,00-0037840,K.Williams,RB,LA,BUF,2026-10-13T00:15:00Z,0.601,True,,,,,,,,False,,,
+2026,5,00-0034857,J.Allen,QB,BUF,LA,2026-10-13T00:15:00Z,0.615,True,,,,,,,,False,,,
+2026,5,00-0037840,K.Williams,RB,LA,BUF,2026-10-13T00:15:00Z,0.603,True,,,,,,,,False,,,
