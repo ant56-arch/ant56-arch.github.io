@@ -566,11 +566,12 @@ table.record-table td.row-label { font-weight: 700; }
    the script never arrives the box says so instead of sitting blank. */
 .chart-card {
   position: relative;
-  min-height: 220px;
+  height: 340px;
   padding: 16px 0;
   border-bottom: 1px solid var(--rule);
 }
 .chart-card canvas { max-width: 100%; }
+@media (max-width: 560px) { .chart-card { height: 300px; } }
 .chart-card[data-state="loading"],
 .chart-card[data-state="failed"] {
   background-image: repeating-linear-gradient(to bottom, transparent 0 43px, var(--rule) 43px 44px);
@@ -1159,9 +1160,10 @@ a.crawl-item:hover { background: var(--surface-2); }
 .setup-list li { padding: 8px 0; border-bottom: 1px solid var(--rule); color: var(--text); }
 .setup-list li:last-child { border-bottom: none; }
 .setup-label { display: inline-block; min-width: 150px; font-weight: 700; color: var(--text-muted); }
-.trend-chart { display: block; width: 100%; height: auto; margin-top: 18px; }
+.trend-chart { display: block; width: 100%; max-width: 640px; height: auto; margin-top: 18px; }
 .trend-line { fill: none; stroke: var(--ours); stroke-width: 3; }
 .trend-dot { fill: var(--ours); }
+.trend-grid { stroke: var(--rule); stroke-width: 1; }
 .trend-value { fill: var(--text); font-family: var(--font-head); font-size: 16px; font-weight: 700; }
 .trend-label { fill: var(--text-muted); font-size: 12px; }
 .change-flat { color: var(--text-faint); }
@@ -1170,6 +1172,8 @@ a.crawl-item:hover { background: var(--surface-2); }
 table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: var(--text-muted); }
 .model-tiles .stat-value { font-size: 40px; }
 @media (max-width: 700px) {
+  .trend-value { font-size: 22px; }
+  .trend-label { font-size: 16px; }
   .setup-label { display: block; min-width: 0; }
   .model-tiles .stat-value { font-size: 28px; }
   table.responsive-stack.retrain-log tbody tr,

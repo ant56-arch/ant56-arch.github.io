@@ -125,6 +125,9 @@ function initCharts() {
         })),
       },
       options: {
+        // Fill the .chart-card box (base.css) rather than the canvas's
+        // 300x90 default shape, which left a sliver of plot on phones.
+        maintainAspectRatio: false,
         plugins: {
           title: { display: true, text: title, align: "start", font: { size: 15, weight: "bold" }, color: "#ecebe7" },
           legend: { display: true, position: "top", align: "start", labels: { color: "#ecebe7", font: { size: 13 }, boxWidth: 12, boxHeight: 2 } },
@@ -135,7 +138,7 @@ function initCharts() {
           },
         },
         scales: {
-          y: { ticks: { color: "#a8a7a1", callback: pct }, grid: { color: "#2b2d31" }, border: { display: false } },
+          y: { grace: "5%", ticks: { color: "#a8a7a1", callback: pct }, grid: { color: "#2b2d31" }, border: { display: false } },
           x: { ticks: { color: "#a8a7a1" }, grid: { display: false }, border: { color: "#45484e" } },
         },
       },
