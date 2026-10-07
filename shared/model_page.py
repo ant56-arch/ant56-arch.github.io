@@ -37,25 +37,36 @@ def _statline(stats, extra_class=""):
 
 
 def _trend_chart(points, fmt, higher_better):
-    """Inline SVG line of the held-out score after each retrain, oldest first."""
-    w, h, pad_l, pad_r, pad_t, pad_b = 640, 200, 12, 12, 24, 30
+    """Inline SVG line of the held-out score after each retrain, oldest first,
+    with a labelled y-axis. The axis spans at least 4% of the score so tiny
+    wiggles (71.66% vs 71.71%) don't look like big moves."""
+    w, h, pad_l, pad_r, pad_t, pad_b = 480, 300, 64, 30, 34, 34
     vals = [v for _, v in points]
     lo, hi = min(vals), max(vals)
-    span = (hi - lo) or abs(hi) * 0.05 or 1
-    lo, hi = lo - span * 0.25, hi + span * 0.25
+    mid = (lo + hi) / 2
+    span = max(hi - lo, abs(mid) * 0.04) or 1
+    lo, hi = mid - span * 0.75, mid + span * 0.75
     n = len(points)
     xs = [pad_l + (w - pad_l - pad_r) * (i / (n - 1) if n > 1 else 0.5) for i in range(n)]
-    ys = [pad_t + (h - pad_t - pad_b) * (1 - (v - lo) / (hi - lo)) for v in vals]
+    y = lambda v: pad_t + (h - pad_t - pad_b) * (1 - (v - lo) / (hi - lo))
+    ys = [y(v) for v in vals]
+    grid = "".join(
+        f'<line x1="{pad_l}" x2="{w - pad_r + 10}" y1="{y(v):.1f}" y2="{y(v):.1f}" class="trend-grid"/>'
+        f'<text x="{pad_l - 8}" y="{y(v) + 4:.1f}" class="trend-label" text-anchor="end">{escape(fmt(v))}</text>'
+        for v in (lo + (hi - lo) * k / 4 for k in range(5)))
     line = " ".join(f"{x:.1f},{y:.1f}" for x, y in zip(xs, ys))
+
+    def anchor(i):
+        return "start" if n > 1 and i == 0 else "end" if n > 1 and i == n - 1 else "middle"
     dots = "".join(
-        f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.5" class="trend-dot"/>'
-        f'<text x="{x:.1f}" y="{y - 10:.1f}" class="trend-value" text-anchor="middle">{escape(fmt(v))}</text>'
-        f'<text x="{x:.1f}" y="{h - 8}" class="trend-label" text-anchor="middle">{escape(d)}</text>'
-        for (d, v), x, y in zip(points, xs, ys))
+        f'<circle cx="{x:.1f}" cy="{yy:.1f}" r="4.5" class="trend-dot"/>'
+        f'<text x="{x:.1f}" y="{yy - 10:.1f}" class="trend-value" text-anchor="{anchor(i)}">{escape(fmt(v))}</text>'
+        f'<text x="{x:.1f}" y="{h - 6}" class="trend-label" text-anchor="{anchor(i)}">{escape(d.rsplit(", ", 1)[0])}</text>'
+        for i, ((d, v), x, yy) in enumerate(zip(points, xs, ys)))
     direction = "Higher is better" if higher_better else "Lower is better"
     return (f'<svg class="trend-chart" viewBox="0 0 {w} {h}" role="img" '
             f'aria-label="Score on held-out games after each retrain. {direction}.">'
-            f'<polyline points="{line}" class="trend-line"/>{dots}</svg>')
+            f'{grid}<polyline points="{line}" class="trend-line"/>{dots}</svg>')
 
 
 def _change(now, before, fmt):
