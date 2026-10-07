@@ -33,7 +33,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, ROOT)
 from build_site import (asset_version, write_assets, slim_footer, bb_game_pages, card_game, game_units, lock_note, ET, NOW,  # noqa: E402
-                        card, ml_day, ml_history, pct, price_line, record_band_html, script_json, statline)
+                        card, ml_day, ml_history, pct, price_line, record_band_html, season_record, script_json, statline)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
@@ -87,6 +87,13 @@ def kick_time(p):
 
 def graded(picks):
     return [p for p in picks if p.get("correct") is not None and not p.get("void")]
+
+
+def season_label(iso):
+    """European seasons run July to June; 2026-10-07 and 2027-04-01 are both in 2026-27."""
+    d = date.fromisoformat(iso[:10])
+    start = d.year if d.month >= 7 else d.year - 1
+    return f"{start}-{str(start + 1)[2:]}"
 
 
 def wl(picks):
@@ -631,6 +638,7 @@ def build_summary(history, model):
             d = date.fromisoformat(min(p["date"] for p in g))
             summary["record"] = {"value": f"{w}-{l}", "label": "our picks", "sub": pct(w / len(g), 1),
                                  "since": f"{d:%b} {d.day}, {d.year}"}
+            summary["season_record"] = season_record(g, season_label, wl)
         ml = moneyline.record(picks)
         if ml:
             summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": "moneyline",

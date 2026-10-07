@@ -125,6 +125,7 @@
 .hr-tile:last-child { border-right: 0; }
 .hr-lbl { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
 .hr-lbl em { font-style: normal; color: var(--ours); }
+.hr-lbl b { display: block; margin-top: 2px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-muted); }
 .hr-val { margin-top: 4px; font-family: var(--font-head); font-size: 34px; font-weight: 800; font-style: italic; line-height: 1.05; white-space: nowrap; transition: color 0.15s ease; }
 .hr-val i { margin-left: 6px; font-size: 19px; color: var(--ours); }
 a.hr-tile:hover .hr-val { color: var(--ours); }
