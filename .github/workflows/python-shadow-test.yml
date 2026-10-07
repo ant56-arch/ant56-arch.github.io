@@ -42,7 +42,18 @@ jobs:
             ${{ env.OLD }}
             ${{ env.NEW }}
 
+      # CFBD responses carried between runs (src/fetch_cfb_data.py): finished
+      # seasons are fetched once, so the 1,000-call monthly quota lasts.
+      - name: Restore CFBD cache
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: nfl-cfb/data/raw/cfbd_cache
+          key: cfbd-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: cfbd-
+
       - name: Run both versions and diff
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+          CFBD_CACHE_ONLY: "1"
         run: .github/python-shadow-test.sh ${{ matrix.group }}

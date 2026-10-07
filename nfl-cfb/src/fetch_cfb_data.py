@@ -21,11 +21,16 @@ Output: raw CSVs saved to data/raw/ (cfb_games.csv, cfb_advanced_stats.csv,
 cfb_teams.csv), the same directory the NFL raw data lives in.
 """
 
-import requests
-import pandas as pd
+import atexit
+import gzip
+import json
 import os
+import re
 import time
 from datetime import datetime
+
+import pandas as pd
+import requests
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 os.makedirs(RAW_DIR, exist_ok=True)
@@ -47,14 +52,76 @@ def _headers():
         return None
     return {"Authorization": f"Bearer {key}"}
 
+# CFBD's free key allows 1,000 calls a month (it ran out on 2026-10-06), so
+# every call goes through a cache in data/raw/cfbd_cache/, which the
+# workflows carry from run to run with actions/cache:
+#  - finished seasons, and lists that don't change during a season (FBS teams,
+#    roster talent, returning production), are fetched once and kept;
+#  - the current season is reused for RUN_CACHE_HOURS, so the steps of one
+#    run share a single fetch; with CFBD_CACHE_ONLY=1 (the runs that only
+#    need scores, which ESPN fills, plus the refit and the shadow test) any
+#    cached copy is used and CFBD is asked only for what was never fetched;
+#  - the current season's postseason isn't asked for before December.
+CACHE_DIR = os.path.join(RAW_DIR, "cfbd_cache")
+RUN_CACHE_HOURS = 3
+STATIC_PATHS = {"/teams/fbs", "/talent", "/player/returning"}
+_calls = {"made": 0, "remaining": None}
+
+
+def _cache_policy(path, params):
+    season, now = current_cfb_season(), datetime.utcnow()
+    year = params.get("year")
+    year = int(year) if year is not None else None
+    if year == season and params.get("seasonType") == "postseason" and 3 <= now.month <= 11:
+        return "skip"
+    if year is not None and (year < season or path in STATIC_PATHS):
+        return "keep"
+    return "run"
+
+
+def _cache_file(path, params):
+    key = path.strip("/").replace("/", "_") + "_" + "_".join(f"{k}-{params[k]}" for k in sorted(params))
+    return os.path.join(CACHE_DIR, re.sub(r"[^A-Za-z0-9_.-]", "", key) + ".json.gz")
+
+
 def _get(path, params):
+    """CFBD GET through the cache above. The fetch time is stored in the file,
+    since actions/cache doesn't keep file times."""
+    policy = _cache_policy(path, params)
+    if policy == "skip":
+        return []
+    cached = _cache_file(path, params)
+    if os.path.exists(cached):
+        with gzip.open(cached, "rt") as f:
+            entry = json.load(f)
+        fresh = time.time() - entry["fetched"] < RUN_CACHE_HOURS * 3600
+        if policy == "keep" or fresh or os.environ.get("CFBD_CACHE_ONLY") == "1":
+            return entry["data"]
+    data = _get_live(path, params)
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with gzip.open(cached, "wt") as f:
+        json.dump({"fetched": time.time(), "data": data}, f, separators=(",", ":"))
+    return data
+
+
+def _report_calls():
+    if _calls["made"]:
+        print(f"  CFBD calls this step: {_calls['made']}, left this month: {_calls['remaining']}")
+
+
+atexit.register(_report_calls)
+
+
+def _get_live(path, params):
     """GET with a few retries: CFBD sometimes drops a large response midway
     ("Response ended prematurely") or answers 502/503 for a minute, which
     used to leave a run with no CFB picks at all. A client error (bad key,
-    season not out yet) is raised right away."""
+    season not out yet, quota used up) is raised right away."""
     for attempt in range(4):
         try:
             r = requests.get(f"{BASE}{path}", params=params, headers=_headers(), timeout=60)
+            _calls["made"] += 1
+            _calls["remaining"] = r.headers.get("X-CallLimit-Remaining", _calls["remaining"])
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:

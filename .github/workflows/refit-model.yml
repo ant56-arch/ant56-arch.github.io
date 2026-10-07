@@ -71,12 +71,33 @@ jobs:
         continue-on-error: true
         run: python src/fit_td_model.py
 
+      # CFBD responses carried between runs (src/fetch_cfb_data.py): finished
+      # seasons are fetched once, so the 1,000-call monthly quota lasts.
+      - name: Restore CFBD cache
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: nfl-cfb/data/raw/cfbd_cache
+          key: cfbd-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: cfbd-
+
+      # Uses the cached CFB data (Monday's noon run has the weekend's games);
+      # CFBD is only asked for what was never fetched.
       - name: Fit + validate CFB model coefficients
         continue-on-error: true
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+          CFBD_CACHE_ONLY: "1"
           FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
         run: python src/fit_cfb_model.py
+
+      - name: Save CFBD cache
+        if: always()
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: nfl-cfb/data/raw/cfbd_cache
+          key: cfbd-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Commit updated coefficients
         run: |
