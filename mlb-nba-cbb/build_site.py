@@ -347,6 +347,23 @@ def alltime(history):
     return g, sum(p["got_hit"] for p in g), min((p["date"] for p in g), default=None)
 
 
+def hit_wl(picks):
+    hits = sum(p["got_hit"] for p in picks)
+    return hits, len(picks) - hits
+
+
+def season_record(g, season_of, wl):
+    """This season's record for the home page: the latest season with a graded
+    pick, so a finished season's record stays up until the next one's first
+    graded pick. None before any graded pick."""
+    if not g:
+        return None
+    season = max(season_of(p["date"]) for p in g)
+    cur = [p for p in g if season_of(p["date"]) == season]
+    w, l = wl(cur)
+    return {"value": f"{w}-{l}", "sub": pct(w / len(cur), 1), "season": str(season)}
+
+
 def record_band(history, team_history):
     g, hits, first = alltime(history)
     eyebrow = "MLB Edge &middot; top hitters who got a hit"
@@ -1343,6 +1360,7 @@ def games_summary(picks):
         d = date.fromisoformat(min(p["date"] for p in g))
         out["record"] = {"value": f"{w}-{l}", "label": "picking which team wins", "sub": pct(w / len(g), 1),
                          "since": f"{d:%b} {d.day}, {d.year}"}
+        out["season_record"] = season_record(g, lambda day: day[:4], game_wl)
     return out
 
 
@@ -1371,6 +1389,7 @@ def build_summary(history, model, team_history=None):
         d = date.fromisoformat(first)
         summary["record"] = {"value": f"{hits}-{len(g) - hits}", "label": "top hitters who got a hit",
                              "sub": pct(hits / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
+        summary["season_record"] = season_record(g, lambda day: day[:4], hit_wl)
     summary["games"] = games_summary((team_history or {}).get("picks", []))
     add_home_parts(summary, history, team_history)
     return summary

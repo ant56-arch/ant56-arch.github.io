@@ -340,13 +340,19 @@ function hgRecords() {
     parts.forEach(([sport, part, data, href]) => {
       const rec = data && data.record;
       if (!rec) { if (!soon.includes(sport)) soon.push(sport); return; }
+      // This season's record big (a finished season's stays up until the next
+      // one's first graded pick), with the all-time record under it.
+      const cur = data.season_record || rec;
       const a = hgEl("a", "hr-tile");
       a.href = href;
       const lbl = hgEl("span", "hr-lbl", sport + " ");
       if (part) lbl.append(hgEl("em", null, part));
-      const val = hgEl("span", "hr-val", rec.value);
-      if (rec.sub) val.append(hgEl("i", null, rec.sub.replace(/\.\d%$/, "%")));
-      a.append(lbl, val, hgEl("small", null, rec.since ? "since " + rec.since.replace(/, \d{4}$/, "") : rec.label));
+      if (data.season_record) lbl.append(hgEl("b", null, cur.season + " season"));
+      const val = hgEl("span", "hr-val", cur.value);
+      if (cur.sub) val.append(hgEl("i", null, cur.sub.replace(/\.\d%$/, "%")));
+      a.append(lbl, val, hgEl("small", null, !data.season_record
+        ? (rec.since ? "since " + rec.since.replace(/, \d{4}$/, "") : rec.label)
+        : `All-time ${rec.value}` + (rec.since ? " since " + rec.since.replace(/ \d+,/, "") : "")));
       tiles.push(a);
     });
   });

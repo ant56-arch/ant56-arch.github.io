@@ -568,6 +568,22 @@ def live_record(sport, log):
             "ml_n": len(ml), "units": float(ml["ml_units"].sum()) if len(ml) else None,
             "ats": (ats.count(True), ats.count(False))}
 
+def season_record(sport, log):
+    """This season's record for the home page: our pick to win in every graded
+    game of the latest season with one, so a finished season's record stays up
+    until the next season's first graded game. None before any graded game."""
+    if log is None or log.empty or "actual_margin" not in log.columns:
+        return None
+    done = log[(log["season"] >= sport["live_tracking_start_season"]) & log["actual_margin"].notna()]
+    hits = [(int(r["season"]), pick_hit(r)) for _, r in done.iterrows()]
+    hits = [(s, h) for s, h in hits if h is not None]
+    if not hits:
+        return None
+    season = max(s for s, _ in hits)
+    cur = [h for s, h in hits if s == season]
+    wins = cur.count(True)
+    return {"value": f"{wins}-{len(cur) - wins}", "sub": f"{wins / len(cur):.1%}", "season": str(season)}
+
 def record_band(sport, rec):
     """The Home tab's first panel: our all-time record, big."""
     eyebrow = f'<div class="rb-eyebrow">{sport["wordmark"]} Edge &middot; our picks to win</div>'
@@ -1830,6 +1846,7 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
     if rec:
         summary["record"] = {"value": f"{rec['wins']}-{rec['losses']}", "label": "our picks to win",
                              "sub": pct(rec["pct"]), "since": rec["since"]}
+        summary["season_record"] = season_record(sport, log)
     # Optional: this season's moneyline record, same shape as "record".
     ml_season, ml = ml_record(sport, games, log)
     summary["moneyline_record"] = ({"value": ml["record"], "label": f"{ml_season} moneyline",
