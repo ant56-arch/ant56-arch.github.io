@@ -4865,7 +4865,7 @@
     "starters": 0.074
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-06T20:01:04Z",
    "ml": {
     "team": "ATL",
@@ -4878,9 +4878,12 @@
     "home_ml": -109,
     "away_ml": -110,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 1,
+   "away_runs": 3,
+   "winner": "LAD"
   },
   {
    "date": "2026-10-06",
@@ -4918,7 +4921,7 @@
     "starters": 0.148
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-06T23:41:43Z",
    "ml": {
     "team": "SD",
@@ -4930,6 +4933,221 @@
     "value": false,
     "home_ml": -143,
     "away_ml": 118,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.699
+   },
+   "home_runs": 4,
+   "away_runs": 3,
+   "winner": "SD"
+  },
+  {
+   "date": "2026-10-07",
+   "game_id": "849833",
+   "start": "2026-10-07T16:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "CWS",
+   "away": "CLE",
+   "home_name": "Chicago White Sox",
+   "away_name": "Cleveland Guardians",
+   "home_id": 145,
+   "away_id": 114,
+   "home_record": "84-78",
+   "away_record": "85-77",
+   "home_sp": {
+    "id": 656794,
+    "name": "Sean Newcomb",
+    "era": 0.84,
+    "ip": 10.7
+   },
+   "away_sp": {
+    "id": 682982,
+    "name": "Daniel Espino",
+    "era": 6.75,
+    "ip": 4.0
+   },
+   "pick": "CWS",
+   "prob": 56.9,
+   "home_prob": 56.9,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.006,
+    "starters": 0.129
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-07T13:08:13Z",
+   "ml": {
+    "team": "CWS",
+    "side": "home",
+    "price": -120,
+    "prob": 56.9,
+    "book_prob": 52.2,
+    "edge": 4.7,
+    "value": false,
+    "home_ml": -120,
+    "away_ml": 100,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-07",
+   "game_id": "849822",
+   "start": "2026-10-07T18:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "ATL",
+   "away": "LAD",
+   "home_name": "Atlanta Braves",
+   "away_name": "Los Angeles Dodgers",
+   "home_id": 144,
+   "away_id": 119,
+   "home_record": "94-68",
+   "away_record": "100-62",
+   "home_sp": {
+    "id": 641816,
+    "name": "Tyler Mahle",
+    "era": 3.87,
+    "ip": 156.0
+   },
+   "away_sp": {
+    "id": 607192,
+    "name": "Tyler Glasnow",
+    "era": 3.53,
+    "ip": 74.0
+   },
+   "pick": "LAD",
+   "prob": 52.7,
+   "home_prob": 47.3,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.19,
+    "starters": -0.061
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-07T13:08:13Z",
+   "ml": {
+    "team": "LAD",
+    "side": "away",
+    "price": -149,
+    "prob": 52.7,
+    "book_prob": 57.3,
+    "edge": -4.6,
+    "value": false,
+    "home_ml": 124,
+    "away_ml": -149,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-07",
+   "game_id": "849838",
+   "start": "2026-10-07T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "NYY",
+   "away": "TB",
+   "home_name": "New York Yankees",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 147,
+   "away_id": 139,
+   "home_record": "93-68",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 608331,
+    "name": "Max Fried",
+    "era": 2.73,
+    "ip": 118.7
+   },
+   "away_sp": {
+    "id": 607259,
+    "name": "Nick Martinez",
+    "era": 3.1,
+    "ip": 180.0
+   },
+   "pick": "NYY",
+   "prob": 58.1,
+   "home_prob": 58.1,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.049,
+    "starters": 0.138
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-07T13:08:13Z",
+   "ml": {
+    "team": "NYY",
+    "side": "home",
+    "price": -173,
+    "prob": 58.1,
+    "book_prob": 60.6,
+    "edge": -2.5,
+    "value": false,
+    "home_ml": -173,
+    "away_ml": 143,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-07",
+   "game_id": "849827",
+   "start": "2026-10-07T22:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "SD",
+   "away": "MIL",
+   "home_name": "San Diego Padres",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 135,
+   "away_id": 158,
+   "home_record": "91-71",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 621111,
+    "name": "Walker Buehler",
+    "era": 4.63,
+    "ip": 153.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "MIL",
+   "prob": 52.0,
+   "home_prob": 48.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.181,
+    "starters": -0.042
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-07T13:08:13Z",
+   "ml": {
+    "team": "MIL",
+    "side": "away",
+    "price": -105,
+    "prob": 52.0,
+    "book_prob": 48.9,
+    "edge": 3.1,
+    "value": false,
+    "home_ml": -115,
+    "away_ml": -105,
     "book": "DraftKings",
     "won": null,
     "units": null
