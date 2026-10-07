@@ -6,8 +6,9 @@ free tier, for comparison against our own model's projections.
 Requires GitHub Secret: ODDS_API_KEY
 
 Free tier note: 500 credits/month. Each call here costs regions x markets
-credits (1 region x 3 markets = 3 credits). At our Tue/Fri cadence, that's
-roughly 24 credits/month - comfortably within the free allowance.
+credits (1 region x 3 markets = 3 credits). weekly-picks.yml only fetches on
+the runs that need fresh lines (about 30 credits a week), reusing the last
+pull otherwise.
 """
 
 import requests
