@@ -10,13 +10,21 @@ name: NFL and CFB Picks
 
 on:
   workflow_dispatch:
+    inputs:
+      odds:
+        description: "Also pull fresh Vegas lines (spends Odds API credits, 500 a month)"
+        type: boolean
+        default: false
   schedule:
     # Times are ET converted to UTC assuming EDT (UTC-4); after the fall DST
     # change to EST they land an hour earlier in ET. GitHub often starts
     # scheduled runs late, so the minutes are off the top of the hour, where
-    # the queue is busiest. Every run rebuilds both sites; the NFL odds are
-    # fetched every run, the CFB odds only on the CFB update runs below
-    # (about 3 odds-API credits per sport per fetch, 500 a month).
+    # the queue is busiest. Every run rebuilds both sites. Odds API credits
+    # (500 a month, about 3 per sport per fetch) only go on the runs that need
+    # fresh lines: NFL at noon Sun-Fri and before the Sunday, Monday and
+    # Thursday night games; CFB at noon Sun-Fri and Friday 7:15 PM while CFB
+    # data is up. Other runs, and manual runs unless "odds" is ticked, reuse
+    # the last lines pulled.
     # Saturday: 12 PM, 4 PM, 7 PM and 11 PM ET. CFB scores and results only;
     # its lines locked Friday at 9 PM ET (src/moneyline.py lock_times).
     - cron: "5 16,20,23 * * 6"
@@ -25,8 +33,10 @@ on:
     # an NFL run an hour before Sunday's early slate.
     - cron: "5 16 * * 0-5"
     # 7:15 PM ET, about an hour before the TNF, SNF and MNF kickoffs. Friday's
-    # also takes CFB's last odds before the 9 PM ET lock.
-    - cron: "15 23 * * 0-4"
+    # also takes CFB's last odds before the 9 PM ET lock. Tuesday's and
+    # Wednesday's only refresh results and the site.
+    - cron: "15 23 * * 0,1,4"
+    - cron: "15 23 * * 2,3"
     - cron: "15 23 * * 5"
 
 permissions:
@@ -71,11 +81,31 @@ jobs:
         id: build_defense_stats
         run: python src/build_defense_stats.py
 
+      # data/raw/odds.csv isn't committed, so the last pull is carried
+      # between runs; a run that skips the fetch predicts with those lines
+      # (the trackers still lock each game's line at kickoff).
+      - name: Restore last Vegas odds
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: nfl-cfb/data/raw/odds.csv
+          key: nfl-odds-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: nfl-odds-
+
       - name: Fetch Vegas odds
         id: fetch_odds
+        if: (github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == ''
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python src/fetch_odds.py
+
+      - name: Save Vegas odds
+        if: steps.fetch_odds.outcome == 'success'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: nfl-cfb/data/raw/odds.csv
+          key: nfl-odds-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Generate game predictions (model + market-blended sharp line)
         id: game_predictions
@@ -89,6 +119,7 @@ jobs:
       # last pull is over 6 hours old (~18 credits a week, see the script).
       - name: Fetch anytime TD odds
         id: fetch_td_odds
+        if: github.event_name != 'workflow_dispatch' || inputs.odds
         continue-on-error: true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -138,10 +169,12 @@ jobs:
         run: python src/build_cfb_features.py
 
       # CFB odds only on the daily noon run and Friday's last one before the
-      # 9 PM ET lock (and manual runs); other runs keep the logged lines.
+      # 9 PM ET lock (and manual runs with "odds" ticked), and only when the
+      # CFB data fetch worked, so no credits go on lines while CFBD is down.
+      # Other runs keep the logged lines.
       - name: Fetch CFB odds
         id: fetch_cfb_odds
-        if: github.event_name != 'schedule' || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5'
+        if: steps.fetch_cfb_data.outcome == 'success' && ((github.event_name == 'workflow_dispatch' && inputs.odds) || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5')
         continue-on-error: true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
