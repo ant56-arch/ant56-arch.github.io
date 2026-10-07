@@ -121,7 +121,7 @@ const EDGE_SETTINGS = [
   { k: "sound", label: "Sound", sub: "A short chime when a team scores", on: false },
   { k: "liveOnly", label: "Live games only", sub: "Hide games still to play and finals", on: false },
   { k: "picks", label: "Our picks", sub: "Show the model's pick next to each game", on: true },
-  { k: "myTeams", label: "My teams only", sub: "Only games with teams you pick below", on: false },
+  { k: "myTeamsFirst", label: "My teams first", sub: "Games with teams you pick lead the ticker", on: true },
   { button: "pickTeams", label: "Pick my teams" },
   { k: "speed", label: "Ticker speed", on: "normal", choices: [["slow", "Slow"], ["normal", "Normal"], ["fast", "Fast"]] },
   { group: "Sports in the ticker" },
@@ -479,11 +479,11 @@ function edgeCrawlSave(cls) {
   edgeStore(EDGE_CRAWL_KEY, all);
 }
 
-function edgeTickerItem(site, g) {
+function edgeTickerItem(site, g, mine) {
   return () => {
     const a = edgeNode("a", "crawl-item" + (g.state === "in" ? " is-live" : ""));
     a.href = site.schedule;
-    a.append(edgeNode("span", "crawl-sport", site.sport));
+    a.append(edgeNode("span", "crawl-sport", (mine ? "\u2605 " : "") + site.sport));
     [g.away, g.home].forEach(t => {
       const team = edgeNode("span", "crawl-team" + (g.state === "post" && t.winner ? " is-winner" : "") +
                             (edgeTicker.flash.has(`${site.sport}:${g.id}:${t === g.away ? "away" : "home"}`) ? " just-scored" : ""));
@@ -563,10 +563,11 @@ function edgeSetFav(sport, abbr, on) {
   window.dispatchEvent(new CustomEvent("edge-favs-change"));
 }
 
-// Teams starred, for "My teams only" in the ticker.
+// Teams starred, for "My teams first" in the ticker. The ticker still shows
+// every game; starred teams' games just come first.
 function edgeMyTeams() {
   const settings = edgeSettings();
-  if (!settings.myTeams) return null;
+  if (!settings.myTeamsFirst) return null;
   const favs = edgeFavs();
   return favs.size ? favs : null;
 }
@@ -712,22 +713,21 @@ function edgeRenderTicker() {
   const mine = edgeMyTeams();
   const t = g => new Date(g.start).getTime() || 0;
   const items = [];
-  // Live games first, then games still to play, then finals.
+  const later = [];
+  const isMine = (sport, g) => mine && (mine.has(edgeFavKey(sport, g.away.abbr)) || mine.has(edgeFavKey(sport, g.home.abbr)));
+  // My teams' games first, then live games, games still to play, finals.
   (settings.liveOnly ? ["in"] : ["in", "pre", "post"]).forEach(state => {
     EDGE_TICKER_SPORTS.forEach(sport => {
       const slate = edgeTicker.slates[sport];
       if (!settings[sport] || !slate) return;
       const site = EDGE_SITES.find(s => s.sport === sport);
       slate.games.filter(g => g.state === state)
-        .filter(g => !mine || mine.has(edgeFavKey(sport, g.away.abbr)) || mine.has(edgeFavKey(sport, g.home.abbr)))
         .sort((a, b) => (state === "post" ? t(b) - t(a) : t(a) - t(b)))
-        .forEach(g => items.push(edgeTickerItem(site, g)));
+        .forEach(g => (isMine(sport, g) ? items : later).push(edgeTickerItem(site, g, isMine(sport, g))));
     });
   });
-  edgeCrawl("crawl-ticker", "Scores", settings.ticker ? items : []);
-  const plays = edgeTicker.plays
-    .filter(p => settings[p.sport] && (!mine || (p.teams || []).some(a => mine.has(edgeFavKey(p.sport, a)))))
-    .map(edgePlayItem);
+  edgeCrawl("crawl-ticker", "Scores", settings.ticker ? items.concat(later) : []);
+  const plays = edgeTicker.plays.filter(p => settings[p.sport]).map(edgePlayItem);
   edgeCrawl("crawl-plays", "Scoring", settings.plays ? plays : []);
 }
 
@@ -824,8 +824,7 @@ async function initScoreboard() {
   edgeTicker.plays = plays;
   edgeRenderTicker();
   const settings = edgeSettings();
-  const mine = edgeMyTeams();
-  const shown = fresh.filter(p => settings[p.sport] && (!mine || p.teams.some(a => mine.has(edgeFavKey(p.sport, a)))));
+  const shown = fresh.filter(p => settings[p.sport]);
   if (settings.popups) shown.slice(0, 3).forEach(edgeScoreToast);
   if (settings.sound && shown.length && !document.hidden) edgeChime();
   const now = Date.now();
