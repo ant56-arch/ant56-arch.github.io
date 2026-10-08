@@ -1,3 +1,50 @@
 {
- "picks": []
+ "picks": [
+  {
+   "date": "2026-10-09",
+   "game_id": "401882851",
+   "start": "2026-10-09T15:00:00-04:00",
+   "comp": "LALIGA",
+   "season": 2026,
+   "home": "MCF",
+   "away": "ESP",
+   "home_name": "M\u00e1laga",
+   "away_name": "Espanyol",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/99.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/88.png",
+   "home_record": "0-3-4",
+   "away_record": "2-1-4",
+   "neutral": false,
+   "pick": "MCF",
+   "pick_side": "home",
+   "prob": 35.7,
+   "probs": {
+    "home": 35.7,
+    "draw": 30.0,
+    "away": 34.3
+   },
+   "xg": {
+    "home": 1.13,
+    "away": 1.1
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-08T12:46:25Z",
+   "ml": {
+    "side": "home",
+    "price": 175,
+    "prob": 35.7,
+    "book_prob": 34.7,
+    "edge": 0.9,
+    "value": false,
+    "home_ml": 175,
+    "draw_ml": 220,
+    "away_ml": 170,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "MCF"
+   }
+  }
+ ]
 }
