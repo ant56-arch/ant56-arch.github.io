@@ -27,6 +27,11 @@ on:
     - cron: '0 20 * * *'    # 4:00pm ET  - picks (most night lineups are up)
     - cron: '30 22 * * *'   # 6:30pm ET  - picks (West Coast lineups)
     - cron: '0 6 * * *'     # 2:00am ET  - grade results
+    # Backups: GitHub sometimes runs a scheduled run hours late or skips it
+    # (2026-10-08 lost both the 2am and 8:07am runs). These only build when
+    # no run has finished yet this morning (the guard job below).
+    - cron: '37 13 * * *'   # 9:37am ET  - backup picks
+    - cron: '22 14 * * *'   # 10:22am ET - backup picks
   workflow_dispatch:
     inputs:
       mode:
@@ -37,7 +42,7 @@ on:
 
 permissions:
   contents: write
-  actions: write  # dispatches the MLB hitter retrain on a cold stretch
+  actions: write  # dispatches the MLB hitter retrain on a cold stretch; the guard lists runs
 
 concurrency:
   group: mlb-edge
@@ -49,7 +54,30 @@ defaults:
     working-directory: mlb-nba-cbb
 
 jobs:
+  # A backup run goes ahead only if no run has succeeded since 7am ET today.
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      go: ${{ steps.check.outputs.go }}
+    steps:
+      - id: check
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BACKUP: ${{ github.event.schedule == '37 13 * * *' || github.event.schedule == '22 14 * * *' }}
+        run: |
+          go=true
+          if [ "$BACKUP" = true ]; then
+            n=$(gh run list -R "$GITHUB_REPOSITORY" --workflow daily.yml --status success \
+                  --created ">=$(date -u +%Y-%m-%d)T11:00:00Z" --json databaseId --jq length || echo 0)
+            [ "${n:-0}" -gt 0 ] && go=false
+            echo "Runs already finished this morning: ${n:-0}"
+          fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: guard
+    if: needs.guard.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
