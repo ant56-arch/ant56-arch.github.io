@@ -16790,9 +16790,9 @@
       "reason": "Batting 4th \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 3,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16838,9 +16838,9 @@
       "reason": "Batting 2nd \u00b7 Platoon edge (SHB vs. LHP)",
       "hit_streak": 0,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16886,9 +16886,9 @@
       "reason": "Batting 1st \u00b7 .293 season average",
       "hit_streak": 1,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16934,9 +16934,9 @@
       "reason": "Batting 2nd \u00b7 .288 season average",
       "hit_streak": 0,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -16982,9 +16982,9 @@
       "reason": "Batting 4th \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 2,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -17030,9 +17030,9 @@
       "reason": "Batting 2nd \u00b7 Faces Nick Martinez (3.10 ERA, 1.09 WHIP)",
       "hit_streak": 2,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -17078,9 +17078,9 @@
       "reason": "Batting 1st \u00b7 Hitting .571 over the last 2 weeks",
       "hit_streak": 5,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -17126,9 +17126,9 @@
       "reason": "Batting 1st \u00b7 Hitting .467 over the last 2 weeks",
       "hit_streak": 0,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -17524,6 +17524,10 @@
     "2026-10-06": {
       "hitters": 42,
       "with_hit": 23
+    },
+    "2026-10-07": {
+      "hitters": 82,
+      "with_hit": 42
     }
   }
 }
