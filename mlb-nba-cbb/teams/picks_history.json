@@ -5122,29 +5122,29 @@
     "ip": 153.7
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 688107,
+    "name": "Robert Gasser",
+    "era": 3.98,
+    "ip": 104.0
    },
    "pick": "MIL",
-   "prob": 52.0,
-   "home_prob": 48.0,
+   "prob": 53.8,
+   "home_prob": 46.2,
    "factors": {
     "home_field": 0.141,
     "elo": -0.181,
-    "starters": -0.042
+    "starters": -0.113
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-10-07T20:26:28Z",
+   "set_at": "2026-10-08T00:06:00Z",
    "ml": {
     "team": "MIL",
     "side": "away",
     "price": -107,
-    "prob": 52.0,
+    "prob": 53.8,
     "book_prob": 49.5,
-    "edge": 2.5,
+    "edge": 4.3,
     "value": false,
     "home_ml": -112,
     "away_ml": -107,
