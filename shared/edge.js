@@ -872,8 +872,9 @@ initSportMenu();
 // --- Motion and record helpers (home page and sport pages) ---
 // Sliding tab highlight, rolling score digits, records that count up, and
 // the per-day results (summary.json "daily": [[date, wins, losses], ...])
-// behind trend lines, streak badges, the record chart and the Model tab's
-// results calendar. Every animation is skipped for prefers-reduced-motion.
+// behind trend lines, the record chart and the Model tab's results
+// calendar. Streak badges read "ml_daily", the same shape for moneyline
+// picks only. Every animation is skipped for prefers-reduced-motion.
 const EDGE_REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
 
 // Puts a highlight behind (kind "pill") or under (kind "line") a button
@@ -979,7 +980,7 @@ function edgeStreakBadge(daily) {
   if (!s) return null;
   const word = s.kind === "W" ? "winning" : "losing";
   const b = edgeNode("span", "streak " + (s.kind === "W" ? "is-w" : "is-l"), s.kind + s.n);
-  b.title = `${s.n} ${word} ${s.n === 1 ? "day" : "days"} in a row`;
+  b.title = `${s.n} ${word} moneyline ${s.n === 1 ? "day" : "days"} in a row`;
   b.setAttribute("aria-label", b.title);
   return b;
 }

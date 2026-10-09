@@ -411,6 +411,16 @@ def daily_results(g, wl):
     return [[day, *wl(ps)] for day, ps in sorted(by_day.items())]
 
 
+def ml_daily(picks):
+    """[[date, wins, losses], ...] oldest first for graded moneyline picks
+    only: what the home page's win/loss streak badge counts."""
+    by_day = {}
+    for p in moneyline.graded(picks):
+        wl = by_day.setdefault(p["date"], [0, 0])
+        wl[0 if p["ml"]["won"] else 1] += 1
+    return [[day, w, l] for day, (w, l) in sorted(by_day.items())]
+
+
 def record_band(history, team_history):
     g, hits, first = alltime(history)
     eyebrow = "MLB Edge &middot; top hitters who got a hit"
@@ -1260,6 +1270,7 @@ def games_summary(picks):
                          "since": f"{d:%b} {d.day}, {d.year}"}
         out["season_record"] = season_record(g, lambda day: day[:4], game_wl)
         out["daily"] = daily_results(g, game_wl)
+    out["ml_daily"] = ml_daily(picks)
     return out
 
 

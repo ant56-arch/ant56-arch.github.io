@@ -602,6 +602,21 @@ def daily_results(sport, log):
         wl[0 if hit else 1] += 1
     return [[day, w, l] for day, (w, l) in sorted(by_day.items())]
 
+def ml_daily(sport, log):
+    """[[date, wins, losses], ...] oldest first for graded moneyline picks
+    only (pushes left out): what the home page's win/loss streak badge counts."""
+    if log is None or log.empty or "ml_won" not in log.columns:
+        return []
+    done = log[(log["season"] >= sport["live_tracking_start_season"]) & log["ml_won"].notna()]
+    by_day = {}
+    for _, r in done.iterrows():
+        day = pd.to_datetime(r.get("gameday"), errors="coerce")
+        if pd.isna(day):
+            continue
+        wl = by_day.setdefault(f"{day:%Y-%m-%d}", [0, 0])
+        wl[0 if r["ml_won"] else 1] += 1
+    return [[day, w, l] for day, (w, l) in sorted(by_day.items())]
+
 def record_band(sport, rec):
     """The Home tab's first panel: our all-time record, big."""
     eyebrow = f'<div class="rb-eyebrow">{sport["wordmark"]} Edge &middot; our picks to win</div>'
@@ -1892,6 +1907,7 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
                              "sub": pct(rec["pct"]), "since": rec["since"]}
         summary["season_record"] = season_record(sport, log)
         summary["daily"] = daily_results(sport, log)
+    summary["ml_daily"] = ml_daily(sport, log)
     # Optional: this season's moneyline record, same shape as "record".
     ml_season, ml = ml_record(sport, games, log)
     summary["moneyline_record"] = ({"value": ml["record"], "label": f"{ml_season} moneyline",
