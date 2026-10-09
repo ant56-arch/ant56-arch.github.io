@@ -25,21 +25,21 @@
   "2024-09-28",
   "2026-09-27"
  ],
- "trained_on": "2023 to 2024",
- "backtest_season": "2025",
+ "trained_on": "2024 to 2025",
+ "backtest_season": "2026",
  "backtest": {
-  "games": 2430,
-  "correct": 1354,
-  "accuracy": 0.5572,
-  "predicted_accuracy": 0.5655,
-  "log_loss": 0.6778,
-  "brier": 0.2425,
-  "home_win_rate": 0.5428,
+  "games": 2429,
+  "correct": 1366,
+  "accuracy": 0.5624,
+  "predicted_accuracy": 0.5649,
+  "log_loss": 0.6812,
+  "brier": 0.2441,
+  "home_win_rate": 0.5286,
   "top3": {
    "days": 184,
    "picks": 548,
-   "correct": 353,
-   "accuracy": 0.6442
+   "correct": 343,
+   "accuracy": 0.6259
   },
   "bands": [
    {
@@ -47,96 +47,96 @@
      0.5,
      0.55
     ],
-    "n": 1153,
-    "predicted": 0.5246,
-    "actual": 0.5091
+    "n": 1085,
+    "predicted": 0.5243,
+    "actual": 0.5456
    },
    {
     "range": [
      0.55,
      0.6
     ],
-    "n": 753,
-    "predicted": 0.572,
-    "actual": 0.5604
+    "n": 826,
+    "predicted": 0.5728,
+    "actual": 0.5303
    },
    {
     "range": [
      0.6,
      0.65
     ],
-    "n": 336,
-    "predicted": 0.6218,
-    "actual": 0.6101
+    "n": 370,
+    "predicted": 0.621,
+    "actual": 0.6324
    },
    {
     "range": [
      0.65,
      1.0
     ],
-    "n": 188,
-    "predicted": 0.6899,
-    "actual": 0.7447
+    "n": 148,
+    "predicted": 0.6777,
+    "actual": 0.6892
    }
   ],
   "months": [
    {
-    "month": "2025-03",
-    "n": 67,
-    "correct": 41,
-    "predicted": 0.5445
+    "month": "2026-03",
+    "n": 76,
+    "correct": 46,
+    "predicted": 0.5708
    },
    {
-    "month": "2025-04",
-    "n": 391,
-    "correct": 235,
-    "predicted": 0.5554
+    "month": "2026-04",
+    "n": 392,
+    "correct": 215,
+    "predicted": 0.5596
    },
    {
-    "month": "2025-05",
-    "n": 411,
-    "correct": 228,
-    "predicted": 0.5698
+    "month": "2026-05",
+    "n": 419,
+    "correct": 238,
+    "predicted": 0.561
    },
    {
-    "month": "2025-06",
-    "n": 397,
+    "month": "2026-06",
+    "n": 394,
+    "correct": 201,
+    "predicted": 0.5626
+   },
+   {
+    "month": "2026-07",
+    "n": 371,
+    "correct": 213,
+    "predicted": 0.5611
+   },
+   {
+    "month": "2026-08",
+    "n": 417,
+    "correct": 242,
+    "predicted": 0.5686
+   },
+   {
+    "month": "2026-09",
+    "n": 360,
     "correct": 211,
-    "predicted": 0.5676
-   },
-   {
-    "month": "2025-07",
-    "n": 369,
-    "correct": 200,
-    "predicted": 0.5644
-   },
-   {
-    "month": "2025-08",
-    "n": 421,
-    "correct": 237,
-    "predicted": 0.5698
-   },
-   {
-    "month": "2025-09",
-    "n": 374,
-    "correct": 202,
-    "predicted": 0.5692
+    "predicted": 0.5759
    }
   ]
  },
  "backtest_postseason": {
-  "games": 47,
-  "correct": 27,
-  "accuracy": 0.5745,
-  "predicted_accuracy": 0.5444,
-  "log_loss": 0.687,
-  "brier": 0.2469,
-  "home_win_rate": 0.5532,
+  "games": 24,
+  "correct": 15,
+  "accuracy": 0.625,
+  "predicted_accuracy": 0.5617,
+  "log_loss": 0.6765,
+  "brier": 0.2418,
+  "home_win_rate": 0.5,
   "top3": {
-   "days": 26,
-   "picks": 43,
-   "correct": 25,
-   "accuracy": 0.5814
+   "days": 9,
+   "picks": 20,
+   "correct": 12,
+   "accuracy": 0.6
   },
   "bands": [
    {
@@ -144,18 +144,18 @@
      0.5,
      0.55
     ],
-    "n": 32,
-    "predicted": 0.5271,
-    "actual": 0.625
+    "n": 12,
+    "predicted": 0.53,
+    "actual": 0.75
    },
    {
     "range": [
      0.55,
      0.6
     ],
-    "n": 13,
-    "predicted": 0.5759,
-    "actual": 0.3846
+    "n": 9,
+    "predicted": 0.5745,
+    "actual": 0.4444
    },
    {
     "range": [
@@ -163,36 +163,39 @@
      0.65
     ],
     "n": 2,
-    "predicted": 0.6163,
+    "predicted": 0.6404,
+    "actual": 0.5
+   },
+   {
+    "range": [
+     0.65,
+     1.0
+    ],
+    "n": 1,
+    "predicted": 0.6699,
     "actual": 1.0
    }
   ],
   "months": [
    {
-    "month": "2025-09",
-    "n": 4,
-    "correct": 3,
-    "predicted": 0.5466
+    "month": "2026-09",
+    "n": 8,
+    "correct": 6,
+    "predicted": 0.5499
    },
    {
-    "month": "2025-10",
-    "n": 42,
-    "correct": 23,
-    "predicted": 0.5439
-   },
-   {
-    "month": "2025-11",
-    "n": 1,
-    "correct": 1,
-    "predicted": 0.5573
+    "month": "2026-10",
+    "n": 16,
+    "correct": 9,
+    "predicted": 0.5677
    }
   ]
  },
  "baselines": {
-  "elo_only_accuracy": 0.5642,
-  "elo_only_log_loss": 0.6794,
-  "home_team_accuracy": 0.5428,
-  "home_rate_log_loss": 0.6906
+  "elo_only_accuracy": 0.5624,
+  "elo_only_log_loss": 0.6837,
+  "home_team_accuracy": 0.5286,
+  "home_rate_log_loss": 0.6915
  },
  "trained_at": "2026-09-30T01:24:50+00:00",
  "trained_through": "2026-09-27",

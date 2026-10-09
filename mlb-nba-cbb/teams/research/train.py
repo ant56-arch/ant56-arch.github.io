@@ -191,8 +191,9 @@ def season_backtest(recipe):
     then pick every game of that season."""
     rows = build_rows(league_params(recipe))
     seasons = sorted({r["game"]["season"] for r in rows})
-    # A season is finished once we're past its World Series.
-    finished = [s for s in seasons if s < seasons[-1] or date.today().isoformat() >= f"{s}-11-15"]
+    # A season counts once its regular season is over (October), so the
+    # backtest is always the latest season; its postseason fills in as played.
+    finished = [s for s in seasons if s < seasons[-1] or date.today().isoformat() >= f"{s}-10-01"]
     if len(finished) < 2:
         return {}
     test_season = finished[-1]
