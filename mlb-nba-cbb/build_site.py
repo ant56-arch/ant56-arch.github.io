@@ -411,14 +411,24 @@ def daily_results(g, wl):
     return [[day, *wl(ps)] for day, ps in sorted(by_day.items())]
 
 
-def ml_daily(picks):
-    """[[date, wins, losses], ...] oldest first for graded moneyline picks
-    only: what the home page's win/loss streak badge counts."""
-    by_day = {}
-    for p in moneyline.graded(picks):
-        wl = by_day.setdefault(p["date"], [0, 0])
-        wl[0 if p["ml"]["won"] else 1] += 1
-    return [[day, w, l] for day, (w, l) in sorted(by_day.items())]
+def ml_streak(picks):
+    """The current run of moneyline picks won ("W") or lost ("L") in a row,
+    one game at a time in start order: {"kind", "n"}, or None before the
+    first graded pick. Of games that start together, losses count as the
+    later ones, so a tie never stretches a winning run. What the home page's
+    streak badge shows."""
+    def when(p):
+        try:
+            return datetime.fromisoformat(p["start"].replace("Z", "+00:00")).timestamp()
+        except (KeyError, AttributeError, TypeError, ValueError):
+            return datetime.fromisoformat(p["date"]).timestamp()
+    kind, n = None, 0
+    for p in sorted(moneyline.graded(picks), key=lambda p: (when(p), not p["ml"]["won"]), reverse=True):
+        k = "W" if p["ml"]["won"] else "L"
+        if kind and k != kind:
+            break
+        kind, n = k, n + 1
+    return {"kind": kind, "n": n} if kind else None
 
 
 def record_band(history, team_history):
@@ -1270,7 +1280,7 @@ def games_summary(picks):
                          "since": f"{d:%b} {d.day}, {d.year}"}
         out["season_record"] = season_record(g, lambda day: day[:4], game_wl)
         out["daily"] = daily_results(g, game_wl)
-    out["ml_daily"] = ml_daily(picks)
+    out["ml_streak"] = ml_streak(picks)
     return out
 
 

@@ -31,7 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from build_site import (team_accuracy_spec, backtest_months, asset_version, write_assets, bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, DASH, ET,  # noqa: E402
-                        NOW, card, ml_day, ml_history, pct, record_band_html, season_record, daily_results, ml_daily, script_json)
+                        NOW, card, ml_day, ml_history, pct, record_band_html, season_record, daily_results, ml_streak, script_json)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
@@ -492,7 +492,7 @@ def build_summary(history, model):
                                  "sub": pct(w / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
             summary["season_record"] = season_record(g, season_of, wl)
             summary["daily"] = daily_results(g, wl)
-        summary["ml_daily"] = ml_daily(picks)
+        summary["ml_streak"] = ml_streak(picks)
         ml = moneyline.record(picks)
         if ml:  # optional: the home page can show it next to the record
             summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": "moneyline",

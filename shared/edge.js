@@ -873,8 +873,8 @@ initSportMenu();
 // Sliding tab highlight, rolling score digits, records that count up, and
 // the per-day results (summary.json "daily": [[date, wins, losses], ...])
 // behind trend lines, the record chart and the Model tab's results
-// calendar. Streak badges read "ml_daily", the same shape for moneyline
-// picks only. Every animation is skipped for prefers-reduced-motion.
+// calendar. Streak badges read "ml_streak": moneyline picks won or lost in
+// a row. Every animation is skipped for prefers-reduced-motion.
 const EDGE_REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
 
 // Puts a highlight behind (kind "pill") or under (kind "line") a button
@@ -960,27 +960,13 @@ function edgeRunning(daily) {
     .filter(r => r.w + r.l >= EDGE_MIN_PICKS);
 }
 
-// The current run of winning (W) or losing (L) days; even days don't count
-// either way. null with no decided day.
-function edgeStreak(daily) {
-  let kind = null, n = 0;
-  for (let i = (daily || []).length - 1; i >= 0; i--) {
-    const [, w, l] = daily[i];
-    if (w === l) continue;
-    const k = w > l ? "W" : "L";
-    if (kind && k !== kind) break;
-    kind = k;
-    n++;
-  }
-  return kind ? { kind, n } : null;
-}
-
-function edgeStreakBadge(daily) {
-  const s = edgeStreak(daily);
-  if (!s) return null;
-  const word = s.kind === "W" ? "winning" : "losing";
-  const b = edgeNode("span", "streak " + (s.kind === "W" ? "is-w" : "is-l"), s.kind + s.n);
-  b.title = `${s.n} ${word} moneyline ${s.n === 1 ? "day" : "days"} in a row`;
+// A badge for summary.json "ml_streak" ({kind: "W"|"L", n}): moneyline
+// picks won or lost in a row, one game at a time. null without one.
+function edgeStreakBadge(s) {
+  if (!s || !s.n) return null;
+  const won = s.kind === "W";
+  const b = edgeNode("span", "streak " + (won ? "is-w" : "is-l"), s.kind + s.n);
+  b.title = `${won ? "Won" : "Lost"} the last ${s.n === 1 ? "" : s.n + " "}moneyline ${s.n === 1 ? "pick" : "picks"}`;
   b.setAttribute("aria-label", b.title);
   return b;
 }

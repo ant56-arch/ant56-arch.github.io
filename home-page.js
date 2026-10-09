@@ -441,8 +441,8 @@ function hgRecords() {
       a.href = href;
       const lbl = hgEl("span", "hr-lbl", sport + " ");
       if (part) lbl.append(hgEl("em", null, part));
-      // Streaks count moneyline picks only (summary.json "ml_daily").
-      const streak = edgeStreakBadge(data.ml_daily);
+      // Moneyline picks won or lost in a row (summary.json "ml_streak").
+      const streak = edgeStreakBadge(data.ml_streak);
       if (data.season_record) {
         const season = hgEl("b", null, cur.season + " season");
         if (streak) season.append(streak);
