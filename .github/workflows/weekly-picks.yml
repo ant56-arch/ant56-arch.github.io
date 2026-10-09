@@ -38,6 +38,10 @@ on:
     - cron: "15 23 * * 0,1,4"
     - cron: "15 23 * * 2,3"
     - cron: "15 23 * * 5"
+    # 12:35 AM ET Monday, Tuesday and Friday: results of the Sunday, Monday
+    # and Thursday night games, so they reach the home page's Last night strip
+    # overnight instead of at the next noon run. No odds; CFB uses its cache.
+    - cron: "35 4 * * 1,2,5"
 
 permissions:
   contents: write
