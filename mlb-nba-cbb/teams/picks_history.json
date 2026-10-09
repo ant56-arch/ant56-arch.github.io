@@ -5201,7 +5201,7 @@
     "starters": -0.182
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-08T20:32:19Z",
    "ml": {
     "team": "CLE",
@@ -5214,9 +5214,12 @@
     "home_ml": -103,
     "away_ml": -117,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.855
+   },
+   "home_runs": 5,
+   "away_runs": 9,
+   "winner": "CLE"
   }
  ]
 }

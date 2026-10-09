@@ -17174,9 +17174,9 @@
       "reason": "Batting 1st \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 5,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -17222,9 +17222,9 @@
       "reason": "Batting 3rd \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 0,
       "model": "2026-10-07T01:42:34+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 2,
       "void": false
     }
   ],
@@ -17528,6 +17528,10 @@
     "2026-10-07": {
       "hitters": 82,
       "with_hit": 42
+    },
+    "2026-10-08": {
+      "hitters": 23,
+      "with_hit": 14
     }
   }
 }

@@ -9,15 +9,15 @@
   "b2b_away"
  ],
  "coef": {
-  "home_ice": 0.1875,
-  "elo": 0.6351,
-  "net": 0.2822,
-  "recent": -0.072,
-  "rest": 0.1025,
-  "b2b_home": -0.1937,
-  "b2b_away": 0.2206
+  "home_ice": 0.1899,
+  "elo": 0.6687,
+  "net": 0.2583,
+  "recent": -0.0738,
+  "rest": 0.1032,
+  "b2b_home": -0.1865,
+  "b2b_away": 0.2265
  },
- "sigma": 2.545,
+ "sigma": 2.548,
  "league": {
   "elo_k": 8,
   "elo_carry": 0.7
@@ -27,12 +27,12 @@
   "elo_carry": 0.7,
   "years": 3
  },
- "training_games": 3846,
+ "training_games": 3903,
  "training_dates": [
   "2023-12-01",
-  "2026-06-14"
+  "2026-10-08"
  ],
- "trained_on": "2023-24 to 2025-26",
+ "trained_on": "2023-24 to 2026-27",
  "backtest_season": "2025-26",
  "backtest": {
   "games": 1312,
@@ -202,23 +202,23 @@
   "elo_only_log_loss": 0.6893,
   "home_team_accuracy": 0.5221
  },
- "trained_at": "2026-09-30T15:55:28+00:00",
- "trained_through": "2026-06-14",
+ "trained_at": "2026-10-09T13:02:28+00:00",
+ "trained_through": "2026-10-08",
  "recent_holdout": {
-  "from": "2026-03-26",
+  "from": "2026-04-02",
   "games": 250,
-  "correct": 146,
-  "accuracy": 0.584,
-  "predicted_accuracy": 0.5707,
-  "log_loss": 0.6668,
-  "brier": 0.2371,
-  "margin_mae": 2.19,
-  "home_win_rate": 0.52,
+  "correct": 148,
+  "accuracy": 0.592,
+  "predicted_accuracy": 0.5657,
+  "log_loss": 0.67,
+  "brier": 0.2388,
+  "margin_mae": 2.21,
+  "home_win_rate": 0.516,
   "top3": {
-   "days": 65,
-   "picks": 139,
-   "correct": 85,
-   "accuracy": 0.6115
+   "days": 66,
+   "picks": 143,
+   "correct": 90,
+   "accuracy": 0.6294
   }
  }
 }
