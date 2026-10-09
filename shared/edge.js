@@ -868,3 +868,144 @@ function initSportMenu() {
   bar.classList.add("has-menu");
 }
 initSportMenu();
+
+// --- Motion and record helpers (home page and sport pages) ---
+// Sliding tab highlight, rolling score digits, records that count up, and
+// the per-day results (summary.json "daily": [[date, wins, losses], ...])
+// behind trend lines, streak badges, the record chart and the Model tab's
+// results calendar. Every animation is skipped for prefers-reduced-motion.
+const EDGE_REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
+
+// Puts a highlight behind (kind "pill") or under (kind "line") a button
+// group's pressed button and slides it to the next one. Safe to call after
+// the group's buttons are re-rendered: it starts from where it last was.
+function edgeSlide(group, kind) {
+  if (!group) return;
+  group.classList.add("has-slide", kind === "line" ? "slide-line" : "slide-pill");
+  let mark = group.querySelector(":scope > .slide-mark");
+  if (!mark) {
+    mark = edgeNode("span", "slide-mark");
+    mark.setAttribute("aria-hidden", "true");
+    if (group._slideAt) { mark.style.left = group._slideAt[0] + "px"; mark.style.width = group._slideAt[1] + "px"; }
+    group.prepend(mark);
+  }
+  const place = () => {
+    const b = group.querySelector('button[aria-pressed="true"]');
+    if (!b || !b.offsetWidth) { mark.hidden = true; return; }
+    mark.hidden = false;
+    group._slideAt = [b.offsetLeft, b.offsetWidth];
+    mark.style.left = b.offsetLeft + "px";
+    mark.style.width = b.offsetWidth + "px";
+  };
+  void mark.offsetWidth;  // start the slide from the previous spot
+  place();
+  if (!group._slideBound) {
+    group._slideBound = true;
+    group.addEventListener("click", () => requestAnimationFrame(() => edgeSlide(group, kind)));
+    window.addEventListener("resize", () => edgeSlide(group, kind));
+    if (document.fonts) document.fonts.ready.then(() => edgeSlide(group, kind));
+  }
+}
+
+// Sets el to a number, rolling each changed digit like a slot reel when it
+// already showed a different number.
+function edgeRoll(el, value) {
+  const str = String(value);
+  const was = el.dataset.roll;
+  el.dataset.roll = str;
+  el.setAttribute("aria-label", str);
+  if (was === undefined || was === str || EDGE_REDUCE.matches || !/^\d+$/.test(str)) { el.textContent = str; return; }
+  el.textContent = "";
+  [...str].forEach((c, k) => {
+    const slot = edgeNode("span", "roll");
+    slot.setAttribute("aria-hidden", "true");
+    const reel = edgeNode("span", "roll-reel");
+    for (let d = 0; d <= 9; d++) reel.append(edgeNode("span", null, String(d)));
+    const from = was.padStart(str.length, "0")[k];
+    reel.style.transform = `translateY(${-Number(/\d/.test(from) ? from : 0)}em)`;
+    slot.append(reel);
+    el.append(slot);
+    void reel.offsetWidth;
+    reel.style.transitionDelay = k * 60 + "ms";
+    reel.style.transform = `translateY(${-Number(c)}em)`;
+  });
+  el.classList.remove("roll-flash");
+  void el.offsetWidth;
+  el.classList.add("roll-flash");
+}
+
+// A "W-L" record that counts up from 0-0 the first time it's shown.
+function edgeCountUp(el, wins, losses) {
+  const end = `${wins}-${losses}`;
+  if (EDGE_REDUCE.matches || el.dataset.counted) { el.textContent = end; return; }
+  el.dataset.counted = "1";
+  const t0 = performance.now(), dur = 1000;
+  const step = t => {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = p < 1 ? `${Math.round(wins * e)}-${Math.round(losses * e)}` : end;
+    if (p < 1) requestAnimationFrame(step);
+  };
+  el.textContent = "0-0";
+  requestAnimationFrame(step);
+}
+
+// Running winning % after each day: [{date, pct, w, l}], oldest first. The
+// first days, before EDGE_MIN_PICKS graded picks, are left out: a 1-0 or 0-1
+// start (100% or 0%) would swamp the scale.
+const EDGE_MIN_PICKS = 20;
+function edgeRunning(daily) {
+  let w = 0, l = 0;
+  return (daily || []).map(([date, dw, dl]) => { w += dw; l += dl; return { date, w, l, pct: w / Math.max(1, w + l) }; })
+    .filter(r => r.w + r.l >= EDGE_MIN_PICKS);
+}
+
+// The current run of winning (W) or losing (L) days; even days don't count
+// either way. null with no decided day.
+function edgeStreak(daily) {
+  let kind = null, n = 0;
+  for (let i = (daily || []).length - 1; i >= 0; i--) {
+    const [, w, l] = daily[i];
+    if (w === l) continue;
+    const k = w > l ? "W" : "L";
+    if (kind && k !== kind) break;
+    kind = k;
+    n++;
+  }
+  return kind ? { kind, n } : null;
+}
+
+function edgeStreakBadge(daily) {
+  const s = edgeStreak(daily);
+  if (!s) return null;
+  const word = s.kind === "W" ? "winning" : "losing";
+  const b = edgeNode("span", "streak " + (s.kind === "W" ? "is-w" : "is-l"), s.kind + s.n);
+  b.title = `${s.n} ${word} ${s.n === 1 ? "day" : "days"} in a row`;
+  b.setAttribute("aria-label", b.title);
+  return b;
+}
+
+// A small trend line of the running winning % over the last `days` days with
+// a graded pick, its high and low on the left and a caption under it.
+function edgeSpark(daily, days) {
+  const run = edgeRunning(daily).slice(-(days || 30));
+  if (run.length < 2) return null;
+  const vals = run.map(r => r.pct);
+  const lo = Math.max(0, Math.floor(Math.min(...vals) * 100) - 1) / 100, hi = Math.min(100, Math.ceil(Math.max(...vals) * 100) + 1) / 100;
+  const x = i => 2 + i * (156 / (run.length - 1)), y = v => 32 - (v - lo) / (hi - lo) * 28;
+  const line = run.map((r, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(r.pct).toFixed(1)).join("");
+  const wrap = edgeNode("div", "spk");
+  const axis = edgeNode("div", "spk-y");
+  axis.append(edgeNode("span", null, Math.round(hi * 100) + "%"), edgeNode("span", null, Math.round(lo * 100) + "%"));
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 160 34");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("class", "spark");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = `<path class="spark-area" d="${line}L158 34L2 34Z"/><path class="spark-line" d="${line}" vector-effect="non-scaling-stroke"/>` +
+                  `<circle class="spark-dot" cx="${x(run.length - 1)}" cy="${y(vals[vals.length - 1])}" r="2.6"/>`;
+  wrap.append(axis, svg);
+  const box = edgeNode("div", "spk-box");
+  box.append(wrap, edgeNode("span", "spk-cap", `Winning %, last ${run.length} days with picks`));
+  return box;
+}

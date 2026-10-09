@@ -19,7 +19,8 @@ function edgeFetchSummaries() {
 const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB", "Soccer"];
 const HG_LAYOUT_KEY = "edge-home-layout";
 const HG_SHOW = 9;  // games per sport group before "See more"
-const hg = { day: null, sport: "all", value: false, open: new Set(), layout: null, games: [], summaries: [] };
+const hg = { day: null, sport: "all", value: false, open: new Set(), layout: null, games: [], summaries: [],
+             scores: {}, results: {}, counted: new Set(), loaded: false };
 
 function hgStore(key, value) {
   try {
@@ -134,6 +135,26 @@ function hgResult(g) {
   return g.value && g.state === "pre" ? hgEl("span", "hg-val", "Value") : null;
 }
 
+// How our pick is doing: Leading / Tied / Trailing while live, then a Hit or
+// Miss stamp at the final (stamped in when it goes final while the page is
+// open). Before the game, the Value tag if it has one. The pick % never moves.
+function hgPickState(g) {
+  if (g.hit != null) {
+    const s = hgEl("span", "stamp " + (g.hit ? "is-hit" : "is-miss"), g.hit ? "✓ Hit" : "✗ Miss");
+    if (hg.loaded && hg.results[g.key] == null) s.classList.add("stamp-in");
+    hg.results[g.key] = g.hit;
+    return s;
+  }
+  hg.results[g.key] = null;
+  if (g.state === "in" && g.pick !== "Draw" && g.away.score != null && g.home.score != null) {
+    const ours = g.pick === g.away.abbr ? g.away.score : g.home.score;
+    const theirs = g.pick === g.away.abbr ? g.home.score : g.away.score;
+    const k = ours > theirs ? "lead" : ours < theirs ? "trail" : "tied";
+    return hgEl("span", "pick-state is-" + k, k === "lead" ? "Leading" : k === "tied" ? "Tied" : "Trailing");
+  }
+  return hgResult(g);
+}
+
 function hgStar(g) {
   const on = hgIsFav(g);
   const names = `${g.away.name} and ${g.home.name}`;
@@ -162,7 +183,15 @@ function hgTeamRow(g, t) {
   nm.append(b, hgEl("small", null, bits.join(" · ") || "Neutral site"));
   row.append(nm);
   if (t.abbr === g.pick) row.append(hgEl("span", "hg-ours", "Our pick"));
-  if (t.score != null) row.append(hgEl("span", "hg-sc", String(t.score)));
+  if (t.score != null) {
+    // Rolls to a new score when a refresh brings one (not on the first load).
+    const sc = hgEl("span", "hg-sc");
+    const k = g.key + ":" + (t === g.away ? "a" : "h");
+    if (hg.scores[k] != null) sc.dataset.roll = String(hg.scores[k]);
+    edgeRoll(sc, t.score);
+    hg.scores[k] = t.score;
+    row.append(sc);
+  }
   return row;
 }
 
@@ -183,7 +212,7 @@ function hgCard(g, top, withDay) {
   const pick = hgEl("div", "hg-pick");
   pick.append(hgEl("span", "hg-lbl", "Pick to win"),
               hgEl("b", null, g.pick === "Draw" ? "Draw" : (g.pick === g.away.abbr ? g.away : g.home).name));
-  const res = hgResult(g);
+  const res = hgPickState(g);
   if (res) pick.append(res);
   const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
   pct.append(hgEl("i", null, "%"));
@@ -209,7 +238,7 @@ function hgRow(g, withDay) {
   const team = abbr => abbr === g.pick ? hgEl("strong", null, abbr) : document.createTextNode(abbr);
   mu.append(team(g.away.abbr), ` ${g.at === "vs" ? "vs" : "@"} `, team(g.home.abbr));
   const sub = hgEl("small", null, `${g.sport} · Pick ${g.pick}${g.price != null ? " " + edgePrice(g.price) : ""}`);
-  const res = hgResult(g);
+  const res = hgPickState(g);
   if (res) sub.append(" ", res);
   mu.append(sub);
   const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
@@ -312,6 +341,71 @@ function hgRender() {
     sections.push(hgEl("div", "empty-state", msg));
   }
   out.replaceChildren(...sections);
+  out.removeAttribute("aria-busy");
+  hgTop3(inDay, withDay);
+  hgCountdown();
+  edgeSlide(dayBtns, "pill");
+  edgeSlide(document.getElementById("hg-sports"), "line");
+  edgeSlide(document.getElementById("hg-layout"), "pill");
+}
+
+// Top 3: the day's three surest picks as small cards above the games. On
+// phones they're a row you swipe through one at a time, with dots.
+function hgTop3(inDay, withDay) {
+  const box = document.getElementById("hg-top3");
+  if (!box) return;
+  const top = [...inDay].sort((a, b) => b.prob - a.prob).slice(0, 3);
+  box.hidden = top.length < 3;
+  if (box.hidden) return;
+  const row = hgEl("div", "t3-row");
+  top.forEach((g, i) => {
+    const a = hgEl("a", "t3");
+    a.href = g.url;
+    const other = g.pick === g.away.abbr ? g.home : g.away;
+    const pickName = g.pick === "Draw" ? "Draw" : (g.pick === g.away.abbr ? g.away : g.home).name;
+    const when = g.state === "pre" ? hgTime(g, withDay) + " " + edgeTz().label : g.state === "in" ? "Live" : "Final";
+    a.append(hgEl("span", "t3-rk", `#${i + 1} · ${g.sport} · ${when}`),
+             hgEl("b", "t3-mu", g.pick === "Draw" ? `${g.away.name} vs ${g.home.name}: draw` : `${pickName} over ${other.name}`));
+    const foot = hgEl("span", "t3-ft");
+    const state = hgPickState(g);
+    foot.append(state || hgEl("span", "t3-lbl", "Pick to win"));
+    const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
+    pct.append(hgEl("i", null, "%"));
+    foot.append(pct);
+    a.append(foot);
+    row.append(a);
+  });
+  const dots = hgEl("div", "t3-dots", null, { "aria-hidden": "true" });
+  top.forEach((_, i) => dots.append(hgEl("i", i ? null : "on")));
+  row.addEventListener("scroll", () => {
+    const k = Math.round(row.scrollLeft / Math.max(1, row.firstChild.offsetWidth));
+    [...dots.children].forEach((d, j) => d.classList.toggle("on", j === k));
+  }, { passive: true });
+  const h = hgEl("h3", "t3-h", "Top 3 picks");
+  box.replaceChildren(h, row, dots);
+}
+
+// Countdown to the next game we pick today, or how many are live.
+function hgCountdown() {
+  const el = document.getElementById("hg-cd");
+  if (!el) return;
+  const today = hg.games.filter(g => g.date === hgDayKey());
+  const live = today.filter(g => g.state === "in").length;
+  const next = today.filter(g => g.state === "pre" && new Date(g.start) > Date.now())
+    .sort((a, b) => new Date(a.start) - new Date(b.start))[0];
+  el.classList.toggle("is-live", live > 0);
+  if (live) {
+    el.replaceChildren(hgEl("b", null, "Live now"), ` · ${live} ${live === 1 ? "game" : "games"}`);
+  } else if (next) {
+    const left = new Date(next.start) - Date.now();
+    const h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
+    const started = today.some(g => g.state !== "pre");
+    el.replaceChildren(started ? "Next pick in " : "First pick in ",
+                       hgEl("b", null, h ? `${h}h ${m}m` : `${m}m ${String(sec).padStart(2, "0")}s`));
+  }
+  el.hidden = !live && !next;
+  clearTimeout(hg.cdTimer);
+  if (next || live) hg.cdTimer = setTimeout(hgCountdown, 1000);
 }
 
 function hgHero() {
@@ -347,12 +441,24 @@ function hgRecords() {
       a.href = href;
       const lbl = hgEl("span", "hr-lbl", sport + " ");
       if (part) lbl.append(hgEl("em", null, part));
-      if (data.season_record) lbl.append(hgEl("b", null, cur.season + " season"));
-      const val = hgEl("span", "hr-val", cur.value);
+      const streak = edgeStreakBadge(data.daily);
+      if (data.season_record) {
+        const season = hgEl("b", null, cur.season + " season");
+        if (streak) season.append(streak);
+        lbl.append(season);
+      } else if (streak) lbl.append(streak);
+      const val = hgEl("span", "hr-val");
+      const num = hgEl("span", null, cur.value);
+      const [w, l] = cur.value.split("-").map(Number);
+      const key = sport + part;
+      if (!hg.counted.has(key) && w >= 0 && l >= 0) { hg.counted.add(key); edgeCountUp(num, w, l); }
+      val.append(num);
       if (cur.sub) val.append(hgEl("i", null, cur.sub.replace(/\.\d%$/, "%")));
       a.append(lbl, val, hgEl("small", null, !data.season_record
         ? (rec.since ? "since " + rec.since.replace(/, \d{4}$/, "") : rec.label)
         : `All-time ${rec.value}` + (rec.since ? " since " + rec.since.replace(/ \d+,/, "") : "")));
+      const spark = edgeSpark(data.daily, 30);
+      if (spark) a.append(spark);
       tiles.push(a);
     });
   });
@@ -362,6 +468,153 @@ function hgRecords() {
     tiles.push(d);
   }
   box.replaceChildren(...tiles);
+}
+
+// Winning % over time: each sport's running record since we started
+// counting, from summary.json "daily". 7 days, 30 days or all of it; tap a
+// sport to hide its line; hover or drag to read a day. The y-axis fits the
+// lines shown, so small moves are readable.
+const RC = { range: "30", hidden: new Set(), lines: null };
+const RC_COLORS = { NFL: "--l-nfl", "MLB Hits": "--l-mlbh", "MLB Games": "--l-mlbg", NHL: "--l-nhl", CFB: "--l-cfb",
+                    NBA: "--l-nba", CBB: "--l-cbb", Soccer: "--l-soc" };
+
+function hgChart() {
+  const sec = document.getElementById("rchart");
+  if (!sec) return;
+  if (!RC.lines) {
+    RC.lines = [];
+    EDGE_SITES.forEach((site, i) => {
+      const s = hg.summaries[i];
+      const parts = site.sport === "MLB" ? [["MLB Hits", s && s.daily], ["MLB Games", s && s.games && s.games.daily]]
+                                         : [[site.sport, s && s.daily]];
+      parts.forEach(([name, daily]) => { if (daily && daily.length >= 2) RC.lines.push({ name, run: edgeRunning(daily) }); });
+    });
+    if (!RC.lines.length) return;
+    sec.hidden = false;
+    const range = document.getElementById("rchart-range");
+    range.addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      RC.range = b.dataset.v;
+      range.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+      rcDraw(true);
+    });
+    edgeSlide(range, "pill");
+    const legend = document.getElementById("rchart-legend");
+    RC.lines.forEach(l => {
+      const b = hgEl("button", null, null, { type: "button", "aria-pressed": "true" });
+      const dot = hgEl("i");
+      dot.style.background = `var(${RC_COLORS[l.name]})`;
+      b.append(dot, l.name);
+      b.addEventListener("click", () => {
+        const on = RC.hidden.has(l.name);
+        if (!on && RC.hidden.size >= RC.lines.length - 1) return;  // keep one line
+        on ? RC.hidden.delete(l.name) : RC.hidden.add(l.name);
+        b.setAttribute("aria-pressed", String(on));
+        rcDraw(false);
+      });
+      legend.append(b);
+    });
+    const svg = document.getElementById("rchart-svg");
+    svg.addEventListener("pointermove", rcHover);
+    svg.addEventListener("pointerdown", rcHover);
+    svg.addEventListener("pointerleave", () => { document.getElementById("rchart-tip").hidden = true; const c = svg.querySelector(".rc-cross"); if (c) c.setAttribute("visibility", "hidden"); });
+    let t;
+    window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => rcDraw(false), 150); });
+  }
+  rcDraw(true);
+}
+
+function rcDays() {
+  // Every calendar day in range, oldest first, as YYYY-MM-DD.
+  const end = hgDayKey();
+  const first = RC.range === "all"
+    ? RC.lines.reduce((m, l) => (l.run[0].date < m ? l.run[0].date : m), end)
+    : hgDayKey(-(Number(RC.range) - 1));
+  const out = [];
+  for (let d = new Date(first + "T12:00:00Z"); edgeDayKey(d) <= end && out.length < 800; d = new Date(d.getTime() + 86400000)) out.push(d.toISOString().slice(0, 10));
+  return out;
+}
+
+function rcDraw(animate) {
+  const svg = document.getElementById("rchart-svg");
+  const W = svg.getBoundingClientRect().width < 560 ? 420 : 800, H = 300, PL = 44, PR = 52, PT = 14, PB = 30;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const days = rcDays();
+  // Each line's running % as of each day (carried over days without picks;
+  // null before its first graded pick).
+  const shown = RC.lines.filter(l => !RC.hidden.has(l.name)).map(l => {
+    let j = -1;
+    const vals = days.map(d => { while (j + 1 < l.run.length && l.run[j + 1].date <= d) j++; return j < 0 ? null : l.run[j]; });
+    return { ...l, vals };
+  }).filter(l => l.vals.some(v => v));
+  const all = shown.flatMap(l => l.vals.filter(Boolean).map(v => v.pct));
+  if (!all.length) { svg.innerHTML = ""; return; }
+  const span = Math.max(...all) - Math.min(...all);
+  const step = [0.01, 0.02, 0.05, 0.1, 0.2].find(st => span / st <= 5) || 0.25;
+  const lo = Math.floor((Math.min(...all) - 0.005) / step) * step, hi = Math.ceil((Math.max(...all) + 0.005) / step) * step;
+  const n = days.length;
+  const X = i => PL + (n > 1 ? i * (W - PL - PR) / (n - 1) : (W - PL - PR) / 2), Y = v => PT + (hi - v) / (hi - lo) * (H - PT - PB);
+  let g = "";
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    g += `<line class="rc-grid" x1="${PL}" x2="${W - PR}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>` +
+         `<text class="rc-ax" x="${PL - 8}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v * 100)}%</text>`;
+  }
+  const lab = d => new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const ticks = n <= 7 ? [...Array(n).keys()] : [0, Math.round((n - 1) / 3), Math.round(2 * (n - 1) / 3), n - 1];
+  [...new Set(ticks)].forEach(i => { g += `<text class="rc-ax" x="${X(i).toFixed(1)}" y="${H - 8}" text-anchor="${i === 0 ? "start" : i === n - 1 ? "end" : "middle"}">${lab(days[i])}</text>`; });
+  g += `<line class="rc-cross" x1="0" x2="0" y1="${PT}" y2="${H - PB}" visibility="hidden"/>`;
+  const ends = [];
+  shown.forEach(l => {
+    const color = `var(${RC_COLORS[l.name]})`;
+    let d = "";
+    l.vals.forEach((v, i) => { if (v) d += (d && l.vals[i - 1] ? "L" : "M") + X(i).toFixed(1) + " " + Y(v.pct).toFixed(1); });
+    g += `<path class="rc-line" d="${d}" style="stroke:${color}"/>`;
+    const last = l.vals[n - 1];
+    if (last) {
+      g += `<circle cx="${X(n - 1).toFixed(1)}" cy="${Y(last.pct).toFixed(1)}" r="4" style="fill:${color}"/>`;
+      ends.push({ y: Y(last.pct), text: (last.pct * 100).toFixed(1) + "%", color });
+    }
+  });
+  ends.sort((a, b) => a.y - b.y);
+  for (let k = 1; k < ends.length; k++) if (ends[k].y - ends[k - 1].y < 14) ends[k].y = ends[k - 1].y + 14;
+  ends.forEach(e => { g += `<text class="rc-end" x="${X(n - 1) + 8}" y="${(e.y + 4).toFixed(1)}" style="fill:${e.color}">${e.text}</text>`; });
+  svg.innerHTML = g;
+  RC.view = { days, shown, X, W, n };
+  if (animate && !EDGE_REDUCE.matches) svg.querySelectorAll(".rc-line").forEach(p => {
+    const len = p.getTotalLength();
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+    p.getBoundingClientRect();
+    p.style.transition = "stroke-dashoffset 0.9s ease-out";
+    p.style.strokeDashoffset = "0";
+    p.addEventListener("transitionend", () => { p.style.strokeDasharray = ""; }, { once: true });
+  });
+}
+
+function rcHover(ev) {
+  const v = RC.view;
+  if (!v) return;
+  const svg = document.getElementById("rchart-svg"), tip = document.getElementById("rchart-tip");
+  const r = svg.getBoundingClientRect();
+  const px = (ev.clientX - r.left) / r.width * v.W;
+  let i = 0;
+  for (let k = 1; k < v.n; k++) if (Math.abs(v.X(k) - px) < Math.abs(v.X(i) - px)) i = k;
+  const cross = svg.querySelector(".rc-cross");
+  cross.setAttribute("x1", v.X(i));
+  cross.setAttribute("x2", v.X(i));
+  cross.setAttribute("visibility", "visible");
+  const rows = v.shown.filter(l => l.vals[i]).map(l => {
+    const d = hgEl("div");
+    const nm = hgEl("span", null, l.name);
+    nm.style.color = `var(${RC_COLORS[l.name]})`;
+    d.append(nm, hgEl("span", null, `${(l.vals[i].pct * 100).toFixed(1)}% (${l.vals[i].w}-${l.vals[i].l})`));
+    return d;
+  });
+  tip.replaceChildren(hgEl("b", null, new Date(v.days[i] + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" })), ...rows);
+  tip.hidden = false;
+  const left = v.X(i) / v.W * r.width;
+  tip.style.left = (left > r.width / 2 ? left - tip.offsetWidth - 12 : left + 12) + "px";
 }
 
 async function initHomeGames() {
@@ -409,6 +662,8 @@ async function initHomeGames() {
     hgHero();
     hgRecords();
     hgRender();
+    hgChart();
+    hg.loaded = true;
     if (hg.games.some(g => g.state === "in")) setTimeout(refresh, 60000);
   };
   await refresh();

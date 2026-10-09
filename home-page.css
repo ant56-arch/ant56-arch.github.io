@@ -356,3 +356,62 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 .hg-more { display: block; width: 100%; margin-top: 12px; padding: 11px 14px; font: 600 14px var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 10px; cursor: pointer; }
 .hg-more:hover { border-color: var(--ours); color: var(--ours); }
 .hg-more:focus-visible { outline: 2px solid var(--ours); outline-offset: 2px; }
+
+/* Countdown to the next game we pick, beside the day buttons. */
+.hg-cd { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+.hg-cd::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ours); }
+.hg-cd b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.hg-cd.is-live::before { background: var(--miss); animation: hg-blink 1.4s infinite; }
+
+/* Top 3 picks: three small cards; a swipe row with dots on phones. */
+.hg-top3 { margin-top: 18px; }
+.t3-h { margin: 0 0 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ours); }
+.t3-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.t3 { display: grid; gap: 6px; align-content: start; min-width: 0; padding: 12px 14px; background: var(--surface); border: 1px solid var(--rule); border-top: 2px solid var(--ours); border-radius: 10px; text-decoration: none; color: inherit; }
+.t3:hover .t3-mu { color: var(--ours); }
+.t3-rk { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+.t3-mu { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 600; }
+.t3-ft { display: flex; align-items: center; gap: 10px; }
+.t3-lbl { font-size: 13px; color: var(--text-muted); }
+.t3-dots { display: none; justify-content: center; gap: 6px; margin-top: 10px; }
+.t3-dots i { width: 7px; height: 7px; border-radius: 4px; background: var(--rule-strong); transition: width 0.25s, background 0.25s; }
+.t3-dots i.on { width: 18px; background: var(--ours); }
+@media (max-width: 700px) {
+  .t3-row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 86%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .t3-row::-webkit-scrollbar { display: none; }
+  .t3 { scroll-snap-align: start; }
+  .t3-dots { display: flex; }
+}
+.hg-top3 + #hg-out { margin-top: 18px; }
+.hg-card .stamp, .hg-row .stamp { font-size: 13px; }
+.hg-row .stamp, .hg-row .pick-state { margin-left: 4px; }
+
+/* Record tiles: trend line under each. */
+.hr-tile .spk-box { margin-top: 10px; }
+
+/* Winning % over time (home.js hgChart). Line colors per sport. */
+.rchart { --l-nfl: #8db4d8; --l-mlbh: #e5793b; --l-mlbg: #e8c25a; --l-nhl: #c8a2e8; --l-cfb: #6cc7b4;
+          --l-nba: #f08aa0; --l-cbb: #a9d36a; --l-soc: #d9d4c7; }
+:root[data-theme="light"] .rchart { --l-nfl: #2c6696; --l-mlbh: #b9531a; --l-mlbg: #8a6a05; --l-nhl: #7a4fb0; --l-cfb: #1f7a68;
+          --l-nba: #b03a5b; --l-cbb: #4f7a12; --l-soc: #55524a; }
+.rc-card { margin-top: 14px; padding: 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; }
+.rc-card .hg-controls { margin-top: 0; }
+.rchart-legend { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.rchart-legend button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface-2); font: 600 13px var(--font); color: var(--text); cursor: pointer; }
+.rchart-legend button[aria-pressed="false"] { opacity: 0.45; }
+.rchart-legend i { width: 9px; height: 9px; border-radius: 50%; }
+.rchart-plot { position: relative; margin-top: 10px; }
+#rchart-svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.rc-grid { stroke: var(--rule); }
+.rc-ax { fill: var(--text-faint); font: 12px var(--font); }
+.rc-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.rc-end { font: 700 13px var(--font); }
+.rc-cross { stroke: var(--rule-strong); }
+.rchart-tip { position: absolute; top: 6px; min-width: 170px; padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 8px; background: var(--bar); font-size: 13px; pointer-events: none; }
+.rchart-tip b { display: block; margin-bottom: 2px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.rchart-tip div { display: flex; justify-content: space-between; gap: 12px; }
+@media (max-width: 700px) { .rchart-legend { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .hg-cd.is-live::before { animation: none; }
+  .t3-dots i { transition: none; }
+}
