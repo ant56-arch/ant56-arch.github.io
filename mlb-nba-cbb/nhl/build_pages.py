@@ -26,7 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from build_site import (asset_version, write_assets, bb_board, slim_footer, bb_game, bb_game_pages, bb_home_parts, ET, NOW,  # noqa: E402
-                        card, ml_day, ml_history, pct, record_band_html, season_record, script_json, statline)
+                        card, ml_day, ml_history, pct, record_band_html, season_record, daily_results, script_json, statline)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import model_page  # noqa: E402
@@ -487,6 +487,7 @@ def build_summary(history, model):
             summary["record"] = {"value": f"{w}-{l}", "label": "our picks to win",
                                  "sub": pct(w / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
             summary["season_record"] = season_record(g, season_of, wl)
+            summary["daily"] = daily_results(g, wl)
         ml = moneyline.record(picks)
         if ml:  # optional: the home page can show it next to the record
             summary["ml_record"] = {"value": f"{ml['wins']}-{ml['losses']}", "label": "moneyline",

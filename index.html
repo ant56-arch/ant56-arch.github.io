@@ -47,6 +47,7 @@
       <div class="hg-head"><h2 id="hg-title">Today's games</h2><p>Tap a team for the full game page.</p></div>
       <div class="hg-controls">
         <div class="hg-seg" role="group" aria-label="Day" id="hg-days"></div>
+        <span class="hg-cd" id="hg-cd" hidden></span>
         <div class="hg-right">
           <button type="button" class="hg-pill" id="hg-value" aria-pressed="false">Value only</button>
           <button type="button" class="hg-pill" id="hg-teams">☆ My teams</button>
@@ -58,12 +59,32 @@
       </div>
       <div class="hg-chips" role="group" aria-label="Sport" id="hg-sports"></div>
       <p class="hg-tally" id="hg-tally" aria-live="polite"></p>
-      <div id="hg-out"><p class="hg-tally">Loading today's games.</p></div>
+      <div class="hg-top3" id="hg-top3" hidden></div>
+      <div id="hg-out" aria-busy="true"><div class="hg-grid" aria-label="Loading today's games">
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+      </div></div>
     </section>
 
     <section class="hg" aria-labelledby="rec-title">
       <div class="hg-head"><h2 id="rec-title">Our record</h2><p>Live picks since we started counting. It never resets.</p></div>
       <div class="home-records" id="home-records"></div>
+    </section>
+
+    <section class="hg rchart" id="rchart" aria-labelledby="rchart-title" hidden>
+      <div class="hg-head"><h2 id="rchart-title">Winning % over time</h2><p>Each line is a sport's record since we started counting. Hover or drag to read any day.</p></div>
+      <div class="rc-card">
+        <div class="hg-controls">
+          <div class="hg-seg" role="group" aria-label="Range" id="rchart-range">
+            <button type="button" data-v="7" aria-pressed="false">7 days</button>
+            <button type="button" data-v="30" aria-pressed="true">30 days</button>
+            <button type="button" data-v="all" aria-pressed="false">All</button>
+          </div>
+          <div class="rchart-legend" role="group" aria-label="Sports" id="rchart-legend"></div>
+        </div>
+        <div class="rchart-plot"><svg id="rchart-svg" role="img" aria-label="Running winning percentage by sport"></svg><div class="rchart-tip" id="rchart-tip" hidden></div></div>
+      </div>
     </section>
 
     <section class="card last-night" id="last-night" aria-live="polite" hidden>

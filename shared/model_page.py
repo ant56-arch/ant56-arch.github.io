@@ -79,7 +79,7 @@ def _change(now, before, fmt):
     return f'<span class="change-move">{arrow} {escape(fmt(abs(diff)).lstrip("+"))}</span>'
 
 
-def render(spec):
+def render(spec, calendar=True):
     parts = []
     runs = spec["runs"]
     fmt = spec["score_fmt"]
@@ -90,6 +90,14 @@ def render(spec):
                        _statline(spec["tiles"], "model-tiles") +
                        '<div class="section-label">Current setup</div>'
                        f'<ul class="setup-list">{setup}</ul>'))
+
+    # Live results by day: a calendar sport-pages.js fills from summary.json
+    # "daily" (hidden until it has a day to show).
+    if calendar:
+        parts.append('<section class="card" id="results-cal" data-summary="summary.json" hidden>'
+                     '<div class="card-header"><h2>Results By Day</h2><div class="subtitle">Every live pick, graded, '
+                     'one square per day. Hover or tap a day for its record.</div></div>'
+                     '<div class="card-body"></div></section>')
 
     # Is it getting better: held-out score after each retrain.
     scored = [r for r in reversed(runs) if r.get("after") is not None]

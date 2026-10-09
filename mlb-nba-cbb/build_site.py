@@ -364,6 +364,16 @@ def season_record(g, season_of, wl):
     return {"value": f"{w}-{l}", "sub": pct(w / len(cur), 1), "season": str(season)}
 
 
+def daily_results(g, wl):
+    """[[date, wins, losses], ...] oldest first: every day with a graded pick,
+    for the home page's trend lines, streaks and record chart and each Model
+    tab's results calendar."""
+    by_day = {}
+    for p in g:
+        by_day.setdefault(p["date"], []).append(p)
+    return [[day, *wl(ps)] for day, ps in sorted(by_day.items())]
+
+
 def record_band(history, team_history):
     g, hits, first = alltime(history)
     eyebrow = "MLB Edge &middot; top hitters who got a hit"
@@ -1291,7 +1301,7 @@ def team_model_html(model, runs):
         "empty": "No retrains logged yet. The first one runs about a week into the season.",
     }
     # model_page is shared across sites; point its live-results line at this page's record.
-    html = model_page.render(spec).replace("Live results are on the Accuracy tab.",
+    html = model_page.render(spec, calendar=False).replace("Live results are on the Accuracy tab.",
                                            "Live results are in the record higher up this page.")
     bt = model.get("backtest")
     if bt:
@@ -1361,6 +1371,7 @@ def games_summary(picks):
         out["record"] = {"value": f"{w}-{l}", "label": "picking which team wins", "sub": pct(w / len(g), 1),
                          "since": f"{d:%b} {d.day}, {d.year}"}
         out["season_record"] = season_record(g, lambda day: day[:4], game_wl)
+        out["daily"] = daily_results(g, game_wl)
     return out
 
 
@@ -1390,6 +1401,7 @@ def build_summary(history, model, team_history=None):
         summary["record"] = {"value": f"{hits}-{len(g) - hits}", "label": "top hitters who got a hit",
                              "sub": pct(hits / len(g), 1), "since": f"{d:%b} {d.day}, {d.year}"}
         summary["season_record"] = season_record(g, lambda day: day[:4], hit_wl)
+        summary["daily"] = daily_results(g, hit_wl)
     summary["games"] = games_summary((team_history or {}).get("picks", []))
     add_home_parts(summary, history, team_history)
     return summary
