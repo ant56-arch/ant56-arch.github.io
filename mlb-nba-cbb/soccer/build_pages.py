@@ -25,17 +25,18 @@ import os
 import shutil
 import sys
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, ROOT)
-from build_site import (asset_version, write_assets, slim_footer, bb_game_pages, card_game, game_units, lock_note, ET, NOW,  # noqa: E402
-                        card, ml_day, ml_history, pct, price_line, record_band_html, season_record, daily_results, script_json, statline)
+from build_site import (team_accuracy_spec, backtest_months, asset_version, write_assets, slim_footer, bb_game_pages, card_game, game_units, lock_note, ET, NOW,  # noqa: E402
+                        card, ml_day, ml_history, pct, price_line, record_band_html, season_record, daily_results, script_json)
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
+import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
 
@@ -73,8 +74,6 @@ def load_json(path, default):
         return default
     with open(path) as f:
         return json.load(f)
-
-
 
 
 def day_label(iso):
@@ -351,62 +350,6 @@ def build_history(history):
 LIVE_BANDS = ((0, 45), (45, 55), (55, 65), (65, 101))
 
 
-def band_label(lo, hi):
-    if lo <= 0:
-        return f"Under {hi:.0%}"
-    return f"{lo:.0%} and up" if hi >= 1 else f"{lo:.0%}-{hi:.0%}"
-
-
-def band_table(bands, note):
-    rows = "".join(f"""<tr><td class="row-label">{band_label(*b['range'])}</td>
-      <td data-label="Matches" class="num">{b['n']}</td>
-      <td data-label="Model said" class="num">{pct(b['predicted'], 1)}</td>
-      <td data-label="Pick right" class="num accent">{pct(b['actual'], 1)}</td></tr>""" for b in bands)
-    return f"""<table class="data record-table responsive-stack">
-      <thead><tr><th>Pick's chance</th><th class="num">Matches</th><th class="num">Model said</th><th class="num">Pick right</th></tr></thead>
-      <tbody>{rows}</tbody></table><div class="table-footnote">{note}</div>"""
-
-
-def live_bands(picks):
-    out = []
-    for lo, hi in LIVE_BANDS:
-        b = [p for p in picks if lo <= p["prob"] < hi]
-        if b:
-            out.append({"range": [lo / 100, min(hi, 100) / 100], "n": len(b),
-                        "predicted": sum(p["prob"] for p in b) / len(b) / 100,
-                        "actual": sum(p["correct"] for p in b) / len(b)})
-    return out
-
-
-def chart_data(groups, titles):
-    labels, actual, predicted, cum_a, cum_p = [], [], [], [], []
-    seen = right = conf = 0
-    for label, items in groups:
-        labels.append(label)
-        actual.append(round(sum(c for _, c in items) / len(items), 3))
-        predicted.append(round(sum(p for p, _ in items) / len(items), 3))
-        seen += len(items)
-        right += sum(c for _, c in items)
-        conf += sum(p for p, _ in items)
-        cum_a.append(round(right / seen, 3))
-        cum_p.append(round(conf / seen, 3))
-    return {"labels": labels, "actual": actual, "predicted": predicted,
-            "cumulative_actual": cum_a, "cumulative_predicted": cum_p, "titles": titles}
-
-
-CHART_TITLES = {
-    "weekly": "Picks Right by Week: Actual vs. What the Model Predicted",
-    "weekly_actual": "Actual hit rate", "weekly_predicted": "Model's predicted hit rate",
-    "cumulative": "Season-to-Date Hit Rate",
-}
-
-
-def charts_html(data):
-    return ("".join(f'<div class="chart-card" data-state="loading"><canvas id="{c}" height="90"></canvas></div>'
-                    for c in ("chart-weekly", "chart-cumulative"))
-            + f'<script>const ACCURACY_DATA = {script_json(data)};</script>')
-
-
 def comp_table(model):
     rows = ""
     for code, s in (model.get("backtest_by_comp") or {}).items():
@@ -429,42 +372,17 @@ def comp_table(model):
 
 
 def build_accuracy(history, model):
-    picks = sorted(graded(history["picks"]), key=lambda p: p["date"])
-    parts = []
-    charts = False
-    if picks:
-        weeks = defaultdict(list)
-        for p in picks:
-            d = date.fromisoformat(p["date"])
-            weeks[d - timedelta(days=d.weekday())].append((p["prob"] / 100, p["correct"]))
-        data = chart_data([("Wk of " + wk.strftime("%b %-d"), weeks[wk]) for wk in sorted(weeks)], CHART_TITLES)
-        parts.append(card("Accuracy Over Time", f"{len(picks)} graded picks: what the model predicted vs. what happened",
-                          charts_html(data)))
-        by_comp = ""
-        for c, name in COMPS.items():
-            cp = [p for p in picks if p["comp"] == c]
-            if cp:
-                w, l = wl(cp)
-                by_comp += f"{name} {w}-{l} &middot; "
-        parts.append(card("Calibration", "Picks grouped by the chance the model gave them",
-                          band_table(live_bands(picks), f"{by_comp}Live picks only. If the model is honest, each "
-                                     "row's two percentages should be close. Small rows swing a lot.")))
-        charts = True
-
+    """The Accuracy tab, laid out like every sport's (accuracy_page)."""
+    picks = graded(history["picks"])
+    by_comp = ""
+    for c, name in COMPS.items():
+        cp = [p for p in picks if p["comp"] == c and season_label(p["date"]) == season_label(max(q["date"] for q in picks))]
+        if cp:
+            w, l = wl(cp)
+            by_comp += f"{name} {w}-{l} &middot; "
     bt = model.get("backtest")
+    backtest = None
     if bt:
-        if not charts:
-            groups = []
-            for m in bt["months"]:
-                n, c = m["n"], m["correct"]
-                groups.append((date.fromisoformat(m["month"] + "-01").strftime("%b %Y"),
-                               [(m["predicted"], True)] * c + [(m["predicted"], False)] * (n - c)))
-            titles = dict(CHART_TITLES, weekly=f"{model['backtest_season']} Backtest by Month: Actual vs. Predicted",
-                          cumulative=f"{model['backtest_season']} Backtest, Season to Date")
-            parts.append(card("Backtest Over Time", f"Every Premier League, La Liga and Champions League match of "
-                              f"{model['backtest_season']}, each picked from only the results before it",
-                              charts_html(chart_data(groups, titles))))
-            charts = True
         book = bt.get("book") or {}
         stats = [(f"{bt['correct']}-{bt['games'] - bt['correct']}", f"{model['backtest_season']} backtest",
                   f"{pct(bt['accuracy'], 1)} of picks right"),
@@ -476,12 +394,17 @@ def build_accuracy(history, model):
                 f"way the daily picks are made. The model expected {pct(bt['predicted_accuracy'], 1)} of its picks "
                 f"to be right and got {pct(bt['accuracy'], 1)}. Draws were {pct(bt['draw_rate'], 0)} of results; "
                 f"{bt['draw_picks']} of its picks were draws.")
-        parts.append(card("Backtest", "How the model did on a season it was picking blind",
-                          statline(stats) + band_table(bt["bands"], note) + comp_table(model)))
-    if not parts:
-        parts.append(card("Accuracy", "", '<div class="empty-state">No graded picks yet, and no backtest until the '
-                          'model is trained.</div>'))
-    return page_shell("Accuracy", "accuracy.html", "".join(parts), charts=charts)
+        backtest = {"subtitle": f"Every Premier League, La Liga and Champions League match of {model['backtest_season']}, "
+                                "each picked from only the results before it",
+                    "tiles": stats, "groups": backtest_months(bt), "rows": accuracy_page.band_rows(bt["bands"]),
+                    "note": note, "html": comp_table(model)}
+    spec = team_accuracy_spec(
+        history["picks"], season_label, 55, noun={"chance": "Chance"}, backtest=backtest,
+        edges=[(lo / 100, hi / 100) for lo, hi in LIVE_BANDS],
+        cal_note=f"{by_comp}Live picks only. If the model is honest, each row's two percentages should be close. "
+                 "Small rows swing a lot.")
+    body = accuracy_page.render(spec)
+    return page_shell("Accuracy", "accuracy.html", body, charts=accuracy_page.has_charts(body))
 
 
 # ── Schedule tab ─────────────────────────────────────────────────────────────

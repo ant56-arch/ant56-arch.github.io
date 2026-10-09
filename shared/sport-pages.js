@@ -140,3 +140,84 @@ async function initResultsCalendar() {
   draw();
 }
 initResultsCalendar();
+
+// --- Accuracy charts (accuracy_page.charts_html) ---
+// Every chart on the Accuracy tab, every sport, drawn the same way from the
+// window.EDGE_CHARTS list: {id, title, labels, fmt, series: [{label, data,
+// color, dash}]}. The box keeps its skeleton, or says the script never
+// arrived, until Chart.js draws into it.
+function initEdgeCharts() {
+  const charts = window.EDGE_CHARTS || [];
+  if (!charts.length) return;
+  if (typeof Chart === "undefined") {
+    document.querySelectorAll(".chart-card").forEach(c => c.dataset.state = "failed");
+    return;
+  }
+  Chart.defaults.font.family = "'Barlow', 'Helvetica Neue', Arial, sans-serif";
+  Chart.defaults.animation = false;
+  const formats = {
+    pct: v => (v * 100).toFixed(0) + "%",
+    num1: v => v.toFixed(1),
+    num3: v => v.toFixed(3),
+    pm1: v => "±" + v.toFixed(1),
+  };
+  const tipFormats = { ...formats, pct: v => (v * 100).toFixed(1) + "%" };
+  charts.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (!el) return;
+    el.closest(".chart-card")?.setAttribute("data-state", "ready");
+    const fmt = formats[c.fmt] || formats.pct, tip = tipFormats[c.fmt] || tipFormats.pct;
+    new Chart(el, {
+      type: "line",
+      data: {
+        labels: c.labels,
+        datasets: c.series.map(s => ({
+          label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color,
+          borderDash: s.dash || [], pointRadius: 3, borderWidth: 2, tension: 0, spanGaps: true,
+        })),
+      },
+      options: {
+        // Fill the .chart-card box (base.css) rather than the canvas's
+        // default shape, which left a sliver of plot on phones.
+        maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: c.title, align: "start", font: { size: 15, weight: "bold" }, color: "#ecebe7" },
+          legend: { display: true, position: "top", align: "start", labels: { color: "#ecebe7", font: { size: 13 }, boxWidth: 12, boxHeight: 2 } },
+          tooltip: {
+            backgroundColor: "#1a1b1d", borderColor: "#45484e", borderWidth: 1, cornerRadius: 6,
+            titleColor: "#ecebe7", bodyColor: "#a8a7a1",
+            callbacks: { label: ctx => `${ctx.dataset.label}: ${tip(ctx.parsed.y)}` },
+          },
+        },
+        scales: {
+          y: {
+            grace: "5%", ticks: { color: "#a8a7a1", callback: fmt }, grid: { color: "#2b2d31" }, border: { display: false },
+            // A share can't go below 0% or above 100%, whatever the padding.
+            afterDataLimits: c.fmt === "pct" || !c.fmt ? s => { s.min = Math.max(0, s.min); s.max = Math.min(1, s.max); } : undefined,
+          },
+          x: { ticks: { color: "#a8a7a1" }, grid: { display: false }, border: { color: "#45484e" } },
+        },
+      },
+    });
+  });
+}
+initEdgeCharts();
+
+// --- Model switch (accuracy_page.switcher) ---
+// Where a sport has two models (MLB hitters and games), buttons show one
+// model's panel at a time, the same way on its Accuracy and Model tabs.
+function initSwitchers() {
+  document.querySelectorAll(".model-switch").forEach(bar => {
+    const btns = bar.querySelectorAll("button[data-panel]");
+    btns.forEach(btn => btn.addEventListener("click", () => {
+      btns.forEach(b => {
+        const on = b === btn;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-pressed", String(on));
+        const panel = document.getElementById(b.dataset.panel);
+        if (panel) panel.hidden = !on;
+      });
+    }));
+  });
+}
+initSwitchers();

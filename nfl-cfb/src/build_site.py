@@ -49,6 +49,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import assets  # noqa: E402
 import extras  # noqa: E402
 import games as games_mod  # noqa: E402
+import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
 from datetime import datetime, timezone
@@ -1482,74 +1483,100 @@ def build_history_page(sport, log):
                 f'<script>const HISTORY_DATA = {history_json};</script>')
     return page_shell(sport, "History", "history", body)
 
-def build_moneyline_card(sport, games, log):
-    """Accuracy tab: this season's moneyline record and every graded pick."""
-    season, ml = ml_record(sport, games, log)
-    body = build_moneyline_block(season, ml, with_label=False)
-    if ml:
-        picks = log[(log["season"] == season) & log["ml_pick_side"].notna()
-                    & (log["ml_won"].notna() | (log["ml_push"] == 1))].sort_values(["week", "gameday"], ascending=False)
-        rows = ""
-        for _, r in picks.iterrows():
-            view = ml_view(sport, r)
-            res = "P" if r.get("ml_push") == 1 else ("W" if r["ml_won"] == 1 else "L")
-            rows += f"""<tr data-week="{week_label(r["week"], r.get("game_type"))}" data-res="{res}" data-kind="ml">
+def moneyline_picks_html(sport, season, log):
+    """Every graded moneyline pick this season, for the Accuracy tab's extras."""
+    picks = log[(log["season"] == season) & log["ml_pick_side"].notna()
+                & (log["ml_won"].notna() | (log["ml_push"] == 1))].sort_values(["week", "gameday"], ascending=False)
+    rows = ""
+    for _, r in picks.iterrows():
+        view = ml_view(sport, r)
+        res = "P" if r.get("ml_push") == 1 else ("W" if r["ml_won"] == 1 else "L")
+        rows += f"""<tr data-week="{week_label(r["week"], r.get("game_type"))}" data-res="{res}" data-kind="ml">
           <td>{week_label(r["week"], r.get("game_type"))}<div class="faint" style="font-size:13px;">{team_short(sport, r["away_team"])} @ {team_short(sport, r["home_team"])}, final {int(r["away_score"])}-{int(r["home_score"])}</div></td>
           <td data-label="Pick" class="num ml-cell">{ml_cell_html(view)}</td>
         </tr>"""
-        body += f"""<table class="data responsive-stack">
+    if not rows:
+        return ""
+    return f"""<table class="data responsive-stack">
       <thead><tr><th>Game</th><th class="num">Pick</th></tr></thead>
       <tbody>{rows}</tbody>
     </table>"""
-    return card("Moneyline Record", f"{season} moneyline picks and the price each one locked at", body)
 
 def build_accuracy_page(sport, log, games=None):
+    """The Accuracy tab, laid out like every sport's (accuracy_page)."""
     games = games if games is not None else pd.DataFrame()
-    ml_card = build_moneyline_card(sport, games, log)
-    if sport.get("player_props_csv"):
-        ml_card += build_td_record_card()
-    if "data-week=" in ml_card:
+    season, ml = ml_record(sport, games, log)
+    graded = log[log["actual_margin"].notna() & (log["season"] == season)].copy() if not log.empty else log
+    record, groups, items = {}, [], []
+    if not graded.empty:
+        graded = graded.sort_values(["week", "gameday"])
+        p_home = graded["model_home_win_prob"].astype(float)
+        graded["pick_prob"] = p_home.where(p_home >= 0.5, 1 - p_home)
+        items = [(str(r["gameday"]), float(r["pick_prob"]), bool(r["model_correct_pick"]))
+                 for _, r in graded.iterrows() if pd.notna(r["model_correct_pick"])]
+        if items:
+            record["tiles"] = accuracy_page.record_tiles(items, accuracy_page.NOUN, 0.7)
+        for wk, g in graded.groupby("week", sort=True):
+            g = g[g["model_correct_pick"].notna()]
+            veg = [bool(v) for v in g["vegas_correct_pick"] if pd.notna(v)]
+            groups.append((week_label(wk, g["game_type"].iloc[0] if "game_type" in g and len(g) else None),
+                           [(float(p), bool(c)) for p, c in zip(g["pick_prob"], g["model_correct_pick"])], veg or None))
+    record["subtitle"] = f"{season} live picks, graded against the final score"
+    record["html"] = build_moneyline_block(season, ml)
+
+    hv = load_coefficients(sport).get("holdout_validation") or {}
+    backtest = None
+    if hv:
+        backtest = {
+            "subtitle": f"Seasons {', '.join(str(x) for x in hv['seasons'])}, held out while the model was fit",
+            "tiles": [(f"{hv['n_games']:,}", "Games tested", "never seen in training"),
+                      (f"±{hv['model_only_spread_mae']:.1f}", "Spread error, ours",
+                       f"Vegas ±{hv['vegas_only_spread_mae']:.1f}; lower is sharper"),
+                      (f"{hv['model_only_brier']:.3f}", "Brier score, ours",
+                       f"Vegas {hv['vegas_only_brier']:.3f}; lower is sharper")],
+            "note": "Points off the final margin, and how well the win chances matched what happened, on games the "
+                    "model wasn't fit on. The picks you see blend in the market where that helped on these games.",
+        }
+
+    extras = []
+    weekly = graded[graded["model_spread_error"].notna()] if not graded.empty else graded
+    if not weekly.empty:
+        w = weekly.groupby("week", sort=True).agg(
+            us_mae=("model_spread_error", "mean"), vegas_mae=("vegas_spread_error", "mean"),
+            us_brier=("model_brier", "mean"), vegas_brier=("vegas_brier", "mean")).reset_index()
+        labels = [week_label(x) for x in w["week"]]
+        charts = [
+            accuracy_page.chart("vs-spread", "Spread Error by Week (lower is sharper)", labels, [
+                {"label": "Our model", "data": w["us_mae"].round(2).tolist(), "color": accuracy_page.OURS},
+                {"label": "Vegas", "data": w["vegas_mae"].round(2).tolist(), "color": accuracy_page.VEGAS}], "pm1"),
+            accuracy_page.chart("vs-brier", "Win Chance Calibration by Week (Brier score, lower is sharper)", labels, [
+                {"label": "Our model", "data": w["us_brier"].round(4).tolist(), "color": accuracy_page.OURS},
+                {"label": "Vegas", "data": w["vegas_brier"].round(4).tolist(), "color": accuracy_page.VEGAS}], "num3"),
+        ]
+        extras.append(("Against Vegas", f"{season}: how far off our lines and win chances were, next to the market's",
+                       accuracy_page.charts_html(charts)))
+    ml_rows = moneyline_picks_html(sport, season, log) if ml else ""
+    td = build_td_record_card() if sport.get("player_props_csv") else ""
+    if ml_rows or "data-week=" in td:
         # sport.js fills this with the weeks found in the pick tables and
         # shows one week at a time (or all of them).
-        ml_card = ('<div class="acc-weeks"><label for="acc-week-select">Show picks from</label> '
-                   '<select id="acc-week-select" class="week-picker"></select>'
-                   '<div id="acc-week-summary" class="muted"></div></div>') + ml_card
-    live_start = sport["live_tracking_start_season"]
-    graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
-    if not graded.empty:
-        graded = graded[graded["season"] >= live_start]
-    if graded.empty:
-        body = card("Accuracy Over Time", "Weekly trend, us vs. the market",
-                     '<div class="empty-state">No live-tracked games graded yet. Check back once the '
-                     f'{live_start} season starts.</div>')
-        return page_shell(sport, "Accuracy", "accuracy", ml_card + body)
+        extras.append('<div class="acc-weeks"><label for="acc-week-select">Show picks from</label> '
+                      '<select id="acc-week-select" class="week-picker"></select>'
+                      '<div id="acc-week-summary" class="muted"></div></div>')
+    if ml_rows:
+        extras.append(("Moneyline Picks", f"{season} moneyline picks and the price each one locked at", ml_rows))
+    if td:
+        extras.append(td)
 
-    graded = graded.sort_values(["season", "week"])
-    # "model_*" here too, not "sharp_*" - sharp is the market-blended line,
-    # which for spreads has a 0.0 model weight and is therefore identical to
-    # Vegas every week. Charting it as "Us" would just plot Vegas twice.
-    weekly = graded.groupby(["season", "week"]).agg(
-        model_accuracy=("model_correct_pick", "mean"), vegas_accuracy=("vegas_correct_pick", "mean"),
-        model_spread_mae=("model_spread_error", "mean"), vegas_spread_mae=("vegas_spread_error", "mean"),
-        model_brier=("model_brier", "mean"), vegas_brier=("vegas_brier", "mean"),
-        n=("model_correct_pick", "size"),
-    ).reset_index()
-
-    labels = [f"{int(s)} Wk{int(w)}" for s, w in zip(weekly["season"], weekly["week"])]
-    data = {
-        "labels": labels,
-        "us_accuracy": weekly["model_accuracy"].round(3).tolist(), "vegas_accuracy": weekly["vegas_accuracy"].round(3).tolist(),
-        "us_spread_mae": weekly["model_spread_mae"].round(2).tolist(), "vegas_spread_mae": weekly["vegas_spread_mae"].round(2).tolist(),
-        "us_brier": weekly["model_brier"].round(4).tolist(), "vegas_brier": weekly["vegas_brier"].round(4).tolist(),
+    spec = {
+        "prefix": "acc", "record": record, "groups": groups, "calibration": {
+            "rows": accuracy_page.bands([(p, c) for _, p, c in items], [(.5, .6), (.6, .7), (.7, .8), (.8, 1.01)])},
+        "backtest": backtest, "extras": extras,
+        "empty": {"record": f"No graded picks yet in {season}. The record starts after the first week of games.",
+                  "trend": f"The charts start after the first graded week of {season}.",
+                  "calibration": "Fills in once picks are graded."},
     }
-    charts_html = "".join(
-        f'<div class="chart-card" data-state="loading"><canvas id="{cid}" height="90"></canvas></div>'
-        for cid in ["chart-accuracy", "chart-spread-mae", "chart-brier"]
-    )
-    body = card("Accuracy Over Time",
-                f"Week-by-week results for {int(weekly['n'].sum())} live-picked games since the start of {live_start}: our model's picks against the market",
-                charts_html + f'<script>const ACCURACY_DATA = {json.dumps(data)};</script>')
-    return page_shell(sport, "Accuracy", "accuracy", ml_card + body)
+    return page_shell(sport, "Accuracy", "accuracy", accuracy_page.render(spec))
 
 def root_page_shell(title, body_html):
     """Shell for the pages that live at the site root rather than under a
