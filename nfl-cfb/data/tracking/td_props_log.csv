@@ -334,7 +334,7 @@ season,week,player_id,player_name,pos,team,opponent,kickoff,our_prob,top10,event
 2026,5,00-0039589,K.Johnson,WR,TB,DAL,2026-10-09T00:15:00Z,0.034,False,259b5df9aa0d10257f56de78523495e0,draftkings,2000.0,0.0441,2026-10-08T21:16:45Z,Kameron Johnson,-0.0101,False,,,
 2026,5,00-0039050,P.Durham,TE,TB,DAL,2026-10-09T00:15:00Z,0.033,False,259b5df9aa0d10257f56de78523495e0,draftkings,3500.0,0.0257,2026-10-08T21:16:45Z,Payne Durham,0.0073,False,,,
 2026,5,00-0036223,J.Taylor,RB,IND,PIT,2026-10-11T17:00:00Z,0.585,True,,,,,,,,False,,,
-2026,5,00-0035700,J.Jacobs,RB,GB,CHI,2026-10-11T17:00:00Z,0.518,True,,,,,,,,False,,,
+2026,5,00-0035700,J.Jacobs,RB,GB,CHI,2026-10-11T17:00:00Z,0.524,True,,,,,,,,False,,,
 2026,5,00-0039139,J.Gibbs,RB,DET,ARI,2026-10-11T20:25:00Z,0.71,True,,,,,,,,False,,,
 2026,5,00-0033280,C.McCaffrey,RB,SF,SEA,2026-10-11T20:25:00Z,0.643,True,,,,,,,,False,,,
 2026,5,00-0036963,A.St. Brown,WR,DET,ARI,2026-10-11T20:25:00Z,0.614,True,,,,,,,,False,,,
