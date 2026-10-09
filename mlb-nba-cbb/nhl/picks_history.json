@@ -2473,7 +2473,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-09T21:11:30Z",
+   "set_at": "2026-10-09T23:55:28Z",
    "ml": {
     "team": "WPG",
     "side": "home",
@@ -2484,7 +2484,7 @@
     "value": false,
     "home_ml": -125,
     "away_ml": 105,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
