@@ -1,8 +1,7 @@
 {
- "updated": "2026-10-10T16:02:53+00:00",
+ "updated": "2026-10-05T22:35:11+00:00",
  "season": 2026,
- "source": "espn",
- "games_through_week": 6,
+ "games_through_week": 5,
  "home_field": 4.23,
  "half_life_weeks": 30,
  "preseason_weight": 3,
@@ -13,9 +12,9 @@
    "abbreviation": "ALA",
    "logo": "https://cdn.collegefootballdata.com/logos/500/333.png",
    "record": "5-0",
-   "overall": 27.7,
-   "offense": 46.54,
-   "defense": 18.84,
+   "overall": 27.69,
+   "offense": 44.13,
+   "defense": 16.43,
    "overall_rank": 1,
    "offense_rank": 1,
    "defense_rank": 8
@@ -27,8 +26,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/194.png",
    "record": "4-1",
    "overall": 27.57,
-   "offense": 42.98,
-   "defense": 15.41,
+   "offense": 40.57,
+   "defense": 13.0,
    "overall_rank": 2,
    "offense_rank": 6,
    "defense_rank": 2
@@ -39,9 +38,9 @@
    "abbreviation": "ND",
    "logo": "https://cdn.collegefootballdata.com/logos/500/87.png",
    "record": "5-0",
-   "overall": 27.35,
-   "offense": 43.92,
-   "defense": 16.57,
+   "overall": 27.34,
+   "offense": 41.51,
+   "defense": 14.16,
    "overall_rank": 3,
    "offense_rank": 5,
    "defense_rank": 4
@@ -53,8 +52,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2390.png",
    "record": "5-0",
    "overall": 27.01,
-   "offense": 44.08,
-   "defense": 17.07,
+   "offense": 41.67,
+   "defense": 14.66,
    "overall_rank": 4,
    "offense_rank": 3,
    "defense_rank": 5
@@ -66,8 +65,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/61.png",
    "record": "5-0",
    "overall": 25.28,
-   "offense": 44.74,
-   "defense": 19.46,
+   "offense": 42.33,
+   "defense": 17.05,
    "overall_rank": 5,
    "offense_rank": 2,
    "defense_rank": 10
@@ -78,9 +77,9 @@
    "abbreviation": "ORE",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2483.png",
    "record": "3-1",
-   "overall": 22.78,
-   "offense": 44.03,
-   "defense": 21.25,
+   "overall": 22.79,
+   "offense": 41.62,
+   "defense": 18.84,
    "overall_rank": 6,
    "offense_rank": 4,
    "defense_rank": 14
@@ -92,8 +91,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/251.png",
    "record": "4-0",
    "overall": 22.07,
-   "offense": 36.72,
-   "defense": 14.65,
+   "offense": 34.31,
+   "defense": 12.24,
    "overall_rank": 7,
    "offense_rank": 18,
    "defense_rank": 1
@@ -104,9 +103,9 @@
    "abbreviation": "IU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/84.png",
    "record": "5-0",
-   "overall": 21.68,
-   "offense": 38.92,
-   "defense": 17.24,
+   "overall": 21.69,
+   "offense": 36.51,
+   "defense": 14.83,
    "overall_rank": 8,
    "offense_rank": 9,
    "defense_rank": 6
@@ -117,9 +116,9 @@
    "abbreviation": "LSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/99.png",
    "record": "4-1",
-   "overall": 19.74,
-   "offense": 38.35,
-   "defense": 18.61,
+   "overall": 19.73,
+   "offense": 35.94,
+   "defense": 16.2,
    "overall_rank": 9,
    "offense_rank": 13,
    "defense_rank": 7
@@ -131,11 +130,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/254.png",
    "record": "4-0",
    "overall": 16.93,
-   "offense": 38.54,
-   "defense": 21.61,
+   "offense": 36.13,
+   "defense": 19.2,
    "overall_rank": 10,
    "offense_rank": 10,
    "defense_rank": 18
+  },
+  {
+   "team": "BYU",
+   "conference": "Big 12",
+   "abbreviation": "BYU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/252.png",
+   "record": "4-0",
+   "overall": 14.4,
+   "offense": 31.91,
+   "defense": 17.51,
+   "overall_rank": 11,
+   "offense_rank": 26,
+   "defense_rank": 12
   },
   {
    "team": "Tennessee",
@@ -143,25 +155,12 @@
    "abbreviation": "TENN",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2633.png",
    "record": "4-1",
-   "overall": 14.39,
-   "offense": 37.23,
-   "defense": 22.84,
-   "overall_rank": 11,
+   "overall": 14.38,
+   "offense": 34.82,
+   "defense": 20.43,
+   "overall_rank": 12,
    "offense_rank": 16,
    "defense_rank": 24
-  },
-  {
-   "team": "BYU",
-   "conference": "Big 12",
-   "abbreviation": "BYU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/252.png",
-   "record": "5-0",
-   "overall": 14.34,
-   "offense": 33.32,
-   "defense": 18.98,
-   "overall_rank": 12,
-   "offense_rank": 34,
-   "defense_rank": 9
   },
   {
    "team": "Texas A&M",
@@ -169,9 +168,9 @@
    "abbreviation": "TA&M",
    "logo": "https://cdn.collegefootballdata.com/logos/500/245.png",
    "record": "3-2",
-   "overall": 14.23,
-   "offense": 34.87,
-   "defense": 20.64,
+   "overall": 14.22,
+   "offense": 32.46,
+   "defense": 18.23,
    "overall_rank": 13,
    "offense_rank": 24,
    "defense_rank": 13
@@ -182,12 +181,12 @@
    "abbreviation": "FLA",
    "logo": "https://cdn.collegefootballdata.com/logos/500/57.png",
    "record": "4-1",
-   "overall": 14.15,
-   "offense": 39.72,
-   "defense": 25.57,
+   "overall": 14.16,
+   "offense": 37.31,
+   "defense": 23.16,
    "overall_rank": 14,
    "offense_rank": 7,
-   "defense_rank": 41
+   "defense_rank": 43
   },
   {
    "team": "Texas Tech",
@@ -196,11 +195,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2641.png",
    "record": "5-0",
    "overall": 13.78,
-   "offense": 33.59,
-   "defense": 19.81,
+   "offense": 31.18,
+   "defense": 17.4,
    "overall_rank": 15,
-   "offense_rank": 30,
-   "defense_rank": 12
+   "offense_rank": 32,
+   "defense_rank": 11
   },
   {
    "team": "Oklahoma",
@@ -208,11 +207,11 @@
    "abbreviation": "OU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/201.png",
    "record": "2-2",
-   "overall": 13.4,
-   "offense": 29.08,
-   "defense": 15.68,
+   "overall": 13.41,
+   "offense": 26.67,
+   "defense": 13.27,
    "overall_rank": 16,
-   "offense_rank": 71,
+   "offense_rank": 70,
    "defense_rank": 3
   },
   {
@@ -221,12 +220,12 @@
    "abbreviation": "UCLA",
    "logo": "https://cdn.collegefootballdata.com/logos/500/26.png",
    "record": "4-0",
-   "overall": 13.23,
-   "offense": 37.59,
-   "defense": 24.36,
+   "overall": 13.24,
+   "offense": 35.18,
+   "defense": 21.95,
    "overall_rank": 17,
    "offense_rank": 15,
-   "defense_rank": 30
+   "defense_rank": 31
   },
   {
    "team": "Missouri",
@@ -235,8 +234,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/142.png",
    "record": "4-1",
    "overall": 13.15,
-   "offense": 35.2,
-   "defense": 22.05,
+   "offense": 32.79,
+   "defense": 19.64,
    "overall_rank": 18,
    "offense_rank": 23,
    "defense_rank": 19
@@ -248,24 +247,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/30.png",
    "record": "5-1",
    "overall": 12.71,
-   "offense": 39.11,
-   "defense": 26.4,
+   "offense": 36.7,
+   "defense": 23.99,
    "overall_rank": 19,
    "offense_rank": 8,
-   "defense_rank": 52
-  },
-  {
-   "team": "Iowa",
-   "conference": "Big Ten",
-   "abbreviation": "IOWA",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2294.png",
-   "record": "5-1",
-   "overall": 12.47,
-   "offense": 31.95,
-   "defense": 19.49,
-   "overall_rank": 20,
-   "offense_rank": 44,
-   "defense_rank": 11
+   "defense_rank": 50
   },
   {
    "team": "Pittsburgh",
@@ -274,10 +260,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/221.png",
    "record": "5-0",
    "overall": 11.84,
-   "offense": 34.11,
-   "defense": 22.27,
-   "overall_rank": 21,
-   "offense_rank": 28,
+   "offense": 31.7,
+   "defense": 19.86,
+   "overall_rank": 20,
+   "offense_rank": 30,
    "defense_rank": 20
   },
   {
@@ -287,11 +273,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/145.png",
    "record": "3-1",
    "overall": 11.43,
-   "offense": 38.4,
-   "defense": 26.97,
-   "overall_rank": 22,
+   "offense": 35.99,
+   "defense": 24.56,
+   "overall_rank": 21,
    "offense_rank": 11,
-   "defense_rank": 58
+   "defense_rank": 56
   },
   {
    "team": "Nebraska",
@@ -300,11 +286,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/158.png",
    "record": "5-0",
    "overall": 11.34,
-   "offense": 36.65,
-   "defense": 25.31,
-   "overall_rank": 23,
+   "offense": 34.24,
+   "defense": 22.9,
+   "overall_rank": 22,
    "offense_rank": 19,
-   "defense_rank": 36
+   "defense_rank": 37
   },
   {
    "team": "Mississippi State",
@@ -312,12 +298,25 @@
    "abbreviation": "MSST",
    "logo": "https://cdn.collegefootballdata.com/logos/500/344.png",
    "record": "4-1",
-   "overall": 11.22,
-   "offense": 38.39,
-   "defense": 27.17,
-   "overall_rank": 24,
+   "overall": 11.23,
+   "offense": 35.98,
+   "defense": 24.76,
+   "overall_rank": 23,
    "offense_rank": 12,
-   "defense_rank": 60
+   "defense_rank": 57
+  },
+  {
+   "team": "Iowa",
+   "conference": "Big Ten",
+   "abbreviation": "IOWA",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2294.png",
+   "record": "4-1",
+   "overall": 11.05,
+   "offense": 27.94,
+   "defense": 16.89,
+   "overall_rank": 24,
+   "offense_rank": 59,
+   "defense_rank": 9
   },
   {
    "team": "Houston",
@@ -326,11 +325,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/248.png",
    "record": "4-1",
    "overall": 11.04,
-   "offense": 36.89,
-   "defense": 25.85,
+   "offense": 34.48,
+   "defense": 23.44,
    "overall_rank": 25,
    "offense_rank": 17,
-   "defense_rank": 43
+   "defense_rank": 44
   },
   {
    "team": "James Madison",
@@ -339,11 +338,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/256.png",
    "record": "5-0",
    "overall": 10.68,
-   "offense": 35.21,
-   "defense": 24.53,
+   "offense": 32.8,
+   "defense": 22.12,
    "overall_rank": 26,
    "offense_rank": 22,
-   "defense_rank": 34
+   "defense_rank": 35
   },
   {
    "team": "Penn State",
@@ -351,9 +350,9 @@
    "abbreviation": "PSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/213.png",
    "record": "3-2",
-   "overall": 10.28,
-   "offense": 32.85,
-   "defense": 22.57,
+   "overall": 10.29,
+   "offense": 30.44,
+   "defense": 20.16,
    "overall_rank": 27,
    "offense_rank": 38,
    "defense_rank": 22
@@ -365,10 +364,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/167.png",
    "record": "4-1",
    "overall": 9.8,
-   "offense": 33.38,
-   "defense": 23.58,
+   "offense": 30.97,
+   "defense": 21.17,
    "overall_rank": 28,
-   "offense_rank": 33,
+   "offense_rank": 35,
    "defense_rank": 27
   },
   {
@@ -378,24 +377,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/154.png",
    "record": "4-1",
    "overall": 9.74,
-   "offense": 34.23,
-   "defense": 24.49,
+   "offense": 31.82,
+   "defense": 22.08,
    "overall_rank": 29,
-   "offense_rank": 26,
-   "defense_rank": 32
-  },
-  {
-   "team": "Louisville",
-   "conference": "ACC",
-   "abbreviation": "LOU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/97.png",
-   "record": "3-3",
-   "overall": 9.45,
-   "offense": 36.3,
-   "defense": 26.85,
-   "overall_rank": 30,
-   "offense_rank": 20,
-   "defense_rank": 56
+   "offense_rank": 27,
+   "defense_rank": 33
   },
   {
    "team": "Michigan",
@@ -403,10 +389,10 @@
    "abbreviation": "MICH",
    "logo": "https://cdn.collegefootballdata.com/logos/500/130.png",
    "record": "3-2",
-   "overall": 9.42,
-   "offense": 30.86,
-   "defense": 21.44,
-   "overall_rank": 31,
+   "overall": 9.41,
+   "offense": 28.45,
+   "defense": 19.03,
+   "overall_rank": 30,
    "offense_rank": 52,
    "defense_rank": 16
   },
@@ -417,11 +403,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2.png",
    "record": "3-2",
    "overall": 9.25,
-   "offense": 30.75,
-   "defense": 21.5,
-   "overall_rank": 32,
+   "offense": 28.34,
+   "defense": 19.09,
+   "overall_rank": 31,
    "offense_rank": 53,
    "defense_rank": 17
+  },
+  {
+   "team": "Florida State",
+   "conference": "ACC",
+   "abbreviation": "FSU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/52.png",
+   "record": "3-2",
+   "overall": 8.73,
+   "offense": 31.81,
+   "defense": 23.08,
+   "overall_rank": 32,
+   "offense_rank": 29,
+   "defense_rank": 41
   },
   {
    "team": "Wisconsin",
@@ -430,8 +429,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/275.png",
    "record": "4-1",
    "overall": 8.72,
-   "offense": 30.11,
-   "defense": 21.39,
+   "offense": 27.7,
+   "defense": 18.98,
    "overall_rank": 33,
    "offense_rank": 65,
    "defense_rank": 15
@@ -442,9 +441,9 @@
    "abbreviation": "NU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/77.png",
    "record": "3-1",
-   "overall": 8.71,
-   "offense": 31.96,
-   "defense": 23.25,
+   "overall": 8.72,
+   "offense": 29.55,
+   "defense": 20.84,
    "overall_rank": 34,
    "offense_rank": 43,
    "defense_rank": 25
@@ -455,12 +454,12 @@
    "abbreviation": "BAY",
    "logo": "https://cdn.collegefootballdata.com/logos/500/239.png",
    "record": "4-1",
-   "overall": 8.26,
-   "offense": 32.66,
-   "defense": 24.4,
+   "overall": 8.27,
+   "offense": 30.25,
+   "defense": 21.99,
    "overall_rank": 35,
    "offense_rank": 40,
-   "defense_rank": 31
+   "defense_rank": 32
   },
   {
    "team": "Kansas State",
@@ -468,11 +467,11 @@
    "abbreviation": "KSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2306.png",
    "record": "3-1",
-   "overall": 8.06,
-   "offense": 34.23,
-   "defense": 26.17,
+   "overall": 8.07,
+   "offense": 31.82,
+   "defense": 23.76,
    "overall_rank": 36,
-   "offense_rank": 26,
+   "offense_rank": 28,
    "defense_rank": 47
   },
   {
@@ -482,9 +481,22 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/259.png",
    "record": "4-1",
    "overall": 7.77,
-   "offense": 35.57,
-   "defense": 27.8,
+   "offense": 33.16,
+   "defense": 25.39,
    "overall_rank": 37,
+   "offense_rank": 20,
+   "defense_rank": 63
+  },
+  {
+   "team": "Louisville",
+   "conference": "ACC",
+   "abbreviation": "LOU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/97.png",
+   "record": "2-3",
+   "overall": 7.49,
+   "offense": 32.99,
+   "defense": 25.5,
+   "overall_rank": 38,
    "offense_rank": 21,
    "defense_rank": 66
   },
@@ -494,11 +506,11 @@
    "abbreviation": "ARIZ",
    "logo": "https://cdn.collegefootballdata.com/logos/500/12.png",
    "record": "4-1",
-   "overall": 7.35,
-   "offense": 31.44,
-   "defense": 24.09,
-   "overall_rank": 38,
-   "offense_rank": 46,
+   "overall": 7.34,
+   "offense": 29.03,
+   "defense": 21.68,
+   "overall_rank": 39,
+   "offense_rank": 45,
    "defense_rank": 29
   },
   {
@@ -507,11 +519,11 @@
    "abbreviation": "UCF",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2116.png",
    "record": "3-2",
-   "overall": 6.85,
-   "offense": 29.63,
-   "defense": 22.78,
-   "overall_rank": 39,
-   "offense_rank": 67,
+   "overall": 6.86,
+   "offense": 27.22,
+   "defense": 20.37,
+   "overall_rank": 40,
+   "offense_rank": 66,
    "defense_rank": 23
   },
   {
@@ -521,24 +533,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/150.png",
    "record": "4-0",
    "overall": 6.8,
-   "offense": 32.11,
-   "defense": 25.31,
-   "overall_rank": 40,
-   "offense_rank": 42,
-   "defense_rank": 36
-  },
-  {
-   "team": "Florida State",
-   "conference": "ACC",
-   "abbreviation": "FSU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/52.png",
-   "record": "3-3",
-   "overall": 6.77,
-   "offense": 33.16,
-   "defense": 26.39,
+   "offense": 29.7,
+   "defense": 22.9,
    "overall_rank": 41,
-   "offense_rank": 35,
-   "defense_rank": 51
+   "offense_rank": 42,
+   "defense_rank": 38
   },
   {
    "team": "Kentucky",
@@ -547,8 +546,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/96.png",
    "record": "4-1",
    "overall": 6.64,
-   "offense": 32.8,
-   "defense": 26.16,
+   "offense": 30.39,
+   "defense": 23.75,
    "overall_rank": 42,
    "offense_rank": 39,
    "defense_rank": 46
@@ -559,12 +558,12 @@
    "abbreviation": "SC",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2579.png",
    "record": "2-3",
-   "overall": 6.49,
-   "offense": 33.79,
-   "defense": 27.3,
+   "overall": 6.48,
+   "offense": 31.38,
+   "defense": 24.89,
    "overall_rank": 43,
-   "offense_rank": 29,
-   "defense_rank": 63
+   "offense_rank": 31,
+   "defense_rank": 59
   },
   {
    "team": "Virginia",
@@ -573,8 +572,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/258.png",
    "record": "3-2",
    "overall": 6.45,
-   "offense": 30.21,
-   "defense": 23.76,
+   "offense": 27.8,
+   "defense": 21.35,
    "overall_rank": 44,
    "offense_rank": 61,
    "defense_rank": 28
@@ -585,12 +584,12 @@
    "abbreviation": "SMU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2567.png",
    "record": "4-1",
-   "overall": 6.25,
-   "offense": 33.05,
-   "defense": 26.8,
+   "overall": 6.26,
+   "offense": 30.64,
+   "defense": 24.39,
    "overall_rank": 45,
    "offense_rank": 36,
-   "defense_rank": 55
+   "defense_rank": 53
   },
   {
    "team": "NC State",
@@ -599,11 +598,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/152.png",
    "record": "3-2",
    "overall": 6.15,
-   "offense": 34.74,
-   "defense": 28.59,
+   "offense": 32.33,
+   "defense": 26.18,
    "overall_rank": 46,
    "offense_rank": 25,
-   "defense_rank": 72
+   "defense_rank": 71
   },
   {
    "team": "TCU",
@@ -612,10 +611,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2628.png",
    "record": "2-3",
    "overall": 5.93,
-   "offense": 28.37,
-   "defense": 22.44,
+   "offense": 25.96,
+   "defense": 20.03,
    "overall_rank": 47,
-   "offense_rank": 73,
+   "offense_rank": 72,
    "defense_rank": 21
   },
   {
@@ -625,10 +624,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/68.png",
    "record": "4-1",
    "overall": 5.61,
-   "offense": 31.92,
-   "defense": 26.31,
+   "offense": 29.51,
+   "defense": 23.9,
    "overall_rank": 48,
-   "offense_rank": 45,
+   "offense_rank": 44,
    "defense_rank": 49
   },
   {
@@ -638,11 +637,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2305.png",
    "record": "2-2",
    "overall": 5.51,
-   "offense": 31.03,
-   "defense": 25.52,
+   "offense": 28.62,
+   "defense": 23.11,
    "overall_rank": 49,
-   "offense_rank": 49,
-   "defense_rank": 40
+   "offense_rank": 48,
+   "defense_rank": 42
+  },
+  {
+   "team": "Washington",
+   "conference": "Big Ten",
+   "abbreviation": "WASH",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/264.png",
+   "record": "3-2",
+   "overall": 4.97,
+   "offense": 26.8,
+   "defense": 21.83,
+   "overall_rank": 50,
+   "offense_rank": 69,
+   "defense_rank": 30
   },
   {
    "team": "Oklahoma State",
@@ -651,10 +663,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/197.png",
    "record": "3-1",
    "overall": 4.31,
-   "offense": 30.38,
-   "defense": 26.07,
-   "overall_rank": 50,
-   "offense_rank": 59,
+   "offense": 27.97,
+   "defense": 23.66,
+   "overall_rank": 51,
+   "offense_rank": 58,
    "defense_rank": 45
   },
   {
@@ -664,11 +676,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/135.png",
    "record": "4-1",
    "overall": 4.21,
-   "offense": 28.72,
-   "defense": 24.51,
-   "overall_rank": 51,
-   "offense_rank": 72,
-   "defense_rank": 33
+   "offense": 26.31,
+   "defense": 22.1,
+   "overall_rank": 52,
+   "offense_rank": 71,
+   "defense_rank": 34
   },
   {
    "team": "Clemson",
@@ -676,10 +688,10 @@
    "abbreviation": "CLEM",
    "logo": "https://cdn.collegefootballdata.com/logos/500/228.png",
    "record": "3-2",
-   "overall": 4.11,
-   "offense": 27.67,
-   "defense": 23.56,
-   "overall_rank": 52,
+   "overall": 4.1,
+   "offense": 25.26,
+   "defense": 21.15,
+   "overall_rank": 53,
    "offense_rank": 77,
    "defense_rank": 26
   },
@@ -688,13 +700,13 @@
    "conference": "Big 12",
    "abbreviation": "ISU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/66.png",
-   "record": "3-3",
-   "overall": 4.09,
-   "offense": 29.99,
-   "defense": 25.9,
-   "overall_rank": 53,
-   "offense_rank": 66,
-   "defense_rank": 44
+   "record": "3-2",
+   "overall": 4.04,
+   "offense": 28.53,
+   "defense": 24.49,
+   "overall_rank": 54,
+   "offense_rank": 50,
+   "defense_rank": 54
   },
   {
    "team": "North Texas",
@@ -703,24 +715,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/249.png",
    "record": "3-2",
    "overall": 3.69,
-   "offense": 37.7,
-   "defense": 34.01,
-   "overall_rank": 54,
-   "offense_rank": 14,
-   "defense_rank": 110
-  },
-  {
-   "team": "Washington",
-   "conference": "Big Ten",
-   "abbreviation": "WASH",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/264.png",
-   "record": "3-3",
-   "overall": 3.55,
-   "offense": 29.4,
-   "defense": 25.84,
+   "offense": 35.29,
+   "defense": 31.6,
    "overall_rank": 55,
-   "offense_rank": 70,
-   "defense_rank": 42
+   "offense_rank": 14,
+   "defense_rank": 111
   },
   {
    "team": "Vanderbilt",
@@ -729,11 +728,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/238.png",
    "record": "3-2",
    "overall": 3.49,
-   "offense": 30.13,
-   "defense": 26.64,
+   "offense": 27.72,
+   "defense": 24.23,
    "overall_rank": 56,
    "offense_rank": 64,
-   "defense_rank": 54
+   "defense_rank": 52
   },
   {
    "team": "Toledo",
@@ -742,10 +741,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2649.png",
    "record": "4-1",
    "overall": 2.99,
-   "offense": 33.55,
-   "defense": 30.56,
+   "offense": 31.14,
+   "defense": 28.15,
    "overall_rank": 57,
-   "offense_rank": 32,
+   "offense_rank": 34,
    "defense_rank": 87
   },
   {
@@ -755,11 +754,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/153.png",
    "record": "2-2",
    "overall": 2.46,
-   "offense": 27.82,
-   "defense": 25.36,
+   "offense": 25.41,
+   "defense": 22.95,
    "overall_rank": 58,
    "offense_rank": 76,
-   "defense_rank": 38
+   "defense_rank": 39
   },
   {
    "team": "Memphis",
@@ -768,8 +767,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/235.png",
    "record": "4-1",
    "overall": 2.39,
-   "offense": 32.64,
-   "defense": 30.25,
+   "offense": 30.23,
+   "defense": 27.84,
    "overall_rank": 59,
    "offense_rank": 41,
    "defense_rank": 83
@@ -781,11 +780,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/278.png",
    "record": "4-1",
    "overall": 1.92,
-   "offense": 26.57,
-   "defense": 24.65,
+   "offense": 24.16,
+   "defense": 22.24,
    "overall_rank": 60,
    "offense_rank": 83,
-   "defense_rank": 35
+   "defense_rank": 36
   },
   {
    "team": "Illinois",
@@ -794,8 +793,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/356.png",
    "record": "2-3",
    "overall": 1.27,
-   "offense": 30.54,
-   "defense": 29.27,
+   "offense": 28.13,
+   "defense": 26.86,
    "overall_rank": 61,
    "offense_rank": 57,
    "defense_rank": 75
@@ -807,8 +806,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/204.png",
    "record": "3-2",
    "overall": 1.22,
-   "offense": 30.17,
-   "defense": 28.95,
+   "offense": 27.76,
+   "defense": 26.54,
    "overall_rank": 62,
    "offense_rank": 63,
    "defense_rank": 74
@@ -820,11 +819,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/183.png",
    "record": "2-2",
    "overall": 0.93,
-   "offense": 29.48,
-   "defense": 28.55,
+   "offense": 27.07,
+   "defense": 26.14,
    "overall_rank": 63,
-   "offense_rank": 69,
-   "defense_rank": 70
+   "offense_rank": 67,
+   "defense_rank": 69
   },
   {
    "team": "Cincinnati",
@@ -833,11 +832,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2132.png",
    "record": "4-1",
    "overall": 0.92,
-   "offense": 31.37,
-   "defense": 30.45,
+   "offense": 28.96,
+   "defense": 28.04,
    "overall_rank": 64,
-   "offense_rank": 47,
-   "defense_rank": 86
+   "offense_rank": 46,
+   "defense_rank": 85
+  },
+  {
+   "team": "South Florida",
+   "conference": "American Athletic",
+   "abbreviation": "USF",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/58.png",
+   "record": "4-1",
+   "overall": 0.53,
+   "offense": 25.04,
+   "defense": 24.51,
+   "overall_rank": 65,
+   "offense_rank": 78,
+   "defense_rank": 55
   },
   {
    "team": "Arizona State",
@@ -846,37 +858,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/9.png",
    "record": "2-2",
    "overall": 0.46,
-   "offense": 30.88,
-   "defense": 30.42,
-   "overall_rank": 65,
-   "offense_rank": 51,
-   "defense_rank": 85
-  },
-  {
-   "team": "South Florida",
-   "conference": "American Athletic",
-   "abbreviation": "USF",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/58.png",
-   "record": "4-2",
-   "overall": 0.2,
-   "offense": 27.22,
-   "defense": 27.03,
+   "offense": 28.47,
+   "defense": 28.01,
    "overall_rank": 66,
-   "offense_rank": 79,
-   "defense_rank": 59
-  },
-  {
-   "team": "UTSA",
-   "conference": "American Athletic",
-   "abbreviation": "UTSA",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2636.png",
-   "record": "5-1",
-   "overall": 0.06,
-   "offense": 29.55,
-   "defense": 29.49,
-   "overall_rank": 67,
-   "offense_rank": 68,
-   "defense_rank": 78
+   "offense_rank": 51,
+   "defense_rank": 84
   },
   {
    "team": "West Virginia",
@@ -885,11 +871,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/277.png",
    "record": "3-2",
    "overall": -0.03,
-   "offense": 33.03,
-   "defense": 33.06,
-   "overall_rank": 68,
+   "offense": 30.62,
+   "defense": 30.65,
+   "overall_rank": 67,
    "offense_rank": 37,
-   "defense_rank": 106
+   "defense_rank": 107
+  },
+  {
+   "team": "UTSA",
+   "conference": "American Athletic",
+   "abbreviation": "UTSA",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2636.png",
+   "record": "4-1",
+   "overall": -0.27,
+   "offense": 27.03,
+   "defense": 27.3,
+   "overall_rank": 68,
+   "offense_rank": 68,
+   "defense_rank": 79
   },
   {
    "team": "Michigan State",
@@ -898,11 +897,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/127.png",
    "record": "2-3",
    "overall": -0.29,
-   "offense": 25.17,
-   "defense": 25.46,
+   "offense": 22.76,
+   "defense": 23.05,
    "overall_rank": 69,
    "offense_rank": 91,
-   "defense_rank": 39
+   "defense_rank": 40
   },
   {
    "team": "Maryland",
@@ -911,11 +910,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/120.png",
    "record": "2-3",
    "overall": -0.62,
-   "offense": 27.94,
-   "defense": 28.56,
+   "offense": 25.53,
+   "defense": 26.15,
    "overall_rank": 70,
    "offense_rank": 75,
-   "defense_rank": 71
+   "defense_rank": 70
   },
   {
    "team": "Louisiana Tech",
@@ -924,8 +923,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2348.png",
    "record": "2-2",
    "overall": -0.67,
-   "offense": 30.3,
-   "defense": 30.97,
+   "offense": 27.89,
+   "defense": 28.56,
    "overall_rank": 71,
    "offense_rank": 60,
    "defense_rank": 90
@@ -936,25 +935,12 @@
    "abbreviation": "NDSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2449.png",
    "record": "5-0",
-   "overall": -0.88,
-   "offense": 25.75,
-   "defense": 26.63,
+   "overall": -0.89,
+   "offense": 23.34,
+   "defense": 24.22,
    "overall_rank": 72,
    "offense_rank": 87,
-   "defense_rank": 53
-  },
-  {
-   "team": "Liberty",
-   "conference": "Conference USA",
-   "abbreviation": "LIB",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2335.png",
-   "record": "5-1",
-   "overall": -0.98,
-   "offense": 25.95,
-   "defense": 26.93,
-   "overall_rank": 73,
-   "offense_rank": 86,
-   "defense_rank": 57
+   "defense_rank": 51
   },
   {
    "team": "East Carolina",
@@ -963,11 +949,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/151.png",
    "record": "2-2",
    "overall": -1.13,
-   "offense": 26.08,
-   "defense": 27.21,
-   "overall_rank": 74,
+   "offense": 23.67,
+   "defense": 24.8,
+   "overall_rank": 73,
    "offense_rank": 85,
-   "defense_rank": 62
+   "defense_rank": 58
   },
   {
    "team": "Texas State",
@@ -976,11 +962,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/326.png",
    "record": "2-3",
    "overall": -1.34,
-   "offense": 33.58,
-   "defense": 34.92,
-   "overall_rank": 75,
-   "offense_rank": 31,
-   "defense_rank": 117
+   "offense": 31.17,
+   "defense": 32.51,
+   "overall_rank": 74,
+   "offense_rank": 33,
+   "defense_rank": 118
   },
   {
    "team": "Georgia State",
@@ -988,12 +974,12 @@
    "abbreviation": "GAST",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2247.png",
    "record": "4-1",
-   "overall": -1.54,
-   "offense": 30.74,
-   "defense": 32.28,
-   "overall_rank": 76,
+   "overall": -1.55,
+   "offense": 28.33,
+   "defense": 29.87,
+   "overall_rank": 75,
    "offense_rank": 54,
-   "defense_rank": 98
+   "defense_rank": 99
   },
   {
    "team": "UConn",
@@ -1002,11 +988,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/41.png",
    "record": "2-3",
    "overall": -1.59,
-   "offense": 30.71,
-   "defense": 32.3,
-   "overall_rank": 77,
+   "offense": 28.3,
+   "defense": 29.89,
+   "overall_rank": 76,
    "offense_rank": 55,
-   "defense_rank": 99
+   "defense_rank": 100
   },
   {
    "team": "Purdue",
@@ -1015,11 +1001,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2509.png",
    "record": "2-3",
    "overall": -1.69,
-   "offense": 30.99,
-   "defense": 32.68,
-   "overall_rank": 78,
-   "offense_rank": 50,
-   "defense_rank": 104
+   "offense": 28.58,
+   "defense": 30.27,
+   "overall_rank": 77,
+   "offense_rank": 49,
+   "defense_rank": 105
   },
   {
    "team": "UNLV",
@@ -1028,9 +1014,9 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2439.png",
    "record": "3-2",
    "overall": -2.25,
-   "offense": 26.53,
-   "defense": 28.78,
-   "overall_rank": 79,
+   "offense": 24.12,
+   "defense": 26.37,
+   "overall_rank": 78,
    "offense_rank": 84,
    "defense_rank": 73
   },
@@ -1041,9 +1027,9 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2655.png",
    "record": "2-2",
    "overall": -2.35,
-   "offense": 23.95,
-   "defense": 26.3,
-   "overall_rank": 80,
+   "offense": 21.54,
+   "defense": 23.89,
+   "overall_rank": 79,
    "offense_rank": 98,
    "defense_rank": 48
   },
@@ -1054,10 +1040,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/59.png",
    "record": "1-3",
    "overall": -2.69,
-   "offense": 28.19,
-   "defense": 30.88,
-   "overall_rank": 81,
-   "offense_rank": 74,
+   "offense": 25.78,
+   "defense": 28.47,
+   "overall_rank": 80,
+   "offense_rank": 73,
    "defense_rank": 89
   },
   {
@@ -1067,11 +1053,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/8.png",
    "record": "2-3",
    "overall": -2.74,
-   "offense": 26.95,
-   "defense": 29.69,
-   "overall_rank": 82,
+   "offense": 24.54,
+   "defense": 27.28,
+   "overall_rank": 81,
    "offense_rank": 80,
-   "defense_rank": 79
+   "defense_rank": 78
+  },
+  {
+   "team": "Liberty",
+   "conference": "Conference USA",
+   "abbreviation": "LIB",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2335.png",
+   "record": "4-1",
+   "overall": -2.85,
+   "offense": 23.45,
+   "defense": 26.3,
+   "overall_rank": 82,
+   "offense_rank": 86,
+   "defense_rank": 72
   },
   {
    "team": "California",
@@ -1080,10 +1079,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/25.png",
    "record": "2-3",
    "overall": -2.9,
-   "offense": 27.27,
-   "defense": 30.17,
+   "offense": 24.86,
+   "defense": 27.76,
    "overall_rank": 83,
-   "offense_rank": 78,
+   "offense_rank": 79,
    "defense_rank": 82
   },
   {
@@ -1093,11 +1092,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/349.png",
    "record": "2-2",
    "overall": -3.79,
-   "offense": 25.64,
-   "defense": 29.43,
+   "offense": 23.23,
+   "defense": 27.02,
    "overall_rank": 84,
    "offense_rank": 88,
-   "defense_rank": 77
+   "defense_rank": 76
   },
   {
    "team": "Colorado",
@@ -1106,11 +1105,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/38.png",
    "record": "2-3",
    "overall": -3.84,
-   "offense": 24.05,
-   "defense": 27.89,
+   "offense": 21.64,
+   "defense": 25.48,
    "overall_rank": 85,
-   "offense_rank": 97,
-   "defense_rank": 68
+   "offense_rank": 96,
+   "defense_rank": 65
   },
   {
    "team": "Temple",
@@ -1119,8 +1118,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/218.png",
    "record": "2-3",
    "overall": -4.38,
-   "offense": 26.74,
-   "defense": 31.12,
+   "offense": 24.33,
+   "defense": 28.71,
    "overall_rank": 86,
    "offense_rank": 82,
    "defense_rank": 91
@@ -1132,11 +1131,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/202.png",
    "record": "3-2",
    "overall": -4.44,
-   "offense": 24.07,
-   "defense": 28.51,
+   "offense": 21.66,
+   "defense": 26.1,
    "overall_rank": 87,
-   "offense_rank": 96,
-   "defense_rank": 69
+   "offense_rank": 95,
+   "defense_rank": 68
   },
   {
    "team": "San Diego State",
@@ -1144,12 +1143,12 @@
    "abbreviation": "SDSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/21.png",
    "record": "2-3",
-   "overall": -4.47,
-   "offense": 23.06,
-   "defense": 27.53,
+   "overall": -4.48,
+   "offense": 20.65,
+   "defense": 25.12,
    "overall_rank": 88,
-   "offense_rank": 104,
-   "defense_rank": 64
+   "offense_rank": 103,
+   "defense_rank": 61
   },
   {
    "team": "App State",
@@ -1157,12 +1156,12 @@
    "abbreviation": "APP",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2026.png",
    "record": "3-1",
-   "overall": -4.86,
-   "offense": 26.86,
-   "defense": 31.72,
+   "overall": -4.87,
+   "offense": 24.45,
+   "defense": 29.31,
    "overall_rank": 89,
    "offense_rank": 81,
-   "defense_rank": 94
+   "defense_rank": 95
   },
   {
    "team": "Western Michigan",
@@ -1170,12 +1169,12 @@
    "abbreviation": "WMU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2711.png",
    "record": "3-2",
-   "overall": -4.96,
-   "offense": 22.57,
-   "defense": 27.53,
+   "overall": -4.95,
+   "offense": 20.16,
+   "defense": 25.12,
    "overall_rank": 90,
-   "offense_rank": 106,
-   "defense_rank": 64
+   "offense_rank": 107,
+   "defense_rank": 60
   },
   {
    "team": "Rutgers",
@@ -1183,12 +1182,12 @@
    "abbreviation": "RUTG",
    "logo": "https://cdn.collegefootballdata.com/logos/500/164.png",
    "record": "1-4",
-   "overall": -4.99,
-   "offense": 30.21,
-   "defense": 35.2,
+   "overall": -5.0,
+   "offense": 27.8,
+   "defense": 32.79,
    "overall_rank": 91,
-   "offense_rank": 61,
-   "defense_rank": 120
+   "offense_rank": 62,
+   "defense_rank": 122
   },
   {
    "team": "Georgia Southern",
@@ -1196,9 +1195,9 @@
    "abbreviation": "GASO",
    "logo": "https://cdn.collegefootballdata.com/logos/500/290.png",
    "record": "2-3",
-   "overall": -5.97,
-   "offense": 25.58,
-   "defense": 31.55,
+   "overall": -5.96,
+   "offense": 23.17,
+   "defense": 29.14,
    "overall_rank": 92,
    "offense_rank": 89,
    "defense_rank": 93
@@ -1208,13 +1207,13 @@
    "conference": "Pac-12",
    "abbreviation": "WSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/265.png",
-   "record": "1-5",
-   "overall": -6.09,
-   "offense": 21.09,
-   "defense": 27.18,
+   "record": "1-4",
+   "overall": -6.03,
+   "offense": 19.17,
+   "defense": 25.2,
    "overall_rank": 93,
    "offense_rank": 114,
-   "defense_rank": 61
+   "defense_rank": 62
   },
   {
    "team": "Louisiana",
@@ -1222,11 +1221,11 @@
    "abbreviation": "UL",
    "logo": "https://cdn.collegefootballdata.com/logos/500/309.png",
    "record": "4-1",
-   "overall": -6.2,
-   "offense": 23.57,
-   "defense": 29.77,
+   "overall": -6.21,
+   "offense": 21.16,
+   "defense": 27.36,
    "overall_rank": 94,
-   "offense_rank": 100,
+   "offense_rank": 101,
    "defense_rank": 80
   },
   {
@@ -1236,11 +1235,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2226.png",
    "record": "4-1",
    "overall": -6.39,
-   "offense": 30.61,
-   "defense": 37.0,
+   "offense": 28.2,
+   "defense": 34.59,
    "overall_rank": 95,
    "offense_rank": 56,
-   "defense_rank": 129
+   "defense_rank": 128
   },
   {
    "team": "Boston College",
@@ -1249,37 +1248,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/103.png",
    "record": "2-3",
    "overall": -7.06,
-   "offense": 20.74,
-   "defense": 27.8,
+   "offense": 18.33,
+   "defense": 25.39,
    "overall_rank": 96,
    "offense_rank": 119,
-   "defense_rank": 66
-  },
-  {
-   "team": "Jacksonville State",
-   "conference": "Conference USA",
-   "abbreviation": "JXST",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/55.png",
-   "record": "4-2",
-   "overall": -7.23,
-   "offense": 24.54,
-   "defense": 31.77,
-   "overall_rank": 97,
-   "offense_rank": 95,
-   "defense_rank": 95
-  },
-  {
-   "team": "Troy",
-   "conference": "Sun Belt",
-   "abbreviation": "TROY",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2653.png",
-   "record": "3-2",
-   "overall": -7.29,
-   "offense": 23.41,
-   "defense": 30.7,
-   "overall_rank": 98,
-   "offense_rank": 101,
-   "defense_rank": 88
+   "defense_rank": 64
   },
   {
    "team": "Miami (OH)",
@@ -1288,63 +1261,63 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/193.png",
    "record": "2-3",
    "overall": -7.36,
-   "offense": 25.31,
-   "defense": 32.67,
-   "overall_rank": 99,
+   "offense": 22.9,
+   "defense": 30.26,
+   "overall_rank": 97,
    "offense_rank": 90,
-   "defense_rank": 103
+   "defense_rank": 104
   },
   {
-   "team": "Kennesaw State",
+   "team": "Jacksonville State",
    "conference": "Conference USA",
-   "abbreviation": "KENN",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/338.png",
-   "record": "1-4",
-   "overall": -8.5,
-   "offense": 21.88,
-   "defense": 30.38,
-   "overall_rank": 100,
-   "offense_rank": 111,
-   "defense_rank": 84
-  },
-  {
-   "team": "Florida International",
-   "conference": "Conference USA",
-   "abbreviation": "FIU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2229.png",
+   "abbreviation": "JXST",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/55.png",
    "record": "3-2",
-   "overall": -8.61,
-   "offense": 17.75,
-   "defense": 26.37,
-   "overall_rank": 101,
-   "offense_rank": 132,
-   "defense_rank": 50
+   "overall": -7.67,
+   "offense": 21.81,
+   "defense": 29.49,
+   "overall_rank": 98,
+   "offense_rank": 93,
+   "defense_rank": 96
   },
   {
    "team": "Arkansas State",
    "conference": "Sun Belt",
    "abbreviation": "ARST",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2032.png",
-   "record": "2-4",
-   "overall": -9.04,
-   "offense": 25.11,
-   "defense": 34.15,
-   "overall_rank": 102,
-   "offense_rank": 92,
-   "defense_rank": 111
+   "record": "2-3",
+   "overall": -7.72,
+   "offense": 21.49,
+   "defense": 29.2,
+   "overall_rank": 99,
+   "offense_rank": 99,
+   "defense_rank": 94
   },
   {
-   "team": "South Alabama",
+   "team": "Kennesaw State",
+   "conference": "Conference USA",
+   "abbreviation": "KENN",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/338.png",
+   "record": "1-3",
+   "overall": -8.06,
+   "offense": 19.6,
+   "defense": 27.65,
+   "overall_rank": 100,
+   "offense_rank": 112,
+   "defense_rank": 81
+  },
+  {
+   "team": "Troy",
    "conference": "Sun Belt",
-   "abbreviation": "USA",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/6.png",
-   "record": "4-2",
-   "overall": -9.33,
-   "offense": 30.54,
-   "defense": 39.86,
-   "overall_rank": 103,
-   "offense_rank": 58,
-   "defense_rank": 134
+   "abbreviation": "TROY",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2653.png",
+   "record": "2-2",
+   "overall": -8.72,
+   "offense": 18.53,
+   "defense": 27.25,
+   "overall_rank": 101,
+   "offense_rank": 118,
+   "defense_rank": 77
   },
   {
    "team": "Ohio",
@@ -1353,11 +1326,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/195.png",
    "record": "3-2",
    "overall": -9.35,
-   "offense": 23.39,
-   "defense": 32.74,
-   "overall_rank": 104,
+   "offense": 20.98,
+   "defense": 30.33,
+   "overall_rank": 102,
    "offense_rank": 102,
-   "defense_rank": 105
+   "defense_rank": 106
   },
   {
    "team": "Stanford",
@@ -1366,24 +1339,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/24.png",
    "record": "2-3",
    "overall": -9.39,
-   "offense": 25.02,
-   "defense": 34.41,
-   "overall_rank": 105,
-   "offense_rank": 93,
-   "defense_rank": 113
-  },
-  {
-   "team": "Utah State",
-   "conference": "Pac-12",
-   "abbreviation": "USU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/328.png",
-   "record": "2-4",
-   "overall": -9.84,
-   "offense": 20.13,
-   "defense": 29.97,
-   "overall_rank": 106,
-   "offense_rank": 122,
-   "defense_rank": 81
+   "offense": 22.61,
+   "defense": 32.0,
+   "overall_rank": 103,
+   "offense_rank": 92,
+   "defense_rank": 114
   },
   {
    "team": "Massachusetts",
@@ -1392,11 +1352,37 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/113.png",
    "record": "4-1",
    "overall": -9.86,
-   "offense": 22.2,
-   "defense": 32.06,
-   "overall_rank": 107,
-   "offense_rank": 108,
-   "defense_rank": 97
+   "offense": 19.79,
+   "defense": 29.65,
+   "overall_rank": 104,
+   "offense_rank": 109,
+   "defense_rank": 98
+  },
+  {
+   "team": "Florida International",
+   "conference": "Conference USA",
+   "abbreviation": "FIU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2229.png",
+   "record": "2-2",
+   "overall": -9.9,
+   "offense": 15.61,
+   "defense": 25.5,
+   "overall_rank": 105,
+   "offense_rank": 132,
+   "defense_rank": 67
+  },
+  {
+   "team": "Utah State",
+   "conference": "Pac-12",
+   "abbreviation": "USU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/328.png",
+   "record": "1-4",
+   "overall": -9.9,
+   "offense": 18.15,
+   "defense": 28.05,
+   "overall_rank": 106,
+   "offense_rank": 120,
+   "defense_rank": 86
   },
   {
    "team": "Colorado State",
@@ -1405,10 +1391,10 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/36.png",
    "record": "2-3",
    "overall": -9.92,
-   "offense": 31.07,
-   "defense": 40.99,
-   "overall_rank": 108,
-   "offense_rank": 48,
+   "offense": 28.66,
+   "defense": 38.58,
+   "overall_rank": 107,
+   "offense_rank": 47,
    "defense_rank": 137
   },
   {
@@ -1418,37 +1404,76 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/295.png",
    "record": "1-4",
    "overall": -9.96,
-   "offense": 21.23,
-   "defense": 31.19,
-   "overall_rank": 109,
-   "offense_rank": 113,
+   "offense": 18.82,
+   "defense": 28.78,
+   "overall_rank": 108,
+   "offense_rank": 116,
    "defense_rank": 92
-  },
-  {
-   "team": "San Jos\u00e9 State",
-   "conference": "Mountain West",
-   "abbreviation": "SJSU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/23.png",
-   "record": "3-3",
-   "overall": -11.44,
-   "offense": 20.96,
-   "defense": 32.4,
-   "overall_rank": 110,
-   "offense_rank": 117,
-   "defense_rank": 101
   },
   {
    "team": "Southern Miss",
    "conference": "Sun Belt",
    "abbreviation": "USM",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2572.png",
-   "record": "1-4",
-   "overall": -11.64,
-   "offense": 25.0,
-   "defense": 36.64,
+   "record": "1-3",
+   "overall": -10.21,
+   "offense": 21.55,
+   "defense": 31.76,
+   "overall_rank": 109,
+   "offense_rank": 97,
+   "defense_rank": 112
+  },
+  {
+   "team": "San Jos\u00e9 State",
+   "conference": "Mountain West",
+   "abbreviation": "SJSU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/23.png",
+   "record": "3-2",
+   "overall": -10.25,
+   "offense": 19.79,
+   "defense": 30.03,
+   "overall_rank": 110,
+   "offense_rank": 110,
+   "defense_rank": 102
+  },
+  {
+   "team": "Sam Houston",
+   "conference": "Conference USA",
+   "abbreviation": "SHSU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2534.png",
+   "record": "1-3",
+   "overall": -10.63,
+   "offense": 21.69,
+   "defense": 32.32,
    "overall_rank": 111,
    "offense_rank": 94,
-   "defense_rank": 127
+   "defense_rank": 115
+  },
+  {
+   "team": "South Alabama",
+   "conference": "Sun Belt",
+   "abbreviation": "USA",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/6.png",
+   "record": "3-2",
+   "overall": -10.66,
+   "offense": 25.59,
+   "defense": 36.24,
+   "overall_rank": 112,
+   "offense_rank": 74,
+   "defense_rank": 133
+  },
+  {
+   "team": "New Mexico State",
+   "conference": "Conference USA",
+   "abbreviation": "NMSU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/166.png",
+   "record": "2-3",
+   "overall": -10.99,
+   "offense": 19.94,
+   "defense": 30.93,
+   "overall_rank": 113,
+   "offense_rank": 108,
+   "defense_rank": 108
   },
   {
    "team": "Coastal Carolina",
@@ -1457,11 +1482,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/324.png",
    "record": "1-4",
    "overall": -11.72,
-   "offense": 21.88,
-   "defense": 33.6,
-   "overall_rank": 112,
-   "offense_rank": 110,
-   "defense_rank": 108
+   "offense": 19.47,
+   "defense": 31.19,
+   "overall_rank": 114,
+   "offense_rank": 113,
+   "defense_rank": 109
   },
   {
    "team": "Air Force",
@@ -1470,11 +1495,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2005.png",
    "record": "3-1",
    "overall": -11.97,
-   "offense": 22.96,
-   "defense": 34.93,
-   "overall_rank": 113,
-   "offense_rank": 105,
-   "defense_rank": 118
+   "offense": 20.55,
+   "defense": 32.52,
+   "overall_rank": 115,
+   "offense_rank": 104,
+   "defense_rank": 119
   },
   {
    "team": "Navy",
@@ -1483,50 +1508,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2426.png",
    "record": "1-3",
    "overall": -12.02,
-   "offense": 19.9,
-   "defense": 31.92,
-   "overall_rank": 114,
-   "offense_rank": 125,
-   "defense_rank": 96
-  },
-  {
-   "team": "New Mexico State",
-   "conference": "Conference USA",
-   "abbreviation": "NMSU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/166.png",
-   "record": "2-4",
-   "overall": -12.27,
-   "offense": 20.81,
-   "defense": 33.08,
-   "overall_rank": 115,
-   "offense_rank": 118,
-   "defense_rank": 107
-  },
-  {
-   "team": "Sam Houston",
-   "conference": "Conference USA",
-   "abbreviation": "SHSU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2534.png",
-   "record": "1-4",
-   "overall": -12.5,
-   "offense": 22.32,
-   "defense": 34.82,
+   "offense": 17.49,
+   "defense": 29.51,
    "overall_rank": 116,
-   "offense_rank": 107,
-   "defense_rank": 115
+   "offense_rank": 125,
+   "defense_rank": 97
   },
   {
-   "team": "Western Kentucky",
+   "team": "Missouri State",
    "conference": "Conference USA",
-   "abbreviation": "WKU",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/98.png",
-   "record": "2-4",
-   "overall": -12.53,
-   "offense": 23.19,
-   "defense": 35.72,
+   "abbreviation": "MOST",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2623.png",
+   "record": "1-3",
+   "overall": -12.52,
+   "offense": 20.17,
+   "defense": 32.69,
    "overall_rank": 117,
-   "offense_rank": 103,
-   "defense_rank": 123
+   "offense_rank": 106,
+   "defense_rank": 121
   },
   {
    "team": "Rice",
@@ -1535,11 +1534,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/242.png",
    "record": "1-4",
    "overall": -12.64,
-   "offense": 19.94,
-   "defense": 32.58,
+   "offense": 17.53,
+   "defense": 30.17,
    "overall_rank": 118,
    "offense_rank": 124,
-   "defense_rank": 102
+   "defense_rank": 103
   },
   {
    "team": "Eastern Michigan",
@@ -1548,11 +1547,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2199.png",
    "record": "3-3",
    "overall": -12.7,
-   "offense": 22.05,
-   "defense": 34.75,
+   "offense": 19.64,
+   "defense": 32.34,
    "overall_rank": 119,
-   "offense_rank": 109,
-   "defense_rank": 114
+   "offense_rank": 111,
+   "defense_rank": 116
   },
   {
    "team": "Central Michigan",
@@ -1560,12 +1559,12 @@
    "abbreviation": "CMU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2117.png",
    "record": "3-2",
-   "overall": -12.75,
-   "offense": 19.64,
-   "defense": 32.39,
+   "overall": -12.74,
+   "offense": 17.23,
+   "defense": 29.98,
    "overall_rank": 120,
    "offense_rank": 127,
-   "defense_rank": 100
+   "defense_rank": 101
   },
   {
    "team": "Hawai'i",
@@ -1574,11 +1573,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/62.png",
    "record": "1-4",
    "overall": -13.35,
-   "offense": 20.52,
-   "defense": 33.87,
+   "offense": 18.11,
+   "defense": 31.46,
    "overall_rank": 121,
-   "offense_rank": 120,
-   "defense_rank": 109
+   "offense_rank": 121,
+   "defense_rank": 110
   },
   {
    "team": "Delaware",
@@ -1587,11 +1586,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/48.png",
    "record": "2-3",
    "overall": -13.52,
-   "offense": 21.43,
-   "defense": 34.95,
+   "offense": 19.02,
+   "defense": 32.54,
    "overall_rank": 122,
-   "offense_rank": 112,
-   "defense_rank": 119
+   "offense_rank": 115,
+   "defense_rank": 120
   },
   {
    "team": "UAB",
@@ -1600,37 +1599,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/5.png",
    "record": "3-2",
    "overall": -13.91,
-   "offense": 20.96,
-   "defense": 34.87,
+   "offense": 18.55,
+   "defense": 32.46,
    "overall_rank": 123,
-   "offense_rank": 116,
-   "defense_rank": 116
+   "offense_rank": 117,
+   "defense_rank": 117
   },
   {
-   "team": "Missouri State",
+   "team": "Western Kentucky",
    "conference": "Conference USA",
-   "abbreviation": "MOST",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2623.png",
+   "abbreviation": "WKU",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/98.png",
    "record": "1-4",
-   "overall": -14.25,
-   "offense": 21.08,
-   "defense": 35.33,
+   "overall": -14.26,
+   "offense": 20.55,
+   "defense": 34.81,
    "overall_rank": 124,
-   "offense_rank": 115,
-   "defense_rank": 121
-  },
-  {
-   "team": "Wyoming",
-   "conference": "Mountain West",
-   "abbreviation": "WYO",
-   "logo": "https://cdn.collegefootballdata.com/logos/500/2751.png",
-   "record": "3-3",
-   "overall": -14.67,
-   "offense": 14.66,
-   "defense": 29.33,
-   "overall_rank": 125,
-   "offense_rank": 138,
-   "defense_rank": 76
+   "offense_rank": 105,
+   "defense_rank": 129
   },
   {
    "team": "Marshall",
@@ -1639,11 +1625,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/276.png",
    "record": "3-2",
    "overall": -15.5,
-   "offense": 23.74,
-   "defense": 39.24,
-   "overall_rank": 126,
-   "offense_rank": 99,
-   "defense_rank": 133
+   "offense": 21.33,
+   "defense": 36.83,
+   "overall_rank": 125,
+   "offense_rank": 100,
+   "defense_rank": 134
   },
   {
    "team": "Nevada",
@@ -1652,11 +1638,24 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2440.png",
    "record": "1-3",
    "overall": -15.68,
-   "offense": 19.65,
-   "defense": 35.33,
-   "overall_rank": 127,
+   "offense": 17.24,
+   "defense": 32.92,
+   "overall_rank": 126,
    "offense_rank": 126,
-   "defense_rank": 122
+   "defense_rank": 123
+  },
+  {
+   "team": "Wyoming",
+   "conference": "Mountain West",
+   "abbreviation": "WYO",
+   "logo": "https://cdn.collegefootballdata.com/logos/500/2751.png",
+   "record": "2-3",
+   "overall": -15.87,
+   "offense": 12.29,
+   "defense": 28.16,
+   "overall_rank": 127,
+   "offense_rank": 138,
+   "defense_rank": 88
   },
   {
    "team": "Middle Tennessee",
@@ -1665,8 +1664,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2393.png",
    "record": "2-3",
    "overall": -17.1,
-   "offense": 19.04,
-   "defense": 36.14,
+   "offense": 16.63,
+   "defense": 33.73,
    "overall_rank": 128,
    "offense_rank": 129,
    "defense_rank": 124
@@ -1677,9 +1676,9 @@
    "abbreviation": "BALL",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2050.png",
    "record": "1-4",
-   "overall": -18.44,
-   "offense": 20.11,
-   "defense": 38.55,
+   "overall": -18.45,
+   "offense": 17.7,
+   "defense": 36.14,
    "overall_rank": 129,
    "offense_rank": 123,
    "defense_rank": 132
@@ -1690,12 +1689,12 @@
    "abbreviation": "BGSU",
    "logo": "https://cdn.collegefootballdata.com/logos/500/189.png",
    "record": "1-4",
-   "overall": -18.59,
-   "offense": 15.79,
-   "defense": 34.38,
+   "overall": -18.58,
+   "offense": 13.38,
+   "defense": 31.97,
    "overall_rank": 130,
    "offense_rank": 137,
-   "defense_rank": 112
+   "defense_rank": 113
   },
   {
    "team": "Akron",
@@ -1704,8 +1703,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2006.png",
    "record": "1-4",
    "overall": -18.83,
-   "offense": 19.62,
-   "defense": 38.45,
+   "offense": 17.21,
+   "defense": 36.04,
    "overall_rank": 131,
    "offense_rank": 128,
    "defense_rank": 131
@@ -1717,8 +1716,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2084.png",
    "record": "2-3",
    "overall": -18.98,
-   "offense": 18.7,
-   "defense": 37.68,
+   "offense": 16.29,
+   "defense": 35.27,
    "overall_rank": 132,
    "offense_rank": 130,
    "defense_rank": 130
@@ -1730,11 +1729,11 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/16.png",
    "record": "1-4",
    "overall": -19.09,
-   "offense": 17.72,
-   "defense": 36.81,
+   "offense": 15.31,
+   "defense": 34.4,
    "overall_rank": 133,
    "offense_rank": 133,
-   "defense_rank": 128
+   "defense_rank": 127
   },
   {
    "team": "Kent State",
@@ -1743,8 +1742,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2309.png",
    "record": "2-3",
    "overall": -19.31,
-   "offense": 16.96,
-   "defense": 36.27,
+   "offense": 14.55,
+   "defense": 33.86,
    "overall_rank": 134,
    "offense_rank": 135,
    "defense_rank": 125
@@ -1756,8 +1755,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2459.png",
    "record": "0-4",
    "overall": -19.5,
-   "offense": 17.03,
-   "defense": 36.53,
+   "offense": 14.62,
+   "defense": 34.12,
    "overall_rank": 135,
    "offense_rank": 134,
    "defense_rank": 126
@@ -1768,11 +1767,11 @@
    "abbreviation": "UTEP",
    "logo": "https://cdn.collegefootballdata.com/logos/500/2638.png",
    "record": "1-4",
-   "overall": -19.59,
-   "offense": 20.52,
-   "defense": 40.11,
+   "overall": -19.6,
+   "offense": 18.11,
+   "defense": 37.7,
    "overall_rank": 136,
-   "offense_rank": 120,
+   "offense_rank": 122,
    "defense_rank": 135
   },
   {
@@ -1782,8 +1781,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2429.png",
    "record": "0-5",
    "overall": -24.06,
-   "offense": 16.32,
-   "defense": 40.38,
+   "offense": 13.91,
+   "defense": 37.97,
    "overall_rank": 137,
    "offense_rank": 136,
    "defense_rank": 136
@@ -1795,8 +1794,8 @@
    "logo": "https://cdn.collegefootballdata.com/logos/500/2433.png",
    "record": "0-5",
    "overall": -24.62,
-   "offense": 18.39,
-   "defense": 43.01,
+   "offense": 15.98,
+   "defense": 40.6,
    "overall_rank": 138,
    "offense_rank": 131,
    "defense_rank": 138
