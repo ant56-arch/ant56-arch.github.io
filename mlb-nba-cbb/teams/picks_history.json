@@ -5220,6 +5220,59 @@
    "home_runs": 5,
    "away_runs": 9,
    "winner": "CLE"
+  },
+  {
+   "date": "2026-10-10",
+   "game_id": "849831",
+   "start": "2026-10-10T20:00:00-04:00",
+   "type": "postseason",
+   "round": "Division Series",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "CWS",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Chicago White Sox",
+   "home_id": 114,
+   "away_id": 145,
+   "home_record": "85-77",
+   "away_record": "84-78",
+   "home_sp": {
+    "id": 668909,
+    "name": "Gavin Williams",
+    "era": 3.76,
+    "ip": 189.3
+   },
+   "away_sp": {
+    "id": 680732,
+    "name": "Sean Burke",
+    "era": 3.81,
+    "ip": 146.3
+   },
+   "pick": "CLE",
+   "prob": 56.8,
+   "home_prob": 56.8,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.049,
+    "starters": 0.083
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-10T05:23:21Z",
+   "ml": {
+    "team": "CLE",
+    "side": "home",
+    "price": -137,
+    "prob": 56.8,
+    "book_prob": 55.3,
+    "edge": 1.5,
+    "value": false,
+    "home_ml": -137,
+    "away_ml": 114,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
