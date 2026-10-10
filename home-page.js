@@ -9,13 +9,14 @@ function edgeFetchSummaries() {
   return window.edgeSummaries;
 }
 
-// Home page: every sport's games with our pick, live games first, then games
-// still to play, then finals, each grouped by sport. Picks come from each
-// site's summary.json "slate"; scores, logos, records and TV come from ESPN in
-// the browser (the games.json "espn" address, without the CFB Top 25 filter),
-// refreshed every minute while a game is live. A pick is matched to its ESPN
-// game by start time and one shared team abbreviation. Below it, each site's
-// all-time record from summary.json.
+// Home page: every game in every league for the day, live games first, then
+// games still to play, then finals, each grouped by sport. Picks come from
+// each site's summary.json "slate"; the games, scores, logos, records and TV
+// come from ESPN in the browser (the games.json "espn" address, without the CFB
+// Top 25 filter), refreshed every minute while a game is live. A pick is
+// matched to its ESPN game by start time and one shared team abbreviation; a
+// game with no pick yet (MLB and NHL picks post the morning of) still shows,
+// marked "No pick yet". Below it, each site's all-time record from summary.json.
 const HG_ORDER = ["NFL", "CFB", "MLB", "NHL", "NBA", "CBB", "Soccer"];
 const HG_LAYOUT_KEY = "edge-home-layout";
 const HG_SHOW = 9;  // games per sport group before "See more"
@@ -54,8 +55,9 @@ function hgDays() {
 }
 
 // ESPN's default scoreboard keeps showing yesterday until late morning ET, so any
-// slate day it doesn't cover is fetched by date (dates=YYYYMMDD, an ET day).
-async function hgLoadEspn(site, summary) {
+// day the home page shows (today, tomorrow, the weekend) or a slate covers that
+// it doesn't cover is fetched by date (dates=YYYYMMDD, an ET day).
+async function hgLoadEspn(site, summary, want) {
   if (!site.games) return [];
   const published = await edgeFetchJson(site.games);
   if (!published) return [];
@@ -65,8 +67,8 @@ async function hgLoadEspn(site, summary) {
   const events = live || [];
   const ids = new Set(events.map(e => e.id));
   const covered = new Set(events.map(e => new Date(e.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" })));
-  const days = [...new Set((summary && summary.slate || []).map(g => g.date).filter(Boolean))]
-    .filter(d => !covered.has(d)).slice(0, 4);
+  const days = [...new Set([...want, ...(summary && summary.slate || []).map(g => g.date).filter(Boolean)])]
+    .filter(d => !covered.has(d)).slice(0, 6);
   const sep = published.espn.includes("?") ? "&" : "?";
   const extra = await Promise.all(days.map(d => edgeFetchJson(published.espn + sep + "dates=" + d.replace(/-/g, ""), 6000)));
   extra.forEach(data => (parse(data) || []).forEach(e => { if (!ids.has(e.id)) { ids.add(e.id); events.push(e); } }));
@@ -82,14 +84,17 @@ function hgMatch(g, espn) {
 
 async function hgLoad() {
   const summaries = await edgeFetchSummaries();
-  const espn = await Promise.all(EDGE_SITES.map((site, i) => hgLoadEspn(site, summaries[i])));
+  const want = [...new Set(hgDays().flatMap(d => d.dates))];
+  const espn = await Promise.all(EDGE_SITES.map((site, i) => hgLoadEspn(site, summaries[i], want)));
   hg.summaries = summaries;
   const games = [];
   EDGE_SITES.forEach((site, i) => {
     const s = summaries[i];
+    const used = new Set();
     (s && s.slate || []).forEach(g => {
       if (!g.start) return;
       const e = hgMatch(g, espn[i]);
+      if (e) used.add(e.id);
       const flip = e && !(e.away.abbr === g.away || e.home.abbr === g.home);  // ESPN lists them the other way
       const side = (ours, theirs) => ({
         abbr: ours, espn: theirs ? theirs.abbr : "", name: theirs ? theirs.short || theirs.name || ours : ours, logo: theirs ? theirs.logo : "",
@@ -108,6 +113,18 @@ async function hgLoad() {
       }
       games.push({ ...g, key: site.sport + ":" + g.id, date: edgeDayKey(new Date(g.start)), away, home, state,
                    detail: e ? e.detail : "", tv: e ? e.tv : "", hit });
+    });
+    // Every other game that day, without a pick (yet).
+    espn[i].forEach(e => {
+      if (used.has(e.id) || !e.start) return;
+      const date = edgeDayKey(new Date(e.start));
+      if (!want.includes(date) && e.state !== "in") return;
+      const side = t => ({ abbr: t.abbr, espn: t.abbr, name: t.short || t.name || t.abbr, logo: t.logo || "",
+                           rank: t.rank, record: t.record, score: e.state !== "pre" ? t.score : null });
+      games.push({ id: e.id, key: site.sport + ":espn-" + e.id, sport: site.sport, start: e.start, date,
+                   at: e.neutral ? "vs" : "@", url: site.schedule, pick: null, prob: null,
+                   away: side(e.away), home: side(e.home), state: e.state || "pre",
+                   detail: e.detail || "", tv: e.tv || "", hit: null });
     });
   });
   hg.games = games;
@@ -146,6 +163,7 @@ function hgPickState(g) {
     return s;
   }
   hg.results[g.key] = null;
+  if (!g.pick) return null;
   if (g.state === "in" && g.pick !== "Draw" && g.away.score != null && g.home.score != null) {
     const ours = g.pick === g.away.abbr ? g.away.score : g.home.score;
     const theirs = g.pick === g.away.abbr ? g.home.score : g.away.score;
@@ -210,13 +228,17 @@ function hgCard(g, top, withDay) {
   if (g.price != null) cell("Odds", `${g.pick} ${edgePrice(g.price)}`);
   if (g.book != null) cell("Vegas gives", Math.round(g.book) + "%", "hg-vg");
   const pick = hgEl("div", "hg-pick");
-  pick.append(hgEl("span", "hg-lbl", "Pick to win"),
-              hgEl("b", null, g.pick === "Draw" ? "Draw" : (g.pick === g.away.abbr ? g.away : g.home).name));
-  const res = hgPickState(g);
-  if (res) pick.append(res);
-  const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
-  pct.append(hgEl("i", null, "%"));
-  pick.append(pct);
+  if (!g.pick) {
+    pick.append(hgEl("span", "hg-lbl", g.state === "pre" ? "No pick yet" : "No pick"));
+  } else {
+    pick.append(hgEl("span", "hg-lbl", "Pick to win"),
+                hgEl("b", null, g.pick === "Draw" ? "Draw" : (g.pick === g.away.abbr ? g.away : g.home).name));
+    const res = hgPickState(g);
+    if (res) pick.append(res);
+    const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
+    pct.append(hgEl("i", null, "%"));
+    pick.append(pct);
+  }
   card.append(head, hgTeamRow(g, g.away), hgTeamRow(g, g.home));
   if (lines.children.length) card.append(lines);
   card.append(pick);
@@ -237,12 +259,13 @@ function hgRow(g, withDay) {
   mu.href = g.url;
   const team = abbr => abbr === g.pick ? hgEl("strong", null, abbr) : document.createTextNode(abbr);
   mu.append(team(g.away.abbr), ` ${g.at === "vs" ? "vs" : "@"} `, team(g.home.abbr));
-  const sub = hgEl("small", null, `${g.sport} · Pick ${g.pick}${g.price != null ? " " + edgePrice(g.price) : ""}`);
+  const sub = hgEl("small", null, !g.pick ? `${g.sport} · ${g.state === "pre" ? "No pick yet" : "No pick"}`
+    : `${g.sport} · Pick ${g.pick}${g.price != null ? " " + edgePrice(g.price) : ""}`);
   const res = hgPickState(g);
   if (res) sub.append(" ", res);
   mu.append(sub);
-  const pct = hgEl("span", "hg-pct", String(Math.round(g.prob)));
-  pct.append(hgEl("i", null, "%"));
+  const pct = hgEl("span", "hg-pct", g.prob == null ? "–" : String(Math.round(g.prob)));
+  if (g.prob != null) pct.append(hgEl("i", null, "%"));
   row.append(when, mu, pct, hgStar(g));
   return row;
 }
@@ -251,7 +274,9 @@ function hgRender() {
   const out = document.getElementById("hg-out");
   if (!out) return;
   const days = hgDays();
-  const counts = days.map(d => hg.games.filter(g => d.dates.includes(g.date)).length);
+  // A game still going past midnight stays on Today.
+  const onDay = (d, g) => d.dates.includes(g.date) || (d.k === "today" && g.state === "in");
+  const counts = days.map(d => hg.games.filter(g => onDay(d, g)).length);
   const opensOn = edgeSettings().homeDay;
   if (!hg.day && days.some(d => d.k === opensOn)) hg.day = opensOn;
   if (!hg.day) hg.day = (days[counts.findIndex(n => n > 0)] || days[0]).k;
@@ -266,7 +291,7 @@ function hgRender() {
     return b;
   }));
 
-  const inDay = hg.games.filter(g => day.dates.includes(g.date));
+  const inDay = hg.games.filter(g => onDay(day, g));
   const sports = HG_ORDER.filter(sp => inDay.some(g => g.sport === sp));
   if (hg.sport !== "all" && !sports.includes(hg.sport)) hg.sport = "all";
   const chip = (v, label, n) => {
@@ -299,7 +324,7 @@ function hgRender() {
   let list = inDay.filter(g => (hg.sport === "all" || g.sport === hg.sport) && (!hg.value || g.value));
   const byTime = (a, b) => new Date(a.start) - new Date(b.start);
   list.sort(byTime);
-  const top = new Set([...inDay].sort((a, b) => b.prob - a.prob).slice(0, 3).map(g => g.key));
+  const top = new Set(inDay.filter(g => g.pick).sort((a, b) => b.prob - a.prob).slice(0, 3).map(g => g.key));
   const block = gs => {
     const wrap = hgEl("div", hg.layout === "list" ? "hg-list" : "hg-grid");
     wrap.append(...gs.map(g => hg.layout === "list" ? hgRow(g, withDay) : hgCard(g, top.has(g.key), withDay)));
@@ -336,7 +361,7 @@ function hgRender() {
     sections.push(sec);
   });
   if (!sections.length) {
-    const msg = !inDay.length ? `No games with our picks ${day.k === "today" ? "today" : day.k === "tomorrow" ? "tomorrow" : "this weekend"}.`
+    const msg = !inDay.length ? `No games ${day.k === "today" ? "today" : day.k === "tomorrow" ? "tomorrow" : "this weekend"}.`
       : "No value picks here. Value picks are games where we like a team more than Vegas does.";
     sections.push(hgEl("div", "empty-state", msg));
   }
@@ -354,7 +379,7 @@ function hgRender() {
 function hgTop3(inDay, withDay) {
   const box = document.getElementById("hg-top3");
   if (!box) return;
-  const top = [...inDay].sort((a, b) => b.prob - a.prob).slice(0, 3);
+  const top = inDay.filter(g => g.pick).sort((a, b) => b.prob - a.prob).slice(0, 3);
   box.hidden = top.length < 3;
   if (box.hidden) return;
   const row = hgEl("div", "t3-row");
@@ -391,7 +416,7 @@ function hgCountdown() {
   if (!el) return;
   const today = hg.games.filter(g => g.date === hgDayKey());
   const live = today.filter(g => g.state === "in").length;
-  const next = today.filter(g => g.state === "pre" && new Date(g.start) > Date.now())
+  const next = today.filter(g => g.pick && g.state === "pre" && new Date(g.start) > Date.now())
     .sort((a, b) => new Date(a.start) - new Date(b.start))[0];
   el.classList.toggle("is-live", live > 0);
   if (live) {
@@ -399,7 +424,7 @@ function hgCountdown() {
   } else if (next) {
     const left = new Date(next.start) - Date.now();
     const h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-    const started = today.some(g => g.state !== "pre");
+    const started = today.some(g => g.pick && g.state !== "pre");
     el.replaceChildren(started ? "Next pick in " : "First pick in ",
                        hgEl("b", null, h ? `${h}h ${m}m` : `${m}m ${String(sec).padStart(2, "0")}s`));
   }
