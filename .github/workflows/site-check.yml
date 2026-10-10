@@ -1,0 +1,46 @@
+name: Site Check
+
+# Three times a day, checks the live site has a pick for every game still to
+# play today (the NFL: this week) in MLB, NHL, NBA, soccer and the NFL, and that
+# each sport's page is fresh (shared/site_check.py). When one isn't, it reruns
+# the update that fills it: daily.yml or weekly-picks.yml (without odds, so no
+# Odds API credits). It never fails, so it never sends an email. Anthony chose
+# this over a Claude check on 2026-10-10 so it costs nothing.
+# Times are ET converted to UTC assuming EDT (UTC-4).
+
+on:
+  schedule:
+    - cron: '20 15 * * *'   # 11:20am ET (after the 8:07, 9:37 and 10:22 picks runs)
+    - cron: '20 21 * * *'   # 5:20pm ET (after the 4pm run)
+    - cron: '20 3 * * *'    # 11:20pm ET (after the 6:30pm and NFL 7:15pm runs)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write  # to start the rerun
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: shared
+      - id: check
+        run: python3 shared/site_check.py
+        continue-on-error: true
+      - name: Rerun what's missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAILY: ${{ steps.check.outputs.daily }}
+          WEEKLY: ${{ steps.check.outputs.weekly }}
+        run: |
+          # Skip a workflow that's already running or queued: it will fill the gap.
+          busy() { [ -n "$(gh run list -R "$GITHUB_REPOSITORY" -w "$1" -L 5 --json status -q '.[] | select(.status != "completed") | .status')" ]; }
+          if [ "$DAILY" = true ]; then
+            if busy daily.yml; then echo "daily.yml already running"; else gh workflow run daily.yml -R "$GITHUB_REPOSITORY" --ref main -f mode=picks && echo "Started daily.yml"; fi
+          fi
+          if [ "$WEEKLY" = true ]; then
+            if busy weekly-picks.yml; then echo "weekly-picks.yml already running"; else gh workflow run weekly-picks.yml -R "$GITHUB_REPOSITORY" --ref main && echo "Started weekly-picks.yml"; fi
+          fi
+        continue-on-error: true
