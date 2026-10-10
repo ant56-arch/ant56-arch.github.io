@@ -1882,7 +1882,7 @@ def add_home_parts(sport, summary, ngames, log):
     strip read: this week's games still to play, the running moneyline total
     and the latest day's results."""
     week = min((g["week"] for g in ngames if not g["final"]), default=None)
-    summary["slate"] = [extras.slate_entry(g) for g in ngames if not g["final"] and g["week"] == week]
+    summary["slate"] = extras.home_slate(ngames, upcoming=lambda g: g["week"] == week)
     summary["units"] = ml_units(sport, log)
     summary["last"] = extras.last_day(ngames)
 
