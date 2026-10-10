@@ -5,14 +5,14 @@ Reads picks_history.json (every pick and its result), data/slate.json (today's
 full slate, written by predict.py) and model_weights.json (backtest numbers),
 and writes:
 Three tabs:
-  index.html    - Home: both all-time records, today's three surest hitters
-                  and games, and the latest results
-  players.html  - Player Hits: today's 10 hitter picks, every hitter in
-                  today's games (sortable) and any past day's picks
+  index.html    - Home: both all-time records, today's three surest games
+                  and hitters, and the latest results
   games.html    - Games: a card for every game today (the team model's pick,
                   win chance and moneyline price) and every past day's results
                   (teams/picks_history.json, written by teams/predict.py)
-  accuracy.html - Accuracy: each model's record, accuracy over time,
+  players.html  - Player Hits: today's 10 hitter picks, every hitter in
+                  today's games (sortable) and any past day's picks
+  accuracy.html - Accuracy: each model's record (Games first), accuracy over time,
                   calibration and backtest (accuracy_page, same as every sport)
   model.html    - Model: how each model retrains itself (model_page)
   history.html  - stub forwarding to where that tab went
@@ -152,7 +152,7 @@ BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><p
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
-    tabs = [("index.html", "Home"), ("players.html", "Player Hits"), ("games.html", "Games"),
+    tabs = [("index.html", "Home"), ("games.html", "Games"), ("players.html", "Player Hits"),
             ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     nav = "".join(
         f'<a href="{href}" class="active" aria-current="page">{label}</a>' if href == active
@@ -487,10 +487,10 @@ def duo_band(history, team_history):
     tg = game_graded(team_history.get("picks", []))
     gw, gl = game_wl(tg)
     return f"""<section class="card record-card"><div class="duo-band">
-      {duo_half("players.html", "Player hits &middot; top hitters who got a hit", (hits, len(g) - hits), len(g),
-                first, "Starts with the first box score")}
       {duo_half("games.html", "Games &middot; picking which team wins", (gw, gl), len(tg),
                 min((p["date"] for p in tg), default=None), "Starts after the first night of results")}
+      {duo_half("players.html", "Player hits &middot; top hitters who got a hit", (hits, len(g) - hits), len(g),
+                first, "Starts with the first box score")}
     </div>
     <p class="duo-note">Live picks only, each graded against the final score, and neither record ever resets.
       <a href="accuracy.html">How they've done</a> &middot; <a href="model.html">How the models work</a></p></section>"""
@@ -509,15 +509,24 @@ def last_results(history, team_history):
     if tg:
         day = max(p["date"] for p in tg)
         w, l = game_wl([p for p in tg if p["date"] == day])
-        stats.append((f"{w}-{l}", "Game picks", day_label(day)))
+        stats.insert(0, (f"{w}-{l}", "Game picks", day_label(day)))
     return extras.board_section("Latest results", "How the last finished day's picks did.", statline(stats)) \
         if stats else ""
 
 
 def build_index(history, slate, team_history, espn_games=()):
     body = duo_band(history, team_history)
-    latest, day_picks = latest_hitters(history)
     more = '<a class="more-link" href="{}">{}</a>'.format
+    today = NOW.date().isoformat()
+    todays = sorted((p for p in team_history.get("picks", []) if p["date"] == today), key=lambda p: -p["prob"])
+    if todays:
+        board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays[:3]],
+                                  top_n=0)
+        n = len(todays)
+        body += extras.board_section(
+            f"Today's surest games: {day_label(today)}", BOARD_NOTE,
+            board + more("games.html", f"All {n} of today's games" if n > 3 else "Every game and past results"))
+    latest, day_picks = latest_hitters(history)
     if no_games_today(slate):
         body += extras.board_section("Today", "", '<div class="empty-state">No MLB games today. Picks resume on '
                                      'the next game day.</div>')
@@ -529,15 +538,6 @@ def build_index(history, slate, team_history, espn_games=()):
             picks_list(sorted(day_picks, key=lambda p: -p["confidence"])[:3])
             + more("players.html", f"All {len(day_picks)} picks and every hitter in today's games"
                    if len(day_picks) > 3 else "Every hitter in today's games and past days"))
-    today = NOW.date().isoformat()
-    todays = sorted((p for p in team_history.get("picks", []) if p["date"] == today), key=lambda p: -p["prob"])
-    if todays:
-        board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays[:3]],
-                                  top_n=0)
-        n = len(todays)
-        body += extras.board_section(
-            f"Today's surest games: {day_label(today)}", BOARD_NOTE,
-            board + more("games.html", f"All {n} of today's games" if n > 3 else "Every game and past results"))
     return page_shell("Home", "index.html", body + last_results(history, team_history))
 
 
@@ -1243,8 +1243,9 @@ def build_accuracy(model, team_model, history, team_history):
         edges=[(.5, .55), (.55, .6), (.6, .65), (.65, 1.01)], backtest=team_backtest(team_model),
         cal_note="If the model is honest, each row's two percentages should be close. In baseball even strong "
                  "favorites lose often, and small rows swing a lot.")
-    body = accuracy_page.switcher([("acc-hits", "Hit picks", accuracy_page.render(hit_accuracy_spec(history, model))),
-                                   ("acc-games", "Game picks", accuracy_page.render(games))], "Models")
+    body = accuracy_page.switcher([("acc-games", "Game picks", accuracy_page.render(games)),
+                                   ("acc-hits", "Hit picks", accuracy_page.render(hit_accuracy_spec(history, model)))],
+                                  "Models")
     return page_shell("Accuracy", "accuracy.html", body, charts=accuracy_page.has_charts(body))
 
 
@@ -1252,8 +1253,8 @@ def build_model(model, runs, team_model, team_runs):
     """How both models learn, one at a time."""
     team = (team_model_html(team_model, team_runs) if team_model.get("coef") else
             card("Team Model", "", '<div class="empty-state">The team model hasn\'t been trained yet.</div>'))
-    body = accuracy_page.switcher([("model-hits", "Hit model", hit_model_html(model, runs)),
-                                   ("model-games", "Team model", team)], "Models")
+    body = accuracy_page.switcher([("model-games", "Team model", team),
+                                   ("model-hits", "Hit model", hit_model_html(model, runs))], "Models")
     return page_shell("Model", "model.html", body)
 
 
