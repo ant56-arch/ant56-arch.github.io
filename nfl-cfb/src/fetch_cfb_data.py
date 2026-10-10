@@ -257,6 +257,37 @@ def main():
         return
 
     season = current_cfb_season()
+    try:
+        pull_cfbd(season)
+    except requests.exceptions.RequestException as e:
+        print(f"\nCFBD unavailable ({e}) - using ESPN's schedule and scores instead.")
+        pull_espn(season)
+
+
+def pull_espn(season):
+    """While CFBD can't be reached (see espn_cfb.py): teams and games from
+    ESPN, no advanced stats, so the picks use the power ratings. A stale
+    cfb_advanced_stats.csv is removed so nothing mixes the two."""
+    import espn_cfb
+    games, colors = espn_cfb.season(season)
+    teams = espn_cfb.team_table(POWER_CONFERENCES, colors)
+    if teams.empty or games.empty:
+        print("  No ESPN data either - skipping college football data fetch.")
+        return
+    teams.to_csv(os.path.join(RAW_DIR, "cfb_teams.csv"), index=False)
+    covered = set(teams["team"])
+    games = games[games["home_team"].isin(covered) | games["away_team"].isin(covered)].copy()
+    games["game_type"] = games["season_type"].map({"regular": "REG", "postseason": "POST"})
+    games["gameday"] = games["start"]
+    games = _add_kickoff_columns(games)
+    games.to_csv(os.path.join(RAW_DIR, "cfb_games.csv"), index=False)
+    stale = os.path.join(RAW_DIR, "cfb_advanced_stats.csv")
+    if os.path.exists(stale):
+        os.remove(stale)
+    print(f"  {len(teams)} teams, {len(games)} games from ESPN (no advanced stats: picks use the power ratings)")
+
+
+def pull_cfbd(season):
     print(f"Pulling college football data for season {season}...")
 
     print("\n[1/3] Team info (Power conferences + independents)...")
@@ -272,6 +303,8 @@ def main():
     lines = fetch_lines(season)
     if not games.empty and not lines.empty:
         games = games.merge(lines, on=["home_team", "away_team"], how="left")
+    if games.empty:
+        raise requests.exceptions.RequestException("no games came back")
     games.to_csv(os.path.join(RAW_DIR, "cfb_games.csv"), index=False)
     print(f"  Total games: {len(games):,}")
 
