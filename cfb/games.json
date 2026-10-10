@@ -1,0 +1,942 @@
+{
+ "sport": "CFB",
+ "label": "Week 6",
+ "updated": "2026-10-10T20:01:26.949442+00:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=400",
+ "top25_only": true,
+ "games": [
+  {
+   "id": "401858487",
+   "start": "2026-10-10T01:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "Fox",
+   "venue": "Husky Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "IOWA",
+    "name": "Iowa Hawkeyes",
+    "short": "Iowa",
+    "location": "Iowa",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png",
+    "rank": 20,
+    "score": 41,
+    "record": "5-1",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "WASH",
+    "name": "Washington Huskies",
+    "short": "Washington",
+    "location": "Washington",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png",
+    "rank": null,
+    "score": 24,
+    "record": "3-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "WASH to win, 57%",
+    "result": false,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "WASH -3.0, 50% to cover",
+     "short": "WASH -3.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856826",
+   "start": "2026-10-10T02:30Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN",
+   "venue": "LaVell Edwards Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "ISU",
+    "name": "Iowa State Cyclones",
+    "short": "Iowa State",
+    "location": "Iowa State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/66.png",
+    "rank": null,
+    "score": 10,
+    "record": "3-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "BYU",
+    "name": "BYU Cougars",
+    "short": "BYU",
+    "location": "BYU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png",
+    "rank": 8,
+    "score": 24,
+    "record": "5-0",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "BYU to win, 66%",
+    "result": true,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "ISU +10.5, 58% to cover",
+     "short": "ISU +10.5",
+     "result": false,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856716",
+   "start": "2026-10-10T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ABC, Disney+",
+   "venue": "Memorial Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "TA&M",
+    "name": "Texas A&M Aggies",
+    "short": "Texas A&M",
+    "location": "Texas A&M",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png",
+    "rank": null,
+    "score": 6,
+    "record": "3-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIZ",
+    "name": "Missouri Tigers",
+    "short": "Missouri",
+    "location": "Missouri",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png",
+    "rank": 14,
+    "score": 27,
+    "record": "5-1",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "MIZ to win, 61%",
+    "result": true,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "MIZ -3.5, 53% to cover",
+     "short": "MIZ -3.5",
+     "result": true,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856824",
+   "start": "2026-10-10T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN2",
+   "venue": "Boone Pickens Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UCF",
+    "name": "UCF Knights",
+    "short": "UCF",
+    "location": "UCF",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
+    "rank": null,
+    "score": 28,
+    "record": "3-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "OKST",
+    "name": "Oklahoma State Cowboys",
+    "short": "Oklahoma St",
+    "location": "Oklahoma State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/197.png",
+    "rank": 18,
+    "score": 42,
+    "record": "4-1",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "OKST to win, 55%",
+    "result": true,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "UCF +9.5, 67% to cover",
+     "short": "UCF +9.5",
+     "result": false,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858256",
+   "start": "2026-10-10T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN",
+   "venue": "Acrisure Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UNC",
+    "name": "North Carolina Tar Heels",
+    "short": "North Carolina",
+    "location": "North Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/153.png",
+    "rank": null,
+    "score": 21,
+    "record": "3-2",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "PITT",
+    "name": "Pittsburgh Panthers",
+    "short": "Pitt",
+    "location": "Pittsburgh",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/221.png",
+    "rank": 25,
+    "score": 17,
+    "record": "5-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "PITT to win, 73%",
+    "result": false,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "PITT -4.0, 64% to cover",
+     "short": "PITT -4.0",
+     "result": false,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858481",
+   "start": "2026-10-10T16:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "Fox",
+   "venue": "Memorial Stadium (Lincoln, NE)",
+   "neutral": false,
+   "away": {
+    "abbr": "IU",
+    "name": "Indiana Hoosiers",
+    "short": "Indiana",
+    "location": "Indiana",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png",
+    "rank": 7,
+    "score": 20,
+    "record": "6-0",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "NEB",
+    "name": "Nebraska Cornhuskers",
+    "short": "Nebraska",
+    "location": "Nebraska",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/158.png",
+    "rank": null,
+    "score": 17,
+    "record": "5-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "IU to win, 71%",
+    "result": true,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "IU -7.5, 54% to cover",
+     "short": "IU -7.5",
+     "result": false,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856714",
+   "start": "2026-10-10T16:45Z",
+   "state": "in",
+   "detail": "11:12 - 4th",
+   "tv": "SEC Network",
+   "venue": "Ben Hill Griffin Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "SC",
+    "name": "South Carolina Gamecocks",
+    "short": "South Carolina",
+    "location": "South Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png",
+    "rank": null,
+    "score": 31,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "FLA",
+    "name": "Florida Gators",
+    "short": "Florida",
+    "location": "Florida",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/57.png",
+    "rank": 16,
+    "score": 13,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "FLA to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "SC +12.5, 63% to cover",
+     "short": "SC +12.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856717",
+   "start": "2026-10-10T19:30Z",
+   "state": "in",
+   "detail": "11:52 - 1st",
+   "tv": "ABC",
+   "venue": "Cotton Bowl",
+   "neutral": true,
+   "away": {
+    "abbr": "TEX",
+    "name": "Texas Longhorns",
+    "short": "Texas",
+    "location": "Texas",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png",
+    "rank": 1,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "OU",
+    "name": "Oklahoma Sooners",
+    "short": "Oklahoma",
+    "location": "Oklahoma",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "OU to win, 52%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "OU +7.5, 69% to cover",
+     "short": "OU +7.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856718",
+   "start": "2026-10-10T19:30Z",
+   "state": "in",
+   "detail": "7:54 - 1st",
+   "tv": "ESPN, Disney+",
+   "venue": "FirstBank Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "MISS",
+    "name": "Ole Miss Rebels",
+    "short": "Ole Miss",
+    "location": "Ole Miss",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
+    "rank": 9,
+    "score": 7,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "VAN",
+    "name": "Vanderbilt Commodores",
+    "short": "Vanderbilt",
+    "location": "Vanderbilt",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/238.png",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "MISS to win, 52%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "VAN +9.5, 70% to cover",
+     "short": "VAN +9.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856825",
+   "start": "2026-10-10T19:30Z",
+   "state": "in",
+   "detail": "7:13 - 1st",
+   "tv": "Fox",
+   "venue": "Bill Snyder Family Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "HOU",
+    "name": "Houston Cougars",
+    "short": "Houston",
+    "location": "Houston",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png",
+    "rank": 22,
+    "score": 7,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "KSU",
+    "name": "Kansas State Wildcats",
+    "short": "Kansas St",
+    "location": "Kansas State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2306.png",
+    "rank": null,
+    "score": 0,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "KSU to win, 58%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "KSU -2.5, 53% to cover",
+     "short": "KSU -2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858257",
+   "start": "2026-10-10T19:30Z",
+   "state": "in",
+   "detail": "4:51 - 1st",
+   "tv": "NBC",
+   "venue": "Notre Dame Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "STAN",
+    "name": "Stanford Cardinal",
+    "short": "Stanford",
+    "location": "Stanford",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/24.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ND",
+    "name": "Notre Dame Fighting Irish",
+    "short": "Notre Dame",
+    "location": "Notre Dame",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
+    "rank": 3,
+    "score": 7,
+    "record": "5-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ND to win, 95%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "STAN +37.5, 71% to cover",
+     "short": "STAN +37.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858484",
+   "start": "2026-10-10T19:30Z",
+   "state": "in",
+   "detail": "7:50 - 1st",
+   "tv": "CBS",
+   "venue": "Autzen Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UCLA",
+    "name": "UCLA Bruins",
+    "short": "UCLA",
+    "location": "UCLA",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/26.png",
+    "rank": 21,
+    "score": 3,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ORE",
+    "name": "Oregon Ducks",
+    "short": "Oregon",
+    "location": "Oregon",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png",
+    "rank": 13,
+    "score": 6,
+    "record": "3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ORE to win, 74%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "UCLA +11.5, 52% to cover",
+     "short": "UCLA +11.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856713",
+   "start": "2026-10-10T20:15Z",
+   "state": "pre",
+   "detail": "10/10 - 4:15 PM EDT",
+   "tv": "SEC Network",
+   "venue": "Donald W. Reynolds Razorback Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "TENN",
+    "name": "Tennessee Volunteers",
+    "short": "Tennessee",
+    "location": "Tennessee",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png",
+    "rank": 15,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ARK",
+    "name": "Arkansas Razorbacks",
+    "short": "Arkansas",
+    "location": "Arkansas",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TENN to win, 77%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "ARK +13.5, 53% to cover",
+     "short": "ARK +13.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858483",
+   "start": "2026-10-10T20:15Z",
+   "state": "pre",
+   "detail": "10/10 - 4:15 PM EDT",
+   "tv": "BTN",
+   "venue": "Ohio Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "MD",
+    "name": "Maryland Terrapins",
+    "short": "Maryland",
+    "location": "Maryland",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/120.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "OSU",
+    "name": "Ohio State Buckeyes",
+    "short": "Ohio State",
+    "location": "Ohio State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
+    "rank": 5,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "OSU to win, 90%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "MD +34.5, 77% to cover",
+     "short": "MD +34.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856715",
+   "start": "2026-10-10T23:00Z",
+   "state": "pre",
+   "detail": "10/10 - 7:00 PM EDT",
+   "tv": "ESPN",
+   "venue": "Kroger Field",
+   "neutral": false,
+   "away": {
+    "abbr": "LSU",
+    "name": "LSU Tigers",
+    "short": "LSU",
+    "location": "LSU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png",
+    "rank": 10,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "UK",
+    "name": "Kentucky Wildcats",
+    "short": "Kentucky",
+    "location": "Kentucky",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
+    "rank": null,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "LSU to win, 64%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "UK +8.5, 55% to cover",
+     "short": "UK +8.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856712",
+   "start": "2026-10-10T23:30Z",
+   "state": "pre",
+   "detail": "10/10 - 7:30 PM EDT",
+   "tv": "ABC",
+   "venue": "Bryant-Denny Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "UGA",
+    "name": "Georgia Bulldogs",
+    "short": "Georgia",
+    "location": "Georgia",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png",
+    "rank": 2,
+    "score": 0,
+    "record": "5-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ALA",
+    "name": "Alabama Crimson Tide",
+    "short": "Alabama",
+    "location": "Alabama",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
+    "rank": 6,
+    "score": 0,
+    "record": "5-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ALA to win, 53%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "ALA -1.5, 50% to cover",
+     "short": "ALA -1.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401858485",
+   "start": "2026-10-10T23:30Z",
+   "state": "pre",
+   "detail": "10/10 - 7:30 PM EDT",
+   "tv": "NBC",
+   "venue": "Beaver Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "USC",
+    "name": "USC Trojans",
+    "short": "USC",
+    "location": "USC",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png",
+    "rank": 19,
+    "score": 0,
+    "record": "5-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "PSU",
+    "name": "Penn State Nittany Lions",
+    "short": "Penn State",
+    "location": "Penn State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/213.png",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "PSU to win, 59%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "PSU -1.5, 56% to cover",
+     "short": "PSU -1.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401856827",
+   "start": "2026-10-11T00:00Z",
+   "state": "pre",
+   "detail": "10/10 - 8:00 PM EDT",
+   "tv": "ESPNEWS",
+   "venue": "Rice-Eccles Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "KU",
+    "name": "Kansas Jayhawks",
+    "short": "Kansas",
+    "location": "Kansas",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2305.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "UTAH",
+    "name": "Utah Utes",
+    "short": "Utah",
+    "location": "Utah",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png",
+    "rank": 12,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "UTAH to win, 65%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "KU +15.5, 70% to cover",
+     "short": "KU +15.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401860901",
+   "start": "2026-10-11T02:30Z",
+   "state": "pre",
+   "detail": "10/10 - 10:30 PM EDT",
+   "tv": "CW",
+   "venue": "Valley Children's Stadium",
+   "neutral": false,
+   "away": {
+    "abbr": "BOIS",
+    "name": "Boise State Broncos",
+    "short": "Boise St",
+    "location": "Boise State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/68.png",
+    "rank": 23,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "FRES",
+    "name": "Fresno State Bulldogs",
+    "short": "Fresno St",
+    "location": "Fresno State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/278.png",
+    "rank": null,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   }
+  }
+ ]
+}

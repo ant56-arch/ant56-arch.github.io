@@ -1,0 +1,400 @@
+{
+ "updated": "2026-10-10T20:01:20.841027+00:00",
+ "heading": "Week 5",
+ "picks": [
+  {
+   "label": "PHI @ JAX",
+   "sub": "78% to win",
+   "value": "JAX -10.0",
+   "result": null
+  },
+  {
+   "label": "CIN @ MIA",
+   "sub": "68% to win",
+   "value": "CIN -6.3",
+   "result": null
+  },
+  {
+   "label": "LV @ NE",
+   "sub": "63% to win",
+   "value": "NE -4.3",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "31-18",
+  "label": "our picks to win",
+  "sub": "63%",
+  "since": "Sep 17, 2026"
+ },
+ "empty": "No games available yet.",
+ "retrained": "2026-10-06T16:48:31.111844+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "31-18",
+  "sub": "63.3%",
+  "season": "2026"
+ },
+ "daily": [
+  [
+   "2026-09-17",
+   1,
+   0
+  ],
+  [
+   "2026-09-20",
+   7,
+   7
+  ],
+  [
+   "2026-09-21",
+   1,
+   0
+  ],
+  [
+   "2026-09-24",
+   1,
+   0
+  ],
+  [
+   "2026-09-27",
+   8,
+   6
+  ],
+  [
+   "2026-09-28",
+   1,
+   0
+  ],
+  [
+   "2026-10-01",
+   1,
+   0
+  ],
+  [
+   "2026-10-04",
+   11,
+   3
+  ],
+  [
+   "2026-10-05",
+   0,
+   1
+  ],
+  [
+   "2026-10-08",
+   0,
+   1
+  ]
+ ],
+ "ml_streak": {
+  "kind": "L",
+  "n": 3
+ },
+ "moneyline_record": {
+  "value": "22-11",
+  "label": "2026 moneyline",
+  "sub": "33 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "NFL",
+   "id": "2026-5-phi-jax",
+   "url": "/nfl/game-2026-5-phi-jax.html",
+   "start": "2026-10-11T09:30:00-04:00",
+   "date": "2026-10-11",
+   "away": "PHI",
+   "home": "JAX",
+   "at": "@",
+   "pick": "JAX",
+   "other": "PHI",
+   "prob": 77.7,
+   "price": -375,
+   "book": 75.7,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-hou-ten",
+   "url": "/nfl/game-2026-5-hou-ten.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "HOU",
+   "home": "TEN",
+   "at": "@",
+   "pick": "HOU",
+   "other": "TEN",
+   "prob": 61.2,
+   "price": -375,
+   "book": 75.7,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-cin-mia",
+   "url": "/nfl/game-2026-5-cin-mia.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "CIN",
+   "home": "MIA",
+   "at": "@",
+   "pick": "CIN",
+   "other": "MIA",
+   "prob": 68.4,
+   "price": -360,
+   "book": 75.1,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-nyg-was",
+   "url": "/nfl/game-2026-5-nyg-was.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "NYG",
+   "home": "WAS",
+   "at": "@",
+   "pick": "WAS",
+   "other": "NYG",
+   "prob": 54.4,
+   "price": -192,
+   "book": 63.1,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-lv-ne",
+   "url": "/nfl/game-2026-5-lv-ne.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "LV",
+   "home": "NE",
+   "at": "@",
+   "pick": "NE",
+   "other": "LV",
+   "prob": 62.8,
+   "price": -192,
+   "book": 63.1,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-ind-pit",
+   "url": "/nfl/game-2026-5-ind-pit.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "IND",
+   "home": "PIT",
+   "at": "@",
+   "pick": "PIT",
+   "other": "IND",
+   "prob": 51.5,
+   "price": -148,
+   "book": 57.2,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-cle-nyj",
+   "url": "/nfl/game-2026-5-cle-nyj.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "CLE",
+   "home": "NYJ",
+   "at": "@",
+   "pick": "CLE",
+   "other": "NYJ",
+   "prob": 54.0,
+   "price": 114,
+   "book": 44.9,
+   "value": true
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-min-no",
+   "url": "/nfl/game-2026-5-min-no.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "MIN",
+   "home": "NO",
+   "at": "@",
+   "pick": "MIN",
+   "other": "NO",
+   "prob": 56.8,
+   "price": -142,
+   "book": 56.4,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-chi-gb",
+   "url": "/nfl/game-2026-5-chi-gb.html",
+   "start": "2026-10-11T13:00:00-04:00",
+   "date": "2026-10-11",
+   "away": "CHI",
+   "home": "GB",
+   "at": "@",
+   "pick": "CHI",
+   "other": "GB",
+   "prob": 52.4,
+   "price": -120,
+   "book": 52.2,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-den-lac",
+   "url": "/nfl/game-2026-5-den-lac.html",
+   "start": "2026-10-11T16:05:00-04:00",
+   "date": "2026-10-11",
+   "away": "DEN",
+   "home": "LAC",
+   "at": "@",
+   "pick": "DEN",
+   "other": "LAC",
+   "prob": 56.1,
+   "price": -175,
+   "book": 60.9,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-det-ari",
+   "url": "/nfl/game-2026-5-det-ari.html",
+   "start": "2026-10-11T16:25:00-04:00",
+   "date": "2026-10-11",
+   "away": "DET",
+   "home": "ARI",
+   "at": "@",
+   "pick": "DET",
+   "other": "ARI",
+   "prob": 61.0,
+   "price": -258,
+   "book": 69.1,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-sf-sea",
+   "url": "/nfl/game-2026-5-sf-sea.html",
+   "start": "2026-10-11T16:25:00-04:00",
+   "date": "2026-10-11",
+   "away": "SF",
+   "home": "SEA",
+   "at": "@",
+   "pick": "SF",
+   "other": "SEA",
+   "prob": 50.7,
+   "price": 136,
+   "book": 40.7,
+   "value": true
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-bal-atl",
+   "url": "/nfl/game-2026-5-bal-atl.html",
+   "start": "2026-10-11T20:20:00-04:00",
+   "date": "2026-10-11",
+   "away": "BAL",
+   "home": "ATL",
+   "at": "@",
+   "pick": "ATL",
+   "other": "BAL",
+   "prob": 59.6,
+   "price": -185,
+   "book": 62.3,
+   "value": false
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-5-buf-la",
+   "url": "/nfl/game-2026-5-buf-la.html",
+   "start": "2026-10-12T20:15:00-04:00",
+   "date": "2026-10-12",
+   "away": "BUF",
+   "home": "LA",
+   "at": "@",
+   "pick": "LA",
+   "other": "BUF",
+   "prob": 57.2,
+   "price": -175,
+   "book": 60.9,
+   "value": false
+  }
+ ],
+ "units": {
+  "picks": 33,
+  "wins": 22,
+  "losses": 11,
+  "units": 3.84,
+  "roi": 0.1165,
+  "since": "2026-09-24",
+  "series": [
+   [
+    "2026-09-24",
+    2.0
+   ],
+   [
+    "2026-09-27",
+    -0.06
+   ],
+   [
+    "2026-09-28",
+    1.48
+   ],
+   [
+    "2026-10-01",
+    2.72
+   ],
+   [
+    "2026-10-04",
+    5.84
+   ],
+   [
+    "2026-10-05",
+    4.84
+   ],
+   [
+    "2026-10-08",
+    3.84
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 28,
+    "wins": 17,
+    "losses": 11,
+    "units": -3.28,
+    "roi": -0.117
+   },
+   "underdogs": {
+    "picks": 5,
+    "wins": 5,
+    "losses": 0,
+    "units": 7.12,
+    "roi": 1.424
+   },
+   "value": {
+    "picks": 11,
+    "wins": 8,
+    "losses": 3,
+    "units": 4.33,
+    "roi": 0.3933
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-08",
+  "games": [
+   {
+    "pick": "DAL",
+    "other": "TB",
+    "hit": false,
+    "text": "DAL lost 24-16",
+    "units": -1.0,
+    "url": "/nfl/game-2026-5-tb-dal.html"
+   }
+  ],
+  "hits": []
+ }
+}

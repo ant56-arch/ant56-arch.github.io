@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model | MLB Edge</title>
+<meta name="description" content="Who wins every MLB game and which hitters get a hit today, from models graded against every box score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M7 23V9h3.4l5.6 7.4L21.6 9H25v14h-3.3v-8.8L16 21.4l-5.7-7.2V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=a1423e71d9">
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a href="https://ant56-arch.github.io/" class="sport-tab">All</a><a href="https://ant56-arch.github.io/nfl/index.html" class="sport-tab">NFL</a><a href="https://ant56-arch.github.io/nba/index.html" class="sport-tab">NBA</a><a href="#" class="sport-tab active" aria-current="page">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="https://ant56-arch.github.io/cfb/index.html" class="sport-tab">CFB</a><a href="https://ant56-arch.github.io/cbb/index.html" class="sport-tab">CBB</a><a href="https://ant56-arch.github.io/soccer/index.html" class="sport-tab">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="MLB">
+  <div class="masthead-inner">
+    <h1 class="wordmark">MLB <span>EDGE</span></h1>
+    <div class="tagline">Who wins every MLB game and which hitters get a hit today, from models graded against every box score.</div>
+    <div class="updated-chip">Updated Oct 10, 2026 3:09 PM ET</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="players.html">Player Hits</a><a href="games.html">Games</a><a href="accuracy.html">Accuracy</a><a href="model.html" class="active" aria-current="page">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <div class="subtabs model-switch" role="group" aria-label="Models"><button type="button" class="subtab active" aria-pressed="true" data-panel="model-hits">Hit model</button><button type="button" class="subtab" aria-pressed="false" data-panel="model-games">Team model</button></div><div class="switch-panel" id="model-hits"><section class="card">
+    <div class="card-header"><h2>How It Learns</h2><div class="subtitle">Every Monday it checks itself against the newest games and only changes when a new version clearly predicts better.</div></div>
+    <div class="card-body"><div class="statline model-tiles"><div class="stat"><div class="stat-value">Oct 10</div><div class="stat-label">Last retrained</div><div class="stat-sub">games through Sep 27, 2026</div></div><div class="stat"><div class="stat-value">128,224</div><div class="stat-label">Hitter-games learned from</div><div class="stat-sub">Mar 20, 2024 to Sep 27, 2026</div></div><div class="stat"><div class="stat-value">Oct 12</div><div class="stat-label">Next check</div><div class="stat-sub">Monday, 4 AM ET</div></div><div class="stat"><div class="stat-value">Kept</div><div class="stat-label">Last decision</div><div class="stat-sub">12 versions tested</div></div></div><div class="section-label">Current setup</div><ul class="setup-list"><li><span class="setup-label">Learns from:</span> the last 3 seasons of games</li><li><span class="setup-label">Ballparks:</span> learns each park&#x27;s effect from the games</li><li><span class="setup-label">Smoothing:</span> medium, to avoid chasing noise</li><li><span class="setup-label">Looks at:</span> 9 factors for every hitter, listed below</li><li><span class="setup-label">Retrains:</span> Mondays, only when new games have been played; in the offseason it waits</li></ul></div>
+  </section><section class="card" id="results-cal" data-summary="summary.json" hidden><div class="card-header"><h2>Results By Day</h2><div class="subtitle">Every live pick, graded, one square per day. Hover or tap a day for its record.</div></div><div class="card-body"></div></section><section class="card">
+    <div class="card-header"><h2>Is It Getting Better?</h2><div class="subtitle">Score on recent games at each retrain</div></div>
+    <div class="card-body"><div class="statline "><div class="stat"><div class="stat-value">71.4%</div><div class="stat-label">Before last retrain</div><div class="stat-sub">live model on recent games</div></div><div class="stat"><div class="stat-value">71.7%</div><div class="stat-label">After last retrain</div><div class="stat-sub">same games, never trained on</div></div></div><svg class="trend-chart" viewBox="0 0 480 300" role="img" aria-label="Score on held-out games after each retrain. Higher is better."><line x1="64" x2="460" y1="266.0" y2="266.0" class="trend-grid"/><text x="56" y="270.0" class="trend-label" text-anchor="end">69.5%</text><line x1="64" x2="460" y1="208.0" y2="208.0" class="trend-grid"/><text x="56" y="212.0" class="trend-label" text-anchor="end">70.6%</text><line x1="64" x2="460" y1="150.0" y2="150.0" class="trend-grid"/><text x="56" y="154.0" class="trend-label" text-anchor="end">71.7%</text><line x1="64" x2="460" y1="92.0" y2="92.0" class="trend-grid"/><text x="56" y="96.0" class="trend-label" text-anchor="end">72.8%</text><line x1="64" x2="460" y1="34.0" y2="34.0" class="trend-grid"/><text x="56" y="38.0" class="trend-label" text-anchor="end">73.8%</text><polyline points="64.0,151.1 160.5,148.9 257.0,148.9 353.5,148.9 450.0,148.9" class="trend-line"/><circle cx="64.0" cy="151.1" r="4.5" class="trend-dot"/><text x="64.0" y="141.1" class="trend-value" text-anchor="start">71.7%</text><text x="64.0" y="294" class="trend-label" text-anchor="start">Sep 23</text><circle cx="160.5" cy="148.9" r="4.5" class="trend-dot"/><text x="160.5" y="138.9" class="trend-value" text-anchor="middle">71.7%</text><text x="160.5" y="294" class="trend-label" text-anchor="middle">Sep 28</text><circle cx="257.0" cy="148.9" r="4.5" class="trend-dot"/><text x="257.0" y="138.9" class="trend-value" text-anchor="middle">71.7%</text><text x="257.0" y="294" class="trend-label" text-anchor="middle">Oct 4</text><circle cx="353.5" cy="148.9" r="4.5" class="trend-dot"/><text x="353.5" y="138.9" class="trend-value" text-anchor="middle">71.7%</text><text x="353.5" y="294" class="trend-label" text-anchor="middle">Oct 7</text><circle cx="450.0" cy="148.9" r="4.5" class="trend-dot"/><text x="450.0" y="138.9" class="trend-value" text-anchor="end">71.7%</text><text x="450.0" y="294" class="trend-label" text-anchor="end">Oct 10</text></svg><div class="table-footnote">Top 10 hit rate on the most recent games, which each version is scored on before it's trained on them. Higher is better. Live results are on the Accuracy tab.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Retrain Log</h2><div class="subtitle">Every time the model checked itself against new games, newest first</div></div>
+    <div class="card-body"><table class="data responsive-stack retrain-log">
+          <thead><tr><th>Date</th><th>Games through</th><th class="num">Versions tested</th><th>Decision</th>
+          <th class="num">Top 10 hit rate</th><th>Why</th></tr></thead>
+          <tbody><tr><td class="row-label">Oct 10, 2026</td>
+          <td data-label="Games through">Sep 27, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Top 10 hit rate" class="num">71.4% → 71.7%</td>
+          <td data-label="Why" class="why-cell">Early retrain after a cold stretch: the last 70 picks won 39, the model expected about 50; kept the recipe, refit with the newest games.</td></tr><tr><td class="row-label">Oct 7, 2026</td>
+          <td data-label="Games through">Sep 27, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Top 10 hit rate" class="num">71.4% → 71.7%</td>
+          <td data-label="Why" class="why-cell">Early retrain after a cold stretch: the last 70 picks won 41, the model expected about 50; kept the recipe, refit with the newest games.</td></tr><tr><td class="row-label">Oct 4, 2026</td>
+          <td data-label="Games through">Sep 27, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Top 10 hit rate" class="num">71.4% → 71.7%</td>
+          <td data-label="Why" class="why-cell">Early retrain after a cold stretch: the last 70 picks won 41, the model expected about 49; kept the recipe, refit with the newest games.</td></tr><tr><td class="row-label">Sep 28, 2026</td>
+          <td data-label="Games through">Sep 27, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-positive">Switched</span></td>
+          <td data-label="Top 10 hit rate" class="num">70.0% → 71.7%</td>
+          <td data-label="Why" class="why-cell">New recipe beat the current one on held-out games.</td></tr><tr><td class="row-label">Sep 23, 2026</td>
+          <td data-label="Games through">Sep 22, 2026</td>
+          <td data-label="Versions tested" class="num">12</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Top 10 hit rate" class="num">70.3% → 71.7%</td>
+          <td data-label="Why" class="why-cell">Kept the recipe, refit with the newest games.</td></tr></tbody></table>
+          <div class="table-footnote">Each retrain fits several versions of the model on everything except the
+          most recent games, scores them on those games, and switches only if a new version is clearly better.
+          Then it refits on every game, and a safety check blocks anything that scores worse than the live
+          model.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>What It's Weighing</h2><div class="subtitle">The factors behind every pick, and how the last retrain moved them</div></div>
+    <div class="card-body"><table class="data responsive-stack factor-table">
+          <thead><tr><th>Factor</th><th class="num">Now</th><th class="num">Before last retrain</th><th class="num">Change</th></tr></thead>
+          <tbody><tr><td class="row-label">At-bats per game<div class="factor-note">more trips to the plate, more chances</div></td>
+          <td data-label="Now" class="num accent">36.5%</td>
+          <td data-label="Before last retrain" class="num">36.5%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Platoon edge<div class="factor-note">batting against the opposite hand</div></td>
+          <td data-label="Now" class="num accent">13.9%</td>
+          <td data-label="Before last retrain" class="num">13.9%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Ballpark<div class="factor-note">how hitter-friendly the park is</div></td>
+          <td data-label="Now" class="num accent">13.3%</td>
+          <td data-label="Before last retrain" class="num">13.3%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Opposing starter&#x27;s strikeouts<div class="factor-note">per nine innings</div></td>
+          <td data-label="Now" class="num accent">11.7%</td>
+          <td data-label="Before last retrain" class="num">11.7%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Season batting average</td>
+          <td data-label="Now" class="num accent">9.7%</td>
+          <td data-label="Before last retrain" class="num">9.7%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Recent form<div class="factor-note">batting average over his last games</div></td>
+          <td data-label="Now" class="num accent">6.5%</td>
+          <td data-label="Before last retrain" class="num">6.5%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Opposing starter&#x27;s ERA</td>
+          <td data-label="Now" class="num accent">3.6%</td>
+          <td data-label="Before last retrain" class="num">3.6%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Home vs. away</td>
+          <td data-label="Now" class="num accent">2.4%</td>
+          <td data-label="Before last retrain" class="num">2.4%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Opposing starter&#x27;s WHIP<div class="factor-note">walks + hits per inning</div></td>
+          <td data-label="Now" class="num accent">2.3%</td>
+          <td data-label="Before last retrain" class="num">2.3%</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr></tbody></table>
+          <div class="table-footnote">Share of influence: how much each factor moves a hit chance, relative to the others, for a typical swing in that factor. Before is the model that was live until the last retrain.</div></div>
+  </section></div><div class="switch-panel" id="model-games" hidden><section class="card">
+    <div class="card-header"><h2>How It Learns</h2><div class="subtitle">Once a week during the season it checks itself against the newest games and only changes when a new version clearly predicts better.</div></div>
+    <div class="card-body"><div class="statline model-tiles"><div class="stat"><div class="stat-value">Sep 30</div><div class="stat-label">Last retrained</div><div class="stat-sub">games through Sep 27, 2026</div></div><div class="stat"><div class="stat-value">4,980</div><div class="stat-label">Games learned from</div><div class="stat-sub">Sep 28, 2024 to Sep 27, 2026</div></div><div class="stat"><div class="stat-value">Weekly</div><div class="stat-label">Next check</div><div class="stat-sub">once 60+ new games are in; waits in the offseason</div></div><div class="stat"><div class="stat-value">Kept</div><div class="stat-label">Last decision</div><div class="stat-sub">36 versions tested</div></div></div><div class="section-label">Current setup</div><ul class="setup-list"><li><span class="setup-label">Learns from:</span> the last 2 seasons of games</li><li><span class="setup-label">Team ratings:</span> steady - one game moves a team&#x27;s Elo rating only a few points, a bit more for a blowout</li><li><span class="setup-label">Over the winter:</span> keeps 67% of each team&#x27;s rating; the rest resets toward average</li><li><span class="setup-label">Starters:</span> ERA and FIP this season and past seasons, blended with 60 innings of a league-average starter so a few starts don&#x27;t swing it</li><li><span class="setup-label">Looks at:</span> 3 factors for every game, listed below, with the day&#x27;s probable starters</li></ul></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Is It Getting Better?</h2><div class="subtitle">Score on recent games at each retrain</div></div>
+    <div class="card-body"><div class="statline "><div class="stat"><div class="stat-value">4.8%</div><div class="stat-label">Before last retrain</div><div class="stat-sub">live model on recent games</div></div><div class="stat"><div class="stat-value">4.7%</div><div class="stat-label">After last retrain</div><div class="stat-sub">same games, never trained on</div></div></div><svg class="trend-chart" viewBox="0 0 480 300" role="img" aria-label="Score on held-out games after each retrain. Higher is better."><line x1="64" x2="460" y1="266.0" y2="266.0" class="trend-grid"/><text x="56" y="270.0" class="trend-label" text-anchor="end">3.3%</text><line x1="64" x2="460" y1="208.0" y2="208.0" class="trend-grid"/><text x="56" y="212.0" class="trend-label" text-anchor="end">3.7%</text><line x1="64" x2="460" y1="150.0" y2="150.0" class="trend-grid"/><text x="56" y="154.0" class="trend-label" text-anchor="end">4.1%</text><line x1="64" x2="460" y1="92.0" y2="92.0" class="trend-grid"/><text x="56" y="96.0" class="trend-label" text-anchor="end">4.5%</text><line x1="64" x2="460" y1="34.0" y2="34.0" class="trend-grid"/><text x="56" y="38.0" class="trend-label" text-anchor="end">5.0%</text><polyline points="64.0,227.3 450.0,72.7" class="trend-line"/><circle cx="64.0" cy="227.3" r="4.5" class="trend-dot"/><text x="64.0" y="217.3" class="trend-value" text-anchor="start">3.6%</text><text x="64.0" y="294" class="trend-label" text-anchor="start">Sep 23</text><circle cx="450.0" cy="72.7" r="4.5" class="trend-dot"/><text x="450.0" y="62.7" class="trend-value" text-anchor="end">4.7%</text><text x="450.0" y="294" class="trend-label" text-anchor="end">Sep 30</text></svg><div class="table-footnote">Better than guessing on the most recent games, which each version is scored on before it's trained on them. Higher is better. Live results are on the Accuracy tab.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Retrain Log</h2><div class="subtitle">Every time the model checked itself against new games, newest first</div></div>
+    <div class="card-body"><table class="data responsive-stack retrain-log">
+          <thead><tr><th>Date</th><th>Games through</th><th class="num">Versions tested</th><th>Decision</th>
+          <th class="num">Better than guessing</th><th>Why</th></tr></thead>
+          <tbody><tr><td class="row-label">Sep 30, 2026</td>
+          <td data-label="Games through">Sep 27, 2026</td>
+          <td data-label="Versions tested" class="num">36</td>
+          <td data-label="Decision"><span class="pill pill-market">Kept + refit</span></td>
+          <td data-label="Better than guessing" class="num">4.8% → 4.7%</td>
+          <td data-label="Why" class="why-cell">Kept the recipe, refit with the newest games.</td></tr><tr><td class="row-label">Sep 23, 2026</td>
+          <td data-label="Games through">Sep 22, 2026</td>
+          <td data-label="Versions tested" class="num">36</td>
+          <td data-label="Decision"><span class="pill pill-positive">Switched</span></td>
+          <td data-label="Better than guessing" class="num">3.6%</td>
+          <td data-label="Why" class="why-cell">New recipe beat the current one on held-out games.</td></tr></tbody></table>
+          <div class="table-footnote">Each retrain fits several versions of the model on everything except the
+          most recent games, scores them on those games, and switches only if a new version is clearly better.
+          Then it refits on every game, and a safety check blocks anything that scores worse than the live
+          model.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>What It's Weighing</h2><div class="subtitle">The factors behind every pick, and how the last retrain moved them</div></div>
+    <div class="card-body"><table class="data responsive-stack factor-table">
+          <thead><tr><th>Factor</th><th class="num">Now</th><th class="num">Before last retrain</th><th class="num">Change</th></tr></thead>
+          <tbody><tr><td class="row-label">Home field<div class="factor-note">for the home team, before anything else</div></td>
+          <td data-label="Now" class="num accent">+0.141</td>
+          <td data-label="Before last retrain" class="num">+0.141</td>
+          <td data-label="Change" class="num"><span class="change-flat">no change</span></td></tr><tr><td class="row-label">Team rating (Elo) gap<div class="factor-note">per 100 rating points</div></td>
+          <td data-label="Now" class="num accent">+0.485</td>
+          <td data-label="Before last retrain" class="num">+0.475</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.010</span></td></tr><tr><td class="row-label">Starting pitcher gap<div class="factor-note">per run per 9 innings better than the other starter</div></td>
+          <td data-label="Now" class="num accent">+0.197</td>
+          <td data-label="Before last retrain" class="num">+0.200</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.003</span></td></tr></tbody></table>
+          <div class="table-footnote">Each number is how much that factor moves the home team&#x27;s log-odds of winning (negative helps the away team); 0.1 is about 2.5 points of win chance near a coin flip. Better than guessing is how much less wrong (log loss) the model is than always giving the home team its usual win rate. Before is the model that was live until the last retrain.</div></div>
+  </section></div>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Stats, lineups and box scores via the MLB Stats API; moneyline prices via ESPN's scoreboard. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 MLB Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=a1423e71d9"></script>
+
+</body>
+</html>

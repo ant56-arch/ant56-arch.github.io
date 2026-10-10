@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuracy | MLB Edge</title>
+<meta name="description" content="Who wins every MLB game and which hitters get a hit today, from models graded against every box score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M7 23V9h3.4l5.6 7.4L21.6 9H25v14h-3.3v-8.8L16 21.4l-5.7-7.2V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=a1423e71d9">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a href="https://ant56-arch.github.io/" class="sport-tab">All</a><a href="https://ant56-arch.github.io/nfl/index.html" class="sport-tab">NFL</a><a href="https://ant56-arch.github.io/nba/index.html" class="sport-tab">NBA</a><a href="#" class="sport-tab active" aria-current="page">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="https://ant56-arch.github.io/cfb/index.html" class="sport-tab">CFB</a><a href="https://ant56-arch.github.io/cbb/index.html" class="sport-tab">CBB</a><a href="https://ant56-arch.github.io/soccer/index.html" class="sport-tab">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="MLB">
+  <div class="masthead-inner">
+    <h1 class="wordmark">MLB <span>EDGE</span></h1>
+    <div class="tagline">Who wins every MLB game and which hitters get a hit today, from models graded against every box score.</div>
+    <div class="updated-chip">Updated Oct 10, 2026 3:09 PM ET</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="players.html">Player Hits</a><a href="games.html">Games</a><a href="accuracy.html" class="active" aria-current="page">Accuracy</a><a href="model.html">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <div class="subtabs model-switch" role="group" aria-label="Models"><button type="button" class="subtab active" aria-pressed="true" data-panel="acc-hits">Hit picks</button><button type="button" class="subtab" aria-pressed="false" data-panel="acc-games">Game picks</button></div><div class="switch-panel" id="acc-hits"><section class="card">
+    <div class="card-header"><h2>Record</h2><div class="subtitle">2026 live hitter picks, graded against the box score</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">59.1%</div><div class="stat-label">This season</div><div class="stat-sub">55 of 93 got a hit; model said 67.4%</div></div><div class="stat"><div class="stat-value">60.7%</div><div class="stat-label">Last 7 days</div><div class="stat-sub">17 of 28 got a hit; model said 65.6%</div></div><div class="stat"><div class="stat-value">64.3%</div><div class="stat-label">Picks at 70%+</div><div class="stat-sub">9 of 14 got a hit; model said 71.0%</div></div></div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Accuracy Over Time</h2><div class="subtitle">93 graded picks: how often they got a hit vs. what the model expected</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="acc-hits-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-hits-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-hits-weekly","title":"Hit Rate by Week","labels":["Wk of Sep 21","Wk of Sep 28","Wk of Oct 5"],"fmt":"pct","series":[{"label":"Our picks, hit rate","data":[0.66,0.429,0.667],"color":"#e5793b"},{"label":"What the model expected","data":[0.693,0.655,0.653],"color":"#a8a7a1","dash":[4,4]}]},{"id":"acc-hits-cumulative","title":"Hit Rate, Season to Date","labels":["Wk of Sep 21","Wk of Sep 28","Wk of Oct 5"],"fmt":"pct","series":[{"label":"Our picks, hit rate","data":[0.66,0.573,0.591],"color":"#e5793b"},{"label":"What the model expected","data":[0.693,0.679,0.674],"color":"#a8a7a1","dash":[4,4]}]}]);</script></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Calibration</h2><div class="subtitle">Picks grouped by the hit chance the model gave them</div></div>
+    <div class="card-body"><table class="data record-table responsive-stack">
+      <thead><tr><th>Hit chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually hit</th></tr></thead>
+      <tbody><tr><td class="row-label">Under 65%</td>
+      <td data-label="Picks" class="num">24</td>
+      <td data-label="Model said" class="num">63.3%</td>
+      <td data-label="Actually hit" class="num accent">54.2%</td></tr><tr><td class="row-label">65%-70%</td>
+      <td data-label="Picks" class="num">55</td>
+      <td data-label="Model said" class="num">68.2%</td>
+      <td data-label="Actually hit" class="num accent">60.0%</td></tr><tr><td class="row-label">70%-75%</td>
+      <td data-label="Picks" class="num">14</td>
+      <td data-label="Model said" class="num">71.0%</td>
+      <td data-label="Actually hit" class="num accent">64.3%</td></tr></tbody></table><div class="table-footnote">If the model is honest, each row's two percentages should be close. Small rows swing a lot.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Backtest</h2><div class="subtitle">How the current model did on games held out of training</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">71.7%</div><div class="stat-label">Top 10 per day</div><div class="stat-sub">got a hit</div></div><div class="stat"><div class="stat-value">58.7%</div><div class="stat-label">All hitters</div><div class="stat-sub">got a hit</div></div></div><table class="data record-table responsive-stack">
+      <thead><tr><th>Hit chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually hit</th></tr></thead>
+      <tbody><tr><td class="row-label">Under 55%</td>
+      <td data-label="Picks" class="num">2287</td>
+      <td data-label="Model said" class="num">49.7%</td>
+      <td data-label="Actually hit" class="num accent">49.1%</td></tr><tr><td class="row-label">55%-60%</td>
+      <td data-label="Picks" class="num">1900</td>
+      <td data-label="Model said" class="num">57.6%</td>
+      <td data-label="Actually hit" class="num accent">57.6%</td></tr><tr><td class="row-label">60%-65%</td>
+      <td data-label="Picks" class="num">2294</td>
+      <td data-label="Model said" class="num">62.5%</td>
+      <td data-label="Actually hit" class="num accent">63.0%</td></tr><tr><td class="row-label">65%-70%</td>
+      <td data-label="Picks" class="num">1328</td>
+      <td data-label="Model said" class="num">67.0%</td>
+      <td data-label="Actually hit" class="num accent">66.7%</td></tr><tr><td class="row-label">70%-75%</td>
+      <td data-label="Picks" class="num">217</td>
+      <td data-label="Model said" class="num">71.5%</td>
+      <td data-label="Actually hit" class="num accent">72.8%</td></tr></tbody></table><div class="table-footnote">Fit on games from 2024-03-20 up to 2026-08-24, then tested on the 8044 hitter-games from 2026-08-24 on, which it never saw. Its top 10 per day got a hit 71.7% of the time, vs. 58.7% for all hitters.</div></div>
+  </section></div><div class="switch-panel" id="acc-games" hidden><section class="card">
+    <div class="card-header"><h2>Record</h2><div class="subtitle">2026 live picks, graded against the final score</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">61-35</div><div class="stat-label">This season</div><div class="stat-sub">63.5% right; model said 57.3%</div></div><div class="stat"><div class="stat-value">8-7</div><div class="stat-label">Last 7 days</div><div class="stat-sub">53.3% right; model said 57.0%</div></div><div class="stat"><div class="stat-value">17-11</div><div class="stat-label">Picks at 60%+</div><div class="stat-sub">60.7% right; model said 64.0%</div></div><div class="stat"><div class="stat-value">53-29</div><div class="stat-label">Moneyline</div><div class="stat-sub">+14.37 units, +17.5% ROI</div></div></div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Accuracy Over Time</h2><div class="subtitle">96 graded picks: how often they won vs. what the model expected</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="acc-games-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-games-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-games-weekly","title":"Win Rate by Week","labels":["Wk of Sep 21","Wk of Sep 28","Wk of Oct 5"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.639,0.733,0.444],"color":"#e5793b"},{"label":"What the model expected","data":[0.576,0.576,0.541],"color":"#a8a7a1","dash":[4,4]}]},{"id":"acc-games-cumulative","title":"Win Rate, Season to Date","labels":["Wk of Sep 21","Wk of Sep 28","Wk of Oct 5"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.639,0.655,0.635],"color":"#e5793b"},{"label":"What the model expected","data":[0.576,0.576,0.573],"color":"#a8a7a1","dash":[4,4]}]}]);</script></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Calibration</h2><div class="subtitle">Picks grouped by the win chance the model gave them</div></div>
+    <div class="card-body"><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-55%</td>
+      <td data-label="Picks" class="num">37</td>
+      <td data-label="Model said" class="num">52.2%</td>
+      <td data-label="Actually won" class="num accent">64.9%</td></tr><tr><td class="row-label">55%-60%</td>
+      <td data-label="Picks" class="num">31</td>
+      <td data-label="Model said" class="num">57.3%</td>
+      <td data-label="Actually won" class="num accent">64.5%</td></tr><tr><td class="row-label">60%-65%</td>
+      <td data-label="Picks" class="num">18</td>
+      <td data-label="Model said" class="num">62.3%</td>
+      <td data-label="Actually won" class="num accent">50.0%</td></tr><tr><td class="row-label">65% and up</td>
+      <td data-label="Picks" class="num">10</td>
+      <td data-label="Model said" class="num">67.1%</td>
+      <td data-label="Actually won" class="num accent">80.0%</td></tr></tbody></table><div class="table-footnote">If the model is honest, each row's two percentages should be close. In baseball even strong favorites lose often, and small rows swing a lot.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Backtest</h2><div class="subtitle">How the team model did on a season it was never trained on</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">1366-1063</div><div class="stat-label">2026 backtest</div><div class="stat-sub">56.2% of games; model said 56.5%</div></div><div class="stat"><div class="stat-value">62.6%</div><div class="stat-label">Top 3 picks each day</div><div class="stat-sub">343-205</div></div><div class="stat"><div class="stat-value">0.681</div><div class="stat-label">Log loss</div><div class="stat-sub">0.692 for home-team rate</div></div></div><div class="chart-card" data-state="loading"><canvas id="acc-games-bt-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-games-bt-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-games-bt-weekly","title":"Win Rate by Month","labels":["Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.605,0.548,0.568,0.51,0.574,0.58,0.586],"color":"#e5793b"},{"label":"What the model expected","data":[0.571,0.56,0.561,0.563,0.561,0.569,0.576],"color":"#a8a7a1","dash":[4,4]}]},{"id":"acc-games-bt-cumulative","title":"Win Rate, Season to Date","labels":["Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.605,0.558,0.563,0.546,0.553,0.558,0.562],"color":"#e5793b"},{"label":"What the model expected","data":[0.571,0.561,0.561,0.562,0.562,0.563,0.565],"color":"#a8a7a1","dash":[4,4]}]}]);</script><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-55%</td>
+      <td data-label="Picks" class="num">1085</td>
+      <td data-label="Model said" class="num">52.4%</td>
+      <td data-label="Actually won" class="num accent">54.6%</td></tr><tr><td class="row-label">55%-60%</td>
+      <td data-label="Picks" class="num">826</td>
+      <td data-label="Model said" class="num">57.3%</td>
+      <td data-label="Actually won" class="num accent">53.0%</td></tr><tr><td class="row-label">60%-65%</td>
+      <td data-label="Picks" class="num">370</td>
+      <td data-label="Model said" class="num">62.1%</td>
+      <td data-label="Actually won" class="num accent">63.2%</td></tr><tr><td class="row-label">65% and up</td>
+      <td data-label="Picks" class="num">148</td>
+      <td data-label="Model said" class="num">67.8%</td>
+      <td data-label="Actually won" class="num accent">68.9%</td></tr></tbody></table><div class="table-footnote">Fit only on 2024-2025 and never shown 2026, then used to pick all 2429 regular-season games of 2026 with only what was known that morning. The home team won 52.9% of those games, and team ratings alone picked 56.2%. Lower log loss is better. In the postseason it went 15-9.</div></div>
+  </section></div>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Stats, lineups and box scores via the MLB Stats API; moneyline prices via ESPN's scoreboard. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 MLB Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=a1423e71d9"></script>
+
+</body>
+</html>

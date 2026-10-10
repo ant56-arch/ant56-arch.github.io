@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratings | CFB Edge</title>
+<meta name="description" content="Model-driven college football spreads and totals for the Power conferences, validated against the closing Vegas line every week.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M9 23V9h3.4l6.6 9.3V9H22v14h-3.4L12 13.6V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=f6d72f46a7">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a class="sport-tab" href="https://ant56-arch.github.io/">All</a><a href="../nfl/index.html" class="sport-tab">NFL</a><a href="https://ant56-arch.github.io/nba/index.html" class="sport-tab">NBA</a><a href="https://ant56-arch.github.io/mlb/" class="sport-tab">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="#" class="sport-tab active" aria-current="page">CFB</a><a href="https://ant56-arch.github.io/cbb/index.html" class="sport-tab">CBB</a><a href="https://ant56-arch.github.io/soccer/index.html" class="sport-tab">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="CFB">
+  <div class="masthead-inner">
+    <h1 class="wordmark">CFB <span>EDGE</span></h1>
+    <div class="tagline">Model-driven spreads and totals for Power-conference college football, graded against the closing line every week.</div>
+    <div class="updated-chip">Updated Oct 10, 2026 20:01 UTC</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="teams.html">Teams</a><a href="ratings.html" class="active" aria-current="page">Ratings</a><a href="history.html">History</a><a href="accuracy.html">Accuracy</a><a href="model.html">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>Power Ratings</h2><div class="subtitle">All 138 FBS teams through week 6, updated Oct 10, 2026. Tap a column to sort.</div></div>
+    <div class="card-body"><p class="lead"><b>49-17</b> (74%) picking winners of FBS games since Friday, Oct 2, missing the final margin by 13.5 points on average. On the 31 of those games our picks also covered: ratings 74%, our model 74%, Vegas favorite 68%.</p><p class="muted">Each team's offense is the points it would score against an average FBS defense, its defense the points it would allow to an average FBS offense (lower is better), and overall is the difference: its expected margin against an average FBS team on a neutral field. Every result is adjusted for who the team played, and both the score and how efficiently the team moved the ball (garbage time left out) count. Each team starts the season from last year's rating, kept more for teams bringing back more of their production, plus roster talent, and this season's games take over as they come in. Tested on 2022-2026 games, they picked 72% of FBS winners (the Vegas favorite: 73%). Home field is worth 4.2 points. These ratings are being tracked on their own and don't feed the picks yet.</p><table class="data responsive-stack" data-sortable>
+      <thead><tr><th data-sort-key="overall_rank" class="num">#</th><th data-sort-key="team">Team</th>
+      <th data-sort-key="overall" class="num">Overall</th><th data-sort-key="offense" class="num">Offense</th>
+      <th data-sort-key="defense" class="num">Defense</th></tr></thead>
+      <tbody><tr>
+          <td data-key="overall_rank" data-value="1" data-label="Rank" class="num">1</td>
+          <td data-key="team" data-value="Alabama"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/333.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Alabama</b><div class="muted" style="font-size:13px;">SEC &middot; 5-0</div></td>
+          <td data-key="overall" data-value="27.7" data-label="Overall" class="num"><b>+27.7</b></td>
+          <td data-key="offense" data-value="46.54" data-label="Offense" class="num">46.5 <span class="muted">(1)</span></td>
+          <td data-key="defense" data-value="-18.84" data-label="Defense" class="num">18.8 <span class="muted">(8)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="2" data-label="Rank" class="num">2</td>
+          <td data-key="team" data-value="Ohio State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/194.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Ohio State</b><div class="muted" style="font-size:13px;">Big Ten &middot; 4-1</div></td>
+          <td data-key="overall" data-value="27.57" data-label="Overall" class="num"><b>+27.6</b></td>
+          <td data-key="offense" data-value="42.98" data-label="Offense" class="num">43.0 <span class="muted">(6)</span></td>
+          <td data-key="defense" data-value="-15.41" data-label="Defense" class="num">15.4 <span class="muted">(2)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="3" data-label="Rank" class="num">3</td>
+          <td data-key="team" data-value="Notre Dame"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/87.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Notre Dame</b><div class="muted" style="font-size:13px;">FBS Independents &middot; 5-0</div></td>
+          <td data-key="overall" data-value="27.35" data-label="Overall" class="num"><b>+27.4</b></td>
+          <td data-key="offense" data-value="43.92" data-label="Offense" class="num">43.9 <span class="muted">(5)</span></td>
+          <td data-key="defense" data-value="-16.57" data-label="Defense" class="num">16.6 <span class="muted">(4)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="4" data-label="Rank" class="num">4</td>
+          <td data-key="team" data-value="Miami"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Miami</b><div class="muted" style="font-size:13px;">ACC &middot; 5-0</div></td>
+          <td data-key="overall" data-value="27.01" data-label="Overall" class="num"><b>+27.0</b></td>
+          <td data-key="offense" data-value="44.08" data-label="Offense" class="num">44.1 <span class="muted">(3)</span></td>
+          <td data-key="defense" data-value="-17.07" data-label="Defense" class="num">17.1 <span class="muted">(5)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="5" data-label="Rank" class="num">5</td>
+          <td data-key="team" data-value="Georgia"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/61.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Georgia</b><div class="muted" style="font-size:13px;">SEC &middot; 5-0</div></td>
+          <td data-key="overall" data-value="25.28" data-label="Overall" class="num"><b>+25.3</b></td>
+          <td data-key="offense" data-value="44.74" data-label="Offense" class="num">44.7 <span class="muted">(2)</span></td>
+          <td data-key="defense" data-value="-19.46" data-label="Defense" class="num">19.5 <span class="muted">(10)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="6" data-label="Rank" class="num">6</td>
+          <td data-key="team" data-value="Oregon"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Oregon</b><div class="muted" style="font-size:13px;">Big Ten &middot; 3-1</div></td>
+          <td data-key="overall" data-value="22.78" data-label="Overall" class="num"><b>+22.8</b></td>
+          <td data-key="offense" data-value="44.03" data-label="Offense" class="num">44.0 <span class="muted">(4)</span></td>
+          <td data-key="defense" data-value="-21.25" data-label="Defense" class="num">21.2 <span class="muted">(14)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="7" data-label="Rank" class="num">7</td>
+          <td data-key="team" data-value="Texas"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/251.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Texas</b><div class="muted" style="font-size:13px;">SEC &middot; 4-0</div></td>
+          <td data-key="overall" data-value="22.07" data-label="Overall" class="num"><b>+22.1</b></td>
+          <td data-key="offense" data-value="36.72" data-label="Offense" class="num">36.7 <span class="muted">(18)</span></td>
+          <td data-key="defense" data-value="-14.65" data-label="Defense" class="num">14.7 <span class="muted">(1)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="8" data-label="Rank" class="num">8</td>
+          <td data-key="team" data-value="Indiana"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/84.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Indiana</b><div class="muted" style="font-size:13px;">Big Ten &middot; 5-0</div></td>
+          <td data-key="overall" data-value="21.68" data-label="Overall" class="num"><b>+21.7</b></td>
+          <td data-key="offense" data-value="38.92" data-label="Offense" class="num">38.9 <span class="muted">(9)</span></td>
+          <td data-key="defense" data-value="-17.24" data-label="Defense" class="num">17.2 <span class="muted">(6)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="9" data-label="Rank" class="num">9</td>
+          <td data-key="team" data-value="LSU"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/99.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>LSU</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="19.74" data-label="Overall" class="num"><b>+19.7</b></td>
+          <td data-key="offense" data-value="38.35" data-label="Offense" class="num">38.4 <span class="muted">(13)</span></td>
+          <td data-key="defense" data-value="-18.61" data-label="Defense" class="num">18.6 <span class="muted">(7)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="10" data-label="Rank" class="num">10</td>
+          <td data-key="team" data-value="Utah"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/254.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Utah</b><div class="muted" style="font-size:13px;">Big 12 &middot; 4-0</div></td>
+          <td data-key="overall" data-value="16.93" data-label="Overall" class="num"><b>+16.9</b></td>
+          <td data-key="offense" data-value="38.54" data-label="Offense" class="num">38.5 <span class="muted">(10)</span></td>
+          <td data-key="defense" data-value="-21.61" data-label="Defense" class="num">21.6 <span class="muted">(18)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="11" data-label="Rank" class="num">11</td>
+          <td data-key="team" data-value="Tennessee"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Tennessee</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="14.39" data-label="Overall" class="num"><b>+14.4</b></td>
+          <td data-key="offense" data-value="37.23" data-label="Offense" class="num">37.2 <span class="muted">(16)</span></td>
+          <td data-key="defense" data-value="-22.84" data-label="Defense" class="num">22.8 <span class="muted">(24)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="12" data-label="Rank" class="num">12</td>
+          <td data-key="team" data-value="BYU"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/252.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>BYU</b><div class="muted" style="font-size:13px;">Big 12 &middot; 5-0</div></td>
+          <td data-key="overall" data-value="14.34" data-label="Overall" class="num"><b>+14.3</b></td>
+          <td data-key="offense" data-value="33.32" data-label="Offense" class="num">33.3 <span class="muted">(34)</span></td>
+          <td data-key="defense" data-value="-18.98" data-label="Defense" class="num">19.0 <span class="muted">(9)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="13" data-label="Rank" class="num">13</td>
+          <td data-key="team" data-value="Texas A&M"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/245.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Texas A&M</b><div class="muted" style="font-size:13px;">SEC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="14.23" data-label="Overall" class="num"><b>+14.2</b></td>
+          <td data-key="offense" data-value="34.87" data-label="Offense" class="num">34.9 <span class="muted">(24)</span></td>
+          <td data-key="defense" data-value="-20.64" data-label="Defense" class="num">20.6 <span class="muted">(13)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="14" data-label="Rank" class="num">14</td>
+          <td data-key="team" data-value="Florida"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/57.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Florida</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="14.15" data-label="Overall" class="num"><b>+14.2</b></td>
+          <td data-key="offense" data-value="39.72" data-label="Offense" class="num">39.7 <span class="muted">(7)</span></td>
+          <td data-key="defense" data-value="-25.57" data-label="Defense" class="num">25.6 <span class="muted">(41)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="15" data-label="Rank" class="num">15</td>
+          <td data-key="team" data-value="Texas Tech"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Texas Tech</b><div class="muted" style="font-size:13px;">Big 12 &middot; 5-0</div></td>
+          <td data-key="overall" data-value="13.78" data-label="Overall" class="num"><b>+13.8</b></td>
+          <td data-key="offense" data-value="33.59" data-label="Offense" class="num">33.6 <span class="muted">(30)</span></td>
+          <td data-key="defense" data-value="-19.81" data-label="Defense" class="num">19.8 <span class="muted">(12)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="16" data-label="Rank" class="num">16</td>
+          <td data-key="team" data-value="Oklahoma"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/201.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Oklahoma</b><div class="muted" style="font-size:13px;">SEC &middot; 2-2</div></td>
+          <td data-key="overall" data-value="13.4" data-label="Overall" class="num"><b>+13.4</b></td>
+          <td data-key="offense" data-value="29.08" data-label="Offense" class="num">29.1 <span class="muted">(71)</span></td>
+          <td data-key="defense" data-value="-15.68" data-label="Defense" class="num">15.7 <span class="muted">(3)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="17" data-label="Rank" class="num">17</td>
+          <td data-key="team" data-value="UCLA"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/26.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UCLA</b><div class="muted" style="font-size:13px;">Big Ten &middot; 4-0</div></td>
+          <td data-key="overall" data-value="13.23" data-label="Overall" class="num"><b>+13.2</b></td>
+          <td data-key="offense" data-value="37.59" data-label="Offense" class="num">37.6 <span class="muted">(15)</span></td>
+          <td data-key="defense" data-value="-24.36" data-label="Defense" class="num">24.4 <span class="muted">(30)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="18" data-label="Rank" class="num">18</td>
+          <td data-key="team" data-value="Missouri"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/142.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Missouri</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="13.15" data-label="Overall" class="num"><b>+13.2</b></td>
+          <td data-key="offense" data-value="35.2" data-label="Offense" class="num">35.2 <span class="muted">(23)</span></td>
+          <td data-key="defense" data-value="-22.05" data-label="Defense" class="num">22.1 <span class="muted">(19)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="19" data-label="Rank" class="num">19</td>
+          <td data-key="team" data-value="USC"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/30.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>USC</b><div class="muted" style="font-size:13px;">Big Ten &middot; 5-1</div></td>
+          <td data-key="overall" data-value="12.71" data-label="Overall" class="num"><b>+12.7</b></td>
+          <td data-key="offense" data-value="39.11" data-label="Offense" class="num">39.1 <span class="muted">(8)</span></td>
+          <td data-key="defense" data-value="-26.4" data-label="Defense" class="num">26.4 <span class="muted">(52)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="20" data-label="Rank" class="num">20</td>
+          <td data-key="team" data-value="Iowa"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Iowa</b><div class="muted" style="font-size:13px;">Big Ten &middot; 5-1</div></td>
+          <td data-key="overall" data-value="12.47" data-label="Overall" class="num"><b>+12.5</b></td>
+          <td data-key="offense" data-value="31.95" data-label="Offense" class="num">31.9 <span class="muted">(44)</span></td>
+          <td data-key="defense" data-value="-19.49" data-label="Defense" class="num">19.5 <span class="muted">(11)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="21" data-label="Rank" class="num">21</td>
+          <td data-key="team" data-value="Pittsburgh"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/221.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Pittsburgh</b><div class="muted" style="font-size:13px;">ACC &middot; 5-0</div></td>
+          <td data-key="overall" data-value="11.84" data-label="Overall" class="num"><b>+11.8</b></td>
+          <td data-key="offense" data-value="34.11" data-label="Offense" class="num">34.1 <span class="muted">(28)</span></td>
+          <td data-key="defense" data-value="-22.27" data-label="Defense" class="num">22.3 <span class="muted">(20)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="22" data-label="Rank" class="num">22</td>
+          <td data-key="team" data-value="Ole Miss"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/145.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Ole Miss</b><div class="muted" style="font-size:13px;">SEC &middot; 3-1</div></td>
+          <td data-key="overall" data-value="11.43" data-label="Overall" class="num"><b>+11.4</b></td>
+          <td data-key="offense" data-value="38.4" data-label="Offense" class="num">38.4 <span class="muted">(11)</span></td>
+          <td data-key="defense" data-value="-26.97" data-label="Defense" class="num">27.0 <span class="muted">(58)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="23" data-label="Rank" class="num">23</td>
+          <td data-key="team" data-value="Nebraska"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/158.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Nebraska</b><div class="muted" style="font-size:13px;">Big Ten &middot; 5-0</div></td>
+          <td data-key="overall" data-value="11.34" data-label="Overall" class="num"><b>+11.3</b></td>
+          <td data-key="offense" data-value="36.65" data-label="Offense" class="num">36.6 <span class="muted">(19)</span></td>
+          <td data-key="defense" data-value="-25.31" data-label="Defense" class="num">25.3 <span class="muted">(36)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="24" data-label="Rank" class="num">24</td>
+          <td data-key="team" data-value="Mississippi State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/344.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Mississippi State</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="11.22" data-label="Overall" class="num"><b>+11.2</b></td>
+          <td data-key="offense" data-value="38.39" data-label="Offense" class="num">38.4 <span class="muted">(12)</span></td>
+          <td data-key="defense" data-value="-27.17" data-label="Defense" class="num">27.2 <span class="muted">(60)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="25" data-label="Rank" class="num">25</td>
+          <td data-key="team" data-value="Houston"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/248.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Houston</b><div class="muted" style="font-size:13px;">Big 12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="11.04" data-label="Overall" class="num"><b>+11.0</b></td>
+          <td data-key="offense" data-value="36.89" data-label="Offense" class="num">36.9 <span class="muted">(17)</span></td>
+          <td data-key="defense" data-value="-25.85" data-label="Defense" class="num">25.9 <span class="muted">(43)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="26" data-label="Rank" class="num">26</td>
+          <td data-key="team" data-value="James Madison"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/256.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>James Madison</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 5-0</div></td>
+          <td data-key="overall" data-value="10.68" data-label="Overall" class="num"><b>+10.7</b></td>
+          <td data-key="offense" data-value="35.21" data-label="Offense" class="num">35.2 <span class="muted">(22)</span></td>
+          <td data-key="defense" data-value="-24.53" data-label="Defense" class="num">24.5 <span class="muted">(34)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="27" data-label="Rank" class="num">27</td>
+          <td data-key="team" data-value="Penn State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/213.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Penn State</b><div class="muted" style="font-size:13px;">Big Ten &middot; 3-2</div></td>
+          <td data-key="overall" data-value="10.28" data-label="Overall" class="num"><b>+10.3</b></td>
+          <td data-key="offense" data-value="32.85" data-label="Offense" class="num">32.9 <span class="muted">(38)</span></td>
+          <td data-key="defense" data-value="-22.57" data-label="Defense" class="num">22.6 <span class="muted">(22)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="28" data-label="Rank" class="num">28</td>
+          <td data-key="team" data-value="New Mexico"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/167.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>New Mexico</b><div class="muted" style="font-size:13px;">Mountain West &middot; 4-1</div></td>
+          <td data-key="overall" data-value="9.8" data-label="Overall" class="num"><b>+9.8</b></td>
+          <td data-key="offense" data-value="33.38" data-label="Offense" class="num">33.4 <span class="muted">(33)</span></td>
+          <td data-key="defense" data-value="-23.58" data-label="Defense" class="num">23.6 <span class="muted">(27)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="29" data-label="Rank" class="num">29</td>
+          <td data-key="team" data-value="Wake Forest"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/154.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Wake Forest</b><div class="muted" style="font-size:13px;">ACC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="9.74" data-label="Overall" class="num"><b>+9.7</b></td>
+          <td data-key="offense" data-value="34.23" data-label="Offense" class="num">34.2 <span class="muted">(26)</span></td>
+          <td data-key="defense" data-value="-24.49" data-label="Defense" class="num">24.5 <span class="muted">(32)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="30" data-label="Rank" class="num">30</td>
+          <td data-key="team" data-value="Louisville"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/97.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Louisville</b><div class="muted" style="font-size:13px;">ACC &middot; 3-3</div></td>
+          <td data-key="overall" data-value="9.45" data-label="Overall" class="num"><b>+9.4</b></td>
+          <td data-key="offense" data-value="36.3" data-label="Offense" class="num">36.3 <span class="muted">(20)</span></td>
+          <td data-key="defense" data-value="-26.85" data-label="Defense" class="num">26.9 <span class="muted">(56)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="31" data-label="Rank" class="num">31</td>
+          <td data-key="team" data-value="Michigan"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/130.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Michigan</b><div class="muted" style="font-size:13px;">Big Ten &middot; 3-2</div></td>
+          <td data-key="overall" data-value="9.42" data-label="Overall" class="num"><b>+9.4</b></td>
+          <td data-key="offense" data-value="30.86" data-label="Offense" class="num">30.9 <span class="muted">(52)</span></td>
+          <td data-key="defense" data-value="-21.44" data-label="Defense" class="num">21.4 <span class="muted">(16)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="32" data-label="Rank" class="num">32</td>
+          <td data-key="team" data-value="Auburn"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Auburn</b><div class="muted" style="font-size:13px;">SEC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="9.25" data-label="Overall" class="num"><b>+9.2</b></td>
+          <td data-key="offense" data-value="30.75" data-label="Offense" class="num">30.8 <span class="muted">(53)</span></td>
+          <td data-key="defense" data-value="-21.5" data-label="Defense" class="num">21.5 <span class="muted">(17)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="33" data-label="Rank" class="num">33</td>
+          <td data-key="team" data-value="Wisconsin"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/275.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Wisconsin</b><div class="muted" style="font-size:13px;">Big Ten &middot; 4-1</div></td>
+          <td data-key="overall" data-value="8.72" data-label="Overall" class="num"><b>+8.7</b></td>
+          <td data-key="offense" data-value="30.11" data-label="Offense" class="num">30.1 <span class="muted">(65)</span></td>
+          <td data-key="defense" data-value="-21.39" data-label="Defense" class="num">21.4 <span class="muted">(15)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="34" data-label="Rank" class="num">34</td>
+          <td data-key="team" data-value="Northwestern"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/77.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Northwestern</b><div class="muted" style="font-size:13px;">Big Ten &middot; 3-1</div></td>
+          <td data-key="overall" data-value="8.71" data-label="Overall" class="num"><b>+8.7</b></td>
+          <td data-key="offense" data-value="31.96" data-label="Offense" class="num">32.0 <span class="muted">(43)</span></td>
+          <td data-key="defense" data-value="-23.25" data-label="Defense" class="num">23.2 <span class="muted">(25)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="35" data-label="Rank" class="num">35</td>
+          <td data-key="team" data-value="Baylor"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/239.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Baylor</b><div class="muted" style="font-size:13px;">Big 12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="8.26" data-label="Overall" class="num"><b>+8.3</b></td>
+          <td data-key="offense" data-value="32.66" data-label="Offense" class="num">32.7 <span class="muted">(40)</span></td>
+          <td data-key="defense" data-value="-24.4" data-label="Defense" class="num">24.4 <span class="muted">(31)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="36" data-label="Rank" class="num">36</td>
+          <td data-key="team" data-value="Kansas State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2306.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Kansas State</b><div class="muted" style="font-size:13px;">Big 12 &middot; 3-1</div></td>
+          <td data-key="overall" data-value="8.06" data-label="Overall" class="num"><b>+8.1</b></td>
+          <td data-key="offense" data-value="34.23" data-label="Offense" class="num">34.2 <span class="muted">(26)</span></td>
+          <td data-key="defense" data-value="-26.17" data-label="Defense" class="num">26.2 <span class="muted">(47)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="37" data-label="Rank" class="num">37</td>
+          <td data-key="team" data-value="Virginia Tech"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/259.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Virginia Tech</b><div class="muted" style="font-size:13px;">ACC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="7.77" data-label="Overall" class="num"><b>+7.8</b></td>
+          <td data-key="offense" data-value="35.57" data-label="Offense" class="num">35.6 <span class="muted">(21)</span></td>
+          <td data-key="defense" data-value="-27.8" data-label="Defense" class="num">27.8 <span class="muted">(66)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="38" data-label="Rank" class="num">38</td>
+          <td data-key="team" data-value="Arizona"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/12.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Arizona</b><div class="muted" style="font-size:13px;">Big 12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="7.35" data-label="Overall" class="num"><b>+7.3</b></td>
+          <td data-key="offense" data-value="31.44" data-label="Offense" class="num">31.4 <span class="muted">(46)</span></td>
+          <td data-key="defense" data-value="-24.09" data-label="Defense" class="num">24.1 <span class="muted">(29)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="39" data-label="Rank" class="num">39</td>
+          <td data-key="team" data-value="UCF"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UCF</b><div class="muted" style="font-size:13px;">Big 12 &middot; 3-2</div></td>
+          <td data-key="overall" data-value="6.85" data-label="Overall" class="num"><b>+6.8</b></td>
+          <td data-key="offense" data-value="29.63" data-label="Offense" class="num">29.6 <span class="muted">(67)</span></td>
+          <td data-key="defense" data-value="-22.78" data-label="Defense" class="num">22.8 <span class="muted">(23)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="40" data-label="Rank" class="num">40</td>
+          <td data-key="team" data-value="Duke"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/150.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Duke</b><div class="muted" style="font-size:13px;">ACC &middot; 4-0</div></td>
+          <td data-key="overall" data-value="6.8" data-label="Overall" class="num"><b>+6.8</b></td>
+          <td data-key="offense" data-value="32.11" data-label="Offense" class="num">32.1 <span class="muted">(42)</span></td>
+          <td data-key="defense" data-value="-25.31" data-label="Defense" class="num">25.3 <span class="muted">(36)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="41" data-label="Rank" class="num">41</td>
+          <td data-key="team" data-value="Florida State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/52.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Florida State</b><div class="muted" style="font-size:13px;">ACC &middot; 3-3</div></td>
+          <td data-key="overall" data-value="6.77" data-label="Overall" class="num"><b>+6.8</b></td>
+          <td data-key="offense" data-value="33.16" data-label="Offense" class="num">33.2 <span class="muted">(35)</span></td>
+          <td data-key="defense" data-value="-26.39" data-label="Defense" class="num">26.4 <span class="muted">(51)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="42" data-label="Rank" class="num">42</td>
+          <td data-key="team" data-value="Kentucky"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/96.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Kentucky</b><div class="muted" style="font-size:13px;">SEC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="6.64" data-label="Overall" class="num"><b>+6.6</b></td>
+          <td data-key="offense" data-value="32.8" data-label="Offense" class="num">32.8 <span class="muted">(39)</span></td>
+          <td data-key="defense" data-value="-26.16" data-label="Defense" class="num">26.2 <span class="muted">(46)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="43" data-label="Rank" class="num">43</td>
+          <td data-key="team" data-value="South Carolina"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>South Carolina</b><div class="muted" style="font-size:13px;">SEC &middot; 2-3</div></td>
+          <td data-key="overall" data-value="6.49" data-label="Overall" class="num"><b>+6.5</b></td>
+          <td data-key="offense" data-value="33.79" data-label="Offense" class="num">33.8 <span class="muted">(29)</span></td>
+          <td data-key="defense" data-value="-27.3" data-label="Defense" class="num">27.3 <span class="muted">(63)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="44" data-label="Rank" class="num">44</td>
+          <td data-key="team" data-value="Virginia"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/258.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Virginia</b><div class="muted" style="font-size:13px;">ACC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="6.45" data-label="Overall" class="num"><b>+6.5</b></td>
+          <td data-key="offense" data-value="30.21" data-label="Offense" class="num">30.2 <span class="muted">(61)</span></td>
+          <td data-key="defense" data-value="-23.76" data-label="Defense" class="num">23.8 <span class="muted">(28)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="45" data-label="Rank" class="num">45</td>
+          <td data-key="team" data-value="SMU"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>SMU</b><div class="muted" style="font-size:13px;">ACC &middot; 4-1</div></td>
+          <td data-key="overall" data-value="6.25" data-label="Overall" class="num"><b>+6.2</b></td>
+          <td data-key="offense" data-value="33.05" data-label="Offense" class="num">33.0 <span class="muted">(36)</span></td>
+          <td data-key="defense" data-value="-26.8" data-label="Defense" class="num">26.8 <span class="muted">(55)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="46" data-label="Rank" class="num">46</td>
+          <td data-key="team" data-value="NC State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/152.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>NC State</b><div class="muted" style="font-size:13px;">ACC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="6.15" data-label="Overall" class="num"><b>+6.2</b></td>
+          <td data-key="offense" data-value="34.74" data-label="Offense" class="num">34.7 <span class="muted">(25)</span></td>
+          <td data-key="defense" data-value="-28.59" data-label="Defense" class="num">28.6 <span class="muted">(72)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="47" data-label="Rank" class="num">47</td>
+          <td data-key="team" data-value="TCU"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2628.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>TCU</b><div class="muted" style="font-size:13px;">Big 12 &middot; 2-3</div></td>
+          <td data-key="overall" data-value="5.93" data-label="Overall" class="num"><b>+5.9</b></td>
+          <td data-key="offense" data-value="28.37" data-label="Offense" class="num">28.4 <span class="muted">(73)</span></td>
+          <td data-key="defense" data-value="-22.44" data-label="Defense" class="num">22.4 <span class="muted">(21)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="48" data-label="Rank" class="num">48</td>
+          <td data-key="team" data-value="Boise State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/68.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Boise State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="5.61" data-label="Overall" class="num"><b>+5.6</b></td>
+          <td data-key="offense" data-value="31.92" data-label="Offense" class="num">31.9 <span class="muted">(45)</span></td>
+          <td data-key="defense" data-value="-26.31" data-label="Defense" class="num">26.3 <span class="muted">(49)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="49" data-label="Rank" class="num">49</td>
+          <td data-key="team" data-value="Kansas"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2305.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Kansas</b><div class="muted" style="font-size:13px;">Big 12 &middot; 2-2</div></td>
+          <td data-key="overall" data-value="5.51" data-label="Overall" class="num"><b>+5.5</b></td>
+          <td data-key="offense" data-value="31.03" data-label="Offense" class="num">31.0 <span class="muted">(49)</span></td>
+          <td data-key="defense" data-value="-25.52" data-label="Defense" class="num">25.5 <span class="muted">(40)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="50" data-label="Rank" class="num">50</td>
+          <td data-key="team" data-value="Oklahoma State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/197.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Oklahoma State</b><div class="muted" style="font-size:13px;">Big 12 &middot; 3-1</div></td>
+          <td data-key="overall" data-value="4.31" data-label="Overall" class="num"><b>+4.3</b></td>
+          <td data-key="offense" data-value="30.38" data-label="Offense" class="num">30.4 <span class="muted">(59)</span></td>
+          <td data-key="defense" data-value="-26.07" data-label="Defense" class="num">26.1 <span class="muted">(45)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="51" data-label="Rank" class="num">51</td>
+          <td data-key="team" data-value="Minnesota"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/135.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Minnesota</b><div class="muted" style="font-size:13px;">Big Ten &middot; 4-1</div></td>
+          <td data-key="overall" data-value="4.21" data-label="Overall" class="num"><b>+4.2</b></td>
+          <td data-key="offense" data-value="28.72" data-label="Offense" class="num">28.7 <span class="muted">(72)</span></td>
+          <td data-key="defense" data-value="-24.51" data-label="Defense" class="num">24.5 <span class="muted">(33)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="52" data-label="Rank" class="num">52</td>
+          <td data-key="team" data-value="Clemson"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/228.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Clemson</b><div class="muted" style="font-size:13px;">ACC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="4.11" data-label="Overall" class="num"><b>+4.1</b></td>
+          <td data-key="offense" data-value="27.67" data-label="Offense" class="num">27.7 <span class="muted">(77)</span></td>
+          <td data-key="defense" data-value="-23.56" data-label="Defense" class="num">23.6 <span class="muted">(26)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="53" data-label="Rank" class="num">53</td>
+          <td data-key="team" data-value="Iowa State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/66.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Iowa State</b><div class="muted" style="font-size:13px;">Big 12 &middot; 3-3</div></td>
+          <td data-key="overall" data-value="4.09" data-label="Overall" class="num"><b>+4.1</b></td>
+          <td data-key="offense" data-value="29.99" data-label="Offense" class="num">30.0 <span class="muted">(66)</span></td>
+          <td data-key="defense" data-value="-25.9" data-label="Defense" class="num">25.9 <span class="muted">(44)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="54" data-label="Rank" class="num">54</td>
+          <td data-key="team" data-value="North Texas"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/249.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>North Texas</b><div class="muted" style="font-size:13px;">American Athletic &middot; 3-2</div></td>
+          <td data-key="overall" data-value="3.69" data-label="Overall" class="num"><b>+3.7</b></td>
+          <td data-key="offense" data-value="37.7" data-label="Offense" class="num">37.7 <span class="muted">(14)</span></td>
+          <td data-key="defense" data-value="-34.01" data-label="Defense" class="num">34.0 <span class="muted">(110)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="55" data-label="Rank" class="num">55</td>
+          <td data-key="team" data-value="Washington"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/264.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Washington</b><div class="muted" style="font-size:13px;">Big Ten &middot; 3-3</div></td>
+          <td data-key="overall" data-value="3.55" data-label="Overall" class="num"><b>+3.5</b></td>
+          <td data-key="offense" data-value="29.4" data-label="Offense" class="num">29.4 <span class="muted">(70)</span></td>
+          <td data-key="defense" data-value="-25.84" data-label="Defense" class="num">25.8 <span class="muted">(42)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="56" data-label="Rank" class="num">56</td>
+          <td data-key="team" data-value="Vanderbilt"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/238.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Vanderbilt</b><div class="muted" style="font-size:13px;">SEC &middot; 3-2</div></td>
+          <td data-key="overall" data-value="3.49" data-label="Overall" class="num"><b>+3.5</b></td>
+          <td data-key="offense" data-value="30.13" data-label="Offense" class="num">30.1 <span class="muted">(64)</span></td>
+          <td data-key="defense" data-value="-26.64" data-label="Defense" class="num">26.6 <span class="muted">(54)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="57" data-label="Rank" class="num">57</td>
+          <td data-key="team" data-value="Toledo"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2649.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Toledo</b><div class="muted" style="font-size:13px;">Mid-American &middot; 4-1</div></td>
+          <td data-key="overall" data-value="2.99" data-label="Overall" class="num"><b>+3.0</b></td>
+          <td data-key="offense" data-value="33.55" data-label="Offense" class="num">33.5 <span class="muted">(32)</span></td>
+          <td data-key="defense" data-value="-30.56" data-label="Defense" class="num">30.6 <span class="muted">(87)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="58" data-label="Rank" class="num">58</td>
+          <td data-key="team" data-value="North Carolina"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/153.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>North Carolina</b><div class="muted" style="font-size:13px;">ACC &middot; 2-2</div></td>
+          <td data-key="overall" data-value="2.46" data-label="Overall" class="num"><b>+2.5</b></td>
+          <td data-key="offense" data-value="27.82" data-label="Offense" class="num">27.8 <span class="muted">(76)</span></td>
+          <td data-key="defense" data-value="-25.36" data-label="Defense" class="num">25.4 <span class="muted">(38)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="59" data-label="Rank" class="num">59</td>
+          <td data-key="team" data-value="Memphis"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/235.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Memphis</b><div class="muted" style="font-size:13px;">American Athletic &middot; 4-1</div></td>
+          <td data-key="overall" data-value="2.39" data-label="Overall" class="num"><b>+2.4</b></td>
+          <td data-key="offense" data-value="32.64" data-label="Offense" class="num">32.6 <span class="muted">(41)</span></td>
+          <td data-key="defense" data-value="-30.25" data-label="Defense" class="num">30.2 <span class="muted">(83)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="60" data-label="Rank" class="num">60</td>
+          <td data-key="team" data-value="Fresno State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/278.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Fresno State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="1.92" data-label="Overall" class="num"><b>+1.9</b></td>
+          <td data-key="offense" data-value="26.57" data-label="Offense" class="num">26.6 <span class="muted">(83)</span></td>
+          <td data-key="defense" data-value="-24.65" data-label="Defense" class="num">24.6 <span class="muted">(35)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="61" data-label="Rank" class="num">61</td>
+          <td data-key="team" data-value="Illinois"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/356.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Illinois</b><div class="muted" style="font-size:13px;">Big Ten &middot; 2-3</div></td>
+          <td data-key="overall" data-value="1.27" data-label="Overall" class="num"><b>+1.3</b></td>
+          <td data-key="offense" data-value="30.54" data-label="Offense" class="num">30.5 <span class="muted">(57)</span></td>
+          <td data-key="defense" data-value="-29.27" data-label="Defense" class="num">29.3 <span class="muted">(75)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="62" data-label="Rank" class="num">62</td>
+          <td data-key="team" data-value="Oregon State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/204.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Oregon State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 3-2</div></td>
+          <td data-key="overall" data-value="1.22" data-label="Overall" class="num"><b>+1.2</b></td>
+          <td data-key="offense" data-value="30.17" data-label="Offense" class="num">30.2 <span class="muted">(63)</span></td>
+          <td data-key="defense" data-value="-28.95" data-label="Defense" class="num">28.9 <span class="muted">(74)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="63" data-label="Rank" class="num">63</td>
+          <td data-key="team" data-value="Syracuse"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/183.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Syracuse</b><div class="muted" style="font-size:13px;">ACC &middot; 2-2</div></td>
+          <td data-key="overall" data-value="0.93" data-label="Overall" class="num"><b>+0.9</b></td>
+          <td data-key="offense" data-value="29.48" data-label="Offense" class="num">29.5 <span class="muted">(69)</span></td>
+          <td data-key="defense" data-value="-28.55" data-label="Defense" class="num">28.6 <span class="muted">(70)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="64" data-label="Rank" class="num">64</td>
+          <td data-key="team" data-value="Cincinnati"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2132.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Cincinnati</b><div class="muted" style="font-size:13px;">Big 12 &middot; 4-1</div></td>
+          <td data-key="overall" data-value="0.92" data-label="Overall" class="num"><b>+0.9</b></td>
+          <td data-key="offense" data-value="31.37" data-label="Offense" class="num">31.4 <span class="muted">(47)</span></td>
+          <td data-key="defense" data-value="-30.45" data-label="Defense" class="num">30.4 <span class="muted">(86)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="65" data-label="Rank" class="num">65</td>
+          <td data-key="team" data-value="Arizona State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/9.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Arizona State</b><div class="muted" style="font-size:13px;">Big 12 &middot; 2-2</div></td>
+          <td data-key="overall" data-value="0.46" data-label="Overall" class="num"><b>+0.5</b></td>
+          <td data-key="offense" data-value="30.88" data-label="Offense" class="num">30.9 <span class="muted">(51)</span></td>
+          <td data-key="defense" data-value="-30.42" data-label="Defense" class="num">30.4 <span class="muted">(85)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="66" data-label="Rank" class="num">66</td>
+          <td data-key="team" data-value="South Florida"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/58.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>South Florida</b><div class="muted" style="font-size:13px;">American Athletic &middot; 4-2</div></td>
+          <td data-key="overall" data-value="0.2" data-label="Overall" class="num"><b>+0.2</b></td>
+          <td data-key="offense" data-value="27.22" data-label="Offense" class="num">27.2 <span class="muted">(79)</span></td>
+          <td data-key="defense" data-value="-27.03" data-label="Defense" class="num">27.0 <span class="muted">(59)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="67" data-label="Rank" class="num">67</td>
+          <td data-key="team" data-value="UTSA"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2636.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UTSA</b><div class="muted" style="font-size:13px;">American Athletic &middot; 5-1</div></td>
+          <td data-key="overall" data-value="0.06" data-label="Overall" class="num"><b>+0.1</b></td>
+          <td data-key="offense" data-value="29.55" data-label="Offense" class="num">29.6 <span class="muted">(68)</span></td>
+          <td data-key="defense" data-value="-29.49" data-label="Defense" class="num">29.5 <span class="muted">(78)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="68" data-label="Rank" class="num">68</td>
+          <td data-key="team" data-value="West Virginia"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/277.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>West Virginia</b><div class="muted" style="font-size:13px;">Big 12 &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-0.03" data-label="Overall" class="num"><b>-0.0</b></td>
+          <td data-key="offense" data-value="33.03" data-label="Offense" class="num">33.0 <span class="muted">(37)</span></td>
+          <td data-key="defense" data-value="-33.06" data-label="Defense" class="num">33.1 <span class="muted">(106)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="69" data-label="Rank" class="num">69</td>
+          <td data-key="team" data-value="Michigan State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/127.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Michigan State</b><div class="muted" style="font-size:13px;">Big Ten &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-0.29" data-label="Overall" class="num"><b>-0.3</b></td>
+          <td data-key="offense" data-value="25.17" data-label="Offense" class="num">25.2 <span class="muted">(91)</span></td>
+          <td data-key="defense" data-value="-25.46" data-label="Defense" class="num">25.5 <span class="muted">(39)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="70" data-label="Rank" class="num">70</td>
+          <td data-key="team" data-value="Maryland"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/120.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Maryland</b><div class="muted" style="font-size:13px;">Big Ten &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-0.62" data-label="Overall" class="num"><b>-0.6</b></td>
+          <td data-key="offense" data-value="27.94" data-label="Offense" class="num">27.9 <span class="muted">(75)</span></td>
+          <td data-key="defense" data-value="-28.56" data-label="Defense" class="num">28.6 <span class="muted">(71)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="71" data-label="Rank" class="num">71</td>
+          <td data-key="team" data-value="Louisiana Tech"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2348.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Louisiana Tech</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 2-2</div></td>
+          <td data-key="overall" data-value="-0.67" data-label="Overall" class="num"><b>-0.7</b></td>
+          <td data-key="offense" data-value="30.3" data-label="Offense" class="num">30.3 <span class="muted">(60)</span></td>
+          <td data-key="defense" data-value="-30.97" data-label="Defense" class="num">31.0 <span class="muted">(90)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="72" data-label="Rank" class="num">72</td>
+          <td data-key="team" data-value="North Dakota State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2449.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>North Dakota State</b><div class="muted" style="font-size:13px;">Mountain West &middot; 5-0</div></td>
+          <td data-key="overall" data-value="-0.88" data-label="Overall" class="num"><b>-0.9</b></td>
+          <td data-key="offense" data-value="25.75" data-label="Offense" class="num">25.8 <span class="muted">(87)</span></td>
+          <td data-key="defense" data-value="-26.63" data-label="Defense" class="num">26.6 <span class="muted">(53)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="73" data-label="Rank" class="num">73</td>
+          <td data-key="team" data-value="Liberty"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2335.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Liberty</b><div class="muted" style="font-size:13px;">Conference USA &middot; 5-1</div></td>
+          <td data-key="overall" data-value="-0.98" data-label="Overall" class="num"><b>-1.0</b></td>
+          <td data-key="offense" data-value="25.95" data-label="Offense" class="num">25.9 <span class="muted">(86)</span></td>
+          <td data-key="defense" data-value="-26.93" data-label="Defense" class="num">26.9 <span class="muted">(57)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="74" data-label="Rank" class="num">74</td>
+          <td data-key="team" data-value="East Carolina"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/151.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>East Carolina</b><div class="muted" style="font-size:13px;">American Athletic &middot; 2-2</div></td>
+          <td data-key="overall" data-value="-1.13" data-label="Overall" class="num"><b>-1.1</b></td>
+          <td data-key="offense" data-value="26.08" data-label="Offense" class="num">26.1 <span class="muted">(85)</span></td>
+          <td data-key="defense" data-value="-27.21" data-label="Defense" class="num">27.2 <span class="muted">(62)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="75" data-label="Rank" class="num">75</td>
+          <td data-key="team" data-value="Texas State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/326.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Texas State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-1.34" data-label="Overall" class="num"><b>-1.3</b></td>
+          <td data-key="offense" data-value="33.58" data-label="Offense" class="num">33.6 <span class="muted">(31)</span></td>
+          <td data-key="defense" data-value="-34.92" data-label="Defense" class="num">34.9 <span class="muted">(117)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="76" data-label="Rank" class="num">76</td>
+          <td data-key="team" data-value="Georgia State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2247.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Georgia State</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 4-1</div></td>
+          <td data-key="overall" data-value="-1.54" data-label="Overall" class="num"><b>-1.5</b></td>
+          <td data-key="offense" data-value="30.74" data-label="Offense" class="num">30.7 <span class="muted">(54)</span></td>
+          <td data-key="defense" data-value="-32.28" data-label="Defense" class="num">32.3 <span class="muted">(98)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="77" data-label="Rank" class="num">77</td>
+          <td data-key="team" data-value="UConn"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/41.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UConn</b><div class="muted" style="font-size:13px;">FBS Independents &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-1.59" data-label="Overall" class="num"><b>-1.6</b></td>
+          <td data-key="offense" data-value="30.71" data-label="Offense" class="num">30.7 <span class="muted">(55)</span></td>
+          <td data-key="defense" data-value="-32.3" data-label="Defense" class="num">32.3 <span class="muted">(99)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="78" data-label="Rank" class="num">78</td>
+          <td data-key="team" data-value="Purdue"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2509.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Purdue</b><div class="muted" style="font-size:13px;">Big Ten &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-1.69" data-label="Overall" class="num"><b>-1.7</b></td>
+          <td data-key="offense" data-value="30.99" data-label="Offense" class="num">31.0 <span class="muted">(50)</span></td>
+          <td data-key="defense" data-value="-32.68" data-label="Defense" class="num">32.7 <span class="muted">(104)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="79" data-label="Rank" class="num">79</td>
+          <td data-key="team" data-value="UNLV"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2439.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UNLV</b><div class="muted" style="font-size:13px;">Mountain West &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-2.25" data-label="Overall" class="num"><b>-2.2</b></td>
+          <td data-key="offense" data-value="26.53" data-label="Offense" class="num">26.5 <span class="muted">(84)</span></td>
+          <td data-key="defense" data-value="-28.78" data-label="Defense" class="num">28.8 <span class="muted">(73)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="80" data-label="Rank" class="num">80</td>
+          <td data-key="team" data-value="Tulane"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2655.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Tulane</b><div class="muted" style="font-size:13px;">American Athletic &middot; 2-2</div></td>
+          <td data-key="overall" data-value="-2.35" data-label="Overall" class="num"><b>-2.4</b></td>
+          <td data-key="offense" data-value="23.95" data-label="Offense" class="num">23.9 <span class="muted">(98)</span></td>
+          <td data-key="defense" data-value="-26.3" data-label="Defense" class="num">26.3 <span class="muted">(48)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="81" data-label="Rank" class="num">81</td>
+          <td data-key="team" data-value="Georgia Tech"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/59.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Georgia Tech</b><div class="muted" style="font-size:13px;">ACC &middot; 1-3</div></td>
+          <td data-key="overall" data-value="-2.69" data-label="Overall" class="num"><b>-2.7</b></td>
+          <td data-key="offense" data-value="28.19" data-label="Offense" class="num">28.2 <span class="muted">(74)</span></td>
+          <td data-key="defense" data-value="-30.88" data-label="Defense" class="num">30.9 <span class="muted">(89)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="82" data-label="Rank" class="num">82</td>
+          <td data-key="team" data-value="Arkansas"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/8.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Arkansas</b><div class="muted" style="font-size:13px;">SEC &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-2.74" data-label="Overall" class="num"><b>-2.7</b></td>
+          <td data-key="offense" data-value="26.95" data-label="Offense" class="num">26.9 <span class="muted">(80)</span></td>
+          <td data-key="defense" data-value="-29.69" data-label="Defense" class="num">29.7 <span class="muted">(79)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="83" data-label="Rank" class="num">83</td>
+          <td data-key="team" data-value="California"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/25.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>California</b><div class="muted" style="font-size:13px;">ACC &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-2.9" data-label="Overall" class="num"><b>-2.9</b></td>
+          <td data-key="offense" data-value="27.27" data-label="Offense" class="num">27.3 <span class="muted">(78)</span></td>
+          <td data-key="defense" data-value="-30.17" data-label="Defense" class="num">30.2 <span class="muted">(82)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="84" data-label="Rank" class="num">84</td>
+          <td data-key="team" data-value="Army"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/349.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Army</b><div class="muted" style="font-size:13px;">American Athletic &middot; 2-2</div></td>
+          <td data-key="overall" data-value="-3.79" data-label="Overall" class="num"><b>-3.8</b></td>
+          <td data-key="offense" data-value="25.64" data-label="Offense" class="num">25.6 <span class="muted">(88)</span></td>
+          <td data-key="defense" data-value="-29.43" data-label="Defense" class="num">29.4 <span class="muted">(77)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="85" data-label="Rank" class="num">85</td>
+          <td data-key="team" data-value="Colorado"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/38.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Colorado</b><div class="muted" style="font-size:13px;">Big 12 &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-3.84" data-label="Overall" class="num"><b>-3.8</b></td>
+          <td data-key="offense" data-value="24.05" data-label="Offense" class="num">24.1 <span class="muted">(97)</span></td>
+          <td data-key="defense" data-value="-27.89" data-label="Defense" class="num">27.9 <span class="muted">(68)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="86" data-label="Rank" class="num">86</td>
+          <td data-key="team" data-value="Temple"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/218.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Temple</b><div class="muted" style="font-size:13px;">American Athletic &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-4.38" data-label="Overall" class="num"><b>-4.4</b></td>
+          <td data-key="offense" data-value="26.74" data-label="Offense" class="num">26.7 <span class="muted">(82)</span></td>
+          <td data-key="defense" data-value="-31.12" data-label="Defense" class="num">31.1 <span class="muted">(91)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="87" data-label="Rank" class="num">87</td>
+          <td data-key="team" data-value="Tulsa"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/202.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Tulsa</b><div class="muted" style="font-size:13px;">American Athletic &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-4.44" data-label="Overall" class="num"><b>-4.4</b></td>
+          <td data-key="offense" data-value="24.07" data-label="Offense" class="num">24.1 <span class="muted">(96)</span></td>
+          <td data-key="defense" data-value="-28.51" data-label="Defense" class="num">28.5 <span class="muted">(69)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="88" data-label="Rank" class="num">88</td>
+          <td data-key="team" data-value="San Diego State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/21.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>San Diego State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-4.47" data-label="Overall" class="num"><b>-4.5</b></td>
+          <td data-key="offense" data-value="23.06" data-label="Offense" class="num">23.1 <span class="muted">(104)</span></td>
+          <td data-key="defense" data-value="-27.53" data-label="Defense" class="num">27.5 <span class="muted">(64)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="89" data-label="Rank" class="num">89</td>
+          <td data-key="team" data-value="App State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2026.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>App State</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 3-1</div></td>
+          <td data-key="overall" data-value="-4.86" data-label="Overall" class="num"><b>-4.9</b></td>
+          <td data-key="offense" data-value="26.86" data-label="Offense" class="num">26.9 <span class="muted">(81)</span></td>
+          <td data-key="defense" data-value="-31.72" data-label="Defense" class="num">31.7 <span class="muted">(94)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="90" data-label="Rank" class="num">90</td>
+          <td data-key="team" data-value="Western Michigan"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Western Michigan</b><div class="muted" style="font-size:13px;">Mid-American &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-4.96" data-label="Overall" class="num"><b>-5.0</b></td>
+          <td data-key="offense" data-value="22.57" data-label="Offense" class="num">22.6 <span class="muted">(106)</span></td>
+          <td data-key="defense" data-value="-27.53" data-label="Defense" class="num">27.5 <span class="muted">(64)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="91" data-label="Rank" class="num">91</td>
+          <td data-key="team" data-value="Rutgers"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/164.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Rutgers</b><div class="muted" style="font-size:13px;">Big Ten &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-4.99" data-label="Overall" class="num"><b>-5.0</b></td>
+          <td data-key="offense" data-value="30.21" data-label="Offense" class="num">30.2 <span class="muted">(61)</span></td>
+          <td data-key="defense" data-value="-35.2" data-label="Defense" class="num">35.2 <span class="muted">(120)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="92" data-label="Rank" class="num">92</td>
+          <td data-key="team" data-value="Georgia Southern"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/290.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Georgia Southern</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-5.97" data-label="Overall" class="num"><b>-6.0</b></td>
+          <td data-key="offense" data-value="25.58" data-label="Offense" class="num">25.6 <span class="muted">(89)</span></td>
+          <td data-key="defense" data-value="-31.55" data-label="Defense" class="num">31.6 <span class="muted">(93)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="93" data-label="Rank" class="num">93</td>
+          <td data-key="team" data-value="Washington State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/265.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Washington State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 1-5</div></td>
+          <td data-key="overall" data-value="-6.09" data-label="Overall" class="num"><b>-6.1</b></td>
+          <td data-key="offense" data-value="21.09" data-label="Offense" class="num">21.1 <span class="muted">(114)</span></td>
+          <td data-key="defense" data-value="-27.18" data-label="Defense" class="num">27.2 <span class="muted">(61)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="94" data-label="Rank" class="num">94</td>
+          <td data-key="team" data-value="Louisiana"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/309.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Louisiana</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 4-1</div></td>
+          <td data-key="overall" data-value="-6.2" data-label="Overall" class="num"><b>-6.2</b></td>
+          <td data-key="offense" data-value="23.57" data-label="Offense" class="num">23.6 <span class="muted">(100)</span></td>
+          <td data-key="defense" data-value="-29.77" data-label="Defense" class="num">29.8 <span class="muted">(80)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="95" data-label="Rank" class="num">95</td>
+          <td data-key="team" data-value="Florida Atlantic"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2226.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Florida Atlantic</b><div class="muted" style="font-size:13px;">American Athletic &middot; 4-1</div></td>
+          <td data-key="overall" data-value="-6.39" data-label="Overall" class="num"><b>-6.4</b></td>
+          <td data-key="offense" data-value="30.61" data-label="Offense" class="num">30.6 <span class="muted">(56)</span></td>
+          <td data-key="defense" data-value="-37.0" data-label="Defense" class="num">37.0 <span class="muted">(129)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="96" data-label="Rank" class="num">96</td>
+          <td data-key="team" data-value="Boston College"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/103.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Boston College</b><div class="muted" style="font-size:13px;">ACC &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-7.06" data-label="Overall" class="num"><b>-7.1</b></td>
+          <td data-key="offense" data-value="20.74" data-label="Offense" class="num">20.7 <span class="muted">(119)</span></td>
+          <td data-key="defense" data-value="-27.8" data-label="Defense" class="num">27.8 <span class="muted">(66)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="97" data-label="Rank" class="num">97</td>
+          <td data-key="team" data-value="Jacksonville State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/55.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Jacksonville State</b><div class="muted" style="font-size:13px;">Conference USA &middot; 4-2</div></td>
+          <td data-key="overall" data-value="-7.23" data-label="Overall" class="num"><b>-7.2</b></td>
+          <td data-key="offense" data-value="24.54" data-label="Offense" class="num">24.5 <span class="muted">(95)</span></td>
+          <td data-key="defense" data-value="-31.77" data-label="Defense" class="num">31.8 <span class="muted">(95)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="98" data-label="Rank" class="num">98</td>
+          <td data-key="team" data-value="Troy"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2653.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Troy</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-7.29" data-label="Overall" class="num"><b>-7.3</b></td>
+          <td data-key="offense" data-value="23.41" data-label="Offense" class="num">23.4 <span class="muted">(101)</span></td>
+          <td data-key="defense" data-value="-30.7" data-label="Defense" class="num">30.7 <span class="muted">(88)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="99" data-label="Rank" class="num">99</td>
+          <td data-key="team" data-value="Miami (OH)"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/193.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Miami (OH)</b><div class="muted" style="font-size:13px;">Mid-American &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-7.36" data-label="Overall" class="num"><b>-7.4</b></td>
+          <td data-key="offense" data-value="25.31" data-label="Offense" class="num">25.3 <span class="muted">(90)</span></td>
+          <td data-key="defense" data-value="-32.67" data-label="Defense" class="num">32.7 <span class="muted">(103)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="100" data-label="Rank" class="num">100</td>
+          <td data-key="team" data-value="Kennesaw State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/338.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Kennesaw State</b><div class="muted" style="font-size:13px;">Conference USA &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-8.5" data-label="Overall" class="num"><b>-8.5</b></td>
+          <td data-key="offense" data-value="21.88" data-label="Offense" class="num">21.9 <span class="muted">(111)</span></td>
+          <td data-key="defense" data-value="-30.38" data-label="Defense" class="num">30.4 <span class="muted">(84)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="101" data-label="Rank" class="num">101</td>
+          <td data-key="team" data-value="Florida International"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2229.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Florida International</b><div class="muted" style="font-size:13px;">Conference USA &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-8.61" data-label="Overall" class="num"><b>-8.6</b></td>
+          <td data-key="offense" data-value="17.75" data-label="Offense" class="num">17.8 <span class="muted">(132)</span></td>
+          <td data-key="defense" data-value="-26.37" data-label="Defense" class="num">26.4 <span class="muted">(50)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="102" data-label="Rank" class="num">102</td>
+          <td data-key="team" data-value="Arkansas State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2032.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Arkansas State</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 2-4</div></td>
+          <td data-key="overall" data-value="-9.04" data-label="Overall" class="num"><b>-9.0</b></td>
+          <td data-key="offense" data-value="25.11" data-label="Offense" class="num">25.1 <span class="muted">(92)</span></td>
+          <td data-key="defense" data-value="-34.15" data-label="Defense" class="num">34.1 <span class="muted">(111)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="103" data-label="Rank" class="num">103</td>
+          <td data-key="team" data-value="South Alabama"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/6.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>South Alabama</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 4-2</div></td>
+          <td data-key="overall" data-value="-9.33" data-label="Overall" class="num"><b>-9.3</b></td>
+          <td data-key="offense" data-value="30.54" data-label="Offense" class="num">30.5 <span class="muted">(58)</span></td>
+          <td data-key="defense" data-value="-39.86" data-label="Defense" class="num">39.9 <span class="muted">(134)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="104" data-label="Rank" class="num">104</td>
+          <td data-key="team" data-value="Ohio"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/195.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Ohio</b><div class="muted" style="font-size:13px;">Mid-American &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-9.35" data-label="Overall" class="num"><b>-9.3</b></td>
+          <td data-key="offense" data-value="23.39" data-label="Offense" class="num">23.4 <span class="muted">(102)</span></td>
+          <td data-key="defense" data-value="-32.74" data-label="Defense" class="num">32.7 <span class="muted">(105)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="105" data-label="Rank" class="num">105</td>
+          <td data-key="team" data-value="Stanford"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/24.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Stanford</b><div class="muted" style="font-size:13px;">ACC &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-9.39" data-label="Overall" class="num"><b>-9.4</b></td>
+          <td data-key="offense" data-value="25.02" data-label="Offense" class="num">25.0 <span class="muted">(93)</span></td>
+          <td data-key="defense" data-value="-34.41" data-label="Defense" class="num">34.4 <span class="muted">(113)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="106" data-label="Rank" class="num">106</td>
+          <td data-key="team" data-value="Utah State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/328.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Utah State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 2-4</div></td>
+          <td data-key="overall" data-value="-9.84" data-label="Overall" class="num"><b>-9.8</b></td>
+          <td data-key="offense" data-value="20.13" data-label="Offense" class="num">20.1 <span class="muted">(122)</span></td>
+          <td data-key="defense" data-value="-29.97" data-label="Defense" class="num">30.0 <span class="muted">(81)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="107" data-label="Rank" class="num">107</td>
+          <td data-key="team" data-value="Massachusetts"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/113.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Massachusetts</b><div class="muted" style="font-size:13px;">Mid-American &middot; 4-1</div></td>
+          <td data-key="overall" data-value="-9.86" data-label="Overall" class="num"><b>-9.9</b></td>
+          <td data-key="offense" data-value="22.2" data-label="Offense" class="num">22.2 <span class="muted">(108)</span></td>
+          <td data-key="defense" data-value="-32.06" data-label="Defense" class="num">32.1 <span class="muted">(97)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="108" data-label="Rank" class="num">108</td>
+          <td data-key="team" data-value="Colorado State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/36.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Colorado State</b><div class="muted" style="font-size:13px;">Pac-12 &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-9.92" data-label="Overall" class="num"><b>-9.9</b></td>
+          <td data-key="offense" data-value="31.07" data-label="Offense" class="num">31.1 <span class="muted">(48)</span></td>
+          <td data-key="defense" data-value="-40.99" data-label="Defense" class="num">41.0 <span class="muted">(137)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="109" data-label="Rank" class="num">109</td>
+          <td data-key="team" data-value="Old Dominion"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/295.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Old Dominion</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-9.96" data-label="Overall" class="num"><b>-10.0</b></td>
+          <td data-key="offense" data-value="21.23" data-label="Offense" class="num">21.2 <span class="muted">(113)</span></td>
+          <td data-key="defense" data-value="-31.19" data-label="Defense" class="num">31.2 <span class="muted">(92)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="110" data-label="Rank" class="num">110</td>
+          <td data-key="team" data-value="San José State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/23.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>San José State</b><div class="muted" style="font-size:13px;">Mountain West &middot; 3-3</div></td>
+          <td data-key="overall" data-value="-11.44" data-label="Overall" class="num"><b>-11.4</b></td>
+          <td data-key="offense" data-value="20.96" data-label="Offense" class="num">21.0 <span class="muted">(117)</span></td>
+          <td data-key="defense" data-value="-32.4" data-label="Defense" class="num">32.4 <span class="muted">(101)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="111" data-label="Rank" class="num">111</td>
+          <td data-key="team" data-value="Southern Miss"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2572.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Southern Miss</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-11.64" data-label="Overall" class="num"><b>-11.6</b></td>
+          <td data-key="offense" data-value="25.0" data-label="Offense" class="num">25.0 <span class="muted">(94)</span></td>
+          <td data-key="defense" data-value="-36.64" data-label="Defense" class="num">36.6 <span class="muted">(127)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="112" data-label="Rank" class="num">112</td>
+          <td data-key="team" data-value="Coastal Carolina"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/324.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Coastal Carolina</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-11.72" data-label="Overall" class="num"><b>-11.7</b></td>
+          <td data-key="offense" data-value="21.88" data-label="Offense" class="num">21.9 <span class="muted">(110)</span></td>
+          <td data-key="defense" data-value="-33.6" data-label="Defense" class="num">33.6 <span class="muted">(108)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="113" data-label="Rank" class="num">113</td>
+          <td data-key="team" data-value="Air Force"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2005.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Air Force</b><div class="muted" style="font-size:13px;">Mountain West &middot; 3-1</div></td>
+          <td data-key="overall" data-value="-11.97" data-label="Overall" class="num"><b>-12.0</b></td>
+          <td data-key="offense" data-value="22.96" data-label="Offense" class="num">23.0 <span class="muted">(105)</span></td>
+          <td data-key="defense" data-value="-34.93" data-label="Defense" class="num">34.9 <span class="muted">(118)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="114" data-label="Rank" class="num">114</td>
+          <td data-key="team" data-value="Navy"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2426.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Navy</b><div class="muted" style="font-size:13px;">American Athletic &middot; 1-3</div></td>
+          <td data-key="overall" data-value="-12.02" data-label="Overall" class="num"><b>-12.0</b></td>
+          <td data-key="offense" data-value="19.9" data-label="Offense" class="num">19.9 <span class="muted">(125)</span></td>
+          <td data-key="defense" data-value="-31.92" data-label="Defense" class="num">31.9 <span class="muted">(96)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="115" data-label="Rank" class="num">115</td>
+          <td data-key="team" data-value="New Mexico State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/166.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>New Mexico State</b><div class="muted" style="font-size:13px;">Conference USA &middot; 2-4</div></td>
+          <td data-key="overall" data-value="-12.27" data-label="Overall" class="num"><b>-12.3</b></td>
+          <td data-key="offense" data-value="20.81" data-label="Offense" class="num">20.8 <span class="muted">(118)</span></td>
+          <td data-key="defense" data-value="-33.08" data-label="Defense" class="num">33.1 <span class="muted">(107)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="116" data-label="Rank" class="num">116</td>
+          <td data-key="team" data-value="Sam Houston"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2534.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Sam Houston</b><div class="muted" style="font-size:13px;">Conference USA &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-12.5" data-label="Overall" class="num"><b>-12.5</b></td>
+          <td data-key="offense" data-value="22.32" data-label="Offense" class="num">22.3 <span class="muted">(107)</span></td>
+          <td data-key="defense" data-value="-34.82" data-label="Defense" class="num">34.8 <span class="muted">(115)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="117" data-label="Rank" class="num">117</td>
+          <td data-key="team" data-value="Western Kentucky"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/98.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Western Kentucky</b><div class="muted" style="font-size:13px;">Conference USA &middot; 2-4</div></td>
+          <td data-key="overall" data-value="-12.53" data-label="Overall" class="num"><b>-12.5</b></td>
+          <td data-key="offense" data-value="23.19" data-label="Offense" class="num">23.2 <span class="muted">(103)</span></td>
+          <td data-key="defense" data-value="-35.72" data-label="Defense" class="num">35.7 <span class="muted">(123)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="118" data-label="Rank" class="num">118</td>
+          <td data-key="team" data-value="Rice"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/242.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Rice</b><div class="muted" style="font-size:13px;">American Athletic &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-12.64" data-label="Overall" class="num"><b>-12.6</b></td>
+          <td data-key="offense" data-value="19.94" data-label="Offense" class="num">19.9 <span class="muted">(124)</span></td>
+          <td data-key="defense" data-value="-32.58" data-label="Defense" class="num">32.6 <span class="muted">(102)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="119" data-label="Rank" class="num">119</td>
+          <td data-key="team" data-value="Eastern Michigan"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2199.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Eastern Michigan</b><div class="muted" style="font-size:13px;">Mid-American &middot; 3-3</div></td>
+          <td data-key="overall" data-value="-12.7" data-label="Overall" class="num"><b>-12.7</b></td>
+          <td data-key="offense" data-value="22.05" data-label="Offense" class="num">22.1 <span class="muted">(109)</span></td>
+          <td data-key="defense" data-value="-34.75" data-label="Defense" class="num">34.8 <span class="muted">(114)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="120" data-label="Rank" class="num">120</td>
+          <td data-key="team" data-value="Central Michigan"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2117.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Central Michigan</b><div class="muted" style="font-size:13px;">Mid-American &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-12.75" data-label="Overall" class="num"><b>-12.8</b></td>
+          <td data-key="offense" data-value="19.64" data-label="Offense" class="num">19.6 <span class="muted">(127)</span></td>
+          <td data-key="defense" data-value="-32.39" data-label="Defense" class="num">32.4 <span class="muted">(100)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="121" data-label="Rank" class="num">121</td>
+          <td data-key="team" data-value="Hawai'i"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/62.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Hawai'i</b><div class="muted" style="font-size:13px;">Mountain West &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-13.35" data-label="Overall" class="num"><b>-13.3</b></td>
+          <td data-key="offense" data-value="20.52" data-label="Offense" class="num">20.5 <span class="muted">(120)</span></td>
+          <td data-key="defense" data-value="-33.87" data-label="Defense" class="num">33.9 <span class="muted">(109)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="122" data-label="Rank" class="num">122</td>
+          <td data-key="team" data-value="Delaware"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/48.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Delaware</b><div class="muted" style="font-size:13px;">Conference USA &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-13.52" data-label="Overall" class="num"><b>-13.5</b></td>
+          <td data-key="offense" data-value="21.43" data-label="Offense" class="num">21.4 <span class="muted">(112)</span></td>
+          <td data-key="defense" data-value="-34.95" data-label="Defense" class="num">35.0 <span class="muted">(119)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="123" data-label="Rank" class="num">123</td>
+          <td data-key="team" data-value="UAB"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/5.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UAB</b><div class="muted" style="font-size:13px;">American Athletic &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-13.91" data-label="Overall" class="num"><b>-13.9</b></td>
+          <td data-key="offense" data-value="20.96" data-label="Offense" class="num">21.0 <span class="muted">(116)</span></td>
+          <td data-key="defense" data-value="-34.87" data-label="Defense" class="num">34.9 <span class="muted">(116)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="124" data-label="Rank" class="num">124</td>
+          <td data-key="team" data-value="Missouri State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Missouri State</b><div class="muted" style="font-size:13px;">Conference USA &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-14.25" data-label="Overall" class="num"><b>-14.2</b></td>
+          <td data-key="offense" data-value="21.08" data-label="Offense" class="num">21.1 <span class="muted">(115)</span></td>
+          <td data-key="defense" data-value="-35.33" data-label="Defense" class="num">35.3 <span class="muted">(121)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="125" data-label="Rank" class="num">125</td>
+          <td data-key="team" data-value="Wyoming"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2751.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Wyoming</b><div class="muted" style="font-size:13px;">Mountain West &middot; 3-3</div></td>
+          <td data-key="overall" data-value="-14.67" data-label="Overall" class="num"><b>-14.7</b></td>
+          <td data-key="offense" data-value="14.66" data-label="Offense" class="num">14.7 <span class="muted">(138)</span></td>
+          <td data-key="defense" data-value="-29.33" data-label="Defense" class="num">29.3 <span class="muted">(76)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="126" data-label="Rank" class="num">126</td>
+          <td data-key="team" data-value="Marshall"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/276.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Marshall</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 3-2</div></td>
+          <td data-key="overall" data-value="-15.5" data-label="Overall" class="num"><b>-15.5</b></td>
+          <td data-key="offense" data-value="23.74" data-label="Offense" class="num">23.7 <span class="muted">(99)</span></td>
+          <td data-key="defense" data-value="-39.24" data-label="Defense" class="num">39.2 <span class="muted">(133)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="127" data-label="Rank" class="num">127</td>
+          <td data-key="team" data-value="Nevada"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2440.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Nevada</b><div class="muted" style="font-size:13px;">Mountain West &middot; 1-3</div></td>
+          <td data-key="overall" data-value="-15.68" data-label="Overall" class="num"><b>-15.7</b></td>
+          <td data-key="offense" data-value="19.65" data-label="Offense" class="num">19.6 <span class="muted">(126)</span></td>
+          <td data-key="defense" data-value="-35.33" data-label="Defense" class="num">35.3 <span class="muted">(122)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="128" data-label="Rank" class="num">128</td>
+          <td data-key="team" data-value="Middle Tennessee"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2393.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Middle Tennessee</b><div class="muted" style="font-size:13px;">Conference USA &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-17.1" data-label="Overall" class="num"><b>-17.1</b></td>
+          <td data-key="offense" data-value="19.04" data-label="Offense" class="num">19.0 <span class="muted">(129)</span></td>
+          <td data-key="defense" data-value="-36.14" data-label="Defense" class="num">36.1 <span class="muted">(124)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="129" data-label="Rank" class="num">129</td>
+          <td data-key="team" data-value="Ball State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2050.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Ball State</b><div class="muted" style="font-size:13px;">Mid-American &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-18.44" data-label="Overall" class="num"><b>-18.4</b></td>
+          <td data-key="offense" data-value="20.11" data-label="Offense" class="num">20.1 <span class="muted">(123)</span></td>
+          <td data-key="defense" data-value="-38.55" data-label="Defense" class="num">38.5 <span class="muted">(132)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="130" data-label="Rank" class="num">130</td>
+          <td data-key="team" data-value="Bowling Green"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/189.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Bowling Green</b><div class="muted" style="font-size:13px;">Mid-American &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-18.59" data-label="Overall" class="num"><b>-18.6</b></td>
+          <td data-key="offense" data-value="15.79" data-label="Offense" class="num">15.8 <span class="muted">(137)</span></td>
+          <td data-key="defense" data-value="-34.38" data-label="Defense" class="num">34.4 <span class="muted">(112)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="131" data-label="Rank" class="num">131</td>
+          <td data-key="team" data-value="Akron"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2006.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Akron</b><div class="muted" style="font-size:13px;">Mid-American &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-18.83" data-label="Overall" class="num"><b>-18.8</b></td>
+          <td data-key="offense" data-value="19.62" data-label="Offense" class="num">19.6 <span class="muted">(128)</span></td>
+          <td data-key="defense" data-value="-38.45" data-label="Defense" class="num">38.5 <span class="muted">(131)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="132" data-label="Rank" class="num">132</td>
+          <td data-key="team" data-value="Buffalo"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Buffalo</b><div class="muted" style="font-size:13px;">Mid-American &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-18.98" data-label="Overall" class="num"><b>-19.0</b></td>
+          <td data-key="offense" data-value="18.7" data-label="Offense" class="num">18.7 <span class="muted">(130)</span></td>
+          <td data-key="defense" data-value="-37.68" data-label="Defense" class="num">37.7 <span class="muted">(130)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="133" data-label="Rank" class="num">133</td>
+          <td data-key="team" data-value="Sacramento State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/16.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Sacramento State</b><div class="muted" style="font-size:13px;">Mid-American &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-19.09" data-label="Overall" class="num"><b>-19.1</b></td>
+          <td data-key="offense" data-value="17.72" data-label="Offense" class="num">17.7 <span class="muted">(133)</span></td>
+          <td data-key="defense" data-value="-36.81" data-label="Defense" class="num">36.8 <span class="muted">(128)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="134" data-label="Rank" class="num">134</td>
+          <td data-key="team" data-value="Kent State"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Kent State</b><div class="muted" style="font-size:13px;">Mid-American &middot; 2-3</div></td>
+          <td data-key="overall" data-value="-19.31" data-label="Overall" class="num"><b>-19.3</b></td>
+          <td data-key="offense" data-value="16.96" data-label="Offense" class="num">17.0 <span class="muted">(135)</span></td>
+          <td data-key="defense" data-value="-36.27" data-label="Defense" class="num">36.3 <span class="muted">(125)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="135" data-label="Rank" class="num">135</td>
+          <td data-key="team" data-value="Northern Illinois"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2459.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Northern Illinois</b><div class="muted" style="font-size:13px;">Mountain West &middot; 0-4</div></td>
+          <td data-key="overall" data-value="-19.5" data-label="Overall" class="num"><b>-19.5</b></td>
+          <td data-key="offense" data-value="17.03" data-label="Offense" class="num">17.0 <span class="muted">(134)</span></td>
+          <td data-key="defense" data-value="-36.53" data-label="Defense" class="num">36.5 <span class="muted">(126)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="136" data-label="Rank" class="num">136</td>
+          <td data-key="team" data-value="UTEP"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2638.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UTEP</b><div class="muted" style="font-size:13px;">Mountain West &middot; 1-4</div></td>
+          <td data-key="overall" data-value="-19.59" data-label="Overall" class="num"><b>-19.6</b></td>
+          <td data-key="offense" data-value="20.52" data-label="Offense" class="num">20.5 <span class="muted">(120)</span></td>
+          <td data-key="defense" data-value="-40.11" data-label="Defense" class="num">40.1 <span class="muted">(135)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="137" data-label="Rank" class="num">137</td>
+          <td data-key="team" data-value="Charlotte"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2429.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>Charlotte</b><div class="muted" style="font-size:13px;">American Athletic &middot; 0-5</div></td>
+          <td data-key="overall" data-value="-24.06" data-label="Overall" class="num"><b>-24.1</b></td>
+          <td data-key="offense" data-value="16.32" data-label="Offense" class="num">16.3 <span class="muted">(136)</span></td>
+          <td data-key="defense" data-value="-40.38" data-label="Defense" class="num">40.4 <span class="muted">(136)</span></td>
+        </tr><tr>
+          <td data-key="overall_rank" data-value="138" data-label="Rank" class="num">138</td>
+          <td data-key="team" data-value="UL Monroe"><img src="https://a.espncdn.com/i/teamlogos/ncaa/500/2433.png" alt="" loading="lazy" width="22" height="22" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'"> <b>UL Monroe</b><div class="muted" style="font-size:13px;">Sun Belt &middot; 0-5</div></td>
+          <td data-key="overall" data-value="-24.62" data-label="Overall" class="num"><b>-24.6</b></td>
+          <td data-key="offense" data-value="18.39" data-label="Offense" class="num">18.4 <span class="muted">(131)</span></td>
+          <td data-key="defense" data-value="-43.01" data-label="Defense" class="num">43.0 <span class="muted">(138)</span></td>
+        </tr></tbody></table></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Team efficiency (PPA, success rate, explosiveness) via CollegeFootballData.com. Vegas lines via the-odds-api.com, where available. Covers SEC, Big Ten, Big 12, ACC and FBS independent teams. For entertainment only, not betting advice. Gambling problem?
+      Call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 CFB Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=f6d72f46a7"></script>
+</body>
+</html>

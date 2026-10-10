@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Edge | NFL, CFB, MLB, NBA, NHL, CBB and soccer picks</title>
+<meta name="description" content="Model-driven picks for the NFL, college football, MLB, the NBA, the NHL, college basketball and European soccer, each graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport">
+      <a class="sport-tab active" href="/" aria-current="page">All</a>
+      <a class="sport-tab" href="/nfl/index.html">NFL</a>
+      <a class="sport-tab" href="/nba/index.html">NBA</a>
+      <a class="sport-tab" href="/mlb/">MLB</a>
+      <a class="sport-tab" href="/nhl/index.html">NHL</a>
+      <a class="sport-tab" href="/cfb/index.html">CFB</a>
+      <a class="sport-tab" href="/cbb/index.html">CBB</a>
+      <a class="sport-tab" href="/soccer/index.html">Soccer</a>
+      <a class="sport-tab" href="/bets.html">Betting</a>
+      <a class="sport-tab" href="/schedule.html">Schedule</a>
+    </nav>
+  </div>
+</header>
+
+<header class="masthead home-hero home-slim">
+  <div class="masthead-inner">
+    <div class="home-hero-text">
+      <div class="home-date" id="home-date"></div>
+      <h1 class="wordmark">Sports <span>Edge</span></h1>
+    </div>
+    <div class="home-hero-meta" id="home-count">Model picks for every game, graded against every final score.</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main id="main-content">
+    <section class="hg" aria-labelledby="hg-title">
+      <div class="hg-head"><h2 id="hg-title">Today's games</h2><p>Tap a team for the full game page.</p></div>
+      <div class="hg-controls">
+        <div class="hg-seg" role="group" aria-label="Day" id="hg-days"></div>
+        <span class="hg-cd" id="hg-cd" hidden></span>
+        <div class="hg-right">
+          <button type="button" class="hg-pill" id="hg-value" aria-pressed="false">Value only</button>
+          <button type="button" class="hg-pill" id="hg-teams">☆ My teams</button>
+          <div class="hg-seg" role="group" aria-label="Layout" id="hg-layout">
+            <button type="button" data-v="cards" aria-pressed="true">Cards</button>
+            <button type="button" data-v="list" aria-pressed="false">List</button>
+          </div>
+        </div>
+      </div>
+      <div class="hg-chips" role="group" aria-label="Sport" id="hg-sports"></div>
+      <p class="hg-tally" id="hg-tally" aria-live="polite"></p>
+      <div class="hg-top3" id="hg-top3" hidden></div>
+      <div id="hg-out" aria-busy="true"><div class="hg-grid" aria-label="Loading today's games">
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
+      </div></div>
+    </section>
+
+    <section class="hg" aria-labelledby="rec-title">
+      <div class="hg-head"><h2 id="rec-title">Our record</h2><p>Live picks since we started counting. It never resets.</p></div>
+      <div class="home-records" id="home-records"></div>
+    </section>
+
+    <section class="hg rchart" id="rchart" aria-labelledby="rchart-title" hidden>
+      <div class="hg-head"><h2 id="rchart-title">Winning % over time</h2><p>Each line is a sport's record since we started counting. Hover or drag to read any day.</p></div>
+      <div class="rc-card">
+        <div class="hg-controls">
+          <div class="hg-seg" role="group" aria-label="Range" id="rchart-range">
+            <button type="button" data-v="7" aria-pressed="false">7 days</button>
+            <button type="button" data-v="30" aria-pressed="true">30 days</button>
+            <button type="button" data-v="all" aria-pressed="false">All</button>
+          </div>
+          <div class="rchart-legend" role="group" aria-label="Sports" id="rchart-legend"></div>
+        </div>
+        <div class="rchart-plot"><svg id="rchart-svg" role="img" aria-label="Running winning percentage by sport"></svg><div class="rchart-tip" id="rchart-tip" hidden></div></div>
+      </div>
+    </section>
+
+    <section class="card last-night" id="last-night" aria-live="polite" hidden>
+      <div class="card-body"></div>
+    </section>
+  </main>
+
+  <footer class="home-foot">
+    <span>For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</span>
+    <a href="/terms.html">Terms</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="https://github.com/ant56-arch">Source code</a>
+  </footer>
+</div>
+<script src="home.js?v=18"></script>
+</body>
+</html>

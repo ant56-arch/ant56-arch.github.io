@@ -1,0 +1,240 @@
+{
+ "sport": "NBA",
+ "label": "Sat, Oct 10",
+ "updated": "2026-10-10T15:09:30.541406-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401902645",
+   "start": "2026-10-10T22:30Z",
+   "state": "pre",
+   "detail": "10/10 - 6:30 PM EDT",
+   "tv": "",
+   "venue": "Rogers Arena",
+   "neutral": false,
+   "away": {
+    "abbr": "LAC",
+    "name": "LA Clippers",
+    "short": "Clippers",
+    "location": "LA",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/lac.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TOR",
+    "name": "Toronto Raptors",
+    "short": "Raptors",
+    "location": "Toronto",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/tor.png",
+    "rank": null,
+    "score": 0,
+    "record": "0-1",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401898396",
+   "start": "2026-10-10T23:00Z",
+   "state": "pre",
+   "detail": "10/10 - 7:00 PM EDT",
+   "tv": "",
+   "venue": "Gainbridge Fieldhouse",
+   "neutral": false,
+   "away": {
+    "abbr": "ATL",
+    "name": "Atlanta Hawks",
+    "short": "Hawks",
+    "location": "Atlanta",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/atl.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "IND",
+    "name": "Indiana Pacers",
+    "short": "Pacers",
+    "location": "Indiana",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/ind.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-0",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401906510",
+   "start": "2026-10-10T23:00Z",
+   "state": "pre",
+   "detail": "10/10 - 7:00 PM EDT",
+   "tv": "MNMT",
+   "venue": "Capital One Arena",
+   "neutral": false,
+   "away": {
+    "abbr": "DET",
+    "name": "Detroit Pistons",
+    "short": "Pistons",
+    "location": "Detroit",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/det.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "WSH",
+    "name": "Washington Wizards",
+    "short": "Wizards",
+    "location": "Washington",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/wsh.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-0",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401898397",
+   "start": "2026-10-11T00:00Z",
+   "state": "pre",
+   "detail": "10/10 - 8:00 PM EDT",
+   "tv": "",
+   "venue": "Kaseya Center",
+   "neutral": false,
+   "away": {
+    "abbr": "MIN",
+    "name": "Minnesota Timberwolves",
+    "short": "Timberwolves",
+    "location": "Minnesota",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/min.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIA",
+    "name": "Miami Heat",
+    "short": "Heat",
+    "location": "Miami",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/mia.png",
+    "rank": null,
+    "score": 0,
+    "record": "2-0",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401898398",
+   "start": "2026-10-11T00:00Z",
+   "state": "pre",
+   "detail": "10/10 - 8:00 PM EDT",
+   "tv": "NBA TV",
+   "venue": "TD Garden",
+   "neutral": false,
+   "away": {
+    "abbr": "PHI",
+    "name": "Philadelphia 76ers",
+    "short": "76ers",
+    "location": "Philadelphia",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phi.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "BOS",
+    "name": "Boston Celtics",
+    "short": "Celtics",
+    "location": "Boston",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/bos.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-0",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401898399",
+   "start": "2026-10-11T00:30Z",
+   "state": "pre",
+   "detail": "10/10 - 8:30 PM EDT",
+   "tv": "",
+   "venue": "Chase Center",
+   "neutral": false,
+   "away": {
+    "abbr": "SAC",
+    "name": "Sacramento Kings",
+    "short": "Kings",
+    "location": "Sacramento",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sac.png",
+    "rank": null,
+    "score": 0,
+    "record": "0-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "GS",
+    "name": "Golden State Warriors",
+    "short": "Warriors",
+    "location": "Golden State",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/gs.png",
+    "rank": null,
+    "score": 0,
+    "record": "1-2",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401898720",
+   "start": "2026-10-11T02:30Z",
+   "state": "pre",
+   "detail": "10/10 - 10:30 PM EDT",
+   "tv": "ESPN2",
+   "venue": "Mortgage Matchup Center",
+   "neutral": false,
+   "away": {
+    "abbr": "SA",
+    "name": "San Antonio Spurs",
+    "short": "Spurs",
+    "location": "San Antonio",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sa.png",
+    "rank": null,
+    "score": 0,
+    "record": "0-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "PHX",
+    "name": "Phoenix Suns",
+    "short": "Suns",
+    "location": "Phoenix",
+    "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phx.png",
+    "rank": null,
+    "score": 0,
+    "record": "0-2",
+    "probable": null,
+    "winner": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,464 @@
+{
+ "updated": "2026-10-10T20:01:25.932585+00:00",
+ "heading": "Week 6",
+ "picks": [
+  {
+   "label": "STAN @ ND",
+   "sub": "95% to win",
+   "value": "ND -28.3",
+   "result": null
+  },
+  {
+   "label": "MD @ OSU",
+   "sub": "90% to win",
+   "value": "OSU -22.0",
+   "result": null
+  },
+  {
+   "label": "SYR @ UVA",
+   "sub": "77% to win",
+   "value": "UVA -12.5",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "40-22",
+  "label": "our picks to win",
+  "sub": "65%",
+  "since": "Sep 25, 2026"
+ },
+ "empty": "No games available yet. Covers Power-conference and independent FBS teams only.",
+ "retrained": "2026-09-29T15:58:55.485936+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "40-22",
+  "sub": "64.5%",
+  "season": "2026"
+ },
+ "daily": [
+  [
+   "2026-09-25",
+   0,
+   2
+  ],
+  [
+   "2026-09-26",
+   12,
+   11
+  ],
+  [
+   "2026-10-02",
+   1,
+   1
+  ],
+  [
+   "2026-10-03",
+   20,
+   6
+  ],
+  [
+   "2026-10-09",
+   2,
+   1
+  ],
+  [
+   "2026-10-10",
+   5,
+   1
+  ]
+ ],
+ "ml_streak": {
+  "kind": "L",
+  "n": 1
+ },
+ "moneyline_record": {
+  "value": "40-22",
+  "label": "2026 moneyline",
+  "sub": "62 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "CFB",
+   "id": "2026-6-south-carolina-florida",
+   "url": "/cfb/game-2026-6-south-carolina-florida.html",
+   "start": "2026-10-10T12:45:00-04:00",
+   "date": "2026-10-10",
+   "away": "SC",
+   "home": "FLA",
+   "at": "@",
+   "pick": "FLA",
+   "other": "SC",
+   "prob": 66.0,
+   "price": -550,
+   "book": 81.2,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-stanford-notre-dame",
+   "url": "/cfb/game-2026-6-stanford-notre-dame.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "STAN",
+   "home": "ND",
+   "at": "@",
+   "pick": "ND",
+   "other": "STAN",
+   "prob": 95.3,
+   "price": null,
+   "book": null,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-ucla-oregon",
+   "url": "/cfb/game-2026-6-ucla-oregon.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "UCLA",
+   "home": "ORE",
+   "at": "@",
+   "pick": "ORE",
+   "other": "UCLA",
+   "prob": 73.8,
+   "price": -455,
+   "book": 78.7,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-texas-oklahoma",
+   "url": "/cfb/game-2026-6-texas-oklahoma.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "TEX",
+   "home": "OU",
+   "at": "@",
+   "pick": "OU",
+   "other": "TEX",
+   "prob": 52.0,
+   "price": 260,
+   "book": 26.7,
+   "value": true
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-virginia-tech-california",
+   "url": "/cfb/game-2026-6-virginia-tech-california.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "VT",
+   "home": "CAL",
+   "at": "@",
+   "pick": "VT",
+   "other": "CAL",
+   "prob": 57.0,
+   "price": -355,
+   "book": 74.8,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-duke-georgia-tech",
+   "url": "/cfb/game-2026-6-duke-georgia-tech.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "DUKE",
+   "home": "GT",
+   "at": "@",
+   "pick": "DUKE",
+   "other": "GT",
+   "prob": 64.9,
+   "price": -270,
+   "book": 70.0,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-ole-miss-vanderbilt",
+   "url": "/cfb/game-2026-6-ole-miss-vanderbilt.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "MISS",
+   "home": "VAN",
+   "at": "@",
+   "pick": "MISS",
+   "other": "VAN",
+   "prob": 51.7,
+   "price": -360,
+   "book": 75.1,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-illinois-michigan-state",
+   "url": "/cfb/game-2026-6-illinois-michigan-state.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "ILL",
+   "home": "MSU",
+   "at": "@",
+   "pick": "ILL",
+   "other": "MSU",
+   "prob": 62.8,
+   "price": -142,
+   "book": 56.4,
+   "value": true
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-houston-kansas-state",
+   "url": "/cfb/game-2026-6-houston-kansas-state.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "HOU",
+   "home": "KSU",
+   "at": "@",
+   "pick": "KSU",
+   "other": "HOU",
+   "prob": 58.5,
+   "price": -142,
+   "book": 56.4,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-maryland-ohio-state",
+   "url": "/cfb/game-2026-6-maryland-ohio-state.html",
+   "start": "2026-10-10T16:15:00-04:00",
+   "date": "2026-10-10",
+   "away": "MD",
+   "home": "OSU",
+   "at": "@",
+   "pick": "OSU",
+   "other": "MD",
+   "prob": 90.3,
+   "price": null,
+   "book": null,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-tennessee-arkansas",
+   "url": "/cfb/game-2026-6-tennessee-arkansas.html",
+   "start": "2026-10-10T16:15:00-04:00",
+   "date": "2026-10-10",
+   "away": "TENN",
+   "home": "ARK",
+   "at": "@",
+   "pick": "TENN",
+   "other": "ARK",
+   "prob": 76.8,
+   "price": -550,
+   "book": 81.2,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-lsu-kentucky",
+   "url": "/cfb/game-2026-6-lsu-kentucky.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "LSU",
+   "home": "UK",
+   "at": "@",
+   "pick": "LSU",
+   "other": "UK",
+   "prob": 64.3,
+   "price": -345,
+   "book": 74.4,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-syracuse-virginia",
+   "url": "/cfb/game-2026-6-syracuse-virginia.html",
+   "start": "2026-10-10T19:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "SYR",
+   "home": "UVA",
+   "at": "@",
+   "pick": "UVA",
+   "other": "SYR",
+   "prob": 77.0,
+   "price": -345,
+   "book": 74.4,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-georgia-alabama",
+   "url": "/cfb/game-2026-6-georgia-alabama.html",
+   "start": "2026-10-10T19:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "UGA",
+   "home": "ALA",
+   "at": "@",
+   "pick": "ALA",
+   "other": "UGA",
+   "prob": 53.4,
+   "price": -122,
+   "book": 52.6,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-usc-penn-state",
+   "url": "/cfb/game-2026-6-usc-penn-state.html",
+   "start": "2026-10-10T19:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "USC",
+   "home": "PSU",
+   "at": "@",
+   "pick": "PSU",
+   "other": "USC",
+   "prob": 59.2,
+   "price": -122,
+   "book": 52.6,
+   "value": true
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-kansas-utah",
+   "url": "/cfb/game-2026-6-kansas-utah.html",
+   "start": "2026-10-10T20:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "KU",
+   "home": "UTAH",
+   "at": "@",
+   "pick": "UTAH",
+   "other": "KU",
+   "prob": 65.1,
+   "price": -700,
+   "book": 84.0,
+   "value": false
+  },
+  {
+   "sport": "CFB",
+   "id": "2026-6-minnesota-purdue",
+   "url": "/cfb/game-2026-6-minnesota-purdue.html",
+   "start": "2026-10-10T20:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "MINN",
+   "home": "PUR",
+   "at": "@",
+   "pick": "MINN",
+   "other": "PUR",
+   "prob": 65.3,
+   "price": -135,
+   "book": 55.1,
+   "value": true
+  }
+ ],
+ "units": {
+  "picks": 62,
+  "wins": 40,
+  "losses": 22,
+  "units": -4.53,
+  "roi": -0.0731,
+  "since": "2026-09-25",
+  "series": [
+   [
+    "2026-09-25",
+    -2.0
+   ],
+   [
+    "2026-09-26",
+    -8.18
+   ],
+   [
+    "2026-10-02",
+    -8.13
+   ],
+   [
+    "2026-10-03",
+    -5.65
+   ],
+   [
+    "2026-10-09",
+    -5.87
+   ],
+   [
+    "2026-10-10",
+    -4.53
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 49,
+    "wins": 35,
+    "losses": 14,
+    "units": -3.92,
+    "roi": -0.08
+   },
+   "underdogs": {
+    "picks": 13,
+    "wins": 5,
+    "losses": 8,
+    "units": -0.61,
+    "roi": -0.0469
+   },
+   "value": {
+    "picks": 18,
+    "wins": 7,
+    "losses": 11,
+    "units": -2.36,
+    "roi": -0.1312
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-10",
+  "games": [
+   {
+    "pick": "ARIZ",
+    "other": "WVU",
+    "hit": true,
+    "text": "ARIZ 52-31",
+    "units": 0.6,
+    "url": "/cfb/game-2026-6-arizona-west-virginia.html"
+   },
+   {
+    "pick": "IU",
+    "other": "NEB",
+    "hit": true,
+    "text": "IU 20-17",
+    "units": 0.33,
+    "url": "/cfb/game-2026-6-indiana-nebraska.html"
+   },
+   {
+    "pick": "PITT",
+    "other": "UNC",
+    "hit": false,
+    "text": "PITT lost 21-17",
+    "units": -1.0,
+    "url": "/cfb/game-2026-6-north-carolina-pittsburgh.html"
+   },
+   {
+    "pick": "MIZ",
+    "other": "TA&M",
+    "hit": true,
+    "text": "MIZ 27-6",
+    "units": 0.56,
+    "url": "/cfb/game-2026-6-texas-a-m-missouri.html"
+   },
+   {
+    "pick": "OKST",
+    "other": "UCF",
+    "hit": true,
+    "text": "OKST 42-28",
+    "units": 0.28,
+    "url": "/cfb/game-2026-6-ucf-oklahoma-state.html"
+   },
+   {
+    "pick": "WAKE",
+    "other": "NCSU",
+    "hit": true,
+    "text": "WAKE 38-14",
+    "units": 0.57,
+    "url": "/cfb/game-2026-6-wake-forest-nc-state.html"
+   }
+  ],
+  "hits": []
+ }
+}

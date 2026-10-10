@@ -1,0 +1,46 @@
+{
+ "sport": "MLB",
+ "label": "Sat, Oct 10",
+ "updated": "2026-10-10T15:09:30.195624-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401907994",
+   "start": "2026-10-11T00:00Z",
+   "state": "pre",
+   "detail": "10/10 - 8:00 PM EDT",
+   "tv": "TBS, truTV",
+   "venue": "Progressive Field",
+   "neutral": false,
+   "away": {
+    "abbr": "CHW",
+    "name": "Chicago White Sox",
+    "short": "White Sox",
+    "location": "Chicago",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/chw.png",
+    "rank": null,
+    "score": 0,
+    "record": "84-78",
+    "probable": "S. Burke",
+    "winner": false
+   },
+   "home": {
+    "abbr": "CLE",
+    "name": "Cleveland Guardians",
+    "short": "Guardians",
+    "location": "Cleveland",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/cle.png",
+    "rank": null,
+    "score": 0,
+    "record": "85-77",
+    "probable": "G. Williams",
+    "winner": false
+   },
+   "pick": {
+    "text": "CLE 57%",
+    "result": null
+   }
+  }
+ ]
+}

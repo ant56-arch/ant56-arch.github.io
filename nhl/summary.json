@@ -1,0 +1,431 @@
+{
+ "updated": "2026-10-10T15:09:30.919668-04:00",
+ "heading": "Today: Sat, Oct 10",
+ "picks": [
+  {
+   "label": "CAR over CHI",
+   "sub": "CAR @ CHI \u00b7 7:00 PM ET",
+   "value": "66%",
+   "result": null
+  },
+  {
+   "label": "COL over TOR",
+   "sub": "TOR @ COL \u00b7 7:00 PM ET",
+   "value": "66%",
+   "result": null
+  },
+  {
+   "label": "NJ over VAN",
+   "sub": "VAN @ NJ \u00b7 3:30 PM ET",
+   "value": "62%",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "37-24",
+  "label": "our picks to win",
+  "sub": "60.7%",
+  "since": "Oct 1, 2026"
+ },
+ "empty": "No NHL picks yet. They start on opening night.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-10-09T13:02:28+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "37-24",
+  "sub": "60.7%",
+  "season": "2026-27"
+ },
+ "daily": [
+  [
+   "2026-10-01",
+   4,
+   4
+  ],
+  [
+   "2026-10-02",
+   0,
+   5
+  ],
+  [
+   "2026-10-03",
+   9,
+   4
+  ],
+  [
+   "2026-10-04",
+   4,
+   1
+  ],
+  [
+   "2026-10-05",
+   3,
+   1
+  ],
+  [
+   "2026-10-06",
+   7,
+   2
+  ],
+  [
+   "2026-10-07",
+   2,
+   1
+  ],
+  [
+   "2026-10-08",
+   6,
+   4
+  ],
+  [
+   "2026-10-09",
+   2,
+   2
+  ]
+ ],
+ "ml_streak": {
+  "kind": "L",
+  "n": 2
+ },
+ "ml_record": {
+  "value": "37-24",
+  "label": "moneyline",
+  "sub": "61 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "NHL",
+   "id": "401892469",
+   "url": "/nhl/game-401892469.html",
+   "start": "2026-10-10T13:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "PHI",
+   "home": "BOS",
+   "at": "@",
+   "pick": "BOS",
+   "other": "PHI",
+   "prob": 55.7,
+   "price": -135,
+   "book": 55.1,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892470",
+   "url": "/nhl/game-401892470.html",
+   "start": "2026-10-10T15:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "VAN",
+   "home": "NJ",
+   "at": "@",
+   "pick": "NJ",
+   "other": "VAN",
+   "prob": 62.1,
+   "price": -298,
+   "book": 71.8,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892471",
+   "url": "/nhl/game-401892471.html",
+   "start": "2026-10-10T16:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "EDM",
+   "home": "SJ",
+   "at": "@",
+   "pick": "EDM",
+   "other": "SJ",
+   "prob": 57.4,
+   "price": -162,
+   "book": 59.3,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401891805",
+   "url": "/nhl/game-401891805.html",
+   "start": "2026-10-10T18:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "MIN",
+   "home": "FLA",
+   "at": "@",
+   "pick": "FLA",
+   "other": "MIN",
+   "prob": 51.7,
+   "price": -135,
+   "book": 55.1,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892472",
+   "url": "/nhl/game-401892472.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "UTA",
+   "home": "BUF",
+   "at": "@",
+   "pick": "BUF",
+   "other": "UTA",
+   "prob": 53.7,
+   "price": -108,
+   "book": 49.6,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892473",
+   "url": "/nhl/game-401892473.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "DET",
+   "home": "MTL",
+   "at": "@",
+   "pick": "MTL",
+   "other": "DET",
+   "prob": 61.8,
+   "price": -198,
+   "book": 63.7,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892474",
+   "url": "/nhl/game-401892474.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "NSH",
+   "home": "OTT",
+   "at": "@",
+   "pick": "OTT",
+   "other": "NSH",
+   "prob": 58.2,
+   "price": -162,
+   "book": 59.3,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892475",
+   "url": "/nhl/game-401892475.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "DAL",
+   "home": "PIT",
+   "at": "@",
+   "pick": "DAL",
+   "other": "PIT",
+   "prob": 57.1,
+   "price": -180,
+   "book": 61.6,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892476",
+   "url": "/nhl/game-401892476.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "CAR",
+   "home": "CHI",
+   "at": "@",
+   "pick": "CAR",
+   "other": "CHI",
+   "prob": 66.3,
+   "price": -245,
+   "book": 68.1,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892477",
+   "url": "/nhl/game-401892477.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "CBJ",
+   "home": "STL",
+   "at": "@",
+   "pick": "STL",
+   "other": "CBJ",
+   "prob": 56.2,
+   "price": -115,
+   "book": 51.1,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892478",
+   "url": "/nhl/game-401892478.html",
+   "start": "2026-10-10T19:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "TOR",
+   "home": "COL",
+   "at": "@",
+   "pick": "COL",
+   "other": "TOR",
+   "prob": 66.2,
+   "price": -218,
+   "book": 65.7,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892479",
+   "url": "/nhl/game-401892479.html",
+   "start": "2026-10-10T19:30:00-04:00",
+   "date": "2026-10-10",
+   "away": "TB",
+   "home": "NYI",
+   "at": "@",
+   "pick": "TB",
+   "other": "NYI",
+   "prob": 52.3,
+   "price": -170,
+   "book": 60.4,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892480",
+   "url": "/nhl/game-401892480.html",
+   "start": "2026-10-10T22:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "ANA",
+   "home": "CGY",
+   "at": "@",
+   "pick": "ANA",
+   "other": "CGY",
+   "prob": 50.8,
+   "price": -122,
+   "book": 52.6,
+   "value": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892481",
+   "url": "/nhl/game-401892481.html",
+   "start": "2026-10-10T22:00:00-04:00",
+   "date": "2026-10-10",
+   "away": "LA",
+   "home": "VGK",
+   "at": "@",
+   "pick": "VGK",
+   "other": "LA",
+   "prob": 58.3,
+   "price": -170,
+   "book": 60.4,
+   "value": false
+  }
+ ],
+ "units": {
+  "picks": 61,
+  "wins": 37,
+  "losses": 24,
+  "units": 0.9,
+  "roi": 0.0148,
+  "since": "2026-10-01",
+  "series": [
+   [
+    "2026-10-01",
+    -1.82
+   ],
+   [
+    "2026-10-02",
+    -6.82
+   ],
+   [
+    "2026-10-03",
+    -4.32
+   ],
+   [
+    "2026-10-04",
+    -2.36
+   ],
+   [
+    "2026-10-05",
+    -1.57
+   ],
+   [
+    "2026-10-06",
+    1.89
+   ],
+   [
+    "2026-10-07",
+    2.25
+   ],
+   [
+    "2026-10-08",
+    1.35
+   ],
+   [
+    "2026-10-09",
+    0.9
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 55,
+    "wins": 33,
+    "losses": 22,
+    "units": -1.69,
+    "roi": -0.0307
+   },
+   "underdogs": {
+    "picks": 6,
+    "wins": 4,
+    "losses": 2,
+    "units": 2.59,
+    "roi": 0.4317
+   },
+   "value": {
+    "picks": 3,
+    "wins": 3,
+    "losses": 0,
+    "units": 3.54,
+    "roi": 1.18
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-09",
+  "games": [
+   {
+    "pick": "DET",
+    "other": "SEA",
+    "hit": false,
+    "text": "DET lost 6-3",
+    "units": -1.0,
+    "url": "/nhl/game-401892465.html"
+   },
+   {
+    "pick": "WSH",
+    "other": "NYR",
+    "hit": true,
+    "text": "WSH 3-1",
+    "units": 0.704,
+    "url": "/nhl/game-401892466.html"
+   },
+   {
+    "pick": "CBJ",
+    "other": "PIT",
+    "hit": true,
+    "text": "CBJ 3-2",
+    "units": 0.847,
+    "url": "/nhl/game-401892467.html"
+   },
+   {
+    "pick": "WPG",
+    "other": "ANA",
+    "hit": false,
+    "text": "WPG lost 5-1",
+    "units": -1.0,
+    "url": "/nhl/game-401892468.html"
+   }
+  ],
+  "hits": []
+ }
+}

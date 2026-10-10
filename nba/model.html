@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model | NBA Edge</title>
+<meta name="description" content="Who wins every NBA game tonight and how likely it is, from a model graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M8 23V9h3.3l6.9 8.6V9H24v14h-3.3l-6.9-8.6V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=a1423e71d9">
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://ant56-arch.github.io/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
+    <nav class="sport-switcher" aria-label="Sport"><a href="https://ant56-arch.github.io/" class="sport-tab">All</a><a href="https://ant56-arch.github.io/nfl/index.html" class="sport-tab">NFL</a><a href="#" class="sport-tab active" aria-current="page">NBA</a><a href="https://ant56-arch.github.io/mlb/" class="sport-tab">MLB</a><a href="https://ant56-arch.github.io/nhl/index.html" class="sport-tab">NHL</a><a href="https://ant56-arch.github.io/cfb/index.html" class="sport-tab">CFB</a><a href="https://ant56-arch.github.io/cbb/index.html" class="sport-tab">CBB</a><a href="https://ant56-arch.github.io/soccer/index.html" class="sport-tab">Soccer</a><a href="https://ant56-arch.github.io/bets.html" class="sport-tab">Betting</a><a href="https://ant56-arch.github.io/schedule.html" class="sport-tab">Schedule</a></nav>
+  </div>
+</header>
+<header class="masthead" data-sport="NBA">
+  <div class="masthead-inner">
+    <h1 class="wordmark">NBA <span>EDGE</span></h1>
+    <div class="tagline">Who wins every NBA game tonight and how likely it is, from a model graded against every final score.</div>
+    <div class="updated-chip">Updated Oct 10, 2026 3:09 PM ET</div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="tabs-inner"><a href="index.html">Home</a><a href="history.html">History</a><a href="accuracy.html">Accuracy</a><a href="model.html" class="active" aria-current="page">Model</a></div></nav>
+<div class="wrap">
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>How It Learns</h2><div class="subtitle">Once a week during the season it checks itself against the newest games and only changes when a new version clearly predicts better.</div></div>
+    <div class="card-body"><div class="statline model-tiles"><div class="stat"><div class="stat-value">Sep 23</div><div class="stat-label">Last retrained</div><div class="stat-sub">games through Jun 13, 2026</div></div><div class="stat"><div class="stat-value">2,645</div><div class="stat-label">Games learned from</div><div class="stat-sub">Jun 14, 2024 to Jun 13, 2026</div></div><div class="stat"><div class="stat-value">Weekly</div><div class="stat-label">Next check</div><div class="stat-sub">once 50+ new games are in; waits in the offseason</div></div><div class="stat"><div class="stat-value">Switched</div><div class="stat-label">Last decision</div><div class="stat-sub">18 versions tested</div></div></div><div class="section-label">Current setup</div><ul class="setup-list"><li><span class="setup-label">Learns from:</span> the last 2 seasons of games</li><li><span class="setup-label">Team ratings:</span> steady - each result moves a team&#x27;s Elo rating by up to 15 points</li><li><span class="setup-label">Over the summer:</span> keeps 60% of each team&#x27;s rating; the rest resets toward average</li><li><span class="setup-label">Looks at:</span> 9 factors for every game, listed below, including injuries on the day</li></ul></div>
+  </section><section class="card" id="results-cal" data-summary="summary.json" hidden><div class="card-header"><h2>Results By Day</h2><div class="subtitle">Every live pick, graded, one square per day. Hover or tap a day for its record.</div></div><div class="card-body"></div></section><section class="card">
+    <div class="card-header"><h2>Is It Getting Better?</h2><div class="subtitle">Score on recent games at each retrain</div></div>
+    <div class="card-body"><div class="statline "><div class="stat"><div class="stat-value">20.8%</div><div class="stat-label">Before last retrain</div><div class="stat-sub">live model on recent games</div></div><div class="stat"><div class="stat-value">20.8%</div><div class="stat-label">After last retrain</div><div class="stat-sub">same games, never trained on</div></div></div><div class="table-footnote">A trend line shows up here once there are a few retrains to compare.</div><div class="table-footnote">Better than guessing on the most recent games, which each version is scored on before it's trained on them. Higher is better. Live results are on the Accuracy tab.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Retrain Log</h2><div class="subtitle">Every time the model checked itself against new games, newest first</div></div>
+    <div class="card-body"><table class="data responsive-stack retrain-log">
+          <thead><tr><th>Date</th><th>Games through</th><th class="num">Versions tested</th><th>Decision</th>
+          <th class="num">Better than guessing</th><th>Why</th></tr></thead>
+          <tbody><tr><td class="row-label">Sep 23, 2026</td>
+          <td data-label="Games through">Jun 13, 2026</td>
+          <td data-label="Versions tested" class="num">18</td>
+          <td data-label="Decision"><span class="pill pill-positive">Switched</span></td>
+          <td data-label="Better than guessing" class="num">20.8% → 20.8%</td>
+          <td data-label="Why" class="why-cell">New recipe beat the current one on held-out games.</td></tr></tbody></table>
+          <div class="table-footnote">Each retrain fits several versions of the model on everything except the
+          most recent games, scores them on those games, and switches only if a new version is clearly better.
+          Then it refits on every game, and a safety check blocks anything that scores worse than the live
+          model.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>What It's Weighing</h2><div class="subtitle">The factors behind every pick, and how the last retrain moved them</div></div>
+    <div class="card-body"><table class="data responsive-stack factor-table">
+          <thead><tr><th>Factor</th><th class="num">Now</th><th class="num">Before last retrain</th><th class="num">Change</th></tr></thead>
+          <tbody><tr><td class="row-label">Home court<div class="factor-note">points for the home team</div></td>
+          <td data-label="Now" class="num accent">+2.95 pts</td>
+          <td data-label="Before last retrain" class="num">+3.37 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.42 pts</span></td></tr><tr><td class="row-label">Team rating (Elo) gap<div class="factor-note">points per 100 rating points</div></td>
+          <td data-label="Now" class="num accent">+2.70 pts</td>
+          <td data-label="Before last retrain" class="num">+1.98 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.72 pts</span></td></tr><tr><td class="row-label">Season point differential gap<div class="factor-note">points per point of differential</div></td>
+          <td data-label="Now" class="num accent">+0.30 pts</td>
+          <td data-label="Before last retrain" class="num">+0.42 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.12 pts</span></td></tr><tr><td class="row-label">Last 10 games form gap<div class="factor-note">points per point of differential</div></td>
+          <td data-label="Now" class="num accent">+0.14 pts</td>
+          <td data-label="Before last retrain" class="num">+0.09 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.05 pts</span></td></tr><tr><td class="row-label">Extra rest<div class="factor-note">points per extra day off vs. the opponent</div></td>
+          <td data-label="Now" class="num accent">+0.06 pts</td>
+          <td data-label="Before last retrain" class="num">+0.20 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.14 pts</span></td></tr><tr><td class="row-label">Home team on a back-to-back</td>
+          <td data-label="Now" class="num accent">-2.35 pts</td>
+          <td data-label="Before last retrain" class="num">-2.16 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9660; 0.19 pts</span></td></tr><tr><td class="row-label">Away team on a back-to-back</td>
+          <td data-label="Now" class="num accent">+1.51 pts</td>
+          <td data-label="Before last retrain" class="num">+1.49 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.01 pts</span></td></tr><tr><td class="row-label">Home team&#x27;s missing players<div class="factor-note">per 10 points of missing player value</div></td>
+          <td data-label="Now" class="num accent">-1.39 pts</td>
+          <td data-label="Before last retrain" class="num">-1.42 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.03 pts</span></td></tr><tr><td class="row-label">Away team&#x27;s missing players<div class="factor-note">per 10 points of missing player value</div></td>
+          <td data-label="Now" class="num accent">+1.01 pts</td>
+          <td data-label="Before last retrain" class="num">+0.91 pts</td>
+          <td data-label="Change" class="num"><span class="change-move">&#9650; 0.10 pts</span></td></tr></tbody></table>
+          <div class="table-footnote">Each number is how many points of margin that factor adds for the home team (negative helps the away team). Before is the model that was live until the last retrain.</div></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Scores, box scores, injury reports and moneyline prices via ESPN. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
+      <span>&copy; 2026 NBA Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=a1423e71d9"></script>
+<script src="nba.js?v=a1423e71d9"></script>
+</body>
+</html>
