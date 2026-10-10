@@ -570,7 +570,7 @@ def build_summary(history, model):
                                     "sub": f"{ml['picks']} picks graded"}
     # Only picks actually made count here, never the backtest.
     games = all_games(history)
-    summary["slate"] = [extras.slate_entry(g) for g in games if g["date"] >= today and not g["final"] and not g["void"]]
+    summary["slate"] = extras.home_slate(games)
     summary["units"] = game_units(picks)
     last = extras.last_day(games)
     if last:

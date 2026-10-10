@@ -67,7 +67,7 @@ async function hgLoadEspn(site, summary, want) {
   const events = live || [];
   const ids = new Set(events.map(e => e.id));
   const covered = new Set(events.map(e => new Date(e.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" })));
-  const days = [...new Set([...want, ...(summary && summary.slate || []).map(g => g.date).filter(Boolean)])]
+  const days = [...new Set([...want, ...(summary && summary.slate || []).filter(g => !g.final).map(g => g.date).filter(Boolean)])]
     .filter(d => !covered.has(d)).slice(0, 6);
   const sep = published.espn.includes("?") ? "&" : "?";
   const extra = await Promise.all(days.map(d => edgeFetchJson(published.espn + sep + "dates=" + d.replace(/-/g, ""), 6000)));
@@ -696,7 +696,8 @@ async function initHomeGames() {
 }
 
 // --- Betting tab and Last night (home site only) ---
-// Each site's summary.json carries "slate" (games still to play, with our
+// Each site's summary.json carries "slate" (our picks: games still to play,
+// plus the last few days' finished ones marked "final", each with our
 // pick, its moneyline price and a link to the game's page), "units" (the
 // running total of 1 unit on every graded moneyline pick, split into
 // favorites, underdogs and value picks) and "last" (the latest day's
@@ -1008,7 +1009,7 @@ async function initLastNight() {
     if (seen.has(g.site.sport) || !g.start) return;
     seen.add(g.site.sport);
     const key = edgeDayKey(new Date(g.start));
-    const n = (summaries[EDGE_SITES.indexOf(g.site)].slate || []).filter(x => x.start && edgeDayKey(new Date(x.start)) === key).length;
+    const n = (summaries[EDGE_SITES.indexOf(g.site)].slate || []).filter(x => x.start && !x.final && edgeDayKey(new Date(x.start)) === key).length;
     const when = key === today ? "today" : "on " + new Date(g.start).toLocaleDateString("en-US", { ...EDGE_ET, weekday: "long" });
     next.push(`${n} ${g.site.sport} ${n === 1 ? "game" : "games"} ${when}`);
   });

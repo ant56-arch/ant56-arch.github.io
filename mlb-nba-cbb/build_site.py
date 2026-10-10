@@ -978,9 +978,7 @@ def bb_game_pages(games, shell):
 
 def bb_home_parts(summary, picks, games):
     """Betting tab and Last night data for an NBA, NHL or CBB summary."""
-    today = NOW.date().isoformat()
-    summary["slate"] = [extras.slate_entry(g) for g in games
-                        if g["date"] >= today and not g["final"] and not g["void"]]
+    summary["slate"] = extras.home_slate(games)
     summary["units"] = game_units(picks)
     summary["last"] = extras.last_day(games)
 
@@ -1322,9 +1320,7 @@ def add_home_parts(summary, history, team_history):
     latest day's results."""
     team_history = team_history or {"picks": []}
     games = mlb_games(team_history, history)
-    today = NOW.date().isoformat()
-    summary["slate"] = [extras.slate_entry(g) for g in games
-                        if g["date"] >= today and not g["final"] and not g["void"]]
+    summary["slate"] = extras.home_slate(games)
     summary["units"] = game_units(team_history["picks"])
     last = extras.last_day(games, hitter_results(history))
     summary["last"] = last

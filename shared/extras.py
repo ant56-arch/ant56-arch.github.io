@@ -25,7 +25,7 @@ and this module renders the page, the cards and the JSON from it. Money
 reads it from summary.json: a moneyline unit is 1 bet at the price the pick
 locked at, so dollars are units times 10. Live picks only.
 """
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
@@ -303,14 +303,35 @@ def board_section(title, sub, body):
 
 
 # ── summary.json parts for the home site ─────────────────────────────────────
+# How many days a finished pick stays in summary.json "slate", so the home
+# page can still grade it from ESPN's final score (Today, and the Sat-Mon
+# Weekend view on a Monday).
+FINALS_KEPT_DAYS = 3
+
+
+def home_slate(games, upcoming=None):
+    """summary.json "slate": every pick on the days the home page shows. Games
+    still to play (today on, or those `upcoming` keeps), plus finished games
+    from the last FINALS_KEPT_DAYS days. Dropping finished games here is what
+    left the home page's "So far" tally missing most of the day's results:
+    a pick that vanishes from the slate shows as a game with no pick. The
+    Betting tab and Next up read only the games still to start."""
+    today = datetime.now(ET).date()
+    since = (today - timedelta(days=FINALS_KEPT_DAYS)).isoformat()
+    keep = upcoming or (lambda g: g["date"] >= today.isoformat())
+    return [slate_entry(g) for g in games if not g.get("void")
+            and (g["date"] >= since if g.get("final") else keep(g))]
+
+
 def slate_entry(g):
-    """One game still to be decided, for the Betting tab and 'Next up'."""
+    """One pick for the home page; "final" once its game is over."""
     ml = g.get("ml") or {}
     return {"sport": g["sport"], "id": g["id"], "url": g["url"], "start": g.get("start"), "date": g["date"],
             "away": g["away"]["abbr"], "home": g["home"]["abbr"], "at": "vs" if g.get("neutral") else "@",
             "pick": g["pick"], "other": g["other"], "prob": round(g["prob"], 1),
             "price": int(round(ml["price"])) if ml.get("price") is not None else None,
-            "book": round(ml["book"], 1) if ml.get("book") is not None else None, "value": bool(ml.get("value"))}
+            "book": round(ml["book"], 1) if ml.get("book") is not None else None, "value": bool(ml.get("value")),
+            "final": bool(g.get("final"))}
 
 
 def recap_text(g):
