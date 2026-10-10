@@ -162,10 +162,11 @@ def espn_final_scores(log, scored):
 
 def grade_completed_games(log):
     games_path = os.path.join(RAW_DIR, "cfb_games.csv")
-    if not os.path.exists(games_path):
-        return log
-    schedules = pd.read_csv(games_path)
-    results = schedules[schedules["home_score"].notna() & schedules["away_score"].notna()][KEY_COLS + ["home_score", "away_score"]]
+    if os.path.exists(games_path):
+        schedules = pd.read_csv(games_path)
+        results = schedules[schedules["home_score"].notna() & schedules["away_score"].notna()][KEY_COLS + ["home_score", "away_score"]]
+    else:  # no schedule this run: ESPN alone grades
+        results = log[KEY_COLS].iloc[:0].assign(home_score=pd.Series(dtype=float), away_score=pd.Series(dtype=float))
     # CFBD wins when it has a score; ESPN fills in the games it hasn't posted yet.
     espn_results = espn_final_scores(log, results)
     if not espn_results.empty:
@@ -271,19 +272,22 @@ def summarize(log):
 def main():
     print("Loading this run's CFB predictions to snapshot...")
     snapshot = load_predictions_snapshot()
-    if snapshot is None:
-        print("  No CFB predictions available yet (CFBD_API_KEY not set, or no games this run) - skipping.")
-        return
-
     log = pd.read_csv(LOG_PATH) if os.path.exists(LOG_PATH) else None
-    # When this run's lines and picks were taken. upsert_snapshot only writes
-    # games that haven't kicked off, so once a game starts this stays the
-    # time its line and pick were locked in (shown on the site).
-    snapshot["lines_set_at"] = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ")
-    log = upsert_snapshot(log, snapshot)
-    ml_snapshot = load_moneyline_snapshot()
-    if ml_snapshot is not None:
-        log = moneyline.lock_and_merge(log, ml_snapshot, KEY_COLS, friday_lock=True)
+    if snapshot is None:
+        # Still grade what's already logged (ESPN has the scores), so results
+        # keep coming in on a run with no new predictions.
+        print("  No CFB predictions this run - grading the games already logged.")
+        if log is None or log.empty:
+            return
+    else:
+        # When this run's lines and picks were taken. upsert_snapshot only writes
+        # games that haven't kicked off, so once a game starts this stays the
+        # time its line and pick were locked in (shown on the site).
+        snapshot["lines_set_at"] = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ")
+        log = upsert_snapshot(log, snapshot)
+        ml_snapshot = load_moneyline_snapshot()
+        if ml_snapshot is not None:
+            log = moneyline.lock_and_merge(log, ml_snapshot, KEY_COLS, friday_lock=True)
     print(f"  CFB tracking log now has {len(log)} predicted games total")
 
     print("Grading any CFB games whose results are now in...")

@@ -25,6 +25,7 @@ import os
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
+TRACKING_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "tracking")
 COEFFICIENTS_PATH = os.path.join(os.path.dirname(__file__), "fitted_cfb_coefficients.json")
 
 DEFAULT_COEFFICIENTS = {
@@ -118,7 +119,10 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
 
     combined_expected_eff = home_expected_eff + away_expected_eff
     model_total = coefs["total_intercept"] + (combined_expected_eff * coefs["total_coef"])
+    return blend_with_market(home_team, away_team, model_spread, model_total, model_home_win_prob,
+                             blend_weights, vegas_odds)
 
+def blend_with_market(home_team, away_team, model_spread, model_total, model_home_win_prob, blend_weights, vegas_odds=None):
     vegas = get_vegas_line(vegas_odds, home_team, away_team)
     has_market = vegas is not None and pd.notna(vegas.get("home_favored_by"))
 
@@ -146,18 +150,64 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
         "favored_by": round(abs(sharp_spread), 1),
     }
 
+def load_ratings():
+    """Power ratings (cfb_ratings.py) for the picks while CFBD's advanced
+    stats are out (see espn_cfb.py), limited to the teams the efficiency
+    model covers so the slate stays the same."""
+    path = os.path.join(TRACKING_DIR, "cfb_ratings.json")
+    teams_path = os.path.join(RAW_DIR, "cfb_teams.csv")
+    if not os.path.exists(path) or not os.path.exists(teams_path):
+        return None
+    with open(path) as f:
+        data = json.load(f)
+    ratings = pd.DataFrame(data.get("teams", []))
+    if ratings.empty:
+        return None
+    covered = set(pd.read_csv(teams_path)["team"])
+    ratings = ratings[ratings["team"].isin(covered)].set_index("team")
+    return {"teams": ratings, "home_field": data.get("home_field", 0.0),
+            "average": float(pd.DataFrame(data["teams"])["offense"].mean())}
+
+def ratings_game(game, ratings):
+    """Model numbers from the power ratings: margin = overall gap + home field
+    (none at a neutral site); each side's points = its offense + the other
+    side's defense - the average FBS team's level."""
+    r = ratings["teams"]
+    home, away = game["home_team"], game["away_team"]
+    if home not in r.index or away not in r.index:
+        return None
+    neutral = bool(game.get("neutral")) if pd.notna(game.get("neutral")) else False
+    spread = r.at[home, "overall"] - r.at[away, "overall"] + (0.0 if neutral else ratings["home_field"])
+    avg = ratings["average"]
+    total = (r.at[home, "offense"] + r.at[away, "defense"] - avg) + (r.at[away, "offense"] + r.at[home, "defense"] - avg)
+    return spread, total
+
+def predict_game_from_ratings(game, ratings, coefs, blend_weights, vegas_odds=None):
+    numbers = ratings_game(game, ratings)
+    if numbers is None:
+        return None
+    spread, total = numbers
+    win_prob = norm.cdf(spread / coefs["margin_std_dev"])
+    return blend_with_market(game["home_team"], game["away_team"], spread, total, win_prob, blend_weights, vegas_odds)
+
 def predict_all_upcoming(use_current_form=True):
     coefs, blend_weights, holdout = load_coefficients()
     team_stats = load_team_stats()
     upcoming = load_upcoming_games()
     vegas_odds = load_vegas_odds()
 
-    if team_stats is None or upcoming.empty:
+    ratings = load_ratings() if team_stats is None else None
+    if (team_stats is None and ratings is None) or upcoming.empty:
         return pd.DataFrame(), holdout
+    if ratings is not None:
+        print("  No advanced stats this run (CFBD out) - using the power ratings for the model numbers.")
 
     predictions = []
     for _, game in upcoming.iterrows():
-        pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds, use_current_form)
+        if ratings is not None:
+            pred = predict_game_from_ratings(game, ratings, coefs, blend_weights, vegas_odds)
+        else:
+            pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds, use_current_form)
         if pred:
             pred["season"] = game["season"]
             pred["week"] = game["week"]
