@@ -257,7 +257,11 @@ def game_card(g, top=False):
         res = ('<span class="pill pill-positive">HIT</span>' if g["hit"]
                else '<span class="pill pill-danger">MISS</span>')
     group = f' data-group="{escape(g["group"])}"' if g.get("group") else ""
-    return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}"{group}>'
+    # For live scores in the browser (sport-pages.js): which ESPN game this is.
+    live = "" if g.get("final") or g.get("void") else (
+        f' data-start="{escape(str(g.get("start") or ""))}" data-away="{escape(g["away"]["abbr"])}"'
+        f' data-home="{escape(g["home"]["abbr"])}" data-pick="{escape("Draw" if g.get("pick_name") == "Draw" else str(g["pick"]))}"')
+    return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}"{group}{live}>'
             f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{rows}{lines}'
             f'<div class="gc-pick"><span class="gc-label">{escape(g.get("pick_label") or "Pick to win")}</span>'
             f'<b>{escape(pick_name or g["pick"])}</b>{odds}{value}{res}'
