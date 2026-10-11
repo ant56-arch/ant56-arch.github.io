@@ -221,3 +221,93 @@ function initSwitchers() {
   });
 }
 initSwitchers();
+
+// --- Live scores on the game cards (extras.game_card) ---
+// The cards are built by the site's scheduled runs, so a game that ends between
+// runs would keep showing our projection. Cards for games not yet final carry
+// data-start/-away/-home/-pick; this fills in ESPN's live score or final, and
+// HIT / MISS on our pick to win, refreshing every minute while a game is live.
+// The next run's grading (and the spread result) replaces it for good.
+function gcLiveSite() {
+  const dir = location.pathname.split("/")[1];
+  return EDGE_SITES.find(s => s.games && s.games.split("/")[1] === dir) || null;
+}
+
+async function gcLiveEvents(site, days) {
+  const published = await edgeFetchJson(site.games);
+  if (!published || !published.espn) return [];
+  const parse = data => data && Array.isArray(data.events) ? data.events.map(edgeParseEspn).filter(Boolean) : [];
+  const events = parse(await edgeFetchJson(published.espn, 6000));
+  const ids = new Set(events.map(e => e.id));
+  const covered = new Set(events.map(e => new Date(e.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" })));
+  const sep = published.espn.includes("?") ? "&" : "?";
+  const extra = await Promise.all(days.filter(d => !covered.has(d)).slice(0, 6)
+    .map(d => edgeFetchJson(published.espn + sep + "dates=" + d.replace(/-/g, ""), 6000)));
+  extra.forEach(data => parse(data).forEach(e => { if (!ids.has(e.id)) { ids.add(e.id); events.push(e); } }));
+  return events;
+}
+
+function gcLiveMatch(card, events, sport) {
+  const key = a => edgeFavKey(sport, a);
+  const teams = [card.dataset.away, card.dataset.home].map(key);
+  const t = new Date(card.dataset.start).getTime();
+  return events.find(e => {
+    if (!teams.includes(key(e.away.abbr)) && !teams.includes(key(e.home.abbr))) return false;
+    if (Number.isFinite(t)) return Math.abs(new Date(e.start).getTime() - t) < 15 * 60000;
+    return new Date(e.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" }) === card.dataset.day;
+  }) || null;
+}
+
+function gcLivePaint(card, e, sport) {
+  const flip = edgeFavKey(sport, card.dataset.away) === edgeFavKey(sport, e.home.abbr) ||
+               edgeFavKey(sport, card.dataset.home) === edgeFavKey(sport, e.away.abbr);
+  const away = flip ? e.home : e.away, home = flip ? e.away : e.home;
+  if (away.score == null || home.score == null) return;
+  const when = card.querySelector(".gc-when");
+  if (when) {
+    when.textContent = e.state === "post" ? "Final" : (e.detail || "Live");
+    when.classList.toggle("is-live", e.state === "in");
+  }
+  const rows = card.querySelectorAll(".gc-team");
+  [away, home].forEach((t, i) => {
+    const row = rows[i];
+    if (!row) return;
+    const num = row.querySelector(".gc-num");
+    if (num) num.textContent = String(t.score);
+    row.classList.toggle("is-lead", t.score > (i ? away : home).score);
+  });
+  const pick = card.querySelector(".gc-pick");
+  if (!pick || e.state !== "post" || pick.querySelector(".gc-live-res")) return;
+  const p = card.dataset.pick;
+  let hit = null;
+  if (p === "Draw") hit = away.score === home.score;
+  else if (away.score !== home.score) hit = (p === card.dataset.away) === (away.score > home.score);
+  if (hit === null) return;
+  const res = edgeNode("span", `pill ${hit ? "pill-positive" : "pill-danger"} gc-live-res`, hit ? "HIT" : "MISS");
+  pick.insertBefore(res, pick.querySelector(".gc-pct"));
+}
+
+async function initLiveCards() {
+  const cards = [...document.querySelectorAll(".gc[data-start]")];
+  const site = gcLiveSite();
+  if (!cards.length || !site) return;
+  const days = [...new Set(cards.map(c => c.dataset.day).filter(Boolean))];
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const refresh = async () => {
+    const started = cards.filter(c => { const t = new Date(c.dataset.start).getTime();
+      return Number.isFinite(t) ? t <= Date.now() : c.dataset.day <= today; });
+    if (!started.length) return false;
+    const events = await gcLiveEvents(site, days.filter(d => d <= today));
+    let live = false;
+    started.forEach(c => {
+      const e = gcLiveMatch(c, events, site.sport);
+      if (!e || e.state === "pre") return;
+      gcLivePaint(c, e, site.sport);
+      if (e.state === "in") live = true;
+    });
+    return live;
+  };
+  const loop = async () => { if (await refresh()) setTimeout(loop, 60000); };
+  loop();
+}
+initLiveCards();

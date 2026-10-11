@@ -1928,3 +1928,5 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
   .slide-mark, .roll-reel { transition: none; }
   .roll-flash, .stamp.stamp-in, .skel i { animation: none; }
 }
+.gc-when.is-live { color: var(--miss); }
+.gc-when.is-live::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: var(--miss); vertical-align: 1px; }
