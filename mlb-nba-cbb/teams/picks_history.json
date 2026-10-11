@@ -5257,7 +5257,7 @@
     "starters": 0.083
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-10T23:22:49Z",
    "ml": {
     "team": "CLE",
@@ -5269,6 +5269,62 @@
     "value": false,
     "home_ml": -142,
     "away_ml": 127,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.704
+   },
+   "home_runs": 2,
+   "away_runs": 0,
+   "winner": "CLE"
+  },
+  {
+   "date": "2026-10-11",
+   "game_id": "849809",
+   "start": "2026-10-11T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "LAD",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "Los Angeles Dodgers",
+   "home_id": 158,
+   "away_id": 119,
+   "home_record": "103-59",
+   "away_record": "100-62",
+   "home_sp": {
+    "id": 694819,
+    "name": "Jacob Misiorowski",
+    "era": 1.86,
+    "ip": 178.7
+   },
+   "away_sp": {
+    "id": 669373,
+    "name": "Tarik Skubal",
+    "era": 2.68,
+    "ip": 164.7
+   },
+   "pick": "MIL",
+   "prob": 54.4,
+   "home_prob": 54.4,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.048,
+    "starters": -0.013
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-11T10:01:28Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": -113,
+    "prob": 54.4,
+    "book_prob": 50.6,
+    "edge": 3.8,
+    "value": false,
+    "home_ml": -113,
+    "away_ml": -107,
     "book": "DraftKings",
     "won": null,
     "units": null
