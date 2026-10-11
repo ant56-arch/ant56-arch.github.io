@@ -698,6 +698,7 @@ def td_price_bits(r):
     return f" Book: {moneyline.format_price(r['price'])}, {r['book_prob'] * 100:.0f}% with the vig taken out.{edge}"
 
 TD_SHOW_PER_GAME = 5      # players shown on each game card before "Show all"
+TD_SHOW_RANKED = 25       # players shown on the slate-wide ranking before "Show all"
 TD_MIN_PROB = 0.10        # players under this chance are left off the cards
 TD_MAX_PER_TEAM = 8       # and no team lists more than this many
 TD_DETAILS_PATH = os.path.join(PROCESSED_DIR, "td_details.json")
@@ -851,12 +852,13 @@ def td_game_card(sport, g, rows_html, n_more_html, n, defense):
     </section>"""
 
 def td_upcoming_list(sport, props, td_log):
-    """This week's games as cards: each game's most likely scorers, ranked
-    across the slate, with the book's price and the numbers behind them."""
+    """This week's most likely scorers, two ways: one list ranked by TD chance
+    across the whole slate, and the same players grouped into game cards with
+    each game's line. Returns (ranked html, game cards html)."""
     empty = ('<div class="empty-state">No games to project right now. TD picks come back with the next NFL game; '
              'last results are in the week tabs.</div>')
     if props.empty or "td_prob" not in props.columns or props["td_prob"].notna().sum() == 0:
-        return empty
+        return empty, empty
     p = props.dropna(subset=["td_prob"]).copy()
     cols = ["player_id", "price", "book_prob", "edge", "value", "kickoff"]
     if not td_log.empty:
@@ -876,7 +878,7 @@ def td_upcoming_list(sport, props, td_log):
     p = p[(p["td_prob"] >= TD_MIN_PROB) | p["value"]].sort_values("td_prob", ascending=False)
     p = p.groupby("team", group_keys=False).head(TD_MAX_PER_TEAM).reset_index(drop=True)
     if p.empty:
-        return empty
+        return empty, empty
     p["rank"] = np.arange(1, len(p) + 1)
     details = load_td_details()
     players, defense = details.get("players", {}), details.get("defense", {})
@@ -907,7 +909,15 @@ def td_upcoming_list(sport, props, td_log):
         shown, rest = rows[:TD_SHOW_PER_GAME], rows[TD_SHOW_PER_GAME:]
         more = (f'<details class="tdg-more"><summary>Show all {len(rows)} players</summary>{"".join(rest)}</details>' if rest else "")
         html += td_game_card(sport, g, "".join(shown), more, len(rows), defense)
-    return f'<div class="tdg-grid">{html}</div>'
+    ranked = [td_player_row(int(r["rank"]), r, sport, players.get(r["player_id"]), defense) for _, r in p.iterrows()]
+    shown, rest = ranked[:TD_SHOW_RANKED], ranked[TD_SHOW_RANKED:]
+    more = (f'<details class="tdg-more"><summary>Show all {len(ranked)} players</summary>{"".join(rest)}</details>' if rest else "")
+    ranked_html = f"""<section class="tdg">
+      <header class="tdg-head"><div class="tdg-teams">Most likely to score</div>
+        <div class="tdg-when">Every game this week, ranked by TD chance &middot; tap a player for the numbers</div></header>
+      <div class="tdg-list">{"".join(shown)}{more}</div>
+    </section>"""
+    return ranked_html, f'<div class="tdg-grid">{html}</div>'
 
 def td_roster_faces():
     """gsis_id -> (full name, headshot url) from the current roster."""
@@ -1049,7 +1059,8 @@ def build_td_page(sport, props):
         with open(TD_SUMMARY_PATH) as f:
             summary = json.load(f)
     band = td_record_band(summary) if summary else ""
-    panels = [("td-week", "This week", td_upcoming_list(sport, props, td_log))]
+    ranked, by_game = td_upcoming_list(sport, props, td_log)
+    panels = [("td-week", "Most likely", ranked), ("td-games", "By game", by_game)]
     if not td_log.empty:
         g = td_log[td_log["result"].isin(["W", "L", "void"]) & (td_log["value"].astype(bool) | td_log["top10"].astype(bool))]
         weeks = g[["season", "week"]].drop_duplicates().sort_values(["season", "week"], ascending=False).head(TD_RESULT_WEEKS)
