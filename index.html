@@ -259,6 +259,16 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 .foot-links a { text-decoration: none; }
 .foot-links a:hover { color: var(--ink); }
 .slate[hidden] { display: none; }
+#tabs a { padding-bottom: 4px; border-bottom: 1px solid transparent; }
+#tabs a[aria-current="page"] { opacity: 1; border-bottom-color: currentColor; }
+@media (max-width: 860px) {
+  .nav { flex-wrap: wrap; row-gap: 10px; }
+  .nav ul#tabs { display: flex; order: 3; flex: 1 0 100%; margin: 0; gap: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .nav ul#tabs::-webkit-scrollbar { display: none; }
+  .nav ul#tabs a { white-space: nowrap; }
+  .hero { padding-top: 160px; }
+}
+.record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -267,13 +277,15 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
     <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>
     EDGE
   </a>
-  <ul class="mono">
-    <li><a href="#record">Record</a></li>
-    <li><a href="#slate">Today</a></li>
-    <li><a href="#value">Value</a></li>
-    <li><a href="#method">Model</a></li>
-    <li><a href="#leagues">Leagues</a></li>
-    <li><a href="#calendar">Results</a></li>
+  <ul class="mono" id="tabs">
+    <li><a href="/">All</a></li>
+    <li><a href="/?l=nfl">NFL</a></li>
+    <li><a href="/?l=cfb">CFB</a></li>
+    <li><a href="/?l=mlb">MLB</a></li>
+    <li><a href="/?l=nhl">NHL</a></li>
+    <li><a href="/?l=nba">NBA</a></li>
+    <li><a href="/?l=cbb">CBB</a></li>
+    <li><a href="/?l=soccer">Soccer</a></li>
   </ul>
   <a class="pill" href="#slate">Today's picks</a>
 </nav>
@@ -282,12 +294,12 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
   <canvas id="heroArt" aria-hidden="true"></canvas>
   <div class="hero-row">
     <div>
-      <div class="eyebrow mono">Seven leagues · One model each</div>
-      <h1><span class="ln"><span>Picks,</span></span><span class="ln"><span>measured.</span></span></h1>
+      <div class="eyebrow mono" id="heroEyebrow">Seven leagues · One model each</div>
+      <h1><span class="ln"><span id="heroL1">Picks,</span></span><span class="ln"><span>measured.</span></span></h1>
     </div>
     <div class="hero-side">
       <span class="it">Every game priced by our own numbers before the market has its say.</span>
-      <p>Daily picks for the NFL, college football, MLB, the NBA, the NHL, college basketball and European soccer, graded in public the night they finish.</p>
+      <p id="heroSide">Daily picks for the NFL, college football, MLB, the NBA, the NHL, college basketball and European soccer, graded in public the night they finish.</p>
     </div>
   </div>
   <div class="hero-bar mono">
@@ -378,8 +390,8 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
   </section>
 
   <section id="leagues">
-    <div class="sec-head mono"><span class="num">05<b>The leagues</b></span><span>Seven sites, one record</span></div>
-    <h2>A model for <em>every season.</em></h2>
+    <div class="sec-head mono"><span class="num">05<b id="lgHead">The leagues</b></span><span id="lgSub">Seven sites, one record</span></div>
+    <h2 id="lgH2">A model for <em>every season.</em></h2>
     <div class="leagues" id="leagueGrid"></div>
   </section>
 
@@ -414,6 +426,68 @@ const SITES = [
 ];
 const BOARD_ORDER = ["NHL", "MLB", "NFL", "CFB", "Soccer", "NBA", "CBB"];
 
+// One tab per league (/?l=nfl): the same page, filtered to that league.
+const LEAGUE = {
+  NFL: { kind: "pitch", word: "Kickoffs,", start: "kickoff", season: "Football", pages: [
+    ["index.html", "Game board", "Every game this week as a card: our line, Vegas's line and the pick."],
+    ["teams.html", "Teams", "Schedule-adjusted ratings for all 32 teams."],
+    ["players.html", "Players", "Top 10s and the anytime touchdown scorers."],
+    ["td.html", "TD Props", "Anytime touchdown picks with book prices."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the NFL model works."]] },
+  CFB: { kind: "pitch", word: "Saturdays,", start: "kickoff", season: "Football", pages: [
+    ["index.html", "Game board", "Every FBS game with a line this week."],
+    ["teams.html", "Teams", "Every FBS team and its schedule."],
+    ["ratings.html", "Ratings", "Our own power ratings for 138 teams."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the CFB model works."]] },
+  MLB: { kind: "park", word: "Innings,", start: "first pitch", season: "Baseball", pages: [
+    ["index.html", "Home", "Both records, today's top hitters and games."],
+    ["games.html", "Games", "A pick in every game, with the price."],
+    ["players.html", "Player Hits", "Top hitters to get a hit, and every hitter we rate."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How both MLB models work."]] },
+  NHL: { kind: "ice", word: "Periods,", start: "puck drop", season: "Hockey", pages: [
+    ["index.html", "Game board", "Every game today as a card, with the pick."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the NHL model works."]] },
+  NBA: { kind: "court", word: "Quarters,", start: "tip-off", season: "Basketball", pages: [
+    ["index.html", "Game board", "Every game as a card, with the pick."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the NBA model works."]] },
+  CBB: { kind: "court", word: "Halves,", start: "tip-off", season: "Basketball", pages: [
+    ["index.html", "Game board", "Every game as a card, with the pick."],
+    ["ratings.html", "Ratings", "KenPom-style ratings for every team."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the CBB model works."]] },
+  Soccer: { kind: "pitch", word: "Matches,", start: "kickoff", season: "Soccer", pages: [
+    ["index.html", "Game board", "Premier League, La Liga and Champions League, by competition."],
+    ["history.html", "History", "Every pick we've posted, graded."],
+    ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
+    ["model.html", "Model", "How the soccer model works, draws included."]] },
+};
+const LG = (() => {
+  const q = (new URLSearchParams(location.search).get("l") || "").toLowerCase();
+  const s = SITES.find(x => x.lg.toLowerCase() === q);
+  return s ? s.lg : "All";
+})();
+const SITE = SITES.find(s => s.lg === LG);
+document.querySelectorAll("#tabs a").forEach(a => {
+  const q = (new URL(a.href).searchParams.get("l") || "").toLowerCase();
+  if (q === (LG === "All" ? "" : LG.toLowerCase())) a.setAttribute("aria-current", "page");
+});
+if (LG !== "All") {
+  document.title = `${LG} Edge | Sports Edge`;
+  $("heroEyebrow").textContent = `${LG} Edge · One model, every game`;
+  $("heroL1").textContent = LEAGUE[LG].word;
+  $("heroSide").textContent = SITE.about + " Graded in public the night each game finishes.";
+}
+
 const dayKey = d => new Intl.DateTimeFormat("en-CA", { timeZone: ET, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 const etTime = iso => new Date(iso).toLocaleTimeString("en-US", { timeZone: ET, hour: "numeric", minute: "2-digit" });
 const etHour = iso => +new Intl.DateTimeFormat("en-US", { timeZone: ET, hour: "numeric", hourCycle: "h23" }).format(new Date(iso));
@@ -442,6 +516,7 @@ addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 // ---------- Hero: a ballpark under lights, drawn on canvas ----------
 function drawHero() {
+  if (LG !== "All" && LEAGUE[LG].kind !== "park") { edgeStadium($("heroArt"), LEAGUE[LG].kind); return; }
   const c = $("heroArt"), r = c.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
   c.width = r.width * dpr; c.height = r.height * dpr;
   const x = c.getContext("2d"); x.scale(dpr, dpr);
@@ -488,6 +563,113 @@ function drawHero() {
   g = x.createLinearGradient(0, hz - 60, 0, hz + 80); g.addColorStop(0, "rgba(255,230,190,0)"); g.addColorStop(.5, "rgba(255,230,190,.10)"); g.addColorStop(1, "rgba(255,230,190,0)");
   x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
   for (let i = 0; i < W * H / 90; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * .035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
+}
+function edgeStadium(c, kind) {
+  const r = c.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const W = r.width, H = r.height, hz = H * (kind === "park" || kind === "pitch" ? 0.5 : 0.46);
+  const indoor = kind === "ice" || kind === "court";
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  let g = x.createLinearGradient(0, 0, 0, hz);
+  if (indoor) { g.addColorStop(0, "#07090A"); g.addColorStop(0.7, "#141A1C"); g.addColorStop(1, "#2A2620"); }
+  else { g.addColorStop(0, "#0B1418"); g.addColorStop(0.55, "#1D2A33"); g.addColorStop(0.85, "#6B4A3A"); g.addColorStop(1, "#C98A55"); }
+  x.fillStyle = g; x.fillRect(0, 0, W, hz + 2);
+  if (indoor) {
+    // roof trusses
+    x.strokeStyle = "rgba(242,238,230,.06)"; x.lineWidth = 1;
+    for (let i = 0; i <= 14; i++) { x.beginPath(); x.moveTo(W * i / 14, 0); x.lineTo(W * 0.5 + (i - 7) * W * 0.03, hz - 90); x.stroke(); }
+    // scoreboard
+    const sw = Math.min(160, W * 0.18);
+    x.fillStyle = "#0C100E"; x.fillRect(W / 2 - sw / 2, H * 0.06, sw, sw * 0.42);
+    x.fillStyle = "rgba(229,157,114,.55)"; x.fillRect(W / 2 - sw / 2 + 6, H * 0.06 + 6, sw - 12, 3);
+  } else {
+    x.fillStyle = "#2A2F33";
+    x.beginPath(); x.moveTo(0, hz);
+    for (let i = 0; i <= 12; i++) x.lineTo(W * i / 12, hz - 20 - Math.sin(i * 1.7) * 14 - Math.cos(i * 0.9) * 10);
+    x.lineTo(W, hz); x.fill();
+  }
+  // the stands, a long low bowl, and the crowd in them
+  g = x.createLinearGradient(0, hz - 70, 0, hz + 30); g.addColorStop(0, "#1B2420"); g.addColorStop(1, "#0F1613");
+  x.fillStyle = g;
+  x.beginPath(); x.moveTo(-20, hz + 30); x.lineTo(-20, hz - 30);
+  x.quadraticCurveTo(W * 0.5, hz - (indoor ? 150 : 110), W + 20, hz - 30); x.lineTo(W + 20, hz + 30); x.fill();
+  const crowd = Math.min(2600, W * 1.2);
+  for (let i = 0; i < crowd; i++) {
+    const px = rnd() * W, t = px / W, top = hz - 30 - Math.sin(t * Math.PI) * (indoor ? 105 : 70);
+    const py = top + rnd() * (hz + 26 - top);
+    x.fillStyle = `rgba(${200 + rnd() * 55},${170 + rnd() * 60},${140 + rnd() * 60},${0.08 + rnd() * 0.22})`;
+    x.fillRect(px, py, 1.2, 1.2);
+  }
+  // the playing surface
+  const top = hz + 20;
+  if (kind === "ice") {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#9FB3BC"); g.addColorStop(1, "#56666C");
+  } else if (kind === "court") {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#8A6440"); g.addColorStop(1, "#3E2A19");
+  } else {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#2E5A33"); g.addColorStop(1, "#14301B");
+  }
+  x.fillStyle = g; x.fillRect(0, top, W, H);
+  const stripe = (w0, w1, a, b) => {
+    for (let i = -14; i < 26; i++) {
+      x.fillStyle = i % 2 ? a : b;
+      x.beginPath();
+      x.moveTo(W * 0.5 + i * w0, top); x.lineTo(W * 0.5 + (i + 1) * w0, top);
+      x.lineTo(W * 0.5 + (i + 1) * w1, H); x.lineTo(W * 0.5 + i * w1, H); x.fill();
+    }
+  };
+  if (kind === "court") stripe(14, 90, "rgba(255,255,255,.025)", "rgba(0,0,0,.05)");
+  else if (kind !== "ice") stripe(40, 260, "rgba(255,255,255,.035)", "rgba(0,0,0,.05)");
+  // a horizon-to-viewer line at fraction f across the field, in perspective
+  const across = (f, color, w) => {
+    const y = top + (H - top) * f;
+    x.strokeStyle = color; x.lineWidth = w || 1.2;
+    x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke();
+  };
+  const line = "rgba(242,238,230,.24)";
+  if (kind === "park") {
+    x.strokeStyle = line; x.lineWidth = 1.2;
+    x.beginPath(); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.05, hz + 40); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.95, hz + 40); x.stroke();
+    x.fillStyle = "rgba(160,104,64,.55)";
+    x.beginPath(); x.ellipse(W * 0.5, H * 0.9, W * 0.2, H * 0.12, 0, Math.PI, 2 * Math.PI); x.fill();
+  } else if (kind === "pitch") {
+    [0.08, 0.2, 0.36, 0.58, 0.86].forEach(f => across(f, line, 1 + f));
+    x.strokeStyle = line; x.lineWidth = 1.4;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.36, W * 0.09, (H - top) * 0.07, 0, 0, 2 * Math.PI); x.stroke();
+  } else if (kind === "ice") {
+    across(0.42, "rgba(176,40,40,.65)", 4);
+    across(0.18, "rgba(40,80,170,.55)", 3);
+    across(0.78, "rgba(40,80,170,.55)", 4);
+    x.strokeStyle = "rgba(176,40,40,.6)"; x.lineWidth = 2;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.42, W * 0.08, (H - top) * 0.09, 0, 0, 2 * Math.PI); x.stroke();
+  } else if (kind === "court") {
+    across(0.4, line, 2);
+    x.strokeStyle = line; x.lineWidth = 2;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.4, W * 0.07, (H - top) * 0.1, 0, 0, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, H * 1.02, W * 0.28, (H - top) * 0.32, 0, Math.PI, 2 * Math.PI); x.stroke();
+  }
+  // light towers outdoors, a ring of lamps indoors, each with its glow
+  const lamps = indoor ? [[0.2, 0.2], [0.4, 0.14], [0.6, 0.14], [0.8, 0.2]] : [[0.12, 0.16], [0.3, 0.1], [0.7, 0.1], [0.88, 0.16]];
+  lamps.forEach(([fx, fy]) => {
+    const lx = W * fx, ly = H * fy;
+    const glow = x.createRadialGradient(lx, ly, 0, lx, ly, W * (indoor ? 0.16 : 0.22));
+    glow.addColorStop(0, "rgba(255,240,205,.55)"); glow.addColorStop(0.12, "rgba(255,226,170,.18)"); glow.addColorStop(1, "rgba(255,220,160,0)");
+    x.fillStyle = glow; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#FFF6E2";
+    if (indoor) { x.fillRect(lx - 9, ly - 2, 18, 4); return; }
+    x.fillStyle = "#0C110F"; x.fillRect(lx - 1.5, ly, 3, hz - ly);
+    x.fillStyle = "#FFF6E2";
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) x.fillRect(lx - 14 + i * 7.5, ly - 8 + j * 6, 5, 4);
+  });
+  // haze and film grain
+  g = x.createLinearGradient(0, hz - 60, 0, hz + 80); g.addColorStop(0, "rgba(255,230,190,0)"); g.addColorStop(0.5, "rgba(255,230,190,.10)"); g.addColorStop(1, "rgba(255,230,190,0)");
+  x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
+  const grain = Math.min(30000, W * H / 90);
+  for (let i = 0; i < grain; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * 0.035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
 }
 drawHero();
 let rz, lastW = innerWidth;
@@ -743,10 +925,69 @@ function slateText(games, key, isToday) {
   return { games, date, h2, lede };
 }
 
+// A league tab's record section: all-time and season rows, its own stats.
+function leagueTop(s, today) {
+  const info = LEAGUE[LG];
+  $("recHead").textContent = `${LG} · ${info.season}`;
+  $("boardYear").textContent = `${LG} picks to win`;
+  document.querySelector(".board th").textContent = "Span";
+  $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
+  const src = LG === "MLB" ? s && s.games : s;
+  const rows = [];
+  const row = (label, r, st) => { const x = r && wl(r.value); if (x && x[0] + x[1]) rows.push({ label, w: x[0], l: x[1], st }); };
+  if (src) {
+    const st = src.ml_streak && src.ml_streak.n ? `${src.ml_streak.kind}${src.ml_streak.n}` : "—";
+    row("All-time", src.record, st);
+    if (src.season_record && src.season_record.value !== (src.record || {}).value) row(`${src.season_record.season} season`, src.season_record, "—");
+    else if (src.season_record) row(`${src.season_record.season} season`, src.season_record, st);
+    if (LG === "MLB") row("Top hitters", s.record, "—");
+  }
+  $("boardRows").innerHTML = rows.map(b => { const pct = b.w / (b.w + b.l) * 100; return `<tr><td>${b.label}</td><td>${b.w}-${b.l}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (pct - 40) / 40 * 100))}%"></i></span>${pct.toFixed(1)}%</td><td><span class="streak">${b.st}</span></td></tr>`; }).join("");
+  const main = rows[0];
+  if (!main) {
+    $("statement").innerHTML = `No ${LG} picks graded yet. ${esc(SITE.wait || "Picks start soon.")} Every one will be <em>posted before</em> the ${info.start}, and we'll <em>grade</em> every one of them.`;
+    lightStatement();
+    document.querySelector(".record-grid").hidden = true;
+    $("heroTally").textContent = SITE.wait || "Picks start soon";
+    return;
+  }
+  const N = main.w + main.l, since = src.record.since ? new Date(src.record.since) : null;
+  const sinceMonth = since && !isNaN(since) ? since.toLocaleDateString("en-US", { month: "long" }) : "the start";
+  $("statement").innerHTML = `${Words(N)} ${LG} games picked since ${sinceMonth}, every one <em>posted before</em> the ${info.start}. We don't bury the misses. We <em>grade</em> every one of them.`;
+  lightStatement();
+  $("heroTally").textContent = `${N} games graded · ${(main.w / N * 100).toFixed(1)}% right`;
+  const stats = [[`${main.w}-${main.l}`, `${LG} picks to win since ${src.record.since || "we started"}`]];
+  if (LG === "MLB" && s.record) { const h = wl(s.record.value); if (h) stats.push([`${h[0]}`, `top hitters who got a hit, out of ${h[0] + h[1]} picked (${(h[0] / (h[0] + h[1]) * 100).toFixed(1)}%)`]); }
+  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, `moneyline picks ${src.ml_streak.kind === "W" ? "won" : "lost"} in a row going into today`]);
+  const last = s.last && s.last.games && s.last.games.length ? s.last : null;
+  if (last) {
+    const lw = last.games.filter(g => g.hit === true).length, ll = last.games.filter(g => g.hit === false).length;
+    stats.push([`${lw}-${ll}`, `on ${longDate(last.date, { weekday: "long", month: "short", day: "numeric" })}`]);
+  }
+  $("stats").innerHTML = stats.map(([b, t]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("");
+}
+
+// A league tab's section 05: that league's own pages.
+function leaguePages(s) {
+  $("lgHead").textContent = `More ${LG}`;
+  $("lgSub").textContent = `${LG} Edge`;
+  $("lgH2").innerHTML = `Everything <em>${LG}.</em>`;
+  const base = SITE.href.replace(/index\.html$/, "");
+  $("leagueGrid").innerHTML = LEAGUE[LG].pages.map(([f, name, about], i) => `
+    <a class="league${i === 0 ? " feat" : ""}" href="${base}${f}">
+      <div class="lt mono"><span>${LG}</span><span>${String(i + 1).padStart(2, "0")}</span></div>
+      <h3>${name}</h3>
+      <p>${about}</p>
+      <div class="wait">Open →</div>
+    </a>`).join("");
+}
+
 function render(sums) {
   const by = {}; SITES.forEach((s, i) => by[s.lg] = sums[i]);
   const today = dayKey(new Date());
 
+  if (LG !== "All") leagueTop(by[LG], today);
+  else {
   // Board: picks to win per league, with the moneyline streak.
   const board = [];
   BOARD_ORDER.forEach(lg => {
@@ -781,9 +1022,10 @@ function render(sums) {
   const hot = board.filter(b => b.kind === "W").sort((a, b) => b.n - a.n)[0];
   if (hot) stats.push([`W${hot.n}`, `${hot.lg} moneyline picks won in a row going into today`]);
   $("stats").innerHTML = stats.map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("");
+  }
 
   // Slate: today, and the next day with games.
-  const all = slateGames(sums);
+  const all = slateGames(sums).filter(g => LG === "All" || g.sp === LG);
   const days = [...new Set(all.filter(g => g.date >= today).map(g => g.date))].sort();
   const todayGames = all.filter(g => g.date === today);
   const nextKey = days.find(d => d > today);
@@ -797,14 +1039,14 @@ function render(sums) {
   const start = SLATES.today ? "today" : (SLATES.next ? "next" : null);
   if (start) setDay(start, false);
   else {
-    $("slateH2").innerHTML = "No games <em>on the card.</em>"; $("slateLede").textContent = "Check back when the next slate is posted.";
-    document.querySelector(".slate").hidden = true;
+    $("slate").hidden = true;
   }
 
   // Value picks: the slate's Value tags, biggest gap first, up to three.
   const vsrc = (SLATES[start] || { games: [] }).games;
   const VAL = vsrc.filter(g => g.value && g.book).sort((a, b) => (b.prob - b.book) - (a.prob - a.book)).slice(0, 3);
   const vn = vsrc.filter(g => g.value).length;
+  $("value").hidden = LG !== "All" && !vsrc.length;
   $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "next" ? label(nextKey).toLowerCase() : "today"}`;
   $("valH2").innerHTML = VAL.length ? `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} the market <em>left on the table.</em>` : `No prices left <em>on the table.</em>`;
   if (!VAL.length) $("valLede").textContent = "No pick on this slate clears the six-point Value bar. Our numbers and the market are close on every game.";
@@ -821,7 +1063,9 @@ function render(sums) {
     </article>`).join("");
   drawValueArt();
 
-  // Leagues.
+  // Leagues (on a league tab: that league's own pages).
+  if (LG !== "All") leaguePages(by[LG]);
+  else {
   const month = +today.slice(5, 7);
   const leagues = [];
   SITES.forEach(site => {
@@ -841,10 +1085,11 @@ function render(sums) {
       <p>${l.about}</p>
       ${l.rec ? `<div class="lrec"><b>${l.rec}</b><span>${l.sub}</span></div>` : `<div class="wait">${l.wait}</div>`}
     </a>`).join("");
+  }
 
   // Calendar: the last six days with graded team picks.
   const perDay = {};
-  BOARD_ORDER.forEach(lg => {
+  BOARD_ORDER.filter(lg => LG === "All" || lg === LG).forEach(lg => {
     const s = by[lg]; const src = lg === "MLB" ? s && s.games : s;
     (src && src.daily || []).forEach(([d, w, l]) => {
       if (d >= today) return;
@@ -863,7 +1108,8 @@ function render(sums) {
     const [topLg, [tw, tl]] = order[0];
     const lgName = topLg === "Soccer" ? "Soccer" : topLg;
     let head;
-    if (c.w + c.l === biggest && cal.length > 2 && c.w + c.l >= 20) head = "The busiest day of the run";
+    if (LG !== "All") head = c.w === c.l ? "An even day" : (c.w + c.l >= 6 && c.w / (c.w + c.l) >= 0.7) ? `${Words(c.w)} of ${words(c.w + c.l)} right` : c.w + c.l === biggest && cal.length > 2 ? "The busiest day of the run" : c.w > c.l ? "A winning day" : "A losing day";
+    else if (c.w + c.l === biggest && cal.length > 2 && c.w + c.l >= 20) head = "The busiest day of the run";
     else if (c.w === c.l) head = "An even day";
     else if (tw + tl >= 6 && tw / (tw + tl) >= 0.7) head = `${Words(tw)} of ${words(tw + tl)} in the ${lgName}`;
     else if ((tw + tl) / (c.w + c.l) >= 0.6 && tw > tl) head = `${lgName} does the work`;
@@ -876,6 +1122,7 @@ function render(sums) {
       <div class="wl${c.w > c.l ? " up" : ""}">${c.w}-${c.l}<small>${Math.round(c.w / (c.w + c.l) * 100)}% right</small></div>
     </li>`;
   }).join("");
+  $("calendar").hidden = !cal.length;
   $("footDate").textContent = "Figures from the live sites, " + longDate(today, { month: "short", day: "numeric", year: "numeric" });
 }
 
