@@ -371,8 +371,8 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 
   <section id="value">
     <div class="sec-head mono"><span class="num">03<b>Value picks</b></span><span id="valCount"></span></div>
-    <h2 id="valH2">Prices the market <em>left on the table.</em></h2>
-    <p class="lede" id="valLede">A pick gets the Value tag when our win chance is at least six points higher than what the sportsbook's price implies.</p>
+    <h2 id="valH2">Prices Vegas <em>left on the table.</em></h2>
+    <p class="lede" id="valLede">A pick gets the Value tag when we give a team a better chance to win than Vegas's odds do, by at least 6 percentage points. That means the price pays more than it should.</p>
     <div class="value-grid" id="valueGrid"></div>
   </section>
 
@@ -784,7 +784,7 @@ function drawField(g) {
       <rect x="120" y="540" width="560" height="5" fill="${css("--rule")}"/>
       <rect x="120" y="540" width="${560 * p}" height="5" fill="${css("--forest")}"/>
       ${g.book ? `<line x1="${120 + 560 * b}" y1="534" x2="${120 + 560 * b}" y2="551" stroke="${css("--clay")}" stroke-width="2"/>
-      <text x="${Math.min(640, Math.max(160, 120 + 560 * b))}" y="568" text-anchor="middle" fill="${css("--clay")}">BOOK ${g.book.toFixed(1)}%</text>` : ""}
+      <text x="${Math.min(640, Math.max(160, 120 + 560 * b))}" y="568" text-anchor="middle" fill="${css("--clay")}">VEGAS ${g.book.toFixed(1)}%</text>` : ""}
     </g>`);
 }
 
@@ -798,10 +798,10 @@ function autoNote(g) {
   const gap = g.prob - g.book;
   const pickName = g.pick === "Draw" ? "the draw" : g.pick;
   const other = g.pick === g.home ? g.away : g.home;
-  if (g.value) return `Value pick. We have ${pickName} at ${g.prob.toFixed(1)}%, ${gap.toFixed(1)} points higher than the ${g.book.toFixed(1)}% the price implies.`;
-  if (gap >= 2) return g.pick === "Draw" ? `We like the draw a little more than the market does, but not by enough for a Value tag.` : `We like ${g.pick} over ${other} a little more than the market does, but not by enough for a Value tag.`;
-  if (gap <= -2) return `We pick ${pickName} too, but the market likes them more than we do, so the price runs ahead of our numbers.`;
-  return `Our numbers and the market agree on ${pickName} within a couple of points.`;
+  if (g.value) return `Value pick. We give ${pickName} a ${g.prob.toFixed(1)}% chance to win. Vegas's odds (${fmtPrice(g.price)}) only give them ${g.book.toFixed(1)}%, so the bet pays more than our numbers say it should.`;
+  if (gap >= 2) return g.pick === "Draw" ? `We like the draw a little more than Vegas does, but not by enough for a Value tag.` : `We like ${g.pick} over ${other} a little more than Vegas does, but not by enough for a Value tag.`;
+  if (gap <= -2) return `Vegas likes ${pickName} even more than we do, so the bet pays less than our numbers say it should.`;
+  return `We and Vegas agree on ${pickName} within a couple of points.`;
 }
 function counts(games) {
   const c = { All: games.length, Value: games.filter(g => g.value).length };
@@ -1046,19 +1046,19 @@ function render(sums) {
   const vn = vsrc.filter(g => g.value).length;
   $("value").hidden = LG !== "All" && !vsrc.length;
   $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "next" ? label(nextKey).toLowerCase() : "today"}`;
-  $("valH2").innerHTML = VAL.length ? `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} the market <em>left on the table.</em>` : `No prices left <em>on the table.</em>`;
-  if (!VAL.length) $("valLede").textContent = "No pick on this slate clears the six-point Value bar. Our numbers and the market are close on every game.";
+  $("valH2").innerHTML = VAL.length ? `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} Vegas <em>left on the table.</em>` : `No prices left <em>on the table.</em>`;
+  if (!VAL.length) $("valLede").textContent = "No pick on this slate beats Vegas's odds by 6 percentage points or more. We and Vegas are close on every game.";
   $("valueGrid").innerHTML = VAL.map((g, i) => `
     <article class="vcard">
       <div class="vart" data-k="${i}" data-sp="${g.sp}"><canvas aria-hidden="true"></canvas>
         <div class="vtop mono"><span>${g.sp}</span><span>${g.t} ET</span></div>
-        <div><div class="vbig">+${(g.prob - g.book).toFixed(1)}</div><div class="mono" style="opacity:.8;margin-top:8px">Points over the book</div>
+        <div><div class="mono" style="opacity:.8;margin-bottom:8px">Our chance to win</div><div class="vbig">${Math.round(g.prob)}%</div><div class="mono" style="opacity:.8;margin-top:8px">Vegas odds say ${Math.round(g.book)}%</div>
           <div class="vmeter" aria-hidden="true"><i style="width:${g.prob}%"></i><b style="left:${g.book}%"></b></div></div>
       </div>
       <h3>${g.url ? `<a href="${esc(g.url)}">` : ""}${esc(g.pick)} ${fmtPrice(g.price)}${g.url ? "</a>" : ""}</h3>
       <div class="vline">${esc(g.away)} @ ${esc(g.home)}</div>
       <p>${esc(autoNote(g))}</p>
-      <div class="vfoot mono"><span>Ours ${g.prob.toFixed(1)}%</span><span>Book ${g.book.toFixed(1)}%</span></div>
+      <div class="vfoot mono"><span>Us ${g.prob.toFixed(1)}%</span><span>Vegas ${g.book.toFixed(1)}%</span></div>
     </article>`).join("");
   drawValueArt();
 
