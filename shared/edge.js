@@ -145,7 +145,7 @@ const EDGE_SETTINGS = [
   { group: "Display" },
   { k: "tz", label: "Time zone", on: "ET", choices: [["ET", "Eastern"], ["CT", "Central"], ["MT", "Mountain"], ["PT", "Pacific"], ["device", "My device"]] },
   { k: "odds", label: "Odds", on: "american", choices: [["american", "American (−150)"], ["decimal", "Decimal (1.67)"], ["percent", "Win chance (60%)"]] },
-  { k: "theme", label: "Theme", on: "dark", choices: [["dark", "Dark"], ["light", "Light"], ["device", "Match my device"]] },
+  { k: "theme", label: "Theme", on: "device", choices: [["light", "Paper (light)"], ["dark", "Night (dark)"], ["device", "Match my device"]] },
   { group: "Home page" },
   { k: "homeLayout", label: "Games view", on: "auto", choices: [["auto", "Slate"], ["cards", "Cards"], ["list", "List"]] },
   { k: "homeDay", label: "Opens on", on: "auto", choices: [["auto", "First day with games"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]] },
@@ -256,8 +256,148 @@ function edgeApplyTheme() {
   document.documentElement.dataset.theme = light ? "light" : "dark";
 }
 
+// ---------- Stadium hero ----------
+// Every page's masthead is a stadium under lights, drawn on a canvas: a
+// ballpark on the home page and MLB, an open-air stadium for football and
+// soccer, an indoor arena with ice or hardwood for hockey and basketball.
+// Seeded random, so the crowd and grain are the same on every visit.
+
+function edgeStadiumKind(sport) {
+  const s = String(sport || "").toUpperCase();
+  if (s === "NHL") return "ice";
+  if (s === "NBA" || s === "CBB") return "court";
+  if (s === "NFL" || s === "CFB" || s === "SOCCER") return "pitch";
+  return "park";
+}
+
+function edgeStadium(c, kind) {
+  const r = c.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const W = r.width, H = r.height, hz = H * (kind === "park" || kind === "pitch" ? 0.5 : 0.46);
+  const indoor = kind === "ice" || kind === "court";
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  let g = x.createLinearGradient(0, 0, 0, hz);
+  if (indoor) { g.addColorStop(0, "#07090A"); g.addColorStop(0.7, "#141A1C"); g.addColorStop(1, "#2A2620"); }
+  else { g.addColorStop(0, "#0B1418"); g.addColorStop(0.55, "#1D2A33"); g.addColorStop(0.85, "#6B4A3A"); g.addColorStop(1, "#C98A55"); }
+  x.fillStyle = g; x.fillRect(0, 0, W, hz + 2);
+  if (indoor) {
+    // roof trusses
+    x.strokeStyle = "rgba(242,238,230,.06)"; x.lineWidth = 1;
+    for (let i = 0; i <= 14; i++) { x.beginPath(); x.moveTo(W * i / 14, 0); x.lineTo(W * 0.5 + (i - 7) * W * 0.03, hz - 90); x.stroke(); }
+    // scoreboard
+    const sw = Math.min(160, W * 0.18);
+    x.fillStyle = "#0C100E"; x.fillRect(W / 2 - sw / 2, H * 0.06, sw, sw * 0.42);
+    x.fillStyle = "rgba(229,157,114,.55)"; x.fillRect(W / 2 - sw / 2 + 6, H * 0.06 + 6, sw - 12, 3);
+  } else {
+    x.fillStyle = "#2A2F33";
+    x.beginPath(); x.moveTo(0, hz);
+    for (let i = 0; i <= 12; i++) x.lineTo(W * i / 12, hz - 20 - Math.sin(i * 1.7) * 14 - Math.cos(i * 0.9) * 10);
+    x.lineTo(W, hz); x.fill();
+  }
+  // the stands, a long low bowl, and the crowd in them
+  g = x.createLinearGradient(0, hz - 70, 0, hz + 30); g.addColorStop(0, "#1B2420"); g.addColorStop(1, "#0F1613");
+  x.fillStyle = g;
+  x.beginPath(); x.moveTo(-20, hz + 30); x.lineTo(-20, hz - 30);
+  x.quadraticCurveTo(W * 0.5, hz - (indoor ? 150 : 110), W + 20, hz - 30); x.lineTo(W + 20, hz + 30); x.fill();
+  const crowd = Math.min(2600, W * 1.2);
+  for (let i = 0; i < crowd; i++) {
+    const px = rnd() * W, t = px / W, top = hz - 30 - Math.sin(t * Math.PI) * (indoor ? 105 : 70);
+    const py = top + rnd() * (hz + 26 - top);
+    x.fillStyle = `rgba(${200 + rnd() * 55},${170 + rnd() * 60},${140 + rnd() * 60},${0.08 + rnd() * 0.22})`;
+    x.fillRect(px, py, 1.2, 1.2);
+  }
+  // the playing surface
+  const top = hz + 20;
+  if (kind === "ice") {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#9FB3BC"); g.addColorStop(1, "#56666C");
+  } else if (kind === "court") {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#8A6440"); g.addColorStop(1, "#3E2A19");
+  } else {
+    g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#2E5A33"); g.addColorStop(1, "#14301B");
+  }
+  x.fillStyle = g; x.fillRect(0, top, W, H);
+  const stripe = (w0, w1, a, b) => {
+    for (let i = -14; i < 26; i++) {
+      x.fillStyle = i % 2 ? a : b;
+      x.beginPath();
+      x.moveTo(W * 0.5 + i * w0, top); x.lineTo(W * 0.5 + (i + 1) * w0, top);
+      x.lineTo(W * 0.5 + (i + 1) * w1, H); x.lineTo(W * 0.5 + i * w1, H); x.fill();
+    }
+  };
+  if (kind === "court") stripe(14, 90, "rgba(255,255,255,.025)", "rgba(0,0,0,.05)");
+  else if (kind !== "ice") stripe(40, 260, "rgba(255,255,255,.035)", "rgba(0,0,0,.05)");
+  // a horizon-to-viewer line at fraction f across the field, in perspective
+  const across = (f, color, w) => {
+    const y = top + (H - top) * f;
+    x.strokeStyle = color; x.lineWidth = w || 1.2;
+    x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke();
+  };
+  const line = "rgba(242,238,230,.24)";
+  if (kind === "park") {
+    x.strokeStyle = line; x.lineWidth = 1.2;
+    x.beginPath(); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.05, hz + 40); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.95, hz + 40); x.stroke();
+    x.fillStyle = "rgba(160,104,64,.55)";
+    x.beginPath(); x.ellipse(W * 0.5, H * 0.9, W * 0.2, H * 0.12, 0, Math.PI, 2 * Math.PI); x.fill();
+  } else if (kind === "pitch") {
+    [0.08, 0.2, 0.36, 0.58, 0.86].forEach(f => across(f, line, 1 + f));
+    x.strokeStyle = line; x.lineWidth = 1.4;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.36, W * 0.09, (H - top) * 0.07, 0, 0, 2 * Math.PI); x.stroke();
+  } else if (kind === "ice") {
+    across(0.42, "rgba(176,40,40,.65)", 4);
+    across(0.18, "rgba(40,80,170,.55)", 3);
+    across(0.78, "rgba(40,80,170,.55)", 4);
+    x.strokeStyle = "rgba(176,40,40,.6)"; x.lineWidth = 2;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.42, W * 0.08, (H - top) * 0.09, 0, 0, 2 * Math.PI); x.stroke();
+  } else if (kind === "court") {
+    across(0.4, line, 2);
+    x.strokeStyle = line; x.lineWidth = 2;
+    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.4, W * 0.07, (H - top) * 0.1, 0, 0, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, H * 1.02, W * 0.28, (H - top) * 0.32, 0, Math.PI, 2 * Math.PI); x.stroke();
+  }
+  // light towers outdoors, a ring of lamps indoors, each with its glow
+  const lamps = indoor ? [[0.2, 0.2], [0.4, 0.14], [0.6, 0.14], [0.8, 0.2]] : [[0.12, 0.16], [0.3, 0.1], [0.7, 0.1], [0.88, 0.16]];
+  lamps.forEach(([fx, fy]) => {
+    const lx = W * fx, ly = H * fy;
+    const glow = x.createRadialGradient(lx, ly, 0, lx, ly, W * (indoor ? 0.16 : 0.22));
+    glow.addColorStop(0, "rgba(255,240,205,.55)"); glow.addColorStop(0.12, "rgba(255,226,170,.18)"); glow.addColorStop(1, "rgba(255,220,160,0)");
+    x.fillStyle = glow; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#FFF6E2";
+    if (indoor) { x.fillRect(lx - 9, ly - 2, 18, 4); return; }
+    x.fillStyle = "#0C110F"; x.fillRect(lx - 1.5, ly, 3, hz - ly);
+    x.fillStyle = "#FFF6E2";
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) x.fillRect(lx - 14 + i * 7.5, ly - 8 + j * 6, 5, 4);
+  });
+  // haze and film grain
+  g = x.createLinearGradient(0, hz - 60, 0, hz + 80); g.addColorStop(0, "rgba(255,230,190,0)"); g.addColorStop(0.5, "rgba(255,230,190,.10)"); g.addColorStop(1, "rgba(255,230,190,0)");
+  x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
+  const grain = Math.min(30000, W * H / 90);
+  for (let i = 0; i < grain; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * 0.035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
+}
+
+function initStadium() {
+  const head = document.querySelector("header.masthead");
+  if (!head || head.querySelector("canvas.stadium")) return;
+  const c = document.createElement("canvas");
+  c.className = "stadium";
+  c.setAttribute("aria-hidden", "true");
+  head.prepend(c);
+  const kind = edgeStadiumKind(head.dataset.sport);
+  const draw = () => edgeStadium(c, kind);
+  draw();
+  let w = c.clientWidth, timer;
+  window.addEventListener("resize", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { if (c.clientWidth !== w) { w = c.clientWidth; draw(); } }, 150);
+  });
+}
+
 function initSiteSettings() {
   edgeApplyTheme();
+  initStadium();
   matchMedia("(prefers-color-scheme: light)").addEventListener("change", edgeApplyTheme);
   if (document.body) {
     edgeLocalize(document.body);

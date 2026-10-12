@@ -145,9 +145,7 @@ def graded(picks):
     return [p for p in picks if p.get("got_hit") is not None and not p.get("void")]
 
 # The Sports Edge brand mark in the top bar, same on every Edge site.
-BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/>'
-              '<path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" '
-              'fill="#121314"/></svg>')
+BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>')
 
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
@@ -172,7 +170,7 @@ def page_shell(title, active, body_html, charts=False):
 <link rel="icon" href="{FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={ver}">
 {chart_js}
 </head>
@@ -180,13 +178,13 @@ def page_shell(title, active, body_html, charts=False):
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="{HOME_URL}">{BRAND_MARK}<span class="brand-name">Sports <span>Edge</span></span></a>
+    <a class="brand" href="{HOME_URL}">{BRAND_MARK}<span class="brand-name">EDGE</span></a>
     <nav class="sport-switcher" aria-label="Sport">{switcher}</nav>
   </div>
 </header>
 <header class="masthead" data-sport="MLB">
   <div class="masthead-inner">
-    <h1 class="wordmark">MLB <span>EDGE</span></h1>
+    <h1 class="wordmark">MLB <span>Edge</span></h1>
     <div class="tagline">{TAGLINE}</div>
     <div class="updated-chip">Updated {NOW.strftime("%b %-d, %Y %-I:%M %p")} ET</div>
   </div>

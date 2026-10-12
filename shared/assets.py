@@ -14,9 +14,10 @@ home page, nfl-cfb/ and mlb-nba-cbb/:
 Each site publishes one style.css and one script built from these plus its
 own part:
 
-  home page        style.css = base.css + home-page.css
+  home page        style.css = base.css + home-page.css + morrow.css
                    home.js   = edge.js + home-page.js
-  sport sites      style.css = base.css + web/sport.css
+                   edge.js   (alone, for index.html's score ticker)
+  sport sites      style.css = base.css + web/sport.css + morrow.css
                    site.js   = web/sport.js + edge.js + sport-pages.js
 
 The builders call style() and script(); publish_site.sh runs this file to
@@ -40,8 +41,9 @@ def _join(paths):
 
 
 def style(own_css):
-    """A site's style.css: the shared base, then the site's own rules."""
-    return _join([os.path.join(SHARED, "base.css"), own_css])
+    """A site's style.css: the shared base, then the site's own rules, then
+    the Morrow skin (paper, stadium hero, editorial type) over both."""
+    return _join([os.path.join(SHARED, "base.css"), own_css, os.path.join(SHARED, "morrow.css")])
 
 
 def script(own_js):
@@ -55,8 +57,10 @@ def home_script():
 
 
 def write_home(out_dir):
-    """The home page's style.css and home.js, into out_dir."""
-    for name, text in (("style.css", style(os.path.join(ROOT, "home-page.css"))), ("home.js", home_script())):
+    """The home page's style.css and home.js, plus edge.js on its own for
+    index.html (the score ticker), into out_dir."""
+    for name, text in (("style.css", style(os.path.join(ROOT, "home-page.css"))), ("home.js", home_script()),
+                       ("edge.js", read(os.path.join(SHARED, "edge.js")))):
         with open(os.path.join(out_dir, name), "w", encoding="utf-8") as f:
             f.write(text)
 
