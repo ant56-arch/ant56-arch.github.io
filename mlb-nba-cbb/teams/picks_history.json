@@ -5313,7 +5313,7 @@
     "starters": -0.013
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-11T23:32:35Z",
    "ml": {
     "team": "MIL",
@@ -5325,6 +5325,115 @@
     "value": false,
     "home_ml": -103,
     "away_ml": -108,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.971
+   },
+   "home_runs": 2,
+   "away_runs": 1,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-12",
+   "game_id": "849812",
+   "start": "2026-10-12T17:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "LAD",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "Los Angeles Dodgers",
+   "home_id": 158,
+   "away_id": 119,
+   "home_record": "103-59",
+   "away_record": "100-62",
+   "home_sp": {
+    "id": 701656,
+    "name": "Logan Henderson",
+    "era": 2.44,
+    "ip": 103.3
+   },
+   "away_sp": {
+    "id": 808967,
+    "name": "Yoshinobu Yamamoto",
+    "era": 2.48,
+    "ip": 192.0
+   },
+   "pick": "MIL",
+   "prob": 53.1,
+   "home_prob": 53.1,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.057,
+    "starters": -0.075
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-12T10:51:27Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": 119,
+    "prob": 53.1,
+    "book_prob": 43.7,
+    "edge": 9.4,
+    "value": true,
+    "home_ml": 119,
+    "away_ml": -143,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-12",
+   "game_id": "849820",
+   "start": "2026-10-12T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "CLE",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Cleveland Guardians",
+   "home_id": 139,
+   "away_id": 114,
+   "home_record": "98-64",
+   "away_record": "85-77",
+   "home_sp": {
+    "id": 656876,
+    "name": "Drew Rasmussen",
+    "era": 2.55,
+    "ip": 180.0
+   },
+   "away_sp": {
+    "id": 656492,
+    "name": "Foster Griffin",
+    "era": 3.6,
+    "ip": 172.7
+   },
+   "pick": "TB",
+   "prob": 60.7,
+   "home_prob": 60.7,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.135,
+    "starters": 0.158
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-12T10:51:27Z",
+   "ml": {
+    "team": "TB",
+    "side": "home",
+    "price": -172,
+    "prob": 60.7,
+    "book_prob": 60.5,
+    "edge": 0.2,
+    "value": false,
+    "home_ml": -172,
+    "away_ml": 142,
     "book": "DraftKings",
     "won": null,
     "units": null
