@@ -201,7 +201,7 @@ function initEdgeCharts() {
     document.querySelectorAll(".chart-card").forEach(c => c.dataset.state = "failed");
     return;
   }
-  Chart.defaults.font.family = "'Barlow', 'Helvetica Neue', Arial, sans-serif";
+  Chart.defaults.font.family = "'Archivo', 'Helvetica Neue', Arial, sans-serif";
   Chart.defaults.animation = false;
   const formats = {
     pct: v => (v * 100).toFixed(0) + "%",

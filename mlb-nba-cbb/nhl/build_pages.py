@@ -123,7 +123,7 @@ def page_shell(title, active, body_html, charts=False):
 <link rel="icon" href="{FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={ver}">
 {chart_js}
 </head>
@@ -137,7 +137,7 @@ def page_shell(title, active, body_html, charts=False):
 </header>
 <header class="masthead" data-sport="NHL">
   <div class="masthead-inner">
-    <h1 class="wordmark">NHL <span>EDGE</span></h1>
+    <h1 class="wordmark">NHL <span>Edge</span></h1>
     <div class="tagline">{TAGLINE}</div>
     <div class="updated-chip">Updated {NOW.strftime("%b %-d, %Y %-I:%M %p")} ET</div>
   </div>

@@ -24,7 +24,7 @@ a.more-link:hover, .duo-note a:hover { text-decoration: underline; }
 .player-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; white-space: normal; }
 .why { font-size: 13px; color: var(--text-muted); white-space: normal; max-width: 44ch; }
 
-td.prob { font-family: var(--font-head); font-size: 24px; font-weight: 800; font-style: italic; color: var(--ours); }
+td.prob { font-family: var(--font-head); font-stretch: 112%; font-size: 24px; font-weight: 600; font-style: normal; color: var(--ours); }
 
 .player-cell { display: flex; align-items: center; gap: 10px; }
 
@@ -37,10 +37,10 @@ td.prob { font-family: var(--font-head); font-size: 24px; font-weight: 800; font
 .model-jump { margin-bottom: 8px; }
 .model-jump .subtab { text-decoration: none; }
 .model-group {
-  font-family: var(--font-head);
+  font-family: var(--font-head); font-stretch: 112%;
   font-size: 30px;
-  font-weight: 800;
-  font-style: italic;
+  font-weight: 600;
+  font-style: normal;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin: 28px 0 14px;

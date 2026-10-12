@@ -14,9 +14,9 @@ home page, nfl-cfb/ and mlb-nba-cbb/:
 Each site publishes one style.css and one script built from these plus its
 own part:
 
-  home page        style.css = base.css + home-page.css
+  home page        style.css = base.css + home-page.css + morrow.css
                    home.js   = edge.js + home-page.js
-  sport sites      style.css = base.css + web/sport.css
+  sport sites      style.css = base.css + web/sport.css + morrow.css
                    site.js   = web/sport.js + edge.js + sport-pages.js
 
 The builders call style() and script(); publish_site.sh runs this file to
@@ -40,8 +40,9 @@ def _join(paths):
 
 
 def style(own_css):
-    """A site's style.css: the shared base, then the site's own rules."""
-    return _join([os.path.join(SHARED, "base.css"), own_css])
+    """A site's style.css: the shared base, then the site's own rules, then
+    the Morrow skin (paper, stadium hero, editorial type) over both."""
+    return _join([os.path.join(SHARED, "base.css"), own_css, os.path.join(SHARED, "morrow.css")])
 
 
 def script(own_js):

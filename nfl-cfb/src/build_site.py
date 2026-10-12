@@ -431,7 +431,7 @@ def page_shell(sport, title, active_tab, body_html):
 <link rel="icon" href="{FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={ver}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
@@ -440,7 +440,7 @@ def page_shell(sport, title, active_tab, body_html):
 {top_bar(sport_switcher)}
 <header class="masthead" data-sport="{sport["wordmark"]}">
   <div class="masthead-inner">
-    <h1 class="wordmark">{sport["wordmark"]} <span>EDGE</span></h1>
+    <h1 class="wordmark">{sport["wordmark"]} <span>Edge</span></h1>
     <div class="tagline">{sport["tagline"]}</div>
     <div class="updated-chip">Updated {generated}</div>
   </div>
@@ -1625,7 +1625,7 @@ def root_page_shell(title, body_html):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title} | NFL Edge</title>
 <link rel="icon" href="{FAVICON}">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v={ver}">
 </head>
 <body>
