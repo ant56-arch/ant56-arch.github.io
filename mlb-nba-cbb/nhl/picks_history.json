@@ -3258,18 +3258,18 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-12T16:09:36Z",
+   "set_at": "2026-10-12T21:14:25Z",
    "ml": {
     "team": "OTT",
     "side": "away",
-    "price": 110,
+    "price": 102,
     "prob": 53.8,
-    "book_prob": 45.7,
-    "edge": 8.1,
+    "book_prob": 47.4,
+    "edge": 6.4,
     "value": true,
-    "home_ml": -130,
-    "away_ml": 110,
-    "book": "Draft Kings",
+    "home_ml": -122,
+    "away_ml": 102,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -3296,7 +3296,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-12T16:09:36Z",
+   "set_at": "2026-10-12T21:14:25Z",
    "ml": {
     "team": "MIN",
     "side": "home",
@@ -3307,7 +3307,7 @@
     "value": false,
     "home_ml": -112,
     "away_ml": -108,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
