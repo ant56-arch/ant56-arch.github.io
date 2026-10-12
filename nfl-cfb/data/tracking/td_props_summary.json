@@ -1,11 +1,11 @@
 {
   "season": 2026,
   "value": {
-    "wins": 7,
+    "wins": 8,
     "losses": 5,
-    "profit": 39.83,
-    "risked": 120,
-    "roi": 0.3319
+    "profit": 46.5,
+    "risked": 130,
+    "roi": 0.3577
   },
   "top10": {
     "scored": 10,
@@ -13,8 +13,8 @@
     "predicted": 0.623
   },
   "vs_book": {
-    "n": 477,
-    "our_brier": 0.1593,
-    "book_brier": 0.1547
+    "n": 492,
+    "our_brier": 0.1611,
+    "book_brier": 0.1566
   }
 }
