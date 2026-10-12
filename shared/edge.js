@@ -147,7 +147,7 @@ const EDGE_SETTINGS = [
   { k: "odds", label: "Odds", on: "american", choices: [["american", "American (−150)"], ["decimal", "Decimal (1.67)"], ["percent", "Win chance (60%)"]] },
   { k: "theme", label: "Theme", on: "dark", choices: [["dark", "Dark"], ["light", "Light"], ["device", "Match my device"]] },
   { group: "Home page" },
-  { k: "homeLayout", label: "Games view", on: "auto", choices: [["auto", "Cards (list on phones)"], ["cards", "Cards"], ["list", "List"]] },
+  { k: "homeLayout", label: "Games view", on: "auto", choices: [["auto", "Slate"], ["cards", "Cards"], ["list", "List"]] },
   { k: "homeDay", label: "Opens on", on: "auto", choices: [["auto", "First day with games"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]] },
 ];
 const EDGE_TZ = { ET: "America/New_York", CT: "America/Chicago", MT: "America/Denver", PT: "America/Los_Angeles" };
@@ -174,6 +174,7 @@ function edgeSettings() {
     try {
       const layout = localStorage.getItem("edge-home-layout");
       if (layout === "cards" || layout === "list") edgeTicker.settings.homeLayout = layout;
+      else if (layout === "slate") edgeTicker.settings.homeLayout = "auto";
     } catch (e) { /* storage blocked */ }
   }
   return edgeTicker.settings;
@@ -1007,4 +1008,292 @@ function edgeSpark(daily, days) {
   const box = edgeNode("div", "spk-box");
   box.append(wrap, edgeNode("span", "spk-cap", `Winning %, last ${run.length} days with picks`));
   return box;
+}
+
+// --- Slate picker (home page and each sport's game board) ---
+// One game at a time: a big number, the matchup, our pick, win chance and
+// price, a line of text written from the numbers, and a drawing of the
+// sport's field with both teams on it. Up to EDGE_SP_NUMBERED games are
+// numbered squares; past that, a list grouped by start time. Games use the
+// home page's shape: {key, sport, start, date, at, away/home: {abbr, name,
+// logo, score}, pick, pickName, prob, price, book, value, state ("pre", "in"
+// or "post"), hit, detail, url, why: [label, team it helps] or null}.
+const EDGE_SP_NUMBERED = 12;
+
+function edgeSpTime(g) {
+  if (!g.start) return "";
+  const tz = edgeTz();
+  return new Date(g.start).toLocaleTimeString("en-US", { timeZone: tz.timeZone, hour: "numeric", minute: "2-digit" }) + " " + tz.label;
+}
+
+function edgeSpDay(g) {
+  if (!g.start) return "";
+  return new Date(g.start).toLocaleDateString("en-US", { timeZone: edgeTz().timeZone, weekday: "short" });
+}
+
+// What the text under the numbers says, from the numbers alone.
+function edgePickNote(g) {
+  const name = abbr => abbr === g.away.abbr ? g.away.name : abbr === g.home.abbr ? g.home.name : abbr;
+  const scored = g.away.score != null && g.home.score != null;
+  const line = scored ? `${g.away.abbr} ${g.away.score}, ${g.home.abbr} ${g.home.score}` : "";
+  if (!g.pick) return g.state === "pre" ? "No pick yet. Our pick posts once the model has this game's lineups and prices." : "We didn't post a pick for this game.";
+  const pk = g.pick === "Draw" ? "a draw" : name(g.pick);
+  if (g.hit === true) return `Final${line ? ": " + line : ""}. Our pick, ${pk}, hit.`;
+  if (g.hit === false) return `Final${line ? ": " + line : ""}. Our pick, ${pk}, missed.`;
+  if (g.state === "in" && scored) {
+    if (g.pick === "Draw") return `Live: ${line}. We picked a draw.`;
+    const ours = g.pick === g.away.abbr ? g.away.score : g.home.score;
+    const theirs = g.pick === g.away.abbr ? g.home.score : g.away.score;
+    return `Live${g.detail ? ", " + g.detail : ""}: ${line}. Our pick, ${pk}, is ${ours > theirs ? "ahead" : ours < theirs ? "behind" : "tied"}.`;
+  }
+  if (g.state === "post") return `Final${line ? ": " + line : ""}. Grading this one shortly.`;
+  const p = g.prob.toFixed(0), them = g.pick === "Draw" ? "it" : "them";
+  let s;
+  if (g.book == null) s = `We have ${pk} at ${p}% to win. No price is posted yet, so there's nothing to compare it with.`;
+  else {
+    const gap = g.prob - g.book, b = g.book.toFixed(0);
+    if (g.value) s = `Value pick. We have ${pk} at ${p}%, ${gap.toFixed(0)} points higher than the ${b}% the price implies.`;
+    else if (gap >= 2) s = `We like ${pk} a little more than the market does, ${p}% to ${b}%, but not by enough for a Value tag.`;
+    else if (gap <= -2) s = `We pick ${pk} too, but the market likes ${them} more, ${b}% to our ${p}%, so the price runs ahead of our numbers.`;
+    else s = `Our numbers and the market agree on ${pk}, ${p}% to ${b}%.`;
+  }
+  if (g.why && g.why[0]) s += ` The biggest factor is ${g.why[0].toLowerCase()}, which helps ${name(g.why[1])}.`;
+  return s;
+}
+
+// The field, court, rink or pitch, drawn in an 800 x 500 box.
+function edgeSpField(sport) {
+  if (sport === "NHL") return `
+    <rect class="sp-turf" x="120" y="110" width="560" height="290" rx="110"/>
+    <line class="sp-red" x1="400" y1="110" x2="400" y2="400" stroke-width="3"/>
+    <line class="sp-blue" x1="315" y1="110" x2="315" y2="400" stroke-width="5"/><line class="sp-blue" x1="485" y1="110" x2="485" y2="400" stroke-width="5"/>
+    <line class="sp-red" x1="162" y1="122" x2="162" y2="388"/><line class="sp-red" x1="638" y1="122" x2="638" y2="388"/>
+    <circle class="sp-line" cx="400" cy="255" r="42"/>
+    <circle class="sp-line" cx="232" cy="185" r="30"/><circle class="sp-line" cx="232" cy="325" r="30"/>
+    <circle class="sp-line" cx="568" cy="185" r="30"/><circle class="sp-line" cx="568" cy="325" r="30"/>
+    <path class="sp-line" d="M162 235 a20 20 0 0 1 0 40"/><path class="sp-line" d="M638 235 a20 20 0 0 0 0 40"/>`;
+  if (sport === "MLB") return `<g transform="translate(0 -34)">
+    <path class="sp-turf" d="M400 450 L140 190 A370 370 0 0 1 660 190 Z"/>
+    <path class="sp-dirt" d="M400 450 L292 342 L400 234 L508 342 Z"/>
+    <circle class="sp-line" cx="400" cy="352" r="12"/>
+    <path class="sp-line sp-dash" d="M252 302 A210 210 0 0 1 548 302"/>
+    <rect class="sp-base" x="394" y="228" width="12" height="12"/><rect class="sp-base" x="502" y="336" width="12" height="12"/>
+    <rect class="sp-base" x="286" y="336" width="12" height="12"/><path class="sp-base" d="M392 444 h16 v8 l-8 8 l-8 -8 z"/></g>`;
+  if (sport === "Soccer") return `
+    <rect class="sp-turf" x="110" y="100" width="580" height="310"/>
+    <line class="sp-line" x1="400" y1="100" x2="400" y2="410"/><circle class="sp-line" cx="400" cy="255" r="48"/>
+    <rect class="sp-line" x="110" y="172" width="84" height="166"/><rect class="sp-line" x="606" y="172" width="84" height="166"/>
+    <rect class="sp-line" x="110" y="218" width="30" height="74"/><rect class="sp-line" x="660" y="218" width="30" height="74"/>
+    <path class="sp-line" d="M194 226 a32 32 0 0 1 0 58"/><path class="sp-line" d="M606 226 a32 32 0 0 0 0 58"/>`;
+  if (sport === "NBA" || sport === "CBB") return `
+    <rect class="sp-wood" x="110" y="110" width="580" height="290"/>
+    <line class="sp-line" x1="400" y1="110" x2="400" y2="400"/><circle class="sp-line" cx="400" cy="255" r="40"/>
+    <rect class="sp-paint" x="110" y="205" width="120" height="100"/><rect class="sp-paint" x="570" y="205" width="120" height="100"/>
+    <circle class="sp-line" cx="230" cy="255" r="40"/><circle class="sp-line" cx="570" cy="255" r="40"/>
+    <path class="sp-line" d="M110 130 H223 A150 150 0 0 1 223 380 H110"/><path class="sp-line" d="M690 130 H577 A150 150 0 0 0 577 380 H690"/>
+    <circle class="sp-red" cx="140" cy="255" r="7"/><circle class="sp-red" cx="660" cy="255" r="7"/>`;
+  // NFL and CFB
+  let yards = "";
+  for (let i = 0; i <= 10; i++) {
+    const x = 170 + i * 46;
+    yards += `<line class="sp-line" x1="${x}" y1="120" x2="${x}" y2="390" stroke-width="${i === 5 ? 2.5 : 1.2}"/>`;
+    if (i > 0 && i < 10) yards += `<text class="sp-yd" x="${x}" y="146" text-anchor="middle">${(i <= 5 ? i : 10 - i) * 10}</text>`;
+  }
+  return `<rect class="sp-turf" x="110" y="120" width="580" height="270"/>
+    <rect class="sp-end" x="110" y="120" width="60" height="270"/><rect class="sp-end" x="630" y="120" width="60" height="270"/>${yards}`;
+}
+
+function edgeSpMarker(g, t, x, side) {
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const isPick = g.pick === t.abbr;
+  const id = "spc" + Math.random().toString(36).slice(2, 8);
+  // The abbreviation sits under the logo, so it shows if the logo can't load.
+  const short = t.abbr.length > 4 ? t.abbr.slice(0, 4).toUpperCase() : t.abbr;
+  const art = `<text class="sp-abbr" x="${x}" y="261" text-anchor="middle">${esc(short)}</text>` + (t.logo
+    ? `<clipPath id="${id}"><circle cx="${x}" cy="255" r="25"/></clipPath><image href="${esc(t.logo)}" x="${x - 25}" y="230" width="50" height="50" clip-path="url(#${id})" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>`
+    : "");
+  const score = t.score != null ? `<text class="sp-score" x="${x}" y="345" text-anchor="middle">${esc(t.score)}</text>` : "";
+  const flag = isPick ? `<path class="sp-pole" d="M${x + 24} 196 v26"/><path class="sp-flag" d="M${x + 24} 196 l16 6 l-16 6 z"/>` : "";
+  return `<g class="sp-team${isPick ? " is-pick" : ""}"><circle class="sp-disc" cx="${x}" cy="255" r="32"/>${art}${flag}
+    <text class="sp-side" x="${x}" y="${t.score != null ? 307 : 312}" text-anchor="middle">${side}${isPick ? " · PICK" : ""}</text>${score}</g>`;
+}
+
+function edgeSpDrawing(g) {
+  const away = g.at === "vs" ? "" : "AWAY", home = g.at === "vs" ? "" : "HOME";
+  let bar = "";
+  if (g.pick && g.prob != null) {
+    const w = 560 * g.prob / 100;
+    bar = `<text class="sp-cap" x="120" y="452">OUR CHANCE</text><text class="sp-cap" x="680" y="452" text-anchor="end">${g.prob.toFixed(1)}%</text>
+      <rect class="sp-track" x="120" y="460" width="560" height="5"/><rect class="sp-fill" x="120" y="460" width="${w.toFixed(1)}" height="5"/>`;
+    if (g.book != null) {
+      const bx = 120 + 560 * g.book / 100;
+      bar += `<line class="sp-book" x1="${bx.toFixed(1)}" y1="454" x2="${bx.toFixed(1)}" y2="471"/>` +
+             `<text class="sp-cap sp-book-t" x="${Math.min(640, Math.max(160, bx)).toFixed(1)}" y="488" text-anchor="middle">VEGAS ${g.book.toFixed(1)}%</text>`;
+    }
+  }
+  return edgeSpField(g.sport) + edgeSpMarker(g, g.away, 262, away) + edgeSpMarker(g, g.home, 538, home) + bar;
+}
+
+// opts: {multiSport, filters, onSelect(key)}. Returns {el, set(games, key)}.
+function edgeSlatePicker(opts) {
+  opts = opts || {};
+  const st = { games: [], list: [], cur: 0, filter: "all", key: null };
+  const el = edgeNode("div", "sp");
+  el.innerHTML = `
+    <div class="sp-left">
+      <div class="sp-head"><span class="sp-num">01</span><div class="sp-hd"><small class="sp-of"></small><h3 class="sp-title"></h3></div></div>
+      <dl class="sp-facts"><div><dt>Our pick</dt><dd class="sp-pick"></dd></div><div><dt>Win chance</dt><dd class="sp-prob"></dd></div><div><dt>Price</dt><dd class="sp-price"></dd></div></dl>
+      <p class="sp-note" aria-live="polite"></p>
+      <div class="sp-choose">
+        <div class="sp-choose-top"><span>Choose a game</span><span class="sp-arrows">
+          <button type="button" class="sp-prev" aria-label="Previous game">&larr;</button><button type="button" class="sp-next" aria-label="Next game">&rarr;</button></span></div>
+        <div class="sp-filters" role="group" aria-label="Filter games" hidden></div>
+        <div class="sp-chips"></div>
+        <div class="sp-list" hidden></div>
+      </div>
+    </div>
+    <div class="sp-frame">
+      <div class="sp-bar"><span class="sp-tag"></span><span class="sp-pill"></span><a class="sp-open" href="#">Game page &rarr;</a></div>
+      <svg class="sp-svg" viewBox="0 0 800 500" role="img"><title></title><g></g></svg>
+    </div>`;
+  const $ = s => el.querySelector(s);
+  const chips = $(".sp-chips"), list = $(".sp-list"), filters = $(".sp-filters");
+
+  function stateTag(g) {
+    if (g.hit === true) return "HIT";
+    if (g.hit === false) return "MISS";
+    if (g.state === "in") return "LIVE";
+    if (g.state === "post") return "FINAL";
+    return null;
+  }
+  function renderChooser() {
+    st.list = st.games.filter(g => st.filter === "all" || (st.filter === "value" && g.value));
+    const many = st.games.length > EDGE_SP_NUMBERED;
+    chips.hidden = many;
+    list.hidden = !many;
+    filters.hidden = !many || !opts.filters;
+    if (!filters.hidden) {
+      const nv = st.games.filter(g => g.value).length;
+      filters.innerHTML = `<button type="button" data-f="all" aria-pressed="${st.filter === "all"}">All<span>${st.games.length}</span></button>` +
+        `<button type="button" data-f="value" aria-pressed="${st.filter === "value"}">Value<span>${nv}</span></button>`;
+    }
+    if (!many) {
+      chips.replaceChildren(...st.list.map((g, i) => {
+        const b = edgeNode("button", null, String(i + 1).padStart(2, "0"));
+        b.type = "button";
+        b.dataset.i = i;
+        const tag = stateTag(g);
+        const sm = edgeNode("small", tag ? "is-" + tag.toLowerCase() : null, tag || (opts.multiSport ? g.sport : edgeSpTime(g).replace(/ \S+$/, "")));
+        b.append(sm);
+        b.setAttribute("aria-label", `${g.away.abbr} at ${g.home.abbr}${tag ? ", " + tag.toLowerCase() : ""}`);
+        return b;
+      }));
+      return;
+    }
+    const keep = list.scrollTop;
+    const nodes = [];
+    let last = null;
+    st.list.forEach((g, i) => {
+      const head = g.state === "in" ? "Live now" : (opts.withDay ? edgeSpDay(g) + " " : "") + edgeSpTime(g);
+      if (head !== last) {
+        const n = st.list.filter(x => (x.state === "in" ? "Live now" : (opts.withDay ? edgeSpDay(x) + " " : "") + edgeSpTime(x)) === head).length;
+        const h = edgeNode("h4", null);
+        h.append(edgeNode("span", null, head), edgeNode("span", null, `${n} ${n === 1 ? "game" : "games"}`));
+        nodes.push(h);
+        last = head;
+      }
+      const b = edgeNode("button", null);
+      b.type = "button";
+      b.dataset.i = i;
+      const tag = stateTag(g);
+      b.append(edgeNode("span", "sp-lg", opts.multiSport ? g.sport : (tag || "")),
+               edgeNode("span", "sp-mt", `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`));
+      const pk = edgeNode("span", "sp-pk", g.pick ? `${g.pick} ${Math.round(g.prob)}%` : "No pick yet");
+      if (g.value && g.state === "pre") pk.append(edgeNode("i", "sp-vdot"));
+      if (opts.multiSport && tag) pk.prepend(edgeNode("b", "is-" + tag.toLowerCase(), tag + " "));
+      b.append(pk);
+      nodes.push(b);
+    });
+    if (!nodes.length) nodes.push(edgeNode("div", "sp-empty", "No games match this filter."));
+    list.replaceChildren(...nodes);
+    list.scrollTop = keep;
+  }
+  function show(i, animate) {
+    const L = st.list;
+    if (!L.length) return;
+    st.cur = (i + L.length) % L.length;
+    const g = L[st.cur];
+    st.key = g.key;
+    const n = String(st.cur + 1).padStart(2, "0");
+    $(".sp-num").textContent = n;
+    const tag = stateTag(g);
+    $(".sp-of").textContent = [`Game ${st.cur + 1} of ${L.length}`, g.sport, g.value && g.state === "pre" ? "Value" : tag ? tag[0] + tag.slice(1).toLowerCase() : ""].filter(Boolean).join(" · ");
+    const title = `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`;
+    $(".sp-title").textContent = title;
+    $(".sp-title").classList.toggle("is-long", title.length > 13);
+    $(".sp-pick").textContent = !g.pick ? "None yet" : g.pick === "Draw" ? "Draw" : g.pick;
+    $(".sp-prob").textContent = g.pick && g.prob != null ? Math.round(g.prob) + "%" : "–";
+    $(".sp-price").textContent = g.price != null ? (typeof edgePrice === "function" ? edgePrice(g.price) : (g.price > 0 ? "+" : "") + g.price) : "–";
+    $(".sp-note").textContent = edgePickNote(g);
+    $(".sp-tag").textContent = `${g.sport} · ${g.away.name} ${g.at === "vs" ? "vs" : "at"} ${g.home.name}`;
+    const open = $(".sp-open");
+    open.hidden = !g.url;
+    if (g.url) open.href = g.url;
+    const pill = $(".sp-pill");
+    pill.className = "sp-pill" + (g.state === "in" ? " is-live" : g.hit === true ? " is-hit" : g.hit === false ? " is-miss" : "");
+    pill.textContent = g.state === "in" ? (g.detail || "Live") : g.hit != null ? (g.hit ? "Final · Hit" : "Final · Miss")
+      : g.state === "post" ? "Final" : `Game ${n} · ${opts.withDay ? edgeSpDay(g) + " " : ""}${edgeSpTime(g)}`;
+    const box = list.hidden ? chips : list;
+    box.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.i === st.cur)));
+    const on = box.querySelector('button[aria-pressed="true"]');
+    if (on && !list.hidden && animate) {
+      const top = on.offsetTop, h = on.offsetHeight;
+      if (top < list.scrollTop + 36 || top + h > list.scrollTop + list.clientHeight) list.scrollTop = top - 44;
+    }
+    const svg = $(".sp-svg");
+    const draw = () => {
+      svg.querySelector("title").textContent = `${g.sport}: ${g.away.name} ${g.at === "vs" ? "vs" : "at"} ${g.home.name}${g.pick ? ", our pick " + g.pick : ""}`;
+      svg.querySelector("g").innerHTML = edgeSpDrawing(g);
+    };
+    if (animate && !EDGE_REDUCE.matches) {
+      svg.classList.add("is-swap");
+      clearTimeout(st.swap);
+      st.swap = setTimeout(() => { draw(); svg.classList.remove("is-swap"); }, 180);
+    } else draw();
+    if (opts.onSelect) opts.onSelect(g.key);
+  }
+  const pickFrom = e => { const b = e.target.closest("button[data-i]"); if (b) show(+b.dataset.i, true); };
+  chips.addEventListener("click", pickFrom);
+  list.addEventListener("click", pickFrom);
+  filters.addEventListener("click", e => {
+    const b = e.target.closest("button[data-f]");
+    if (!b) return;
+    st.filter = b.dataset.f;
+    renderChooser();
+    list.scrollTop = 0;
+    show(0, true);
+  });
+  $(".sp-prev").addEventListener("click", () => show(st.cur - 1, true));
+  $(".sp-next").addEventListener("click", () => show(st.cur + 1, true));
+  el.addEventListener("keydown", e => {
+    if (e.target.closest("input, textarea")) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); show(st.cur + 1, true); el.querySelector('.sp-chips:not([hidden]) button[aria-pressed="true"], .sp-list:not([hidden]) button[aria-pressed="true"]')?.focus(); }
+    if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); show(st.cur - 1, true); el.querySelector('.sp-chips:not([hidden]) button[aria-pressed="true"], .sp-list:not([hidden]) button[aria-pressed="true"]')?.focus(); }
+  });
+
+  // New games (a refresh, a filter outside the picker): keeps the game that
+  // was showing when it's still there, else starts with the next to play.
+  function set(games, key) {
+    const want = key || st.key;
+    st.games = games;
+    if (st.filter === "value" && !games.some(g => g.value)) st.filter = "all";
+    renderChooser();
+    el.hidden = !st.list.length;
+    if (!st.list.length) return;
+    let i = st.list.findIndex(g => g.key === want);
+    if (i < 0) i = st.list.findIndex(g => g.state === "in");
+    if (i < 0) i = st.list.findIndex(g => g.state === "pre");
+    show(Math.max(0, i), false);
+  }
+  return { el, set, state: st };
 }
