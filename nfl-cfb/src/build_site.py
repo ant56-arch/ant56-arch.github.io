@@ -1843,7 +1843,7 @@ def nf_game(sport, g, espn=None):
         "ml": {"price": ml["price"], "book": ml["book"] * 100, "value": ml["value"], "units": ml["units"],
                "won": {"W": True, "L": False}.get(ml["result"])} if ml else None,
         "why": [], "facts": facts, "hitters": [], "note": g.get("lock_html", ""),
-        "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "lines": card_lines(g),
+        "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "series": eg.get("series", ""), "lines": card_lines(g),
     }
 
 

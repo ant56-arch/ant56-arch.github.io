@@ -112,7 +112,7 @@ async function hgLoad() {
         else if (site.sport === "Soccer") hit = false;
       }
       games.push({ ...g, key: site.sport + ":" + g.id, date: edgeDayKey(new Date(g.start)), away, home, state,
-                   detail: e ? e.detail : "", tv: e ? e.tv : "", hit });
+                   detail: e ? e.detail : "", tv: e ? e.tv : "", series: e ? e.series : "", hit });
     });
     // Every other game that day, without a pick (yet).
     espn[i].forEach(e => {
@@ -124,7 +124,7 @@ async function hgLoad() {
       games.push({ id: e.id, key: site.sport + ":espn-" + e.id, sport: site.sport, start: e.start, date,
                    at: e.neutral ? "vs" : "@", url: site.schedule, pick: null, prob: null,
                    away: side(e.away), home: side(e.home), state: e.state || "pre",
-                   detail: e.detail || "", tv: e.tv || "", hit: null });
+                   detail: e.detail || "", tv: e.tv || "", series: e.series || "", hit: null });
     });
   });
   hg.games = games;
@@ -239,7 +239,9 @@ function hgCard(g, top, withDay) {
     pct.append(hgEl("i", null, "%"));
     pick.append(pct);
   }
-  card.append(head, hgTeamRow(g, g.away), hgTeamRow(g, g.home));
+  card.append(head);
+  if (g.series) card.append(hgEl("div", "hg-series", g.series));
+  card.append(hgTeamRow(g, g.away), hgTeamRow(g, g.home));
   if (lines.children.length) card.append(lines);
   card.append(pick);
   return card;

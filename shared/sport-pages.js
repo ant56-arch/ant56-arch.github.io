@@ -302,6 +302,9 @@ async function initLiveCards() {
     started.forEach(c => {
       const e = gcLiveMatch(c, events, site.sport);
       if (!e || e.state === "pre") return;
+      // The series score moves once a playoff game ends.
+      const series = c.querySelector(".gc-series");
+      if (series && e.series) series.textContent = e.series;
       gcLivePaint(c, e, site.sport);
       if (e.state === "in") live = true;
     });
