@@ -272,9 +272,55 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
   .hero { padding-top: 160px; }
 }
 .record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
+
+/* --- Score ticker: the shared edge.js crawl bars, fixed above the nav --- */
+#tick { position: fixed; inset: 0 0 auto 0; z-index: 21; }
+.nav { top: var(--tick-h, 0px); }
+.hero { padding-top: calc(140px + var(--tick-h, 0px)); }
+.crawl { display: flex; align-items: stretch; height: 36px; background: var(--paper-2); border-bottom: 1px solid var(--rule); overflow: hidden; }
+.crawl[hidden] { display: none; }
+.crawl-tag { display: flex; align-items: center; flex-shrink: 0; padding: 0 14px; background: var(--forest); color: var(--forest-ink); font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+.crawl-view { flex: 1; min-width: 0; overflow: hidden; }
+.crawl-run { display: flex; width: max-content; height: 100%; animation: edge-crawl 40s linear infinite; }
+.crawl:hover .crawl-run, .crawl:focus-within .crawl-run { animation-play-state: paused; }
+@keyframes edge-crawl { to { transform: translateX(-50%); } }
+.crawl-item { display: flex; align-items: center; gap: 8px; padding: 0 18px; border-right: 1px solid var(--rule); color: var(--ink-soft); font-size: 13px; white-space: nowrap; text-decoration: none; }
+a.crawl-item:hover { background: var(--paper); }
+.crawl-sport, .crawl-status, .crawl-rank { font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+.crawl-team { display: inline-flex; align-items: center; gap: 5px; }
+.crawl-team b { color: var(--ink); font-weight: 600; }
+.crawl-team.is-winner { color: var(--ink); }
+.crawl-team.just-scored, .crawl-team.just-scored b { color: var(--clay); }
+.crawl-logo { width: 16px; height: 16px; object-fit: contain; }
+.crawl-item.is-live .crawl-status { color: var(--miss); }
+.crawl-item.is-live .crawl-status::before { content: "\25CF  "; }
+.crawl-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--clay); font-size: 12px; font-weight: 600; }
+.crawl-plays { background: #7E2A1C; border-bottom-color: #5C1E14; }
+.crawl-plays .crawl-tag { background: #5C1E14; color: #fff; }
+.crawl-plays .crawl-item { color: #F6DED6; border-right-color: rgba(255,255,255,.18); }
+.crawl-plays a.crawl-item:hover { background: rgba(0,0,0,.2); }
+.crawl-plays .crawl-sport, .crawl-plays .crawl-status { color: #F0B9AA; }
+.crawl-plays .play-what { color: #fff; font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.crawl-plays .play-score { color: #fff; font-weight: 600; }
+.score-toasts { position: fixed; top: calc(var(--tick-h, 0px) + 70px); right: 16px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: 300px; pointer-events: none; }
+.score-toast { --team: var(--clay); position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px 36px 12px 16px; background: var(--paper); border: 1px solid var(--rule); border-left: 5px solid var(--team); border-radius: 6px; box-shadow: 0 12px 30px rgba(0,0,0,.16); color: var(--ink); text-decoration: none; pointer-events: auto; animation: edge-toast-in .35s cubic-bezier(.2,.7,.2,1) both; }
+.score-toast.is-leaving { animation: edge-toast-out .4s ease both; }
+.score-toast-head { display: flex; gap: 8px; font-family: var(--f-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.score-toast-sport, .score-toast-clock { color: var(--ink-faint); }
+.score-toast-what { color: var(--clay); }
+.score-toast-main { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 600; line-height: 1.1; }
+.score-toast-logo { width: 26px; height: 26px; object-fit: contain; }
+.score-toast-line { display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 13px; color: var(--ink-soft); }
+.score-toast-line b { color: var(--ink); }
+.score-toast-close { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-faint); font-size: 20px; line-height: 1; cursor: pointer; }
+@keyframes edge-toast-in { from { opacity: 0; transform: translateY(-12px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes edge-toast-out { to { opacity: 0; transform: translateX(24px); } }
+@media (max-width: 560px) { .score-toasts { top: auto; bottom: 12px; left: 12px; right: 12px; width: auto; flex-direction: column-reverse; } }
+@media (prefers-reduced-motion: reduce) { .crawl-run { animation: none !important; } .crawl-view { overflow-x: auto; } .score-toast, .score-toast.is-leaving { animation: none; } }
 </style>
 </head>
 <body>
+<div id="tick"><span class="topbar" hidden></span></div>
 <nav class="nav" id="nav">
   <a class="brand" href="#top" aria-label="Sports Edge home">
     <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>
@@ -519,7 +565,7 @@ addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 // ---------- Hero: a ballpark under lights, drawn on canvas ----------
 function drawHero() {
-  if (LG !== "All" && LEAGUE[LG].kind !== "park") { edgeStadium($("heroArt"), LEAGUE[LG].kind); return; }
+  if (LG !== "All" && LEAGUE[LG].kind !== "park") { homeStadium($("heroArt"), LEAGUE[LG].kind); return; }
   const c = $("heroArt"), r = c.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
   c.width = r.width * dpr; c.height = r.height * dpr;
   const x = c.getContext("2d"); x.scale(dpr, dpr);
@@ -567,7 +613,7 @@ function drawHero() {
   x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
   for (let i = 0; i < W * H / 90; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * .035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
 }
-function edgeStadium(c, kind) {
+function homeStadium(c, kind) {
   const r = c.getBoundingClientRect();
   if (!r.width || !r.height) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -887,7 +933,7 @@ const KIND = sp => ({ NHL: "ice", NBA: "court", CBB: "court", NFL: "pitch", CFB:
 function drawValueArt() {
   document.querySelectorAll(".vart").forEach(el => {
     const c = el.querySelector("canvas");
-    edgeStadium(c, KIND(el.dataset.sp));
+    homeStadium(c, KIND(el.dataset.sp));
     const r = c.getBoundingClientRect(), x = c.getContext("2d"), W = r.width, H = r.height;
     if (!W) return;
     let g = x.createLinearGradient(0, 0, 0, H * .3); g.addColorStop(0, "rgba(8,14,11,.6)"); g.addColorStop(1, "rgba(8,14,11,0)");
@@ -1130,5 +1176,15 @@ loadAll().then(render);
 // Redraw theme-colored SVG if the viewer's theme flips.
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => list[cur] && drawField(list[cur]));
 </script>
+<script>
+// Keeps the nav and hero clear of the score bars (they come and go).
+(() => {
+  const t = document.getElementById("tick");
+  const set = () => document.documentElement.style.setProperty("--tick-h", t.offsetHeight + "px");
+  new ResizeObserver(set).observe(t);
+  set();
+})();
+</script>
+<script src="/edge.js" defer></script>
 </body>
 </html>

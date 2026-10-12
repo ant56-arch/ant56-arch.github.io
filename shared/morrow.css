@@ -1,0 +1,249 @@
+/*
+The Morrow look, layered last over base.css and each site's own CSS.
+
+A stadium under lights at the top of every page (drawn on a canvas by
+edgeStadium in edge.js), then a paper sheet holding the sections. Type is
+Archivo (wide for headings), Instrument Serif italic for the big numbers
+and the occasional accent word, DM Mono for small labels. Paper is the
+default theme; Night keeps the same layout on forest-black.
+*/
+
+::selection { background: var(--forest); color: var(--forest-ink); }
+a:focus-visible, button:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline-color: var(--ours); }
+
+.mono, .home-date, .updated-chip, table.data th, .day-header td {
+  font-family: var(--font-mono);
+  font-stretch: 100%;
+  letter-spacing: 0.14em;
+}
+em.it, .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+/* ---------- Top bar: the home page's nav (EDGE mark, mono tabs) ---------- */
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  color: var(--text);
+  border-top: 0;
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: blur(10px);
+}
+.topbar .brand { color: var(--text); gap: 10px; }
+.topbar .brand-mark { width: 26px; height: 26px; }
+.topbar .brand-name { font-family: var(--font-head); font-weight: 600; letter-spacing: 0.14em; font-size: 13px; font-stretch: 125%; font-style: normal; text-transform: uppercase; color: var(--text); }
+.topbar .sport-tab { color: var(--text); opacity: 0.82; font-size: 12px; font-weight: 400; letter-spacing: 0.14em; font-family: var(--font-mono); font-stretch: 100%; font-style: normal; text-transform: uppercase; }
+.topbar .sport-tab:hover, .topbar .sport-tab.active { color: var(--text); opacity: 1; }
+.topbar .sport-tab::after { height: 1px; background: currentColor; }
+.topbar .ticker-gear, .topbar .menu-btn, .topbar .menu-toggle, .topbar button { color: var(--text); }
+
+/* ---------- Masthead: the stadium ---------- */
+
+header.masthead {
+  background: var(--night);
+  color: var(--night-ink);
+  border-bottom: 0;
+  isolation: isolate;
+}
+:root[data-theme="light"] header.masthead { background: var(--night); }
+header.masthead > canvas.stadium { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
+header.masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 14, 11, 0.45) 0%, rgba(8, 14, 11, 0.05) 35%, rgba(8, 14, 11, 0.2) 60%, rgba(8, 14, 11, 0.85) 100%);
+}
+header.masthead[data-sport]::after,
+:root[data-theme="light"] header.masthead[data-sport]::after {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  -webkit-text-stroke: 1px rgba(242, 238, 230, 0.16);
+  z-index: 0;
+}
+header.masthead .wordmark {
+  font-weight: 500;
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+  color: var(--night-ink);
+}
+header.masthead .wordmark span {
+  color: #f2d2b8;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: 100%;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.12em;
+}
+header.masthead .tagline, header.masthead .home-hero-meta { color: rgba(242, 238, 230, 0.8); }
+header.masthead .home-hero-meta b { color: var(--night-ink); }
+header.masthead .updated-chip,
+:root[data-theme="light"] header.masthead .updated-chip {
+  background: rgba(14, 23, 18, 0.55);
+  border-color: rgba(242, 238, 230, 0.3);
+  color: rgba(242, 238, 230, 0.85);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.updated-chip::before { background: #e59d72; box-shadow: 0 0 0 3px rgba(229, 157, 114, 0.25); }
+header.masthead:not(.home-hero) .masthead-inner { padding-top: 64px; padding-bottom: 26px; min-height: 230px; align-content: flex-end; }
+header.masthead:not(.home-hero) .wordmark { font-size: 54px; }
+
+/* Home: the full-height stadium hero. */
+header.masthead.home-hero { min-height: min(560px, 74vh); display: grid; align-content: end; }
+.home-hero .masthead-inner { width: 100%; padding-top: 120px; padding-bottom: 54px; }
+.home-hero .home-date { color: rgba(242, 238, 230, 0.8); display: flex; align-items: center; gap: 14px; font-size: 11px; }
+.home-hero .home-date::before { content: ""; width: 36px; height: 1px; background: currentColor; opacity: 0.7; }
+.home-hero .wordmark, .home-slim .wordmark { font-size: clamp(48px, 8.4vw, 116px); line-height: 0.9; margin-top: 14px; }
+.home-hero .wordmark .ln { display: block; overflow: hidden; }
+.home-hero .wordmark .ln > b { display: inline-block; font-weight: inherit; animation: edge-hero-rise 1.1s cubic-bezier(0.2, 0.7, 0.1, 1) both; }
+.home-hero .wordmark .ln:nth-child(2) > b { animation-delay: 0.12s; }
+@keyframes edge-hero-rise { from { transform: translateY(100%); } to { transform: none; } }
+.home-hero .home-hero-meta { text-align: right; max-width: 34ch; font-size: 14px; }
+.home-hero .hero-side-it { display: block; font-family: var(--font-serif); font-style: italic; font-size: 24px; line-height: 1.2; color: var(--night-ink); margin-bottom: 10px; }
+@media (max-width: 760px) {
+  header.masthead.home-hero { min-height: 0; }
+  .home-hero .masthead-inner { padding-top: 70px; padding-bottom: 46px; }
+  .home-hero .home-hero-meta { text-align: left; }
+  header.masthead:not(.home-hero) .masthead-inner { padding-top: 40px; min-height: 180px; }
+  header.masthead:not(.home-hero) .wordmark { font-size: 42px; }
+}
+
+/* The paper sheet slides up over the stadium on the home page. */
+.home-hero + .wrap, .home-hero ~ .wrap {
+  position: relative;
+  z-index: 2;
+  margin-top: -26px;
+  background: var(--bg);
+  border-radius: 26px 26px 0 0;
+}
+.home-hero ~ .wrap { max-width: none; }
+.home-hero ~ .wrap > * { max-width: var(--maxw); margin-left: auto; margin-right: auto; }
+
+/* ---------- Section tabs ---------- */
+
+nav.tabs, :root[data-theme="light"] nav.tabs { background: color-mix(in srgb, var(--bg) 92%, transparent); }
+nav.tabs a { font-family: var(--font-mono); font-stretch: 100%; font-size: 12px; font-weight: 500; letter-spacing: 0.14em; padding: 16px 0 13px; border-bottom-width: 2px; }
+nav.tabs a.active { border-bottom-color: var(--ours); }
+
+/* ---------- Sections: numbered, editorial ---------- */
+
+main { counter-reset: edge-sec; }
+.card, :root[data-theme="light"] .card {
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 34px 0 30px;
+  margin-bottom: 0;
+}
+main > .card:first-child, main > section:first-child > .card:first-child { border-top: 0; }
+.card-header h2, .hg-head h2, .slate-head h2 {
+  display: block;
+  font-family: var(--font-head);
+  font-stretch: 100%;
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-transform: none;
+}
+.card-header h2::before, .hg-head h2::before, .slate-head h2::before {
+  counter-increment: edge-sec;
+  content: counter(edge-sec, decimal-leading-zero) "  \2014";
+  display: block;
+  width: auto;
+  height: auto;
+  margin-bottom: 14px;
+  background: none;
+  transform: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: var(--text-faint);
+}
+.card-header .subtitle, .hg-head p { color: var(--text-muted); }
+.section-label { font-weight: 500; font-stretch: 125%; font-size: 16px; letter-spacing: 0.06em; }
+
+/* Panels that hold a single game or tile: paper cards with a hairline. */
+.gc, .bet-card, .hg-card, .rc-card, .tile, .record-tile, .sp-frame, .ticker-panel, .settings-panel {
+  border-radius: var(--radius);
+}
+.team-logo { background: #f8f5ef; border-radius: 4px; }
+
+/* Hit / Miss stamps and pills stay square-ish and inky. */
+.stamp { border-width: 1.5px; border-radius: 3px; font-family: var(--font-mono); font-stretch: 100%; font-weight: 500; font-size: 12px; letter-spacing: 0.14em; }
+
+/* Big model numbers read as serif figures. */
+.gc-pct, .tdp-pct b, .hg-top3 .pct, .sp-facts dd { font-weight: 500; }
+
+/* ---------- Slate picker on paper ---------- */
+.sp { background: var(--surface-2); border-radius: var(--radius); padding: clamp(16px, 2.6vw, 30px); }
+.sp-frame { background: var(--bg); box-shadow: 0 30px 60px -30px rgba(20, 30, 22, 0.35); }
+.sp-chips button { font-family: var(--font-mono); font-stretch: 100%; font-weight: 500; font-size: 12px; border-radius: 0; }
+.sp-chips button[aria-pressed="true"], .sp-filters button[aria-pressed="true"], .sp-list button[aria-pressed="true"],
+:root[data-theme="light"] .sp-chips button[aria-pressed="true"], :root[data-theme="light"] .sp-filters button[aria-pressed="true"],
+:root[data-theme="light"] .sp-list button[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: var(--forest-ink); }
+.sp-title { font-weight: 500; font-stretch: 125%; }
+
+/* Pressed segment buttons: ink pill on paper. */
+.hg-seg button[aria-pressed="true"], .view-toggle button[aria-pressed="true"], .sp-view button[aria-pressed="true"], .rc-seg button[aria-pressed="true"],
+:root[data-theme="light"] .hg-seg button[aria-pressed="true"], :root[data-theme="light"] .view-toggle button[aria-pressed="true"],
+:root[data-theme="light"] .sp-view button[aria-pressed="true"], :root[data-theme="light"] .rc-seg button[aria-pressed="true"] {
+  background: var(--text);
+  color: var(--bg);
+}
+:root[data-theme="light"] .hg-seg button[aria-pressed="true"] span, .hg-seg button[aria-pressed="true"] span { color: inherit; opacity: 0.7; }
+
+/* ---------- Footer: the big word ---------- */
+.foot-word {
+  margin: 56px 0 0;
+  font-family: var(--font-head);
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: clamp(80px, 21vw, 300px);
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  color: var(--forest);
+  overflow: hidden;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero .wordmark .ln > b { animation: none; }
+}
+.home-hero .wordmark .ln { font-style: normal; }
+/* The phone sport menu drops down on paper, like the bar it hangs from. */
+.has-menu .sport-switcher { background: var(--bg); border-bottom-width: 1px; }
+
+.has-menu .menu-toggle { font-family: var(--font-mono); font-stretch: 100%; font-size: 13px; font-weight: 500; letter-spacing: 0.14em; }
+
+/* Record row: Morrow stats, light serif-sized figures. */
+.hr-val { font-stretch: 100%; font-weight: 400; letter-spacing: -0.02em; font-size: 36px; }
+.hr-val i { font-family: var(--font-serif); font-style: italic; font-size: 22px; }
+.hr-tile.is-soon .hr-val { font-family: var(--font-serif); font-style: italic; font-size: 22px; }
+@media (max-width: 560px) {
+  .home-hero .hero-side-it { font-size: 20px; }
+  .hr-val { font-size: 30px; }
+}
+.slate-head { margin-bottom: 18px; }
+.card.record-card { border-top: 0; }
+.rb-num { font-stretch: 100%; font-weight: 400; letter-spacing: -0.03em; }
+
+/* Stat tiles: Morrow's ruled stats, no panel, no flag. */
+.stat { background: none; border: 0; border-top: 1px solid var(--rule); border-radius: 0; padding: 18px 16px 16px 0; }
+.stat::before { display: none; }
+.stat-value { font-stretch: 100%; font-weight: 400; letter-spacing: -0.02em; }
+.stat-label { font-family: var(--font-mono); font-weight: 500; letter-spacing: 0.14em; font-size: 11px; }
+@media (max-width: 760px) {
+  .card.record-card .rb-side .stat { border-left: 0; padding-left: 0; }
+}
+
+/* Score bars: the home page's mono labels on forest. */
+.crawl-ticker .crawl-tag,
+:root[data-theme="light"] .crawl-ticker .crawl-tag { background: var(--forest); color: var(--forest-ink); font-family: var(--font-mono); font-stretch: 100%; font-size: 11px; font-weight: 400; letter-spacing: 0.16em; }
+.crawl-plays .crawl-tag { font-family: var(--font-mono); font-stretch: 100%; font-size: 11px; font-weight: 400; letter-spacing: 0.16em; }
+.crawl-sport, .crawl-status { font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; font-size: 10px; }

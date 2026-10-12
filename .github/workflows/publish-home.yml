@@ -17,6 +17,7 @@ on:
       - schedule.js
       - shared/base.css
       - shared/edge.js
+      - shared/morrow.css
       - shared/assets.py
       - terms.html
       - privacy.html
