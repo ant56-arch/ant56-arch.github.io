@@ -5,101 +5,884 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sports Edge | NFL, CFB, MLB, NBA, NHL, CBB and soccer picks</title>
 <meta name="description" content="Model-driven picks for the NFL, college football, MLB, the NBA, the NHL, college basketball and European soccer, each graded against every final score.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%2216%22 fill=%22%231E3A2C%22/%3E%3Cpath d=%22M6 21.5 13 14l5 4.5 8-9%22 fill=%22none%22 stroke=%22%23F2EEE6%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: a full-bleed night-stadium hero, then a paper sheet that slides over it holding numbered editorial sections. */
+:root {
+  --paper: #F2EEE6;
+  --paper-2: #E7E1D5;
+  --ink: #1B1B19;
+  --ink-soft: #5E5A51;
+  --ink-faint: #A49E92;
+  --rule: #D3CCBE;
+  --forest: #1E3A2C;
+  --forest-ink: #F2EEE6;
+  --sage: #C3CFB4;
+  --sage-deep: #7F9670;
+  --clay: #B8643A;
+  --hit: #2F6B45;
+  --miss: #9A3B2C;
+  --hero-ink: #F2EEE6;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --gutter: clamp(16px, 2.6vw, 40px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #141815; --paper-2: #1C211D; --ink: #ECE7DC; --ink-soft: #ADA79A; --ink-faint: #6E6A61;
+    --rule: #2E342F; --forest: #A9C394; --forest-ink: #121614; --sage: #2F3B2C; --sage-deep: #8BA478;
+    --clay: #D98B5F; --hit: #8CC59C; --miss: #E58C78; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #141815; --paper-2: #1C211D; --ink: #ECE7DC; --ink-soft: #ADA79A; --ink-faint: #6E6A61;
+  --rule: #2E342F; --forest: #A9C394; --forest-ink: #121614; --sage: #2F3B2C; --sage-deep: #8BA478;
+  --clay: #D98B5F; --hit: #8CC59C; --miss: #E58C78; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-display); font-variation-settings: "wdth" 100; font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
+.mono { font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+em, .it { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.wide { font-variation-settings: "wdth" 125; }
+
+/* --- Nav --- */
+.nav { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; align-items: center; gap: 24px; padding: calc(env(safe-area-inset-top, 0px) + 16px) var(--gutter) 16px; color: var(--hero-ink); transition: background .35s, color .35s, padding .35s; }
+.nav.solid { background: color-mix(in srgb, var(--paper) 92%, transparent); color: var(--ink); backdrop-filter: blur(10px); padding-block: 12px; border-bottom: 1px solid var(--rule); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-variation-settings: "wdth" 125; font-weight: 600; letter-spacing: .14em; font-size: 13px; }
+.brand svg { width: 26px; height: 26px; }
+.nav ul { display: flex; gap: 26px; list-style: none; margin: 0 auto; padding: 0; }
+.nav ul a { text-decoration: none; opacity: .82; }
+.nav ul a:hover { opacity: 1; }
+.pill { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; padding: 10px 16px; border-radius: 999px; background: var(--hero-ink); color: #1B1B19; white-space: nowrap; }
+.nav.solid .pill { background: var(--forest); color: var(--forest-ink); }
+@media (max-width: 860px) { .nav ul { display: none; } .nav .pill { margin-left: auto; } }
+
+/* --- Hero --- */
+.hero { position: relative; min-height: min(760px, 92vh); color: var(--hero-ink); display: grid; align-content: end; padding: 140px var(--gutter) 0; overflow: hidden; background: #0E1712; }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,14,11,.35) 0%, rgba(8,14,11,0) 30%, rgba(8,14,11,.15) 55%, rgba(8,14,11,.78) 100%); pointer-events: none; }
+.hero > *:not(canvas) { position: relative; z-index: 1; }
+.hero-row { display: grid; grid-template-columns: 1fr minmax(0, 330px); gap: 32px; align-items: end; }
+.eyebrow { display: flex; align-items: center; gap: 14px; opacity: .85; }
+.eyebrow::before { content: ""; width: 36px; height: 1px; background: currentColor; opacity: .7; }
+.hero h1 { margin: 18px 0 0; font-weight: 500; font-variation-settings: "wdth" 125; text-transform: uppercase; font-size: clamp(44px, 8.4vw, 132px); line-height: .9; letter-spacing: -.01em; }
+.hero h1 .ln { display: block; overflow: hidden; }
+.hero h1 .ln span { display: inline-block; animation: rise 1.1s cubic-bezier(.2,.7,.1,1) both; }
+.hero h1 .ln:nth-child(2) span { animation-delay: .12s; }
+@keyframes rise { from { transform: translateY(100%); } to { transform: none; } }
+.hero-side .it { font-size: clamp(20px, 2vw, 26px); line-height: 1.2; display: block; }
+.hero-side p { font-size: 13px; opacity: .78; margin: 12px 0 0; max-width: 34ch; }
+.hero-bar { margin-top: 44px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 18px 0 26px; border-top: 1px solid rgba(242,238,230,.28); }
+.hero-bar > :last-child { justify-self: end; }
+.scroll-cue { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.scroll-cue i { width: 30px; height: 30px; border: 1px solid rgba(242,238,230,.5); border-radius: 50%; display: grid; place-items: center; font-style: normal; }
+@media (max-width: 760px) {
+  .hero-row { grid-template-columns: 1fr; }
+  .hero-bar { grid-template-columns: 1fr auto; }
+  .hero-bar > :nth-child(2) { display: none; }
+}
+
+/* --- Sheet and sections --- */
+.sheet { position: relative; z-index: 2; margin-top: -28px; background: var(--paper); border-radius: 28px 28px 0 0; padding: 0 var(--gutter); }
+section { padding-block: clamp(72px, 10vw, 140px); }
+section + section { border-top: 1px solid var(--rule); }
+.sec-head { display: flex; justify-content: space-between; gap: 16px; color: var(--ink-soft); margin-bottom: clamp(36px, 5vw, 64px); }
+.sec-head .num { display: flex; gap: 14px; align-items: center; }
+.sec-head .num::after { content: ""; width: 36px; height: 1px; background: var(--ink-faint); order: 1; }
+.sec-head .num b { order: 2; font-weight: 400; }
+h2 { font-weight: 400; font-size: clamp(34px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.015em; margin: 0; text-wrap: balance; }
+h2 em { font-size: 1.06em; }
+.lede { color: var(--ink-soft); max-width: 52ch; margin: 18px 0 0; }
+
+@media (max-width: 640px) {
+  .sec-head > span:last-child { display: none; }
+  .frame-pill { display: none; }
+  .board .bar { display: none; }
+}
+/* 01 Statement */
+.statement { font-size: clamp(26px, 3.4vw, 46px); line-height: 1.14; letter-spacing: -.012em; max-width: 24ch; margin: 0; text-wrap: pretty; }
+.statement .w { color: var(--ink-faint); transition: color .5s; }
+.statement .w.lit { color: var(--ink); }
+.record-grid { margin-top: clamp(48px, 7vw, 96px); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
+.board { background: var(--forest); color: var(--forest-ink); border-radius: 6px; padding: clamp(20px, 3vw, 34px); display: grid; gap: 22px; }
+.board-top { display: flex; justify-content: space-between; gap: 12px; opacity: .8; }
+.board table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.board th { text-align: left; font-family: var(--f-mono); font-weight: 400; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .65; padding: 0 0 10px; }
+.board td { color: var(--forest-ink); padding: 11px 0; border-top: 1px solid color-mix(in srgb, var(--forest-ink) 18%, transparent); }
+.board td:first-child { font-variation-settings: "wdth" 125; font-weight: 600; letter-spacing: .08em; }
+.board th:not(:first-child), .board td:not(:first-child) { text-align: right; }
+.board .bar { display: inline-block; width: 72px; height: 4px; background: color-mix(in srgb, var(--forest-ink) 20%, transparent); vertical-align: middle; margin-right: 10px; position: relative; }
+.board .bar i { position: absolute; inset: 0 auto 0 0; background: var(--forest-ink); }
+.streak { font-family: var(--f-mono); font-size: 11px; padding: 2px 7px; border-radius: 99px; border: 1px solid currentColor; opacity: .9; }
+.board-foot { opacity: .7; font-size: 12.5px; }
+.stats { display: grid; gap: 0; }
+.stat { padding: 20px 0; border-top: 1px solid var(--rule); display: grid; gap: 4px; }
+.stat:last-child { border-bottom: 1px solid var(--rule); }
+.stat b { font-weight: 400; font-variation-settings: "wdth" 125; font-size: clamp(36px, 4vw, 54px); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--ink-soft); font-size: 13px; }
+@media (max-width: 860px) { .record-grid { grid-template-columns: 1fr; } }
+
+/* 02 Slate picker */
+.slate-sec { background: var(--paper-2); margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }
+.slate { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.slate-left { display: grid; gap: 28px; }
+.g-head { display: flex; align-items: flex-end; gap: 16px; }
+.g-head .big { font-family: var(--f-serif); font-size: 76px; line-height: .8; }
+.g-head small { display: block; color: var(--ink-soft); margin-bottom: 6px; }
+.g-head h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 24px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+.g-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--rule); }
+.g-facts div { padding: 12px 0; display: grid; gap: 4px; }
+.g-facts div + div { padding-left: 14px; }
+.g-facts span { color: var(--ink-soft); font-size: 10.5px; }
+.g-facts b { font-weight: 500; font-size: 22px; font-variant-numeric: tabular-nums; }
+.g-note { margin: 0; color: var(--ink-soft); max-width: 40ch; min-height: 4.6em; }
+.chooser-top { display: flex; justify-content: space-between; align-items: center; color: var(--ink-soft); }
+.arrows { display: flex; gap: 8px; }
+.arrows button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--ink-faint); background: transparent; color: var(--ink); cursor: pointer; font-size: 14px; }
+.arrows button:hover { border-color: var(--ink); }
+.chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 12px; }
+.chips button { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; padding: 9px 0 8px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; display: grid; gap: 2px; }
+.chips button small { font-size: 9px; color: var(--ink-soft); letter-spacing: .14em; }
+.chips button[aria-pressed="true"] { background: var(--forest); color: var(--forest-ink); border-color: var(--forest); }
+.chips button[aria-pressed="true"] small { color: inherit; opacity: .75; }
+.chips button:hover:not([aria-pressed="true"]) { border-color: var(--ink-faint); }
+.dayswitch { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--rule); border-radius: 99px; margin-bottom: 22px; max-width: 100%; }
+.dayswitch button { font: inherit; letter-spacing: inherit; text-transform: inherit; border: 0; border-radius: 99px; padding: 8px 14px; background: transparent; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
+.dayswitch button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.filters button { font: inherit; letter-spacing: .1em; text-transform: inherit; padding: 7px 11px; border: 1px solid var(--rule); border-radius: 99px; background: transparent; color: var(--ink); cursor: pointer; }
+.filters button span { color: var(--ink-soft); margin-left: 4px; }
+.filters button[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: var(--forest-ink); }
+.filters button[aria-pressed="true"] span { color: inherit; opacity: .75; }
+.glist { margin-top: 12px; max-height: 340px; overflow-y: auto; border-block: 1px solid var(--rule); overscroll-behavior: contain; }
+.glist h4 { position: sticky; top: 0; z-index: 1; margin: 0; padding: 9px 0 7px; background: var(--paper-2); display: flex; justify-content: space-between; color: var(--ink-soft); font-weight: 400; border-bottom: 1px solid var(--rule); }
+.glist button { width: 100%; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; padding: 9px 8px; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--rule) 60%, transparent); background: transparent; color: var(--ink); cursor: pointer; font: inherit; font-size: 13.5px; }
+.glist button:hover { background: color-mix(in srgb, var(--paper) 60%, transparent); }
+.glist button[aria-pressed="true"] { background: var(--forest); color: var(--forest-ink); }
+.glist .lg { font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; color: var(--ink-soft); }
+.glist button[aria-pressed="true"] .lg, .glist button[aria-pressed="true"] .pk { color: inherit; }
+.glist .mt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.glist .mt b { font-weight: 600; }
+.glist .pk { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.glist .vdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--clay); margin-left: 6px; vertical-align: middle; }
+.glist .empty { padding: 16px 4px; color: var(--ink-soft); }
+.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; color: var(--ink-soft); }
+.totals b { display: block; color: var(--ink); font-weight: 500; font-family: var(--f-display); letter-spacing: 0; text-transform: none; font-size: 13px; margin-top: 4px; }
+.field-frame { position: relative; background: var(--paper); border-radius: 4px; box-shadow: 0 30px 60px -30px rgba(20, 30, 22, .35); overflow: hidden; aspect-ratio: 4 / 3; max-width: 100%; }
+.field-frame svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.frame-tag { position: absolute; left: 16px; top: 14px; color: var(--ink-soft); z-index: 1; background: var(--paper); padding: 4px 8px; }
+.frame-pill { position: absolute; right: 16px; bottom: 14px; z-index: 1; background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 99px; }
+.compass { position: absolute; right: 16px; top: 14px; z-index: 1; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--rule); display: grid; place-items: center; background: var(--paper); font-size: 10px; }
+#fieldArt { transition: opacity .35s; }
+#fieldArt.swap { opacity: 0; }
+@media (max-width: 900px) { .slate { grid-template-columns: 1fr; } .field-frame { order: -1; } }
+
+/* 03 Value picks */
+.value-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(36px, 5vw, 64px); }
+.vcard { display: grid; gap: 16px; align-content: start; }
+.vart { aspect-ratio: 4 / 5; border-radius: 4px; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: 18px; color: #F2EEE6; max-width: 100%; }
+.vart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vart > :not(canvas) { position: relative; }
+.vart .vtop { display: flex; justify-content: space-between; }
+.vart .vbig { font-family: var(--f-serif); font-size: clamp(64px, 7vw, 108px); line-height: .85; }
+.vcard h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; }
+.vcard .vline { color: var(--ink-soft); font-size: 13px; }
+.vcard p { margin: 0; color: var(--ink-soft); max-width: 42ch; }
+.vcard .vfoot { border-top: 1px solid var(--rule); padding-top: 10px; display: flex; justify-content: space-between; color: var(--ink-soft); }
+@media (max-width: 860px) { .value-grid { grid-template-columns: 1fr; } .vart { aspect-ratio: 16 / 10; } }
+
+/* 04 Method */
+.method { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 80px); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; }
+.steps li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px 16px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.steps li:last-child { border-bottom: 1px solid var(--rule); }
+.steps .n { color: var(--ink-soft); padding-top: 6px; }
+.steps h3 { margin: 0; font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1.05; }
+.steps p { grid-column: 2; margin: 0; color: var(--ink-soft); max-width: 52ch; }
+@media (max-width: 860px) { .method { grid-template-columns: 1fr; } }
+
+/* 05 Leagues */
+.leagues { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: clamp(36px, 5vw, 64px); }
+.league { background: var(--paper); padding: 22px; display: grid; gap: 12px; align-content: start; min-height: 230px; }
+.league.feat { background: var(--forest); color: var(--forest-ink); }
+.league .lt { display: flex; justify-content: space-between; color: var(--ink-soft); }
+.league.feat .lt, .league.feat p, .league.feat .lrec span { color: inherit; opacity: .78; }
+.league h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 26px; letter-spacing: .04em; }
+.league p { margin: 0; color: var(--ink-soft); font-size: 13.5px; }
+.lrec { margin-top: auto; display: grid; gap: 2px; }
+.lrec b { font-weight: 400; font-size: 32px; font-variation-settings: "wdth" 125; font-variant-numeric: tabular-nums; line-height: 1; }
+.lrec span { color: var(--ink-soft); font-size: 12px; }
+.league .wait { font-family: var(--f-serif); font-style: italic; font-size: 24px; line-height: 1.1; margin-top: auto; }
+@media (max-width: 1000px) { .leagues { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .leagues { grid-template-columns: 1fr; } .league { min-height: 0; } }
+
+/* 06 Calendar */
+.cal { list-style: none; margin: clamp(36px, 5vw, 64px) 0 0; padding: 0; }
+.cal li { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 16px 28px; align-items: center; padding: 22px 0; border-top: 1px solid var(--rule); }
+.cal li:last-child { border-bottom: 1px solid var(--rule); }
+.cal .d { display: flex; align-items: baseline; gap: 8px; }
+.cal .d b { font-family: var(--f-serif); font-weight: 400; font-size: 48px; line-height: .9; }
+.cal .d span { color: var(--ink-soft); }
+.cal h3 { margin: 0 0 4px; font-weight: 500; font-size: 19px; }
+.cal .split { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--ink-soft); font-size: 13px; }
+.cal .split span b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cal .wl { font-variation-settings: "wdth" 125; font-size: 30px; font-variant-numeric: tabular-nums; text-align: right; }
+.cal .wl small { display: block; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .14em; color: var(--ink-soft); }
+.cal .wl.up { color: var(--hit); }
+@media (max-width: 640px) { .cal li { grid-template-columns: 1fr auto; } .cal li > div:nth-child(2) { grid-column: 1 / -1; grid-row: 2; } }
+
+/* Footer */
+.foot { padding-block: 64px 28px; display: grid; gap: 40px; }
+.foot-word { font-variation-settings: "wdth" 125; font-weight: 600; font-size: clamp(80px, 22vw, 340px); line-height: .8; letter-spacing: -.03em; color: var(--forest); margin: 0; overflow: hidden; }
+.foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--ink-soft); border-top: 1px solid var(--rule); padding-top: 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* Live-site additions: links, foot links. */
+a.league { text-decoration: none; color: inherit; transition: background .2s; }
+a.league:hover { background: var(--paper-2); }
+a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--paper)); }
+.g-head h3 a, .vcard h3 a { text-decoration: none; }
+.g-head h3 a:hover, .vcard h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 10px 22px; color: var(--ink-soft); }
+.foot-links a { text-decoration: none; }
+.foot-links a:hover { color: var(--ink); }
+.slate[hidden] { display: none; }
+</style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="/"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h22l-8 26H1z" fill="#e5793b"/><path transform="translate(4.3 0) skewX(-15)" d="M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z" fill="#121314"/></svg><span class="brand-name">Sports <span>Edge</span></span></a>
-    <nav class="sport-switcher" aria-label="Sport">
-      <a class="sport-tab active" href="/" aria-current="page">All</a>
-      <a class="sport-tab" href="/nfl/index.html">NFL</a>
-      <a class="sport-tab" href="/nba/index.html">NBA</a>
-      <a class="sport-tab" href="/mlb/">MLB</a>
-      <a class="sport-tab" href="/nhl/index.html">NHL</a>
-      <a class="sport-tab" href="/cfb/index.html">CFB</a>
-      <a class="sport-tab" href="/cbb/index.html">CBB</a>
-      <a class="sport-tab" href="/soccer/index.html">Soccer</a>
-      <a class="sport-tab" href="/bets.html">Betting</a>
-      <a class="sport-tab" href="/schedule.html">Schedule</a>
-    </nav>
-  </div>
-</header>
+<nav class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Sports Edge home">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>
+    EDGE
+  </a>
+  <ul class="mono">
+    <li><a href="#record">Record</a></li>
+    <li><a href="#slate">Today</a></li>
+    <li><a href="#value">Value</a></li>
+    <li><a href="#method">Model</a></li>
+    <li><a href="#leagues">Leagues</a></li>
+    <li><a href="#calendar">Results</a></li>
+  </ul>
+  <a class="pill" href="#slate">Today's picks</a>
+</nav>
 
-<header class="masthead home-hero home-slim">
-  <div class="masthead-inner">
-    <div class="home-hero-text">
-      <div class="home-date" id="home-date"></div>
-      <h1 class="wordmark">Sports <span>Edge</span></h1>
+<header class="hero" id="top">
+  <canvas id="heroArt" aria-hidden="true"></canvas>
+  <div class="hero-row">
+    <div>
+      <div class="eyebrow mono">Seven leagues · One model each</div>
+      <h1><span class="ln"><span>Picks,</span></span><span class="ln"><span>measured.</span></span></h1>
     </div>
-    <div class="home-hero-meta" id="home-count">Model picks for every game, graded against every final score.</div>
+    <div class="hero-side">
+      <span class="it">Every game priced by our own numbers before the market has its say.</span>
+      <p>Daily picks for the NFL, college football, MLB, the NBA, the NHL, college basketball and European soccer, graded in public the night they finish.</p>
+    </div>
+  </div>
+  <div class="hero-bar mono">
+    <a class="scroll-cue" href="#record"><i aria-hidden="true">↓</i>Scroll to explore</a>
+    <span id="heroTally">Every pick graded</span>
+    <span>Est. 2026</span>
   </div>
 </header>
 
-<div class="wrap">
-  <main id="main-content">
-    <section class="hg" aria-labelledby="hg-title">
-      <div class="hg-head"><h2 id="hg-title">Today's games</h2><p>Tap a team for the full game page.</p></div>
-      <div class="hg-controls">
-        <div class="hg-seg" role="group" aria-label="Day" id="hg-days"></div>
-        <span class="hg-cd" id="hg-cd" hidden></span>
-        <div class="hg-right">
-          <button type="button" class="hg-pill" id="hg-value" aria-pressed="false">Value only</button>
-          <button type="button" class="hg-pill" id="hg-teams">☆ My teams</button>
-          <div class="hg-seg" role="group" aria-label="Layout" id="hg-layout">
-            <button type="button" data-v="slate" aria-pressed="true">Slate</button>
-            <button type="button" data-v="cards" aria-pressed="false">Cards</button>
-            <button type="button" data-v="list" aria-pressed="false">List</button>
-          </div>
-        </div>
+<main class="sheet">
+  <section id="record">
+    <div class="sec-head mono"><span class="num">01<b>The record</b></span><span id="recHead">Football · Hockey · Baseball · Soccer</span></div>
+    <p class="statement" id="statement">Every game picked, every one <em>posted before</em> the first pitch, puck drop or kickoff. We don't bury the misses. We <em>grade</em> every one of them.</p>
+
+    <div class="record-grid">
+      <div class="board" aria-label="Record by league">
+        <div class="board-top mono"><span id="boardYear">Picks to win</span><span id="boardDate"></span></div>
+        <table>
+          <thead><tr><th>League</th><th>Record</th><th>Win %</th><th>Streak</th></tr></thead>
+          <tbody id="boardRows"></tbody>
+        </table>
+        <div class="board-foot">Streaks count moneyline picks won or lost in a row, one game at a time.</div>
       </div>
-      <div class="hg-chips" role="group" aria-label="Sport" id="hg-sports"></div>
-      <p class="hg-tally" id="hg-tally" aria-live="polite"></p>
-      <div class="hg-top3" id="hg-top3" hidden></div>
-      <div id="hg-out" aria-busy="true"><div class="hg-grid" aria-label="Loading today's games">
-        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
-        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
-        <div class="skel"><i style="width:45%"></i><i class="is-big"></i><i class="is-big"></i><i style="width:65%"></i></div>
-      </div></div>
-    </section>
+      <div class="stats" id="stats"></div>
+    </div>
+  </section>
 
-    <section class="hg" aria-labelledby="rec-title">
-      <div class="hg-head"><h2 id="rec-title">Our record</h2><p>Live picks since we started counting. It never resets.</p></div>
-      <div class="home-records" id="home-records"></div>
-    </section>
-
-    <section class="hg rchart" id="rchart" aria-labelledby="rchart-title" hidden>
-      <div class="hg-head"><h2 id="rchart-title">Winning % over time</h2><p>Each line is a sport's record since we started counting. Hover or drag to read any day.</p></div>
-      <div class="rc-card">
-        <div class="hg-controls">
-          <div class="hg-seg" role="group" aria-label="Range" id="rchart-range">
-            <button type="button" data-v="7" aria-pressed="false">7 days</button>
-            <button type="button" data-v="30" aria-pressed="true">30 days</button>
-            <button type="button" data-v="all" aria-pressed="false">All</button>
-          </div>
-          <div class="rchart-legend" role="group" aria-label="Sports" id="rchart-legend"></div>
+  <section id="slate" class="slate-sec">
+    <div class="sec-head mono"><span class="num">02<b>Today's slate</b></span><span id="slateDate"></span></div>
+    <div class="slate">
+      <div class="slate-left">
+        <div>
+          <div class="dayswitch mono" id="dayswitch" role="group" aria-label="Which slate"></div>
+          <h2 id="slateH2">Today's <em>card.</em></h2>
+          <p class="lede" id="slateLede">Loading today's picks.</p>
         </div>
-        <div class="rchart-plot"><svg id="rchart-svg" role="img" aria-label="Running winning percentage by sport"></svg><div class="rchart-tip" id="rchart-tip" hidden></div></div>
+        <div>
+          <div class="g-head">
+            <span class="big" id="gNum">01</span>
+            <div><small class="mono" id="gOf"></small><h3 id="gTitle"></h3></div>
+          </div>
+          <div class="g-facts" style="margin-top:16px">
+            <div><span class="mono">Our pick</span><b id="gPick"></b></div>
+            <div><span class="mono">Win chance</span><b id="gProb"></b></div>
+            <div><span class="mono">Price</span><b id="gPrice"></b></div>
+          </div>
+          <p class="g-note" id="gNote" style="margin-top:14px"></p>
+        </div>
+        <div>
+          <div class="chooser-top mono"><span>Choose a game</span>
+            <span class="arrows"><button type="button" id="prevG" aria-label="Previous game">←</button><button type="button" id="nextG" aria-label="Next game">→</button></span></div>
+          <div class="filters mono" id="filters" hidden></div>
+          <div class="chips" id="chips"></div>
+          <div class="glist" id="glist" hidden></div>
+        </div>
+        <div class="totals mono" id="totals"></div>
       </div>
-    </section>
+      <div class="field-frame">
+        <span class="frame-tag mono" id="frameTag"></span>
+        <span class="compass mono" aria-hidden="true">N</span>
+        <svg id="fieldArt" viewBox="0 0 800 600" role="img" aria-labelledby="fieldTitle"><title id="fieldTitle">Diagram of the selected game</title></svg>
+        <span class="frame-pill mono" id="framePill"></span>
+      </div>
+    </div>
+  </section>
 
-    <section class="card last-night" id="last-night" aria-live="polite" hidden>
-      <div class="card-body"></div>
-    </section>
-  </main>
+  <section id="value">
+    <div class="sec-head mono"><span class="num">03<b>Value picks</b></span><span id="valCount"></span></div>
+    <h2 id="valH2">Prices the market <em>left on the table.</em></h2>
+    <p class="lede" id="valLede">A pick gets the Value tag when our win chance is at least six points higher than what the sportsbook's price implies.</p>
+    <div class="value-grid" id="valueGrid"></div>
+  </section>
 
-  <footer class="home-foot">
-    <span>For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</span>
-    <a href="/terms.html">Terms</a>
-    <a href="/privacy.html">Privacy</a>
-    <a href="https://github.com/ant56-arch">Source code</a>
+  <section id="method">
+    <div class="sec-head mono"><span class="num">04<b>How a pick is made</b></span><span>Same four steps, every league</span></div>
+    <div class="method">
+      <div>
+        <h2>Built from the box score <em>up.</em></h2>
+        <p class="lede">Each league has its own model, trained on its own seasons and retrained every week. A new version only goes live if it beats the one it would replace.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="n mono">01</span><h3>Rate every team</h3><p>Schedule-adjusted ratings for offense and defense, updated after every final.</p></li>
+        <li><span class="n mono">02</span><h3>Read the matchup</h3><p>Starting pitchers in baseball, the starting quarterback in the NFL and home edge in every league go in game by game.</p></li>
+        <li><span class="n mono">03</span><h3>Check the price</h3><p>Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted.</p></li>
+        <li><span class="n mono">04</span><h3>Grade it in public</h3><p>The pick locks at first pitch, puck drop or kickoff, and the result is graded that night. Nothing is edited after.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="leagues">
+    <div class="sec-head mono"><span class="num">05<b>The leagues</b></span><span>Seven sites, one record</span></div>
+    <h2>A model for <em>every season.</em></h2>
+    <div class="leagues" id="leagueGrid"></div>
+  </section>
+
+  <section id="calendar">
+    <div class="sec-head mono"><span class="num">06<b>Results by day</b></span><span>Last six days</span></div>
+    <h2>The <em>calendar.</em></h2>
+    <ul class="cal" id="cal"></ul>
+  </section>
+
+  <footer class="foot">
+    <p class="foot-word" aria-hidden="true">EDGE</p>
+    <div class="foot-row mono"><span>Sports Edge · For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</span><span id="footDate"></span></div>
+    <nav class="foot-links mono" aria-label="Sites"><a href="/nfl/index.html">NFL</a><a href="/cfb/index.html">CFB</a><a href="/mlb/">MLB</a><a href="/nhl/index.html">NHL</a><a href="/nba/index.html">NBA</a><a href="/cbb/index.html">CBB</a><a href="/soccer/index.html">Soccer</a><a href="/bets.html">Betting</a><a href="/schedule.html">Schedule</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></nav>
   </footer>
-</div>
-<script src="home.js?v=21"></script>
+</main>
+
+<script>
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = id => document.getElementById(id);
+const fmtPrice = p => (p == null || isNaN(p)) ? "—" : (p > 0 ? "+" : "") + p;
+const ET = "America/New_York";
+
+// Every league's live summary.json (written by its daily or weekly build).
+const SITES = [
+  { lg: "NFL", file: "/nfl/summary.json", href: "/nfl/index.html", about: "Spreads, moneylines and anytime touchdown props for every game." },
+  { lg: "CFB", file: "/cfb/summary.json", href: "/cfb/index.html", about: "Every FBS game with a line, plus our own power ratings for 138 teams." },
+  { lg: "MLB", file: "/mlb/summary.json", href: "/mlb/", about: "Top hitters to get a hit, and a pick in every game." },
+  { lg: "NHL", file: "/nhl/summary.json", href: "/nhl/index.html", about: "A team-strength model, with a pick in every game." },
+  { lg: "Soccer", file: "/soccer/summary.json", href: "/soccer/index.html", about: "Premier League, La Liga and the Champions League, draws included." },
+  { lg: "NBA", file: "/nba/summary.json", href: "/nba/index.html", about: "Daily game picks from our own ratings.", wait: "Picks start on opening night." },
+  { lg: "CBB", file: "/cbb/summary.json", href: "/cbb/index.html", about: "Men's college basketball with KenPom-style ratings, 72% right on last season.", wait: "Picks start in November." },
+];
+const BOARD_ORDER = ["NHL", "MLB", "NFL", "CFB", "Soccer", "NBA", "CBB"];
+
+const dayKey = d => new Intl.DateTimeFormat("en-CA", { timeZone: ET, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+const etTime = iso => new Date(iso).toLocaleTimeString("en-US", { timeZone: ET, hour: "numeric", minute: "2-digit" });
+const etHour = iso => +new Intl.DateTimeFormat("en-US", { timeZone: ET, hour: "numeric", hourCycle: "h23" }).format(new Date(iso));
+const longDate = (key, opts) => new Date(key + "T12:00:00").toLocaleDateString("en-US", opts);
+const wl = s => { const m = String(s || "").match(/^(\d+)-(\d+)/); return m ? [+m[1], +m[2]] : null; };
+
+const ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+function words(n) {
+  if (n < 20) return ONES[n];
+  if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? "-" + ONES[n % 10] : "");
+  if (n < 1000) return ONES[Math.floor(n / 100)] + " hundred" + (n % 100 ? " and " + words(n % 100) : "");
+  return words(Math.floor(n / 1000)) + " thousand" + (n % 1000 ? (n % 1000 < 100 ? " and " : " ") + words(n % 1000) : "");
+}
+const Words = n => { const w = words(n); return w[0].toUpperCase() + w.slice(1); };
+const list3 = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+
+async function loadAll() {
+  return Promise.all(SITES.map(s => fetch(s.file, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null)));
+}
+
+// ---------- Nav turns solid over the paper sheet ----------
+const nav = $("nav");
+const onScroll = () => nav.classList.toggle("solid", scrollY > innerHeight * 0.6);
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+// ---------- Hero: a ballpark under lights, drawn on canvas ----------
+function drawHero() {
+  const c = $("heroArt"), r = c.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const W = r.width, H = r.height, hz = H * 0.5;
+  let g = x.createLinearGradient(0, 0, 0, hz);
+  g.addColorStop(0, "#0B1418"); g.addColorStop(.55, "#1D2A33"); g.addColorStop(.85, "#6B4A3A"); g.addColorStop(1, "#C98A55");
+  x.fillStyle = g; x.fillRect(0, 0, W, hz + 2);
+  x.fillStyle = "#2A2F33";
+  x.beginPath(); x.moveTo(0, hz);
+  for (let i = 0; i <= 12; i++) x.lineTo(W * i / 12, hz - 20 - Math.sin(i * 1.7) * 14 - Math.cos(i * .9) * 10);
+  x.lineTo(W, hz); x.fill();
+  g = x.createLinearGradient(0, hz - 70, 0, hz + 30); g.addColorStop(0, "#1B2420"); g.addColorStop(1, "#0F1613");
+  x.fillStyle = g;
+  x.beginPath(); x.moveTo(-20, hz + 30); x.lineTo(-20, hz - 30);
+  x.quadraticCurveTo(W * .5, hz - 110, W + 20, hz - 30); x.lineTo(W + 20, hz + 30); x.fill();
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 1400; i++) {
+    const px = rnd() * W, t = px / W, top = hz - 30 - Math.sin(t * Math.PI) * 70;
+    const py = top + rnd() * (hz + 26 - top);
+    x.fillStyle = `rgba(${200 + rnd() * 55},${170 + rnd() * 60},${140 + rnd() * 60},${.08 + rnd() * .22})`;
+    x.fillRect(px, py, 1.2, 1.2);
+  }
+  g = x.createLinearGradient(0, hz, 0, H); g.addColorStop(0, "#2E5A33"); g.addColorStop(1, "#14301B");
+  x.fillStyle = g; x.fillRect(0, hz + 20, W, H);
+  for (let i = -10; i < 22; i++) {
+    x.fillStyle = i % 2 ? "rgba(255,255,255,.035)" : "rgba(0,0,0,.05)";
+    x.beginPath();
+    x.moveTo(W * .5 + i * 40, hz + 20); x.lineTo(W * .5 + (i + 1) * 40, hz + 20);
+    x.lineTo(W * .5 + (i + 1) * 260, H); x.lineTo(W * .5 + i * 260, H); x.fill();
+  }
+  x.strokeStyle = "rgba(242,238,230,.22)"; x.lineWidth = 1.2;
+  x.beginPath(); x.moveTo(W * .5, H * .98); x.lineTo(W * .05, hz + 40); x.moveTo(W * .5, H * .98); x.lineTo(W * .95, hz + 40); x.stroke();
+  x.fillStyle = "rgba(160,104,64,.55)";
+  x.beginPath(); x.ellipse(W * .5, H * .9, W * .2, H * .12, 0, Math.PI, 2 * Math.PI); x.fill();
+  [[.12, .16], [.3, .1], [.7, .1], [.88, .16]].forEach(([fx, fy]) => {
+    const lx = W * fx, ly = H * fy;
+    const glow = x.createRadialGradient(lx, ly, 0, lx, ly, W * .22);
+    glow.addColorStop(0, "rgba(255,240,205,.55)"); glow.addColorStop(.12, "rgba(255,226,170,.18)"); glow.addColorStop(1, "rgba(255,220,160,0)");
+    x.fillStyle = glow; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#0C110F"; x.fillRect(lx - 1.5, ly, 3, hz - ly);
+    x.fillStyle = "#FFF6E2";
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) x.fillRect(lx - 14 + i * 7.5, ly - 8 + j * 6, 5, 4);
+  });
+  g = x.createLinearGradient(0, hz - 60, 0, hz + 80); g.addColorStop(0, "rgba(255,230,190,0)"); g.addColorStop(.5, "rgba(255,230,190,.10)"); g.addColorStop(1, "rgba(255,230,190,0)");
+  x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
+  for (let i = 0; i < W * H / 90; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * .035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
+}
+drawHero();
+let rz, lastW = innerWidth;
+addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; drawHero(); } }, 150); });
+
+// ---------- 01 statement words light up as you read ----------
+function lightStatement() {
+  const st = $("statement");
+  (function splitWords(node) {
+    [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(p => {
+          if (!p) return;
+          if (/^\s+$/.test(p)) frag.append(p);
+          else { const s = document.createElement("span"); s.className = "w"; s.textContent = p; frag.append(s); }
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1) { n.classList.add("w"); }
+    });
+  })(st);
+  const words = [...st.querySelectorAll(".w")];
+  function light() {
+    if (REDUCE) { words.forEach(w => w.classList.add("lit")); return; }
+    const r = st.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35)));
+    const n = Math.round(p * words.length);
+    words.forEach((w, i) => w.classList.toggle("lit", i < n));
+  }
+  addEventListener("scroll", light, { passive: true }); light();
+}
+
+// ---------- 02 slate picker with a drawn field per sport ----------
+const NS = "http://www.w3.org/2000/svg";
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function topo(svg) {
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("fill", "none"); g.setAttribute("stroke", css("--ink-faint")); g.setAttribute("stroke-opacity", ".35"); g.setAttribute("stroke-width", ".8");
+  [[110, 120], [700, 480], [690, 110], [120, 500]].forEach(([cx, cy], k) => {
+    for (let i = 1; i <= 6; i++) {
+      const e = document.createElementNS(NS, "ellipse");
+      e.setAttribute("cx", cx + i * 3); e.setAttribute("cy", cy - i * 2);
+      e.setAttribute("rx", 14 * i + k * 4); e.setAttribute("ry", 9 * i + k * 2);
+      e.setAttribute("transform", `rotate(${k * 23 - 15} ${cx} ${cy})`);
+      g.append(e);
+    }
+  });
+  svg.append(g);
+}
+function fieldMarkup(sp) {
+  const L = `stroke="${css("--sage-deep")}" stroke-width="2" fill="none"`;
+  const F = css("--sage");
+  if (sp === "NHL") return `
+    <rect x="130" y="150" width="540" height="300" rx="110" fill="${F}" fill-opacity=".55" ${L}/>
+    <line x1="400" y1="150" x2="400" y2="450" stroke="${css("--clay")}" stroke-width="3"/>
+    <line x1="320" y1="150" x2="320" y2="450" ${L} stroke-width="4"/><line x1="480" y1="150" x2="480" y2="450" ${L} stroke-width="4"/>
+    <line x1="170" y1="160" x2="170" y2="440" stroke="${css("--clay")}" stroke-width="1.5"/><line x1="630" y1="160" x2="630" y2="440" stroke="${css("--clay")}" stroke-width="1.5"/>
+    <circle cx="400" cy="300" r="42" ${L}/>
+    <circle cx="240" cy="230" r="32" ${L}/><circle cx="240" cy="370" r="32" ${L}/><circle cx="560" cy="230" r="32" ${L}/><circle cx="560" cy="370" r="32" ${L}/>
+    <path d="M170 280 a20 20 0 0 1 0 40" ${L}/><path d="M630 280 a20 20 0 0 0 0 40" ${L}/>`;
+  if (sp === "MLB") return `
+    <path d="M400 500 L130 230 A380 380 0 0 1 670 230 Z" fill="${F}" fill-opacity=".55" ${L}/>
+    <path d="M400 500 L290 390 L400 280 L510 390 Z" fill="${css("--clay")}" fill-opacity=".22" ${L}/>
+    <circle cx="400" cy="400" r="12" ${L}/>
+    <path d="M250 350 A215 215 0 0 1 550 350" ${L} stroke-dasharray="4 6"/>
+    <rect x="394" y="274" width="12" height="12" fill="${css("--paper")}" ${L}/><rect x="504" y="384" width="12" height="12" fill="${css("--paper")}" ${L}/><rect x="284" y="384" width="12" height="12" fill="${css("--paper")}" ${L}/>
+    <path d="M392 494 h16 v8 l-8 8 l-8 -8 z" fill="${css("--paper")}" ${L}/>`;
+  if (sp === "Soccer") return `
+    <rect x="120" y="140" width="560" height="320" fill="${F}" fill-opacity=".55" ${L}/>
+    <line x1="400" y1="140" x2="400" y2="460" ${L}/><circle cx="400" cy="300" r="48" ${L}/><circle cx="400" cy="300" r="3" fill="${css("--sage-deep")}"/>
+    <rect x="120" y="215" width="80" height="170" ${L}/><rect x="600" y="215" width="80" height="170" ${L}/>
+    <rect x="120" y="260" width="28" height="80" ${L}/><rect x="652" y="260" width="28" height="80" ${L}/>
+    <path d="M200 270 a32 32 0 0 1 0 60" ${L}/><path d="M600 270 a32 32 0 0 0 0 60" ${L}/>`;
+  if (sp === "NBA" || sp === "CBB") return `
+    <rect x="110" y="150" width="580" height="300" fill="${F}" fill-opacity=".55" ${L}/>
+    <line x1="400" y1="150" x2="400" y2="450" ${L}/><circle cx="400" cy="300" r="40" ${L}/>
+    <rect x="110" y="250" width="110" height="100" fill="${css("--clay")}" fill-opacity=".18" ${L}/><rect x="580" y="250" width="110" height="100" fill="${css("--clay")}" fill-opacity=".18" ${L}/>
+    <path d="M110 170 H190 A140 140 0 0 1 190 430 H110" ${L}/><path d="M690 170 H610 A140 140 0 0 0 610 430 H690" ${L}/>
+    <circle cx="140" cy="300" r="8" ${L}/><circle cx="660" cy="300" r="8" ${L}/>`;
+  // NFL and CFB
+  let yl = "";
+  for (let i = 0; i <= 10; i++) { const xx = 170 + i * 46; yl += `<line x1="${xx}" y1="170" x2="${xx}" y2="430" ${L} stroke-width="${i === 5 ? 2.5 : 1.2}"/>`; if (i > 0 && i < 10) yl += `<text x="${xx}" y="200" font-family="DM Mono, monospace" font-size="11" text-anchor="middle" fill="${css("--sage-deep")}">${(i <= 5 ? i : 10 - i) * 10}</text>`; }
+  return `
+    <rect x="110" y="170" width="580" height="260" fill="${F}" fill-opacity=".55" ${L}/>
+    <rect x="110" y="170" width="60" height="260" fill="${css("--clay")}" fill-opacity=".18" ${L}/><rect x="630" y="170" width="60" height="260" fill="${css("--clay")}" fill-opacity=".18" ${L}/>
+    ${yl}`;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function teamMarker(x, y, abbr, isPick, side) {
+  const ink = css("--ink"), paper = css("--paper"), forest = css("--forest"), fi = css("--forest-ink");
+  const a = esc(String(abbr).slice(0, 5));
+  return `<g>
+    <circle cx="${x}" cy="${y}" r="30" fill="${isPick ? forest : paper}" stroke="${isPick ? forest : ink}" stroke-width="1.5"/>
+    <text x="${x}" y="${y + 5}" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="600" font-size="${a.length > 4 ? 11 : 14}" letter-spacing="1" fill="${isPick ? fi : ink}">${a}</text>
+    <text x="${x}" y="${y + 52}" text-anchor="middle" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="2" fill="${css("--ink-soft")}">${side}${isPick ? " · PICK" : ""}</text>
+    ${isPick ? `<path d="M${x + 22} ${y - 46} v24" stroke="${ink}" stroke-width="1.5"/><path d="M${x + 22} ${y - 46} l14 5 l-14 5 z" fill="${css("--clay")}"/>` : ""}
+  </g>`;
+}
+function drawField(g) {
+  const svg = $("fieldArt");
+  svg.innerHTML = `<title id="fieldTitle">${esc(g.sp)}: ${esc(g.away)} at ${esc(g.home)}, our pick ${esc(g.pick)}</title>`;
+  topo(svg);
+  const pickHome = g.pick === g.home, pickAway = g.pick === g.away;
+  const p = g.prob / 100, b = (g.book || 0) / 100;
+  svg.insertAdjacentHTML("beforeend", fieldMarkup(g.sp) +
+    teamMarker(250, 300, g.away, pickAway, "AWAY") + teamMarker(550, 300, g.home, pickHome, "HOME") +
+    `<g font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1.5" fill="${css("--ink-soft")}">
+      <text x="120" y="532">OUR CHANCE${g.pick === "Draw" ? " OF A DRAW" : ""}</text><text x="680" y="532" text-anchor="end">${g.prob.toFixed(1)}%</text>
+      <rect x="120" y="540" width="560" height="5" fill="${css("--rule")}"/>
+      <rect x="120" y="540" width="${560 * p}" height="5" fill="${css("--forest")}"/>
+      ${g.book ? `<line x1="${120 + 560 * b}" y1="534" x2="${120 + 560 * b}" y2="551" stroke="${css("--clay")}" stroke-width="2"/>
+      <text x="${Math.min(640, Math.max(160, 120 + 560 * b))}" y="568" text-anchor="middle" fill="${css("--clay")}">BOOK ${g.book.toFixed(1)}%</text>` : ""}
+    </g>`);
+}
+
+const NUMBERED_MAX = 12;
+let SLATES = {}, day = "today", filt = "All", list = [], cur = 0;
+const chips = $("chips"), glist = $("glist"), filters = $("filters");
+const lgShort = sp => sp === "Soccer" ? "SOC" : sp;
+function autoNote(g) {
+  if (g.result) return g.result;
+  if (!g.book) return `We have ${g.pick} at ${g.prob.toFixed(1)}%. No sportsbook price was posted for this one.`;
+  const gap = g.prob - g.book;
+  const pickName = g.pick === "Draw" ? "the draw" : g.pick;
+  const other = g.pick === g.home ? g.away : g.home;
+  if (g.value) return `Value pick. We have ${pickName} at ${g.prob.toFixed(1)}%, ${gap.toFixed(1)} points higher than the ${g.book.toFixed(1)}% the price implies.`;
+  if (gap >= 2) return g.pick === "Draw" ? `We like the draw a little more than the market does, but not by enough for a Value tag.` : `We like ${g.pick} over ${other} a little more than the market does, but not by enough for a Value tag.`;
+  if (gap <= -2) return `We pick ${pickName} too, but the market likes them more than we do, so the price runs ahead of our numbers.`;
+  return `Our numbers and the market agree on ${pickName} within a couple of points.`;
+}
+function counts(games) {
+  const c = { All: games.length, Value: games.filter(g => g.value).length };
+  games.forEach(g => c[g.sp] = (c[g.sp] || 0) + 1);
+  return c;
+}
+function renderChooser() {
+  const games = SLATES[day].games;
+  list = games.filter(g => filt === "All" || (filt === "Value" ? g.value : g.sp === filt));
+  const many = games.length > NUMBERED_MAX;
+  chips.hidden = many; glist.hidden = !many; filters.hidden = !many;
+  if (!many) {
+    chips.innerHTML = list.map((g, i) => `<button type="button" aria-pressed="false" data-i="${i}">${String(i + 1).padStart(2, "0")}<small>${lgShort(g.sp)}</small></button>`).join("");
+  } else {
+    const c = counts(games);
+    const keys = ["All", "Value", ...Object.keys(c).filter(k => k !== "All" && k !== "Value").sort((a, b) => c[b] - c[a])];
+    filters.innerHTML = keys.map(k => `<button type="button" data-f="${k}" aria-pressed="${k === filt}">${k}<span>${c[k]}</span></button>`).join("");
+    let html = "", last = null;
+    list.forEach((g, i) => {
+      if (g.t !== last) {
+        const n = list.filter(x => x.t === g.t).length;
+        html += `<h4 class="mono"><span>${g.t} ET</span><span>${n} game${n > 1 ? "s" : ""}</span></h4>`;
+        last = g.t;
+      }
+      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%${g.value ? '<i class="vdot" title="Value pick"></i>' : ""}</span></button>`;
+    });
+    glist.innerHTML = html || `<div class="empty">No games match this filter.</div>`;
+  }
+  const c = counts(games), pm = games.filter(g => g.h >= 17).length;
+  $("totals").innerHTML = `<div>Before 5 PM<b>${games.length - pm} games</b></div><div>5 PM on<b>${pm} games</b></div><div>Value tags<b>${c.Value} picks</b></div>`;
+}
+function show(i, animate) {
+  if (!list.length) return;
+  cur = (i + list.length) % list.length;
+  const g = list[cur], n = String(cur + 1).padStart(2, "0");
+  $("gNum").textContent = n;
+  $("gOf").textContent = `Game ${cur + 1} of ${list.length} · ${g.sp}${g.value ? " · Value" : ""}`;
+  $("gTitle").innerHTML = g.url ? `<a href="${esc(g.url)}">${esc(g.away)} @ ${esc(g.home)}</a>` : `${esc(g.away)} @ ${esc(g.home)}`;
+  $("gPick").textContent = g.pick;
+  $("gProb").textContent = Math.round(g.prob) + "%";
+  $("gPrice").textContent = fmtPrice(g.price);
+  $("gNote").textContent = autoNote(g);
+  $("frameTag").textContent = `${g.sp} · ${g.away} at ${g.home}`;
+  $("framePill").textContent = `Game ${n} · ${g.t} ET`;
+  const box = glist.hidden ? chips : glist;
+  box.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === cur));
+  const on = box.querySelector('button[aria-pressed="true"]');
+  if (on && !glist.hidden) {
+    const top = on.offsetTop - glist.offsetTop, h = on.offsetHeight;
+    if (top < glist.scrollTop + 34 || top + h > glist.scrollTop + glist.clientHeight) glist.scrollTop = top - 40;
+  }
+  const svg = $("fieldArt");
+  if (animate && !REDUCE) { svg.classList.add("swap"); setTimeout(() => { drawField(g); svg.classList.remove("swap"); }, 200); }
+  else drawField(g);
+}
+[chips, glist].forEach(el => el.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i, true); }));
+filters.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; filt = b.dataset.f; renderChooser(); glist.scrollTop = 0; show(0, true); });
+$("dayswitch").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.dataset.day === day) return;
+  setDay(b.dataset.day, true);
+});
+function setDay(d, animate) {
+  day = d; filt = "All";
+  document.querySelectorAll("#dayswitch button").forEach(x => x.setAttribute("aria-pressed", x.dataset.day === d));
+  const S = SLATES[day];
+  $("slateDate").textContent = S.date; $("slateH2").innerHTML = S.h2; $("slateLede").textContent = S.lede;
+  renderChooser(); glist.scrollTop = 0; show(0, animate);
+}
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select") || !list.length) return;
+  const r = $("slate").getBoundingClientRect();
+  if (r.bottom < 0 || r.top > innerHeight) return;
+  if (e.key === "ArrowRight") show(cur + 1, true);
+  if (e.key === "ArrowLeft") show(cur - 1, true);
+});
+$("prevG").onclick = () => show(cur - 1, true);
+$("nextG").onclick = () => show(cur + 1, true);
+
+// ---------- 03 value cards with drawn night-light art ----------
+const VCOL = [["#1E3A2C", "#C98A55"], ["#18262E", "#9DB5A0"], ["#2B2320", "#D6A46A"]];
+function drawValueArt() {
+  document.querySelectorAll(".vart").forEach(el => {
+    const c = el.querySelector("canvas"), r = el.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+    c.width = r.width * dpr; c.height = r.height * dpr;
+    const x = c.getContext("2d"); x.scale(dpr, dpr);
+    const [base, light] = VCOL[+el.dataset.k % 3], W = r.width, H = r.height;
+    x.fillStyle = base; x.fillRect(0, 0, W, H);
+    for (let i = 0; i < 26; i++) {
+      x.strokeStyle = light; x.globalAlpha = .06 + (i % 5 === 0 ? .1 : 0);
+      x.beginPath(); x.ellipse(W * .78, H * .18, 30 + i * 18, 20 + i * 13, -.4, 0, Math.PI * 2); x.stroke();
+    }
+    x.globalAlpha = 1;
+    const g = x.createRadialGradient(W * .78, H * .18, 0, W * .78, H * .18, W * .7);
+    g.addColorStop(0, light + "AA"); g.addColorStop(1, light + "00");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const s = x.createLinearGradient(0, H * .5, 0, H); s.addColorStop(0, "rgba(0,0,0,0)"); s.addColorStop(1, "rgba(0,0,0,.45)");
+    x.fillStyle = s; x.fillRect(0, 0, W, H);
+  });
+}
+addEventListener("resize", () => setTimeout(drawValueArt, 160));
+
+// ---------- Live data ----------
+function slateGames(sums) {
+  const out = [];
+  sums.forEach((s, i) => (s && s.slate || []).forEach(g => {
+    if (!g.start || g.prob == null) return;
+    out.push({
+      sp: g.sport || SITES[i].lg, start: g.start, date: g.date || dayKey(new Date(g.start)),
+      t: etTime(g.start), h: etHour(g.start), away: g.away, home: g.home, pick: g.pick,
+      prob: +g.prob, price: g.price, book: g.book == null ? null : +g.book, value: !!g.value, final: !!g.final, url: g.url,
+    });
+  }));
+  return out.sort((a, b) => a.start.localeCompare(b.start) || (b.prob - a.prob));
+}
+function slateText(games, key, isToday) {
+  const n = games.length;
+  const sports = [...new Set(games.map(g => g.sp))];
+  const names = sports.map(s => s === "Soccer" ? "European soccer" : s);
+  const date = longDate(key, { weekday: "long" }) + " · " + longDate(key, { month: "long", day: "numeric" });
+  const h2 = n > NUMBERED_MAX ? `${Words(n)} games. <em>Still</em> one card.` : `${Words(n)} game${n === 1 ? "" : "s"}. <em>One</em> honest card.`;
+  const first = games[0] ? `, first game at ${games[0].t} ET` : "";
+  let lede = `${list3(names)} ${isToday ? "today" : "on the card"}${first}. Choose a game to see our pick.`;
+  if (n > NUMBERED_MAX) lede += " Past twelve games the list is grouped by start time, with a filter for each league and one for Value picks.";
+  return { games, date, h2, lede };
+}
+
+function render(sums) {
+  const by = {}; SITES.forEach((s, i) => by[s.lg] = sums[i]);
+  const today = dayKey(new Date());
+
+  // Board: picks to win per league, with the moneyline streak.
+  const board = [];
+  BOARD_ORDER.forEach(lg => {
+    const s = by[lg]; if (!s) return;
+    const src = lg === "MLB" ? s.games : s;
+    const rec = src && src.record && wl(src.record.value);
+    if (!rec || rec[0] + rec[1] === 0) return;
+    const st = src.ml_streak;
+    board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
+                 streak: st && st.n ? `${st.kind}${st.n}` : "—", since: src.record.since, kind: st && st.kind, n: st && st.n });
+  });
+  $("boardRows").innerHTML = board.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td><span class="streak">${b.streak}</span></td></tr>`).join("");
+  $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
+  $("boardYear").textContent = "Picks to win · " + today.slice(0, 4);
+
+  const W = board.reduce((a, b) => a + b.w, 0), L = board.reduce((a, b) => a + b.l, 0), N = W + L;
+  const sinceDates = board.map(b => b.since && new Date(b.since)).filter(d => d && !isNaN(d)).sort((a, b) => a - b);
+  const first = sinceDates[0];
+  const sinceMonth = first ? first.toLocaleDateString("en-US", { month: "long" }) : "the start";
+  const sinceShort = first ? first.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+  $("statement").innerHTML = `${Words(N)} games picked since ${sinceMonth}, every one <em>posted before</em> the first pitch, puck drop or kickoff. We don't bury the misses. We <em>grade</em> every one of them.`;
+  lightStatement();
+  $("recHead").textContent = [...new Set(board.map(b => ({ NFL: "Football", CFB: "Football", NHL: "Hockey", MLB: "Baseball", Soccer: "Soccer", NBA: "Basketball", CBB: "Basketball" }[b.lg])))].join(" · ");
+  $("heroTally").textContent = `${N} games graded · ${N ? (W / N * 100).toFixed(1) : "0"}% right`;
+
+  const stats = [];
+  stats.push([`${W}-${L}`, `team picks right across ${words(board.length)} league${board.length === 1 ? "" : "s"}${sinceShort ? " since " + sinceShort : ""}`]);
+  const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
+  if (hits) stats.push([`${hits[0]}`, `MLB top hitters who got a hit, out of ${hits[0] + hits[1]} picked (${(hits[0] / (hits[0] + hits[1]) * 100).toFixed(1)}%)`]);
+  const nfl = by.NFL && (by.NFL.moneyline_record || by.NFL.season_record);
+  if (nfl && nfl.value) stats.push([nfl.value, `NFL ${by.NFL.moneyline_record ? "moneyline picks" : "picks to win"} this season`]);
+  const hot = board.filter(b => b.kind === "W").sort((a, b) => b.n - a.n)[0];
+  if (hot) stats.push([`W${hot.n}`, `${hot.lg} moneyline picks won in a row going into today`]);
+  $("stats").innerHTML = stats.map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("");
+
+  // Slate: today, and the next day with games.
+  const all = slateGames(sums);
+  const days = [...new Set(all.filter(g => g.date >= today).map(g => g.date))].sort();
+  const todayGames = all.filter(g => g.date === today);
+  const nextKey = days.find(d => d > today);
+  SLATES = {};
+  if (todayGames.length) SLATES.today = slateText(todayGames, today, true);
+  if (nextKey) SLATES.next = slateText(all.filter(g => g.date === nextKey), nextKey, false);
+  const sw = $("dayswitch");
+  const label = k => k === nextKey && nextKey === dayKey(new Date(Date.now() + 864e5)) ? "Tomorrow" : longDate(k, { weekday: "long" });
+  sw.innerHTML = (SLATES.today ? `<button type="button" data-day="today" aria-pressed="true">Today · ${todayGames.length}</button>` : "") +
+                 (SLATES.next ? `<button type="button" data-day="next" aria-pressed="false">${label(nextKey)} · ${SLATES.next.games.length}</button>` : "");
+  const start = SLATES.today ? "today" : (SLATES.next ? "next" : null);
+  if (start) setDay(start, false);
+  else {
+    $("slateH2").innerHTML = "No games <em>on the card.</em>"; $("slateLede").textContent = "Check back when the next slate is posted.";
+    document.querySelector(".slate").hidden = true;
+  }
+
+  // Value picks: the slate's Value tags, biggest gap first, up to three.
+  const vsrc = (SLATES[start] || { games: [] }).games;
+  const VAL = vsrc.filter(g => g.value && g.book).sort((a, b) => (b.prob - b.book) - (a.prob - a.book)).slice(0, 3);
+  const vn = vsrc.filter(g => g.value).length;
+  $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "next" ? label(nextKey).toLowerCase() : "today"}`;
+  $("valH2").innerHTML = VAL.length ? `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} the market <em>left on the table.</em>` : `No prices left <em>on the table.</em>`;
+  if (!VAL.length) $("valLede").textContent = "No pick on this slate clears the six-point Value bar. Our numbers and the market are close on every game.";
+  $("valueGrid").innerHTML = VAL.map((g, i) => `
+    <article class="vcard">
+      <div class="vart" data-k="${i}"><canvas aria-hidden="true"></canvas>
+        <div class="vtop mono"><span>${g.sp}</span><span>${g.t} ET</span></div>
+        <div><div class="vbig">+${(g.prob - g.book).toFixed(1)}</div><div class="mono" style="opacity:.8;margin-top:8px">Points over the book</div></div>
+      </div>
+      <h3>${g.url ? `<a href="${esc(g.url)}">` : ""}${esc(g.pick)} ${fmtPrice(g.price)}${g.url ? "</a>" : ""}</h3>
+      <div class="vline">${esc(g.away)} @ ${esc(g.home)}</div>
+      <p>${esc(autoNote(g))}</p>
+      <div class="vfoot mono"><span>Ours ${g.prob.toFixed(1)}%</span><span>Book ${g.book.toFixed(1)}%</span></div>
+    </article>`).join("");
+  drawValueArt();
+
+  // Leagues.
+  const month = +today.slice(5, 7);
+  const leagues = [];
+  SITES.forEach(site => {
+    const s = by[site.lg], src = site.lg === "MLB" ? s && s.games : s;
+    const live = s && (s.slate || []).some(g => !g.final);
+    const recd = s && s.record && wl(s.record.value);
+    let tag = recd ? (live ? "In season" : (site.lg === "MLB" ? "Postseason" : "Between games")) : (site.lg === "CBB" && month < 11 && month > 4 ? "Offseason" : "Preseason");
+    if (site.lg === "MLB" && month >= 10 && recd) tag = "Postseason";
+    const sub = !recd ? null : site.lg === "MLB" ? "hitters who got a hit" : `picks to win since ${(s.record.since || "").replace(/, \d{4}$/, "")}`;
+    leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? s.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" });
+  });
+  leagues.push({ lg: "All", href: "#slate", tag: "Home", about: "Every game from every league on one board, picks first.", rec: String(SITES.length), sub: "leagues on one page" });
+  $("leagueGrid").innerHTML = leagues.map(l => `
+    <a class="league${l.feat ? " feat" : ""}" href="${l.href}">
+      <div class="lt mono"><span>${l.lg === "All" ? "Home" : l.lg}</span><span>${l.tag}</span></div>
+      <h3>${l.lg === "All" ? "Every game" : l.lg}</h3>
+      <p>${l.about}</p>
+      ${l.rec ? `<div class="lrec"><b>${l.rec}</b><span>${l.sub}</span></div>` : `<div class="wait">${l.wait}</div>`}
+    </a>`).join("");
+
+  // Calendar: the last six days with graded team picks.
+  const perDay = {};
+  BOARD_ORDER.forEach(lg => {
+    const s = by[lg]; const src = lg === "MLB" ? s && s.games : s;
+    (src && src.daily || []).forEach(([d, w, l]) => {
+      if (d >= today) return;
+      (perDay[d] = perDay[d] || {})[lg] = [w, l];
+    });
+  });
+  const cal = Object.keys(perDay).sort().reverse().slice(0, 6).map(d => {
+    const s = perDay[d];
+    const w = Object.values(s).reduce((a, x) => a + x[0], 0), l = Object.values(s).reduce((a, x) => a + x[1], 0);
+    return { d, s, w, l };
+  });
+  const biggest = Math.max(...cal.map(c => c.w + c.l), 0);
+  $("cal").innerHTML = cal.map(c => {
+    const dt = new Date(c.d + "T12:00:00");
+    const order = Object.entries(c.s).sort((a, b) => (b[1][0] + b[1][1]) - (a[1][0] + a[1][1]));
+    const [topLg, [tw, tl]] = order[0];
+    const lgName = topLg === "Soccer" ? "Soccer" : topLg;
+    let head;
+    if (c.w + c.l === biggest && cal.length > 2 && c.w + c.l >= 20) head = "The busiest day of the run";
+    else if (c.w === c.l) head = "An even day";
+    else if (tw + tl >= 6 && tw / (tw + tl) >= 0.7) head = `${Words(tw)} of ${words(tw + tl)} in the ${lgName}`;
+    else if ((tw + tl) / (c.w + c.l) >= 0.6 && tw > tl) head = `${lgName} does the work`;
+    else if (order.length === 1) head = `A ${lgName}-only day`;
+    else if (c.w + c.l <= 5) head = "A short slate";
+    else head = c.w > c.l ? `${lgName} carries the day` : "A day to forget";
+    return `<li>
+      <div class="d"><b>${dt.toLocaleDateString("en-US", { day: "2-digit" })}</b><span class="mono">${dt.toLocaleDateString("en-US", { month: "short" })}<br>${dt.toLocaleDateString("en-US", { weekday: "short" })}</span></div>
+      <div><h3>${head}</h3><div class="split">${order.map(([k, v]) => `<span>${k} <b>${v[0]}-${v[1]}</b></span>`).join("")}</div></div>
+      <div class="wl${c.w > c.l ? " up" : ""}">${c.w}-${c.l}<small>${Math.round(c.w / (c.w + c.l) * 100)}% right</small></div>
+    </li>`;
+  }).join("");
+  $("footDate").textContent = "Figures from the live sites, " + longDate(today, { month: "short", day: "numeric", year: "numeric" });
+}
+
+loadAll().then(render);
+
+// Redraw theme-colored SVG if the viewer's theme flips.
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => list[cur] && drawField(list[cur]));
+</script>
 </body>
 </html>
