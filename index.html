@@ -192,6 +192,9 @@ h2 em { font-size: 1.06em; }
 .vart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .vart > :not(canvas) { position: relative; }
 .vart .vtop { display: flex; justify-content: space-between; }
+.vmeter { position: relative; height: 4px; margin-top: 16px; background: rgba(242,238,230,.22); }
+.vmeter i { position: absolute; inset: 0 auto 0 0; background: #F2EEE6; }
+.vmeter b { position: absolute; top: -5px; width: 2px; height: 14px; background: #E59D72; transform: translateX(-1px); }
 .vart .vbig { font-family: var(--f-serif); font-size: clamp(64px, 7vw, 108px); line-height: .85; }
 .vcard h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; }
 .vcard .vline { color: var(--ink-soft); font-size: 13px; }
@@ -878,24 +881,19 @@ $("prevG").onclick = () => show(cur - 1, true);
 $("nextG").onclick = () => show(cur + 1, true);
 
 // ---------- 03 value cards with drawn night-light art ----------
-const VCOL = [["#1E3A2C", "#C98A55"], ["#18262E", "#9DB5A0"], ["#2B2320", "#D6A46A"]];
+// Each Value card is that sport's stadium under lights, shaded top and
+// bottom so the labels and the big number read over it.
+const KIND = sp => ({ NHL: "ice", NBA: "court", CBB: "court", NFL: "pitch", CFB: "pitch", Soccer: "pitch" }[sp] || "park");
 function drawValueArt() {
   document.querySelectorAll(".vart").forEach(el => {
-    const c = el.querySelector("canvas"), r = el.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
-    c.width = r.width * dpr; c.height = r.height * dpr;
-    const x = c.getContext("2d"); x.scale(dpr, dpr);
-    const [base, light] = VCOL[+el.dataset.k % 3], W = r.width, H = r.height;
-    x.fillStyle = base; x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 26; i++) {
-      x.strokeStyle = light; x.globalAlpha = .06 + (i % 5 === 0 ? .1 : 0);
-      x.beginPath(); x.ellipse(W * .78, H * .18, 30 + i * 18, 20 + i * 13, -.4, 0, Math.PI * 2); x.stroke();
-    }
-    x.globalAlpha = 1;
-    const g = x.createRadialGradient(W * .78, H * .18, 0, W * .78, H * .18, W * .7);
-    g.addColorStop(0, light + "AA"); g.addColorStop(1, light + "00");
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    const s = x.createLinearGradient(0, H * .5, 0, H); s.addColorStop(0, "rgba(0,0,0,0)"); s.addColorStop(1, "rgba(0,0,0,.45)");
-    x.fillStyle = s; x.fillRect(0, 0, W, H);
+    const c = el.querySelector("canvas");
+    edgeStadium(c, KIND(el.dataset.sp));
+    const r = c.getBoundingClientRect(), x = c.getContext("2d"), W = r.width, H = r.height;
+    if (!W) return;
+    let g = x.createLinearGradient(0, 0, 0, H * .3); g.addColorStop(0, "rgba(8,14,11,.6)"); g.addColorStop(1, "rgba(8,14,11,0)");
+    x.fillStyle = g; x.fillRect(0, 0, W, H * .3);
+    g = x.createLinearGradient(0, H * .45, 0, H); g.addColorStop(0, "rgba(8,14,11,0)"); g.addColorStop(1, "rgba(8,14,11,.85)");
+    x.fillStyle = g; x.fillRect(0, H * .45, W, H * .55);
   });
 }
 addEventListener("resize", () => setTimeout(drawValueArt, 160));
@@ -1052,9 +1050,10 @@ function render(sums) {
   if (!VAL.length) $("valLede").textContent = "No pick on this slate clears the six-point Value bar. Our numbers and the market are close on every game.";
   $("valueGrid").innerHTML = VAL.map((g, i) => `
     <article class="vcard">
-      <div class="vart" data-k="${i}"><canvas aria-hidden="true"></canvas>
+      <div class="vart" data-k="${i}" data-sp="${g.sp}"><canvas aria-hidden="true"></canvas>
         <div class="vtop mono"><span>${g.sp}</span><span>${g.t} ET</span></div>
-        <div><div class="vbig">+${(g.prob - g.book).toFixed(1)}</div><div class="mono" style="opacity:.8;margin-top:8px">Points over the book</div></div>
+        <div><div class="vbig">+${(g.prob - g.book).toFixed(1)}</div><div class="mono" style="opacity:.8;margin-top:8px">Points over the book</div>
+          <div class="vmeter" aria-hidden="true"><i style="width:${g.prob}%"></i><b style="left:${g.book}%"></b></div></div>
       </div>
       <h3>${g.url ? `<a href="${esc(g.url)}">` : ""}${esc(g.pick)} ${fmtPrice(g.price)}${g.url ? "</a>" : ""}</h3>
       <div class="vline">${esc(g.away)} @ ${esc(g.home)}</div>
