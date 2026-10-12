@@ -25,6 +25,7 @@ and this module renders the page, the cards and the JSON from it. Money
 reads it from summary.json: a moneyline unit is 1 bet at the price the pick
 locked at, so dollars are units times 10. Live picks only.
 """
+import json
 from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
@@ -274,9 +275,40 @@ def _day_name(iso):
     return f"{d:%A}, {d:%b} {d.day}"
 
 
+def _slate_side(g, side):
+    t = g[side]
+    return {"abbr": t["abbr"], "name": t.get("name") or t["abbr"], "logo": t.get("logo") or "",
+            "score": t.get("score") if g.get("final") else None}
+
+
+def slate_data(games):
+    """The games for the slate picker (edgeSlatePicker in shared/edge.js), in
+    the shape the home page uses, as JSON safe inside a <script> tag. "why" is
+    the model's biggest factor and the team it helps."""
+    rows = []
+    for g in games:
+        if g.get("void"):
+            continue
+        why = sorted(((label, v) for label, v in g.get("why") or [] if v), key=lambda it: -abs(it[1]))
+        ml = g.get("ml") or {}
+        draw = g.get("pick_name") == "Draw"
+        rows.append({
+            "key": str(g["id"]), "sport": g.get("sport") or "", "start": g.get("start"), "date": g["date"][:10],
+            "at": "vs" if g.get("neutral") else "@", "away": _slate_side(g, "away"), "home": _slate_side(g, "home"),
+            "pick": "Draw" if draw else g["pick"], "prob": round(g["prob"], 1),
+            "price": int(round(ml["price"])) if ml.get("price") is not None else None,
+            "book": round(ml["book"], 1) if ml.get("book") is not None else None, "value": bool(ml.get("value")),
+            "state": "post" if g.get("final") else "pre", "hit": g.get("hit") if g.get("final") else None,
+            "url": g.get("file") or "", "group": g.get("group"),
+            "why": [why[0][0], g["pick"] if why[0][1] > 0 else g.get("other") or ""] if why and not draw else None,
+        })
+    return json.dumps(rows, separators=(",", ":")).replace("</", "<\\/")
+
+
 def game_board(games, top_n=3, empty=""):
     """Every game as a card, under a header per day, with day buttons when
-    the games span more than one day."""
+    the games span more than one day. Above the cards, the slate picker's
+    games (sport-pages.js shows one view or the other)."""
     if not games:
         return f'<div class="empty-state">{empty}</div>' if empty else ""
     games = sorted(games, key=lambda g: (g["date"][:10], str(g.get("start") or ""), g["id"]))
@@ -297,7 +329,8 @@ def game_board(games, top_n=3, empty=""):
         out += (f'<section class="gc-day" data-day="{d}"><div class="gc-day-head"><h3>{_day_name(d)}</h3>'
                 f'<span>{n}</span></div><div class="gc-grid">'
                 + "".join(game_card(g, g["id"] in tops) for g in gs) + "</div></section>")
-    return chips + out
+    picker = f'<div class="sp-mount"><script type="application/json" class="sp-data">{slate_data(games)}</script></div>'
+    return chips + picker + out
 
 
 def board_section(title, sub, body):

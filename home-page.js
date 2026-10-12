@@ -348,6 +348,23 @@ function hgRender() {
     return sub;
   };
   const n = k => `${k} ${k === 1 ? "game" : "games"}`;
+  // Slate: one game at a time beside its field, every game in the day's
+  // list (live, to play and final) in start order.
+  if (hg.layout === "slate" && list.length) {
+    if (!hg.picker || hg.picker.withDay !== withDay) {
+      hg.picker = edgeSlatePicker({ multiSport: true, withDay, onSelect: k => { hg.slateKey = k; } });
+      hg.picker.withDay = withDay;
+    }
+    hg.picker.set(list.map(g => ({ ...g, why: null })), hg.slateKey);
+    out.replaceChildren(hg.picker.el);
+    out.removeAttribute("aria-busy");
+    hgTop3(inDay, withDay);
+    hgCountdown();
+    edgeSlide(dayBtns, "pill");
+    edgeSlide(document.getElementById("hg-sports"), "line");
+    edgeSlide(document.getElementById("hg-layout"), "pill");
+    return;
+  }
   const sections = [];
   [["Live now", "in", "is-live"], ["Still to play", "pre", ""], ["Final", "post", ""]].forEach(([title, state, cls]) => {
     const gs = list.filter(g => g.state === state);
@@ -647,7 +664,8 @@ function rcHover(ev) {
 
 async function initHomeGames() {
   if (!document.getElementById("hg-out")) return;
-  hg.layout = hgStore(HG_LAYOUT_KEY) || (matchMedia("(max-width: 560px)").matches ? "list" : "cards");
+  const saved = hgStore(HG_LAYOUT_KEY);
+  hg.layout = ["slate", "cards", "list"].includes(saved) ? saved : "slate";
   const pick = (id, key, save) => document.getElementById(id).addEventListener("click", e => {
     const b = e.target.closest("button");
     if (!b) return;

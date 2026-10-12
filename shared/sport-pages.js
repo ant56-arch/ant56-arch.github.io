@@ -53,6 +53,54 @@ initCompChips();
 // --- Sliding highlight under the day and competition buttons ---
 document.querySelectorAll(".day-chips, .comp-chips").forEach(g => edgeSlide(g, "line"));
 
+// --- Slate picker over the game cards (extras.game_board) ---
+// The board's games come as JSON in .sp-mount; Slate shows them one at a
+// time with edgeSlatePicker, Cards shows the cards. The day and competition
+// buttons filter both. The choice is saved for every sport site.
+const SP_VIEW_KEY = "edge-board-view";
+function initSlatePickers() {
+  document.querySelectorAll(".sp-mount").forEach(mount => {
+    let games = [];
+    try { games = JSON.parse(mount.querySelector(".sp-data").textContent); } catch (e) { return; }
+    if (!games.length) return;
+    const scope = mount.parentElement;
+    let view = "slate";
+    try { if (localStorage.getItem(SP_VIEW_KEY) === "cards") view = "cards"; } catch (e) { /* storage blocked */ }
+    const picker = edgeSlatePicker({ filters: true, withDay: new Set(games.map(g => g.date)).size > 1 });
+    const bar = edgeNode("div", "sp-view");
+    bar.setAttribute("role", "group");
+    bar.setAttribute("aria-label", "Games view");
+    ["slate", "cards"].forEach(v => {
+      const b = edgeNode("button", null, v === "slate" ? "Slate" : "Cards");
+      b.type = "button";
+      b.dataset.v = v;
+      bar.append(b);
+    });
+    mount.append(bar, picker.el);
+    const filter = { day: "all", comp: "all" };
+    const apply = () => {
+      bar.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === view)));
+      const gs = games.filter(g => (filter.day === "all" || g.date === filter.day) && (filter.comp === "all" || g.group === filter.comp));
+      picker.set(gs);
+      picker.el.hidden = view !== "slate" || !gs.length;
+      scope.querySelectorAll(".gc-day").forEach(d => d.classList.toggle("sp-off", view === "slate"));
+      edgeSlide(bar, "pill");
+    };
+    bar.addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      view = b.dataset.v;
+      try { localStorage.setItem(SP_VIEW_KEY, view); } catch (err) { /* storage blocked */ }
+      apply();
+    });
+    scope.querySelectorAll(".day-chips button").forEach(b => b.addEventListener("click", () => { filter.day = b.dataset.day; apply(); }));
+    scope.querySelectorAll(".comp-chips button").forEach(b => b.addEventListener("click", () => { filter.comp = b.dataset.group; apply(); }));
+    mount._slate = { games, apply };
+    apply();
+  });
+}
+initSlatePickers();
+
 // --- Results calendar (Model tab, model_page.render) ---
 // One square per day from this site's summary.json "daily", colored by that
 // day's record; MLB adds a Hits / Games switch for its two records.
@@ -299,6 +347,31 @@ async function initLiveCards() {
     if (!started.length) return false;
     const events = await gcLiveEvents(site, days.filter(d => d <= today));
     let live = false;
+    // The slate pickers' games take the same live scores.
+    document.querySelectorAll(".sp-mount").forEach(m => {
+      if (!m._slate) return;
+      let changed = false;
+      m._slate.games.forEach(g => {
+        if (g.state === "post" && g.hit != null) return;
+        const e = gcLiveMatch({ dataset: { away: g.away.abbr, home: g.home.abbr, start: g.start || "", day: g.date } }, events, site.sport);
+        if (!e || e.state === "pre") return;
+        const flip = edgeFavKey(site.sport, g.away.abbr) === edgeFavKey(site.sport, e.home.abbr) ||
+                     edgeFavKey(site.sport, g.home.abbr) === edgeFavKey(site.sport, e.away.abbr);
+        const away = flip ? e.home : e.away, home = flip ? e.away : e.home;
+        if (away.score == null || home.score == null) return;
+        g.away.score = away.score;
+        g.home.score = home.score;
+        g.state = e.state;
+        g.detail = e.detail || "";
+        if (e.state === "post") {
+          if (g.pick === "Draw") g.hit = away.score === home.score;
+          else if (away.score !== home.score) g.hit = (g.pick === g.away.abbr) === (away.score > home.score);
+          else if (site.sport === "Soccer") g.hit = false;
+        }
+        changed = true;
+      });
+      if (changed) m._slate.apply();
+    });
     started.forEach(c => {
       const e = gcLiveMatch(c, events, site.sport);
       if (!e || e.state === "pre") return;
