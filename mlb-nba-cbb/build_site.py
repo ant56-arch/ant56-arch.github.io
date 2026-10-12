@@ -828,7 +828,7 @@ def card_game(g, p, espn_games, lines):
     """A game in the shared shape, with what its card adds: TV, stadium and
     records from ESPN's scoreboard (where it has the game) and the lines strip."""
     info = games_mod.card_info(espn_for(p, espn_games or ()))
-    g["tv"], g["venue"], g["lines"] = info.get("tv", ""), info.get("venue", ""), lines
+    g["tv"], g["venue"], g["series"], g["lines"] = info.get("tv", ""), info.get("venue", ""), info.get("series", ""), lines
     for side, rec in zip(("away", "home"), info.get("records", ("", ""))):
         if rec and not g[side].get("record"):
             g[side]["record"] = rec

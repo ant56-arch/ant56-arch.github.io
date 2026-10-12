@@ -86,7 +86,19 @@ function edgeParseEspn(ev) {
   (comp.broadcasts || []).forEach(b => (b.names || []).forEach(n => { if (!tv.includes(n)) tv.push(n); }));
   const lastPlay = ((comp.situation || {}).lastPlay || {}).text || "";
   return { id: String(ev.id), start: ev.date, lastPlay, state: type.state || "pre", detail: type.shortDetail || type.detail || "",
-           tv: tv.slice(0, 2).join(", "), neutral: !!comp.neutralSite, away: team(sides.away), home: team(sides.home) };
+           tv: tv.slice(0, 2).join(", "), neutral: !!comp.neutralSite, series: edgeSeriesLabel(ev, comp),
+           away: team(sides.away), home: team(sides.home) };
+}
+
+// A playoff game's round and series score, like "NLCS · Game 2 · MIL leads series 1-0"
+// ("" outside the postseason). Same rule as series_label in shared/games.py.
+function edgeSeriesLabel(ev, comp) {
+  const series = comp.series || {};
+  if ((ev.season || {}).type !== 3 && series.type !== "playoff") return "";
+  const note = ((comp.notes || []).find(n => n.headline) || {}).headline || "";
+  const parts = note ? [note.replace(/ - /g, " · ")] : [];
+  if (series.summary && (series.competitors || []).some(c => c.wins)) parts.push(series.summary);
+  return parts.join(" · ");
 }
 
 async function edgeLoadGames(site) {

@@ -233,6 +233,7 @@ def game_card(g, top=False):
         head += f" · {escape(g['tv'])}"
     tag = '<em class="gc-top">Top 3 pick</em>' if top else ""
     venue = f'<span class="gc-venue">{escape(g["venue"])}</span>' if g.get("venue") else ""
+    series = f'<div class="gc-series">{escape(g["series"])}</div>' if g.get("series") else ""
     rows = ""
     for side in ("away", "home"):
         t = g[side]
@@ -262,7 +263,7 @@ def game_card(g, top=False):
         f' data-start="{escape(str(g.get("start") or ""))}" data-away="{escape(g["away"]["abbr"])}"'
         f' data-home="{escape(g["home"]["abbr"])}" data-pick="{escape("Draw" if g.get("pick_name") == "Draw" else str(g["pick"]))}"')
     return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}"{group}{live}>'
-            f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{rows}{lines}'
+            f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{series}{rows}{lines}'
             f'<div class="gc-pick"><span class="gc-label">{escape(g.get("pick_label") or "Pick to win")}</span>'
             f'<b>{escape(pick_name or g["pick"])}</b>{odds}{value}{res}'
             f'<span class="gc-pct">{g["prob"]:.0f}<i>%</i></span></div></a>')

@@ -87,6 +87,20 @@ def _team(c):
     }
 
 
+def series_label(event, comp):
+    """A playoff game's round and series score, like "NLCS · Game 2 · MIL leads
+    series 1-0" ("" outside the postseason). ESPN's series summary counts the
+    game itself once it's final."""
+    series = comp.get("series") or {}
+    if (event.get("season") or {}).get("type") != 3 and series.get("type") != "playoff":
+        return ""
+    note = next((n.get("headline") for n in comp.get("notes") or [] if n.get("headline")), "")
+    parts = [note.replace(" - ", " · ")] if note else []
+    if series.get("summary") and any(c.get("wins") for c in series.get("competitors") or []):
+        parts.append(series["summary"])
+    return " · ".join(parts)
+
+
 def parse(event):
     comp = (event.get("competitions") or [{}])[0]
     sides = {c.get("homeAway"): c for c in comp.get("competitors", [])}
@@ -107,6 +121,7 @@ def parse(event):
         "tv": ", ".join(tv[:2]),
         "venue": venue.get("fullName", ""),
         "neutral": bool(comp.get("neutralSite")),
+        "series": series_label(event, comp),
         "away": _team(sides["away"]),
         "home": _team(sides["home"]),
     }
@@ -157,10 +172,12 @@ def write_json(path, sport, slate, updated):
 
 
 def card_info(espn_game):
-    """What a game card takes from ESPN: TV, stadium and each team's record."""
+    """What a game card takes from ESPN: TV, stadium, each team's record and,
+    in the playoffs, the round and series score."""
     if not espn_game:
         return {}
     return {"tv": espn_game.get("tv") or "", "venue": espn_game.get("venue") or "",
+            "series": espn_game.get("series") or "",
             "records": (espn_game["away"].get("record") or "", espn_game["home"].get("record") or "")}
 
 
