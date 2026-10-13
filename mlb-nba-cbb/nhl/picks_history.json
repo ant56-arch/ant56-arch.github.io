@@ -3609,7 +3609,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "NYI",
     "side": "home",
@@ -3647,7 +3647,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "PIT",
     "side": "away",
@@ -3685,7 +3685,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "WPG",
     "side": "home",
@@ -3723,7 +3723,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "COL",
     "side": "away",
@@ -3761,7 +3761,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "NSH",
     "side": "home",
@@ -3799,7 +3799,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "UTA",
     "side": "home",
@@ -3837,7 +3837,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "ANA",
     "side": "home",
@@ -3875,7 +3875,7 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "EDM",
     "side": "away",
@@ -3913,17 +3913,17 @@
    },
    "model": "2026-10-09T13:02:28+00:00",
    "correct": null,
-   "set_at": "2026-10-13T20:32:24Z",
+   "set_at": "2026-10-13T23:40:47Z",
    "ml": {
     "team": "BOS",
     "side": "away",
-    "price": -125,
+    "price": -130,
     "prob": 54.8,
-    "book_prob": 53.2,
-    "edge": 1.6,
+    "book_prob": 54.3,
+    "edge": 0.5,
     "value": false,
-    "home_ml": 105,
-    "away_ml": -125,
+    "home_ml": 110,
+    "away_ml": -130,
     "book": "DraftKings",
     "won": null,
     "units": null
