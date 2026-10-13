@@ -79,6 +79,9 @@ def _team(c):
         "short": t.get("shortDisplayName") or t.get("name", ""),
         "location": t.get("location", ""),
         "logo": t.get("logo", ""),
+        # Team colors (hex, no #), for the home page's stadium drawings.
+        "color": t.get("color", ""),
+        "alt": t.get("alternateColor", ""),
         "rank": rank if isinstance(rank, int) and 1 <= rank <= 25 else None,
         "score": score,
         "record": record,
