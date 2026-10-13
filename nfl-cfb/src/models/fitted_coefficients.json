@@ -1,5 +1,5 @@
 {
-  "fitted_at": "2026-10-06T16:48:31.111844+00:00",
+  "fitted_at": "2026-10-13T17:38:17.861318+00:00",
   "train_seasons": [
     2013,
     2014,
@@ -16,17 +16,17 @@
     2025,
     2026
   ],
-  "n_games_used": 3358,
+  "n_games_used": 3373,
   "coefficients": {
-    "points_rating_weight": 1.9276263101369717,
-    "success_rating_weight": 22.7752922214554,
-    "qb_weight": 22.157047903433085,
-    "home_field_advantage": 1.9154038122267094,
-    "margin_std_dev": 13.128290077630322,
-    "total_coef": 33.15184478432019,
-    "total_intercept": 46.093704881633734,
-    "total_std_dev": 13.668233530627829,
-    "n_games": 3358
+    "points_rating_weight": 1.9110596906768162,
+    "success_rating_weight": 22.83517412624352,
+    "qb_weight": 22.39858200968735,
+    "home_field_advantage": 1.9085917640074834,
+    "margin_std_dev": 13.129874398703071,
+    "total_coef": 33.35255561559506,
+    "total_intercept": 46.106036609771046,
+    "total_std_dev": 13.662519596168224,
+    "n_games": 3373
   },
   "blend_weight_on_model_spread": 0.0,
   "blend_weight_on_model_winprob": 0.25,
@@ -36,16 +36,16 @@
       2025,
       2026
     ],
-    "n_games": 349,
-    "model_only_spread_mae": 9.897048144814418,
-    "vegas_only_spread_mae": 9.663323782234958,
-    "blended_spread_mae": 9.663323782234958,
-    "model_only_total_mae": 10.889976498508187,
-    "vegas_only_total_mae": 10.479942693409741,
-    "blended_total_mae": 10.479942693409741,
-    "model_only_brier": 0.21730944447658906,
-    "vegas_only_brier": 0.213878898065184,
-    "blended_brier": 0.21351244681676446
+    "n_games": 364,
+    "model_only_spread_mae": 9.921842187119982,
+    "vegas_only_spread_mae": 9.69368131868132,
+    "blended_spread_mae": 9.69368131868132,
+    "model_only_total_mae": 10.900554604468299,
+    "vegas_only_total_mae": 10.467032967032967,
+    "blended_total_mae": 10.467032967032967,
+    "model_only_brier": 0.2178981584038988,
+    "vegas_only_brier": 0.2148277570000308,
+    "blended_brier": 0.2143836913934528
   },
   "recipe": {
     "team_half_life": 4,
@@ -54,5 +54,5 @@
   },
   "team_half_life_games": 4,
   "rating_half_life_weeks": 4,
-  "trained_through": "2026-10-05"
+  "trained_through": "2026-10-12"
 }
