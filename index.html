@@ -191,7 +191,7 @@ h2 em { font-size: 1.06em; }
 .vart { aspect-ratio: 4 / 5; border-radius: 4px; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: 18px; color: #F2EEE6; max-width: 100%; }
 .vart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .vart > :not(canvas) { position: relative; }
-.vart .vtop { display: flex; justify-content: space-between; }
+.vart .vtop { display: flex; justify-content: space-between; gap: 12px; }
 .vmeter { position: relative; height: 4px; margin-top: 16px; background: rgba(242,238,230,.22); }
 .vmeter i { position: absolute; inset: 0 auto 0 0; background: #F2EEE6; }
 .vmeter b { position: absolute; top: -5px; width: 2px; height: 14px; background: #E59D72; transform: translateX(-1px); }
@@ -555,7 +555,27 @@ const Words = n => { const w = words(n); return w[0].toUpperCase() + w.slice(1);
 const list3 = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
 
 async function loadAll() {
-  return Promise.all(SITES.map(s => fetch(s.file, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null)));
+  const [sums] = await Promise.all([
+    Promise.all(SITES.map(s => fetch(s.file, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null))),
+    loadVenues(),
+  ]);
+  return sums;
+}
+
+// Each league's games.json (ESPN's board, written next to its summary): the
+// venue and home-team colors the Value cards paint their stadiums with.
+const VENUES = {};
+function loadVenues() {
+  return Promise.all(SITES.map(s => fetch(s.file.replace("summary.json", "games.json"), { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(d => ((d && d.games) || []).forEach(gm => {
+      if (gm.home && gm.home.abbr) VENUES[`${s.lg}:${gm.home.abbr}`] = { venue: gm.neutral ? "" : gm.venue, ...gm.home };
+    }))));
+}
+// The painted-stadium theme for a pick's home team (null when unknown).
+function homeTeam(g) {
+  const v = VENUES[`${g.sp}:${g.home}`];
+  return v ? { sp: g.sp, abbr: g.home, short: v.short || g.home, color: v.color, alt: v.alt, logo: v.logo, venue: v.venue } : null;
 }
 
 // ---------- Nav turns solid over the paper sheet ----------
@@ -613,7 +633,48 @@ function drawHero() {
   x.fillStyle = g; x.fillRect(0, hz - 60, W, 140);
   for (let i = 0; i < W * H / 90; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * .035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
 }
-function homeStadium(c, kind) {
+// ---------- Home-team stadiums ----------
+// A Value card is drawn as the home team's own building: its colors in the
+// seats, ribbon boards and banners, its name painted on the field, a roof
+// where the venue has one, and a few landmarks (the Green Monster, Wrigley's
+// ivy, the Garden's parquet). t = { sp, abbr, short, color, alt, venue } or
+// null for the plain stadium.
+const ROOFED = {
+  MLB: { TB: 1, TOR: 1, MIL: 1, HOU: 1, ARI: 1, SEA: 1, MIA: 1, TEX: 1 },
+  NFL: { ATL: 1, DAL: 1, DET: 1, HOU: 1, IND: 1, LV: 1, LAR: 1, LA: 1, LAC: 1, MIN: 1, NO: 1, ARI: 1 },
+};
+const hexRgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(h || ""); if (!m) return null; const n = parseInt(m[1], 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const lum = c => (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255;
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+// Team colors that read on a night scene: the main color, and a bright one
+// for type and lines (the alternate, or a lightened main color).
+function teamInk(t) {
+  if (!t) return null;
+  let main = hexRgb(t.color), alt = hexRgb(t.alt);
+  if (!main && !alt) return null;
+  main = main || alt; alt = alt || main;
+  if (lum(main) > 0.85) [main, alt] = [alt, main];          // white first color: swap
+  let bright = lum(alt) > 0.35 ? alt : lum(main) > 0.35 ? main : main.map(v => Math.round(v + (255 - v) * 0.55));
+  if (lum(bright) > 0.95) bright = [242, 238, 230];
+  return { main, bright };
+}
+
+// Team logos (ESPN's, from games.json), drawn into the logo spots once
+// they've loaded; until then, or if one fails, the abbreviation stands in.
+const LOGOS = {};
+let logoRedraw;
+function teamLogo(url) {
+  if (!url) return null;
+  let im = LOGOS[url];
+  if (!im) {
+    im = LOGOS[url] = new Image();
+    im.onload = () => { clearTimeout(logoRedraw); logoRedraw = setTimeout(drawValueArt, 60); };
+    im.src = url;
+  }
+  return im.complete && im.naturalWidth ? im : null;
+}
+
+function homeStadium(c, kind, t) {
   const r = c.getBoundingClientRect();
   if (!r.width || !r.height) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -621,40 +682,83 @@ function homeStadium(c, kind) {
   const x = c.getContext("2d"); x.scale(dpr, dpr);
   const W = r.width, H = r.height, hz = H * (kind === "park" || kind === "pitch" ? 0.5 : 0.46);
   const indoor = kind === "ice" || kind === "court";
-  let seed = 7;
+  const ink = teamInk(t);
+  const team = t && ink ? t : null;
+  const abbr = team ? team.abbr : "";
+  const roofed = indoor || !!(team && (ROOFED[team.sp] || {})[abbr]);
+  let seed = 7 + (abbr ? [...abbr].reduce((a, ch) => a + ch.charCodeAt(0), 0) : 0);
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const paint = (text, cx, cy, size, color, squash, weight) => {
+    x.save(); x.translate(cx, cy); x.scale(1, squash || 1);
+    x.font = `${weight || 600} ${size}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillStyle = color; x.fillText(text, 0, 0); x.restore();
+  };
+  // The home team's mark: its logo when loaded (squashed to lie flat on the
+  // floor when squash < 1), else its abbreviation.
+  const logo = team ? teamLogo(team.logo) : null;
+  const mark = (cx, cy, size, squash, color, text) => {
+    if (!logo) { paint(abbr, cx, cy, text, color, squash, 800); return; }
+    const w = size, h = size * (logo.naturalHeight / logo.naturalWidth) * (squash || 1);
+    x.drawImage(logo, cx - w / 2, cy - h / 2, w, h);
+  };
   let g = x.createLinearGradient(0, 0, 0, hz);
-  if (indoor) { g.addColorStop(0, "#07090A"); g.addColorStop(0.7, "#141A1C"); g.addColorStop(1, "#2A2620"); }
+  if (roofed) { g.addColorStop(0, "#07090A"); g.addColorStop(0.7, "#141A1C"); g.addColorStop(1, "#2A2620"); }
   else { g.addColorStop(0, "#0B1418"); g.addColorStop(0.55, "#1D2A33"); g.addColorStop(0.85, "#6B4A3A"); g.addColorStop(1, "#C98A55"); }
   x.fillStyle = g; x.fillRect(0, 0, W, hz + 2);
-  if (indoor) {
+  if (roofed) {
     // roof trusses
     x.strokeStyle = "rgba(242,238,230,.06)"; x.lineWidth = 1;
     for (let i = 0; i <= 14; i++) { x.beginPath(); x.moveTo(W * i / 14, 0); x.lineTo(W * 0.5 + (i - 7) * W * 0.03, hz - 90); x.stroke(); }
-    // scoreboard
-    const sw = Math.min(160, W * 0.18);
-    x.fillStyle = "#0C100E"; x.fillRect(W / 2 - sw / 2, H * 0.06, sw, sw * 0.42);
-    x.fillStyle = "rgba(229,157,114,.55)"; x.fillRect(W / 2 - sw / 2 + 6, H * 0.06 + 6, sw - 12, 3);
+    // the scoreboard hung over the middle, the home team on it
+    const sw = Math.min(160, W * 0.24), sy = H * 0.13, sh = sw * 0.42;
+    x.fillStyle = "#0C100E"; x.fillRect(W / 2 - sw / 2, sy, sw, sh);
+    x.fillStyle = ink ? rgba(ink.main, 0.85) : "rgba(229,157,114,.55)"; x.fillRect(W / 2 - sw / 2 + 6, sy + 6, sw - 12, 3);
+    if (team) mark(W / 2, sy + sh * 0.6, sh * 0.8, 1, rgba(ink.bright, 0.9), sh * 0.42);
+    // championship banners from the rafters
+    if (team) [0.2, 0.28, 0.72, 0.8].forEach((f, i) => {
+      const bx = W * f, by = H * 0.1, bw = Math.max(10, W * 0.035), bh = bw * 1.7;
+      x.fillStyle = rgba(i % 2 ? ink.bright : ink.main, 0.7); x.fillRect(bx - bw / 2, by, bw, bh);
+      x.fillStyle = rgba(i % 2 ? ink.main : ink.bright, 0.7); x.fillRect(bx - bw / 2 + 2, by + bh * 0.3, bw - 4, 1.5);
+    });
   } else {
     x.fillStyle = "#2A2F33";
     x.beginPath(); x.moveTo(0, hz);
     for (let i = 0; i <= 12; i++) x.lineTo(W * i / 12, hz - 20 - Math.sin(i * 1.7) * 14 - Math.cos(i * 0.9) * 10);
     x.lineTo(W, hz); x.fill();
+    if (team) {
+      // the video board above the outfield or end zone
+      const sw = Math.min(150, W * 0.24), sh = sw * 0.38, sy = hz - (kind === "park" ? 128 : 140);
+      x.fillStyle = "#0C100E"; x.fillRect(W / 2 - 1.5, sy + sh, 3, hz - sy - sh);
+      x.fillRect(W / 2 - sw / 2, sy, sw, sh);
+      x.fillStyle = rgba(ink.main, 0.9); x.fillRect(W / 2 - sw / 2 + 5, sy + 5, sw - 10, 3);
+      mark(W / 2, sy + sh * 0.6, sh * 0.8, 1, rgba(ink.bright, 0.9), sh * 0.42);
+    }
   }
   // the stands, a long low bowl, and the crowd in them
+  const rise = roofed && !indoor ? 110 : indoor ? 150 : 110;
   g = x.createLinearGradient(0, hz - 70, 0, hz + 30); g.addColorStop(0, "#1B2420"); g.addColorStop(1, "#0F1613");
   x.fillStyle = g;
   x.beginPath(); x.moveTo(-20, hz + 30); x.lineTo(-20, hz - 30);
-  x.quadraticCurveTo(W * 0.5, hz - (indoor ? 150 : 110), W + 20, hz - 30); x.lineTo(W + 20, hz + 30); x.fill();
+  x.quadraticCurveTo(W * 0.5, hz - rise, W + 20, hz - 30); x.lineTo(W + 20, hz + 30); x.fill();
   const crowd = Math.min(2600, W * 1.2);
   for (let i = 0; i < crowd; i++) {
-    const px = rnd() * W, t = px / W, top = hz - 30 - Math.sin(t * Math.PI) * (indoor ? 105 : 70);
+    const px = rnd() * W, tt = px / W, top = hz - 30 - Math.sin(tt * Math.PI) * (indoor ? 105 : 70);
     const py = top + rnd() * (hz + 26 - top);
-    x.fillStyle = `rgba(${200 + rnd() * 55},${170 + rnd() * 60},${140 + rnd() * 60},${0.08 + rnd() * 0.22})`;
-    x.fillRect(px, py, 1.2, 1.2);
+    const fan = ink && rnd() < 0.45;
+    x.fillStyle = fan ? rgba(rnd() < 0.7 ? ink.main : ink.bright, 0.25 + rnd() * 0.35)
+                      : `rgba(${200 + rnd() * 55},${170 + rnd() * 60},${140 + rnd() * 60},${0.08 + rnd() * 0.22})`;
+    x.fillRect(px, py, fan ? 1.6 : 1.2, fan ? 1.6 : 1.2);
+  }
+  if (ink) {
+    // the ribbon board along the front of the upper deck
+    x.strokeStyle = rgba(ink.main, 0.85); x.lineWidth = 3;
+    x.beginPath(); x.moveTo(-20, hz - 12); x.quadraticCurveTo(W * 0.5, hz - rise * 0.62, W + 20, hz - 12); x.stroke();
+    x.strokeStyle = rgba(ink.bright, 0.55); x.lineWidth = 1;
+    x.beginPath(); x.moveTo(-20, hz - 16); x.quadraticCurveTo(W * 0.5, hz - rise * 0.62 - 4, W + 20, hz - 16); x.stroke();
   }
   // the playing surface
-  const top = hz + 20;
+  const top = hz + 20, fh = H - top;
+  const at = f => top + fh * f;
   if (kind === "ice") {
     g = x.createLinearGradient(0, top, 0, H); g.addColorStop(0, "#9FB3BC"); g.addColorStop(1, "#56666C");
   } else if (kind === "court") {
@@ -671,45 +775,114 @@ function homeStadium(c, kind) {
       x.lineTo(W * 0.5 + (i + 1) * w1, H); x.lineTo(W * 0.5 + i * w1, H); x.fill();
     }
   };
-  if (kind === "court") stripe(14, 90, "rgba(255,255,255,.025)", "rgba(0,0,0,.05)");
-  else if (kind !== "ice") stripe(40, 260, "rgba(255,255,255,.035)", "rgba(0,0,0,.05)");
-  // a horizon-to-viewer line at fraction f across the field, in perspective
+  if (kind === "court") {
+    if (team && team.sp === "NBA" && abbr === "BOS") {
+      // the Garden's parquet
+      for (let row = 0; row < 18; row++) {
+        const y0 = at(row / 18), y1 = at((row + 1) / 18), n = 8 + row;
+        for (let col = 0; col < n; col++) {
+          x.fillStyle = (row + col) % 2 ? "rgba(0,0,0,.06)" : "rgba(255,255,255,.025)";
+          x.fillRect(W * col / n, y0, W / n + 1, y1 - y0 + 1);
+        }
+      }
+    } else stripe(14, 90, "rgba(255,255,255,.025)", "rgba(0,0,0,.05)");
+  } else if (kind !== "ice") stripe(40, 260, "rgba(255,255,255,.035)", "rgba(0,0,0,.05)");
   const across = (f, color, w) => {
-    const y = top + (H - top) * f;
+    const y = at(f);
     x.strokeStyle = color; x.lineWidth = w || 1.2;
     x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke();
   };
   const line = "rgba(242,238,230,.24)";
+  const name = team ? (team.short || abbr).toUpperCase() : "";
   if (kind === "park") {
+    if (team) {
+      // the outfield wall, in the home team's color (or a landmark)
+      const wallH = 9;
+      if (team.sp === "MLB" && abbr === "BOS") {
+        x.fillStyle = "#1F4A33"; x.fillRect(0, top - 34, W * 0.42, 34 + wallH);
+        x.fillStyle = "rgba(242,238,230,.75)";
+        for (let i = 0; i < 9; i++) x.fillRect(W * 0.04 + i * W * 0.04, top - 26, W * 0.03, 6);
+        x.fillStyle = "#1F4A33"; x.fillRect(W * 0.42, top - 2, W, wallH);
+      } else if (team.sp === "MLB" && abbr === "CHC") {
+        x.fillStyle = "#6E3A2A"; x.fillRect(0, top - 6, W, wallH + 6);
+        for (let i = 0; i < W * 1.4; i++) {
+          x.fillStyle = `rgba(${40 + rnd() * 40},${90 + rnd() * 70},${40 + rnd() * 30},.9)`;
+          x.beginPath(); x.arc(rnd() * W, top - 6 + rnd() * (wallH + 6), 1 + rnd() * 1.4, 0, 7); x.fill();
+        }
+      } else {
+        x.fillStyle = rgba(ink.main, 0.95); x.fillRect(0, top - 2, W, wallH);
+        x.fillStyle = "rgba(240,200,80,.8)"; x.fillRect(0, top - 2, W, 1.2);
+      }
+    }
     x.strokeStyle = line; x.lineWidth = 1.2;
     x.beginPath(); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.05, hz + 40); x.moveTo(W * 0.5, H * 0.98); x.lineTo(W * 0.95, hz + 40); x.stroke();
     x.fillStyle = "rgba(160,104,64,.55)";
     x.beginPath(); x.ellipse(W * 0.5, H * 0.9, W * 0.2, H * 0.12, 0, Math.PI, 2 * Math.PI); x.fill();
+    // the team's name mowed into the outfield grass
+    if (team) paint(name, W / 2, at(0.18), Math.min(W * 0.13, 56), "rgba(255,255,255,.1)", 0.32, 800);
   } else if (kind === "pitch") {
+    const football = team && (team.sp === "NFL" || team.sp === "CFB");
+    if (football) {
+      // the far end zone in the home team's color, its name in it
+      x.fillStyle = rgba(ink.main, 0.85); x.fillRect(0, top, W, fh * 0.08);
+      paint(name, W / 2, at(0.04), Math.min(W * 0.11, 44), rgba(ink.bright, 0.85), 0.42, 800);
+    }
     [0.08, 0.2, 0.36, 0.58, 0.86].forEach(f => across(f, line, 1 + f));
     x.strokeStyle = line; x.lineWidth = 1.4;
-    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.36, W * 0.09, (H - top) * 0.07, 0, 0, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, at(0.36), W * 0.09, fh * 0.07, 0, 0, 2 * Math.PI); x.stroke();
+    if (football) {
+      // midfield logo spot
+      x.fillStyle = rgba(ink.main, 0.75);
+      x.beginPath(); x.ellipse(W * 0.5, at(0.36), W * 0.09, fh * 0.07, 0, 0, 2 * Math.PI); x.fill();
+      mark(W / 2, at(0.36), W * 0.16, 0.5, rgba(ink.bright, 0.9), Math.min(W * 0.07, 30));
+    } else if (team) {
+      // soccer: corner flags and a club banner along the front row
+      [[0.03, 0.02], [0.97, 0.02]].forEach(([fx, fy]) => {
+        x.strokeStyle = "rgba(242,238,230,.6)"; x.lineWidth = 1;
+        x.beginPath(); x.moveTo(W * fx, at(fy)); x.lineTo(W * fx, at(fy) - 12); x.stroke();
+        x.fillStyle = rgba(ink.bright, 0.9); x.fillRect(W * fx, at(fy) - 12, fx < 0.5 ? 6 : -6, 4);
+      });
+      x.fillStyle = rgba(ink.main, 0.9); x.fillRect(0, top - 8, W, 8);
+      for (let i = 0; i < 6; i++) paint(name, W * (i + 0.5) / 6, top - 4, 6, rgba(ink.bright, 0.85), 1, 700);
+    }
   } else if (kind === "ice") {
+    if (team) { x.fillStyle = rgba(ink.main, 0.9); x.fillRect(0, top - 6, W, 6); x.fillStyle = "#F2EEE6"; x.fillRect(0, top - 1, W, 2); }
     across(0.42, "rgba(176,40,40,.65)", 4);
     across(0.18, "rgba(40,80,170,.55)", 3);
     across(0.78, "rgba(40,80,170,.55)", 4);
+    if (team) {
+      // the team's logo spot at center ice
+      x.fillStyle = rgba(ink.main, 0.85);
+      x.beginPath(); x.ellipse(W * 0.5, at(0.42), W * 0.08, fh * 0.09, 0, 0, 2 * Math.PI); x.fill();
+      mark(W / 2, at(0.42), W * 0.15, 0.55, rgba(ink.bright, 0.95), Math.min(W * 0.06, 26));
+    }
     x.strokeStyle = "rgba(176,40,40,.6)"; x.lineWidth = 2;
-    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.42, W * 0.08, (H - top) * 0.09, 0, 0, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, at(0.42), W * 0.08, fh * 0.09, 0, 0, 2 * Math.PI); x.stroke();
   } else if (kind === "court") {
+    if (team) {
+      // the painted lane under the near basket, and the name on the far baseline
+      x.fillStyle = rgba(ink.main, 0.8);
+      x.beginPath(); x.moveTo(W * 0.38, H); x.lineTo(W * 0.43, at(0.62)); x.lineTo(W * 0.57, at(0.62)); x.lineTo(W * 0.62, H); x.fill();
+      x.fillStyle = rgba(ink.main, 0.85); x.fillRect(0, top, W, fh * 0.07);
+      paint(name, W / 2, at(0.035), Math.min(W * 0.09, 36), rgba(ink.bright, 0.85), 0.45, 800);
+      x.fillStyle = rgba(ink.main, 0.85);
+      x.beginPath(); x.ellipse(W * 0.5, at(0.4), W * 0.07, fh * 0.1, 0, 0, 2 * Math.PI); x.fill();
+      mark(W / 2, at(0.4), W * 0.13, 0.55, rgba(ink.bright, 0.95), Math.min(W * 0.055, 24));
+    }
     across(0.4, line, 2);
     x.strokeStyle = line; x.lineWidth = 2;
-    x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.4, W * 0.07, (H - top) * 0.1, 0, 0, 2 * Math.PI); x.stroke();
-    x.beginPath(); x.ellipse(W * 0.5, H * 1.02, W * 0.28, (H - top) * 0.32, 0, Math.PI, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, at(0.4), W * 0.07, fh * 0.1, 0, 0, 2 * Math.PI); x.stroke();
+    x.beginPath(); x.ellipse(W * 0.5, H * 1.02, W * 0.28, fh * 0.32, 0, Math.PI, 2 * Math.PI); x.stroke();
   }
-  // light towers outdoors, a ring of lamps indoors, each with its glow
-  const lamps = indoor ? [[0.2, 0.2], [0.4, 0.14], [0.6, 0.14], [0.8, 0.2]] : [[0.12, 0.16], [0.3, 0.1], [0.7, 0.1], [0.88, 0.16]];
+  // light towers outdoors, a ring of lamps under a roof, each with its glow
+  const lamps = roofed ? [[0.2, 0.2], [0.4, 0.14], [0.6, 0.14], [0.8, 0.2]] : [[0.12, 0.16], [0.3, 0.1], [0.7, 0.1], [0.88, 0.16]];
   lamps.forEach(([fx, fy]) => {
     const lx = W * fx, ly = H * fy;
-    const glow = x.createRadialGradient(lx, ly, 0, lx, ly, W * (indoor ? 0.16 : 0.22));
+    const glow = x.createRadialGradient(lx, ly, 0, lx, ly, W * (roofed ? 0.16 : 0.22));
     glow.addColorStop(0, "rgba(255,240,205,.55)"); glow.addColorStop(0.12, "rgba(255,226,170,.18)"); glow.addColorStop(1, "rgba(255,220,160,0)");
     x.fillStyle = glow; x.fillRect(0, 0, W, H);
     x.fillStyle = "#FFF6E2";
-    if (indoor) { x.fillRect(lx - 9, ly - 2, 18, 4); return; }
+    if (roofed) { x.fillRect(lx - 9, ly - 2, 18, 4); return; }
     x.fillStyle = "#0C110F"; x.fillRect(lx - 1.5, ly, 3, hz - ly);
     x.fillStyle = "#FFF6E2";
     for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) x.fillRect(lx - 14 + i * 7.5, ly - 8 + j * 6, 5, 4);
@@ -933,7 +1106,7 @@ const KIND = sp => ({ NHL: "ice", NBA: "court", CBB: "court", NFL: "pitch", CFB:
 function drawValueArt() {
   document.querySelectorAll(".vart").forEach(el => {
     const c = el.querySelector("canvas");
-    homeStadium(c, KIND(el.dataset.sp));
+    homeStadium(c, KIND(el.dataset.sp), homeTeam({ sp: el.dataset.sp, home: el.dataset.home }));
     const r = c.getBoundingClientRect(), x = c.getContext("2d"), W = r.width, H = r.height;
     if (!W) return;
     let g = x.createLinearGradient(0, 0, 0, H * .3); g.addColorStop(0, "rgba(8,14,11,.6)"); g.addColorStop(1, "rgba(8,14,11,0)");
@@ -943,6 +1116,8 @@ function drawValueArt() {
   });
 }
 addEventListener("resize", () => setTimeout(drawValueArt, 160));
+// The painted team names need Archivo; redraw once it has loaded.
+if (document.fonts) document.fonts.ready.then(() => drawValueArt());
 
 // ---------- Live data ----------
 function slateGames(sums) {
@@ -1096,8 +1271,8 @@ function render(sums) {
   if (!VAL.length) $("valLede").textContent = "No pick on this slate beats Vegas's odds by 6 percentage points or more. We and Vegas are close on every game.";
   $("valueGrid").innerHTML = VAL.map((g, i) => `
     <article class="vcard">
-      <div class="vart" data-k="${i}" data-sp="${g.sp}"><canvas aria-hidden="true"></canvas>
-        <div class="vtop mono"><span>${g.sp}</span><span>${g.t} ET</span></div>
+      <div class="vart" data-k="${i}" data-sp="${g.sp}" data-home="${esc(g.home)}"><canvas aria-hidden="true"></canvas>
+        <div class="vtop mono"><span>${g.sp}${homeTeam(g) && homeTeam(g).venue ? ` · ${esc(homeTeam(g).venue)}` : ""}</span><span>${g.t} ET</span></div>
         <div><div class="mono" style="opacity:.8;margin-bottom:8px">Our chance to win</div><div class="vbig">${Math.round(g.prob)}%</div><div class="mono" style="opacity:.8;margin-top:8px">Vegas odds say ${Math.round(g.book)}%</div>
           <div class="vmeter" aria-hidden="true"><i style="width:${g.prob}%"></i><b style="left:${g.book}%"></b></div></div>
       </div>
