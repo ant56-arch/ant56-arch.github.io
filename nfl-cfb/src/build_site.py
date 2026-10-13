@@ -107,9 +107,6 @@ SPORTS = {
     },
 }
 
-# Fallback only, used if a sport's team CSV (fetched fresh each run) isn't
-# there for some reason.
-_FALLBACK_TEAM_COLOR = "#94a3b8"
 _TEAM_INFO = {}
 
 def team_info(sport):
@@ -141,9 +138,6 @@ def espn_logo(url):
     one the scoreboard strip already uses, so link that instead."""
     m = re.search(r"collegefootballdata\.com/logos/\d+/(\d+)\.png", str(url))
     return f"https://a.espncdn.com/i/teamlogos/ncaa/500/{m.group(1)}.png" if m else url
-
-def team_color(sport, abbr):
-    return team_info(sport).get(abbr, {}).get("color", _FALLBACK_TEAM_COLOR)
 
 def team_logo(sport, abbr):
     return team_info(sport).get(abbr, {}).get("logo", "")

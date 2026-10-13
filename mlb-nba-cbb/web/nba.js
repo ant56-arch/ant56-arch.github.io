@@ -8,7 +8,7 @@ function nbaResult(g) {
   const pillHtml = g.correct
     ? "<span class='pill pill-positive'>WIN</span>"
     : "<span class='pill pill-danger'>LOSS</span>";
-  return `${esc(g.score)} ${pillHtml}`;
+  return `${edgeEsc(g.score)} ${pillHtml}`;
 }
 
 // The moneyline bet: "BUF to win +135", the model's pick, VALUE at a 6+ point edge, and once graded
@@ -21,8 +21,8 @@ function nbaMoneyline(m) {
     res = ` <span class='pill ${m.won ? "pill-positive" : "pill-danger"}'>${m.won ? "WON" : "LOST"}</span>`;
   }
   const value = m.value ? " <span class='pill pill-primary'>VALUE</span>" : "";
-  return `<div class="ml"><div class="ml-pick">${esc(m.text)}${value}${res}</div>
-    <div class="ml-sub">${esc(m.detail)}</div>${m.locked ? `<div class="lock-note locked">Locked ${esc(m.locked)}</div>` : ""}</div>`;
+  return `<div class="ml"><div class="ml-pick">${edgeEsc(m.text)}${value}${res}</div>
+    <div class="ml-sub">${edgeEsc(m.detail)}</div>${m.locked ? `<div class="lock-note locked">Locked ${edgeEsc(m.locked)}</div>` : ""}</div>`;
 }
 
 function initNbaHistory() {
@@ -37,15 +37,15 @@ function initNbaHistory() {
     const d = H.days[day];
     const hasMl = d.games.some(g => g.ml);  // days before moneyline picks have none
     const rows = d.games.map(g => `<tr>
-        <td><div class="player-name">${esc(g.matchup)}</div>${g.meta ? `<div class="player-meta">${esc(g.meta)}</div>` : ""}</td>
-        <td data-label="Pick"><span class="matchup-team">${esc(g.pick)}</span></td>
+        <td><div class="player-name">${edgeEsc(g.matchup)}</div>${g.meta ? `<div class="player-meta">${edgeEsc(g.meta)}</div>` : ""}</td>
+        <td data-label="Pick"><span class="matchup-team">${edgeEsc(g.pick)}</span></td>
         <td class="num prob" data-label="Win chance">${g.prob.toFixed(0)}%</td>
         ${hasMl ? `<td data-label="Moneyline bet" class="ml-cell">${nbaMoneyline(g.ml)}</td>` : ""}
         <td class="num" data-label="Result"><span>${nbaResult(g)}</span></td>
       </tr>`).join("");
     const s = d.summary;
     const ml = s.ml ? ` · Moneyline ${s.ml.wins}-${s.ml.losses}` : "";
-    container.innerHTML = `<div class="section-label">${esc(d.label)}: ${s.wins}-${s.losses}${s.voided ? `, ${s.voided} no decision` : ""}${ml}</div>
+    container.innerHTML = `<div class="section-label">${edgeEsc(d.label)}: ${s.wins}-${s.losses}${s.voided ? `, ${s.voided} no decision` : ""}${ml}</div>
       <table class="data responsive-stack">
         <thead><tr><th>Game</th><th>Pick</th><th class="num">Win chance</th>${hasMl ? "<th>Moneyline bet</th>" : ""}<th class="num">Result</th></tr></thead>
         <tbody>${rows}</tbody>

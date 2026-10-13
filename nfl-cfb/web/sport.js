@@ -1,43 +1,6 @@
-// NFL Edge site behavior: sortable tables, the week-archive picker, and
-// trend charts (Chart.js, loaded via CDN in each page's <head>).
-
-function makeSortable(table) {
-  const tbody = table.tBodies[0];
-  table.querySelectorAll("th[data-sort-key]").forEach((th, colIndex) => {
-    // Keyboard-operable like a real button: focusable, activates on
-    // Enter/Space, and announces its current sort direction.
-    th.tabIndex = 0;
-    th.setAttribute("aria-sort", "none");
-    th.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); th.click(); }
-    });
-    th.addEventListener("click", () => {
-      const rows = Array.from(tbody.querySelectorAll("tr")).filter(r => !r.classList.contains("day-header"));
-      const asc = !th.classList.contains("sorted-asc");
-      table.querySelectorAll("th").forEach(h => {
-        h.classList.remove("sorted-asc", "sorted-desc");
-        if (h.hasAttribute("aria-sort")) h.setAttribute("aria-sort", "none");
-      });
-      th.classList.add(asc ? "sorted-asc" : "sorted-desc");
-      th.setAttribute("aria-sort", asc ? "ascending" : "descending");
-
-      const key = th.dataset.sortKey;
-      const isNumeric = th.classList.contains("num");
-      rows.sort((a, b) => {
-        const av = a.querySelector(`[data-key="${key}"]`)?.dataset.value ?? "";
-        const bv = b.querySelector(`[data-key="${key}"]`)?.dataset.value ?? "";
-        if (isNumeric) return asc ? parseFloat(av) - parseFloat(bv) : parseFloat(bv) - parseFloat(av);
-        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
-      });
-      // Sorting collapses any day-group headers - they only make sense in
-      // chronological order, not after re-sorting by an arbitrary column.
-      tbody.querySelectorAll(".day-header").forEach(r => r.remove());
-      rows.forEach(r => tbody.appendChild(r));
-    });
-  });
-}
-
-document.querySelectorAll("table.data[data-sortable]").forEach(makeSortable);
+// NFL Edge's own behavior: the week pickers, the Accuracy week filter and
+// the Players tabs. Sortable tables and the charts are shared
+// (shared/sport-pages.js).
 
 // --- Shared week-picker: populates a <select> from {week_order, weeks} and
 // re-renders a content div on change. Used by both history.html (every

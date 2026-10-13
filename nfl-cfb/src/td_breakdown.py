@@ -37,13 +37,6 @@ SOFT_DEFENSE = 1.25     # opponent's TDs allowed to his position vs league
 DUE_DEBT = 1.0          # expected TDs minus TDs scored
 
 
-def _zone(yardline):
-    for name, lo, hi in ZONES:
-        if lo <= yardline <= hi:
-            return name
-    return ZONES[-1][0]
-
-
 def player_breakdowns(opps, pg, player_ids, games=BREAKDOWN_GAMES):
     """player_id -> breakdown dict over his last `games` games (pg includes
     quiet games, so a game he was active for without a touch counts)."""
