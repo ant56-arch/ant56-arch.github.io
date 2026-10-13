@@ -5369,7 +5369,7 @@
     "starters": -0.075
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-12T16:09:36Z",
    "ml": {
     "team": "MIL",
@@ -5382,9 +5382,12 @@
     "home_ml": 113,
     "away_ml": -136,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 1.13
+   },
+   "home_runs": 7,
+   "away_runs": 4,
+   "winner": "MIL"
   },
   {
    "date": "2026-10-12",
@@ -5422,7 +5425,7 @@
     "starters": 0.158
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-12T22:25:00Z",
    "ml": {
     "team": "TB",
@@ -5434,6 +5437,62 @@
     "value": false,
     "home_ml": -169,
     "away_ml": 139,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 3,
+   "away_runs": 7,
+   "winner": "CLE"
+  },
+  {
+   "date": "2026-10-13",
+   "game_id": "849813",
+   "start": "2026-10-13T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "CLE",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Cleveland Guardians",
+   "home_id": 139,
+   "away_id": 114,
+   "home_record": "98-64",
+   "away_record": "85-77",
+   "home_sp": {
+    "id": 642547,
+    "name": "Freddy Peralta",
+    "era": 4.35,
+    "ip": 173.7
+   },
+   "away_sp": {
+    "id": 800048,
+    "name": "Parker Messick",
+    "era": 2.66,
+    "ip": 193.0
+   },
+   "pick": "TB",
+   "prob": 52.6,
+   "home_prob": 52.6,
+   "factors": {
+    "home_field": 0.141,
+    "elo": 0.108,
+    "starters": -0.144
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-13T10:37:31Z",
+   "ml": {
+    "team": "TB",
+    "side": "home",
+    "price": -143,
+    "prob": 52.6,
+    "book_prob": 56.3,
+    "edge": -3.7,
+    "value": false,
+    "home_ml": -143,
+    "away_ml": 119,
     "book": "DraftKings",
     "won": null,
     "units": null
