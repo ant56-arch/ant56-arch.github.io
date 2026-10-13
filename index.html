@@ -423,13 +423,13 @@ a.crawl-item:hover { background: var(--paper); }
   </section>
 
   <section id="method">
-    <div class="sec-head mono"><span class="num">04<b>How a pick is made</b></span><span>Same four steps, every league</span></div>
+    <div class="sec-head mono"><span class="num">04<b>How a pick is made</b></span><span id="methodSub">Same four steps, every league</span></div>
     <div class="method">
       <div>
         <h2>Built from the box score <em>up.</em></h2>
         <p class="lede">Each league has its own model, trained on its own seasons and retrained every week. A new version only goes live if it beats the one it would replace.</p>
       </div>
-      <ol class="steps">
+      <ol class="steps" id="steps">
         <li><span class="n mono">01</span><h3>Rate every team</h3><p>Schedule-adjusted ratings for offense and defense, updated after every final.</p></li>
         <li><span class="n mono">02</span><h3>Read the matchup</h3><p>Starting pitchers in baseball, the starting quarterback in the NFL and home edge in every league go in game by game.</p></li>
         <li><span class="n mono">03</span><h3>Check the price</h3><p>Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted.</p></li>
@@ -576,6 +576,42 @@ function loadVenues() {
 function homeTeam(g) {
   const v = VENUES[`${g.sp}:${g.home}`];
   return v ? { sp: g.sp, abbr: g.home, short: v.short || g.home, color: v.color, alt: v.alt, logo: v.logo, venue: v.venue } : null;
+}
+
+// ---------- 04 how a pick is made, told for one league on its tab ----------
+const METHOD = {
+  NFL: [["Rate every team", "Schedule-adjusted ratings for all 32 offenses and defenses, updated after every final."],
+        ["Read the matchup", "The starting quarterback and home field go in game by game."],
+        ["Check the price", "Our spread and win chance are set beside Vegas's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "The line locks at kickoff and the pick is graded once the game is final. Nothing is edited after."]],
+  CFB: [["Rate every team", "Our own opponent-adjusted offense and defense ratings for every FBS team, updated after every Saturday."],
+        ["Read the matchup", "Home field goes in game by game, on top of ratings that already account for who each team has played."],
+        ["Check the price", "Our spread and win chance are set beside Vegas's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "Weekend lines lock Friday night, and every pick is graded once the game is final. Nothing is edited after."]],
+  MLB: [["Rate every hitter and team", "Hitters by how often they get a hit, teams by how well they hit and pitch, updated after every game."],
+        ["Read the matchup", "The starting pitchers, the ballpark and the posted lineups go in game by game."],
+        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "The pick locks at first pitch and is graded from the box score that night. Nothing is edited after."]],
+  NHL: [["Rate every team", "Team strength from every result, plus goal differential over the season and the last ten games."],
+        ["Read the matchup", "Rest, back-to-backs and home ice go in game by game."],
+        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "The pick locks at puck drop and is graded that night, overtime and shootouts included. Nothing is edited after."]],
+  NBA: [["Rate every team", "Our own ratings for all 30 teams, updated after every final."],
+        ["Read the matchup", "Home court goes in game by game."],
+        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "The pick locks at tip-off and is graded that night. Nothing is edited after."]],
+  CBB: [["Rate every team", "KenPom-style adjusted offense, defense and tempo for every Division I team, from every box score."],
+        ["Read the matchup", "Both teams' tempo and home court go in game by game."],
+        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
+        ["Grade it in public", "The pick locks at tip-off and is graded that night. Nothing is edited after."]],
+  Soccer: [["Rate every club", "Attack and defence ratings from goals and shots on target, with recent matches counting most."],
+           ["Read the matchup", "Each competition's home edge goes in, and the draw gets its own chance, so it can be the pick."],
+           ["Check the price", "Home, draw and away chances are set beside the bookmaker's, with the margin taken out."],
+           ["Grade it in public", "The pick locks at kickoff and is graded on the 90-minute score. Nothing is edited after."]],
+};
+if (LG !== "All" && METHOD[LG]) {
+  $("methodSub").textContent = `How ${LG === "Soccer" ? "soccer" : LG} picks are made`;
+  $("steps").innerHTML = METHOD[LG].map(([h, p], i) => `<li><span class="n mono">0${i + 1}</span><h3>${h}</h3><p>${p}</p></li>`).join("");
 }
 
 // ---------- Nav turns solid over the paper sheet ----------
@@ -1227,7 +1263,7 @@ function render(sums) {
   const first = sinceDates[0];
   const sinceMonth = first ? first.toLocaleDateString("en-US", { month: "long" }) : "the start";
   const sinceShort = first ? first.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-  $("statement").innerHTML = `${Words(N)} games picked since ${sinceMonth}, every one <em>posted before</em> the first pitch, puck drop or kickoff. We don't bury the misses. We <em>grade</em> every one of them.`;
+  $("statement").innerHTML = `${Words(N)} games picked since ${sinceMonth}, every one <em>posted before</em> ${LG === "All" ? "the first pitch, puck drop or kickoff" : "the " + LEAGUE[LG].start}. We don't bury the misses. We <em>grade</em> every one of them.`;
   lightStatement();
   $("recHead").textContent = [...new Set(board.map(b => ({ NFL: "Football", CFB: "Football", NHL: "Hockey", MLB: "Baseball", Soccer: "Soccer", NBA: "Basketball", CBB: "Basketball" }[b.lg])))].join(" · ");
   $("heroTally").textContent = `${N} games graded · ${N ? (W / N * 100).toFixed(1) : "0"}% right`;
