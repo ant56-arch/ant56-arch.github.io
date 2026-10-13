@@ -84,13 +84,6 @@ def season_of(iso):
     return f"{start}-{str(start + 1)[2:]}"
 
 
-def top_per_day(picks, n=TOP_N):
-    by_day = defaultdict(list)
-    for p in picks:
-        by_day[p["date"]].append(p)
-    return [p for day in by_day.values() for p in sorted(day, key=lambda p: -p["prob"])[:n]]
-
-
 def wl(picks):
     w = sum(p["correct"] for p in picks)
     return w, len(picks) - w

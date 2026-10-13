@@ -1,3 +1,44 @@
+// Sortable tables: click (or Enter/Space on) a column header with
+// data-sort-key to sort by it; blank numbers always sort last.
+function makeSortable(table) {
+  const tbody = table.tBodies[0];
+  table.querySelectorAll("th[data-sort-key]").forEach(th => {
+    th.tabIndex = 0;
+    th.setAttribute("aria-sort", "none");
+    th.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); th.click(); }
+    });
+    th.addEventListener("click", () => {
+      const rows = Array.from(tbody.querySelectorAll("tr")).filter(r => !r.classList.contains("day-header"));
+      const asc = !th.classList.contains("sorted-asc");
+      table.querySelectorAll("th").forEach(h => {
+        h.classList.remove("sorted-asc", "sorted-desc");
+        if (h.hasAttribute("aria-sort")) h.setAttribute("aria-sort", "none");
+      });
+      th.classList.add(asc ? "sorted-asc" : "sorted-desc");
+      th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+
+      const key = th.dataset.sortKey;
+      const isNumeric = th.classList.contains("num");
+      const val = r => r.querySelector(`[data-key="${key}"]`)?.dataset.value ?? "";
+      rows.sort((a, b) => {
+        if (isNumeric) {
+          const av = parseFloat(val(a)), bv = parseFloat(val(b));
+          if (isNaN(av)) return 1;
+          if (isNaN(bv)) return -1;
+          return asc ? av - bv : bv - av;
+        }
+        return asc ? val(a).localeCompare(val(b)) : val(b).localeCompare(val(a));
+      });
+      // Day-group headers only make sense in date order, so sorting drops them.
+      tbody.querySelectorAll(".day-header").forEach(r => r.remove());
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+document.querySelectorAll("table.data[data-sortable]").forEach(makeSortable);
+
 // --- Section tabs on narrow screens ---
 // When the tabs don't fit (phones), scroll the current one into view and fade
 // whichever edge has more tabs hidden past it, so it's clear the row swipes.

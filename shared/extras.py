@@ -43,11 +43,6 @@ def payout_text(price):
     return f"$100 wins ${price:,.0f}" if price >= 100 else f"Bet ${-price:,.0f} to win $100"
 
 
-def short_day(iso):
-    d = date.fromisoformat(iso[:10])
-    return f"{d:%b} {d.day}"
-
-
 # ── Units, for the home site's Betting tab ──────────────────────────────────
 def _tally(rows):
     wins = sum(1 for r in rows if r[2])
@@ -169,10 +164,6 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
                       "Our hitter picks in this game and their chance to get a hit")
     body += f'<p class="gh-back"><a href="{back_href}">&larr; {escape(back_text)}</a></p>'
     return body
-
-
-def game_link(g, text="Game page"):
-    return f'<a class="pl-link" href="{g["file"]}">{text} &rarr;</a>'
 
 
 # ── Game cards: every sport's Home tab ──────────────────────────────────────

@@ -37,6 +37,11 @@ const EDGE_PLAYS_KEY = "edge-ticker-plays";
 const EDGE_CRAWL_KEY = "edge-ticker-pos";
 const edgeTicker = { published: {}, slates: {}, plays: [], flash: new Set(), toasts: null, settings: null };
 
+// Text made safe to put inside HTML.
+function edgeEsc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
 function edgeFetchJson(url, ms) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms || 8000);
@@ -1244,15 +1249,14 @@ function edgeSpField(sport) {
 }
 
 function edgeSpMarker(g, t, x, side) {
-  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const isPick = g.pick === t.abbr;
   const id = "spc" + Math.random().toString(36).slice(2, 8);
   // The abbreviation sits under the logo, so it shows if the logo can't load.
   const short = t.abbr.length > 4 ? t.abbr.slice(0, 4).toUpperCase() : t.abbr;
-  const art = `<text class="sp-abbr" x="${x}" y="261" text-anchor="middle">${esc(short)}</text>` + (t.logo
-    ? `<clipPath id="${id}"><circle cx="${x}" cy="255" r="25"/></clipPath><image href="${esc(t.logo)}" x="${x - 25}" y="230" width="50" height="50" clip-path="url(#${id})" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>`
+  const art = `<text class="sp-abbr" x="${x}" y="261" text-anchor="middle">${edgeEsc(short)}</text>` + (t.logo
+    ? `<clipPath id="${id}"><circle cx="${x}" cy="255" r="25"/></clipPath><image href="${edgeEsc(t.logo)}" x="${x - 25}" y="230" width="50" height="50" clip-path="url(#${id})" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>`
     : "");
-  const score = t.score != null ? `<text class="sp-score" x="${x}" y="345" text-anchor="middle">${esc(t.score)}</text>` : "";
+  const score = t.score != null ? `<text class="sp-score" x="${x}" y="345" text-anchor="middle">${edgeEsc(t.score)}</text>` : "";
   const flag = isPick ? `<path class="sp-pole" d="M${x + 24} 196 v26"/><path class="sp-flag" d="M${x + 24} 196 l16 6 l-16 6 z"/>` : "";
   return `<g class="sp-team${isPick ? " is-pick" : ""}"><circle class="sp-disc" cx="${x}" cy="255" r="32"/>${art}${flag}
     <text class="sp-side" x="${x}" y="${t.score != null ? 307 : 312}" text-anchor="middle">${side}${isPick ? " · PICK" : ""}</text>${score}</g>`;
