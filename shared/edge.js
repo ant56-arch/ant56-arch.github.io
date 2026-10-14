@@ -414,7 +414,8 @@ function initSiteSettings() {
       if (n.nodeType === 1 || n.nodeType === 3) edgeLocalize(n.nodeType === 1 ? n : n.parentNode);
     }))).observe(document.body, { childList: true, subtree: true });
   }
-  const bar = document.querySelector(".topbar-inner");
+  // Sport pages keep it in the top bar; the home page in its own nav.
+  const bar = document.querySelector(".topbar-inner") || document.querySelector("nav.nav");
   if (!bar || bar.querySelector(".ticker-gear")) return;
   const wrap = edgeNode("div", "ticker-settings");
   const btn = edgeNode("button", "ticker-gear");

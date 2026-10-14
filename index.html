@@ -273,6 +273,232 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 }
 .record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
 
+/* --- Settings gear: the shared edge.js menu, mapped onto this page's colors --- */
+.ticker-settings, .team-picker {
+  --bar: var(--paper); --surface: var(--paper); --surface-2: var(--paper-2);
+  --text: var(--ink); --text-muted: var(--ink-soft); --text-faint: var(--ink-faint);
+  --rule-strong: var(--ink-faint); --ours: var(--clay); --ours-hot: var(--clay);
+  --radius-sm: 4px; --font: 'Archivo', 'Helvetica Neue', Arial, sans-serif; --font-head: var(--font);
+}
+.nav .ticker-settings { margin-left: 4px; }
+.nav .ticker-gear { color: inherit; }
+.nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--ink); }
+@media (max-width: 860px) { .nav .ticker-settings { margin-left: 0; } }
+/* Ticker settings: a gear at the right of the top bar. */
+.ticker-settings { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-left: -12px; }
+.ticker-gear {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.ticker-gear svg { width: 20px; height: 20px; }
+.ticker-gear:hover, .ticker-gear[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
+.ticker-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: 300px;
+  padding: 12px 0 8px 0;
+  background: var(--bar);
+  border: 1px solid var(--rule-strong);
+  border-top: 3px solid var(--ours);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+.ticker-panel[hidden] { display: none; }
+.ticker-panel-title, .ticker-panel-sub {
+  padding: 0 16px 6px 16px;
+  color: var(--text-faint);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ticker-panel-sub { padding-top: 10px; border-top: 1px solid var(--rule); margin-top: 6px; }
+.ticker-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+.ticker-switch:hover { background: var(--surface); }
+.ticker-switch-text { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.ticker-switch-label { color: var(--text); font-weight: 600; font-size: 15px; }
+.ticker-switch-sub { color: var(--text-faint); font-size: 12px; }
+.ticker-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ticker-switch-knob {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--rule-strong);
+  transition: background 0.15s ease;
+}
+.ticker-switch-knob::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+.ticker-switch input:checked + .ticker-switch-knob { background: var(--ours); }
+.ticker-switch input:checked + .ticker-switch-knob::after { transform: translateX(18px); }
+.ticker-switch input:focus-visible + .ticker-switch-knob { outline: 2px solid var(--ours-hot); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .has-menu .ticker-settings { margin-left: 2px; }
+  .ticker-panel { position: fixed; top: 58px; left: 12px; right: 12px; width: auto; }
+  .crawl { height: 36px; }
+  .crawl-tag { padding: 0 10px; font-size: 13px; }
+  .crawl-item { padding: 0 14px; font-size: 13px; }
+}
+.crawl-rank { color: var(--text-faint); font-size: 11px; }
+.crawl-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--ours); font-size: 13px; font-weight: 600; }
+.ticker-panel { max-height: calc(100vh - 90px); overflow-y: auto; overscroll-behavior: contain; }
+.ticker-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 16px;
+}
+.ticker-choice select {
+  max-width: 170px;
+  padding: 6px 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+/* My teams picker (gear menu, home page "My teams" button). */
+.ticker-teams-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 4px 16px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--ours);
+  border-radius: 8px;
+  background: none;
+  color: var(--ours);
+  font: 600 14px var(--font);
+  cursor: pointer;
+}
+.ticker-teams-btn:hover { background: var(--surface); }
+a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration: none; }
+.team-picker-open, .team-picker-open body { overflow: hidden; }
+.team-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6vh 16px 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.team-picker-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  border: 1px solid var(--rule-strong);
+  border-radius: 14px;
+  background: var(--bar);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.team-picker-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 4px; }
+.team-picker-title { font: 600 26px var(--font-head); text-transform: uppercase; color: var(--text); }
+.team-picker-close {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ours);
+  color: #16110d;
+  font: 700 14px var(--font);
+  cursor: pointer;
+}
+.team-picker-note { margin: 0; padding: 0 16px 10px; font-size: 13px; color: var(--text-muted); }
+.team-picker-mine { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+.team-picker-chip {
+  padding: 5px 10px;
+  border: 1px solid #f2c14e;
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+  font: 600 12px var(--font);
+  cursor: pointer;
+}
+.team-picker-none { margin: 0; padding: 4px 0; font-size: 13px; color: var(--text-faint); }
+.team-picker-list .team-picker-none { padding: 14px 16px; }
+.team-picker-tabs { display: flex; gap: 4px; padding: 0 16px; overflow-x: auto; border-bottom: 1px solid var(--rule); scrollbar-width: none; }
+.team-picker-tabs button {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font: 600 14px var(--font);
+  cursor: pointer;
+}
+.team-picker-tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--ours); }
+.team-picker-search {
+  margin: 10px 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: 15px var(--font);
+}
+.team-picker-list { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 12px; }
+.team-picker-team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: 500 15px var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+.team-picker-team:hover { background: var(--surface); }
+.team-picker-team img { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; }
+.team-picker-name { flex: 1; }
+.team-picker-star { font-size: 20px; color: var(--text-faint); }
+.team-picker-team[aria-pressed="true"] .team-picker-star { color: #f2c14e; }
+.team-picker button:focus-visible, .team-picker-search:focus-visible, .ticker-teams-btn:focus-visible { outline: 2px solid var(--ours); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .team-picker { padding: 0; align-items: stretch; }
+  .team-picker-box { max-width: none; max-height: none; border-radius: 0; border: 0; }
+}
+
 /* --- Score ticker: the shared edge.js crawl bars, fixed above the nav --- */
 #tick { position: fixed; inset: 0 0 auto 0; z-index: 21; }
 .nav { top: var(--tick-h, 0px); }
