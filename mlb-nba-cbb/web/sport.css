@@ -74,3 +74,37 @@ td.prob { font-family: var(--font-head); font-stretch: 100%; font-size: 24px; fo
   table.responsive-stack tbody tr td.ml-cell + td[data-label="Result"] { grid-column: 1 / -1; }
   .ml-pick, .ml-sub { white-space: normal; }
 }
+
+/* ── CBB Bracket tab (March Madness) ─────────────────────────────────────── */
+.bk-lead { margin: 10px 0 0; color: var(--text-muted); max-width: 62ch; line-height: 1.45; }
+.bk-rounds { display: grid; grid-template-columns: repeat(2, auto); gap: 6px 18px; align-content: start; }
+.bk-round-score { display: flex; flex-direction: column; }
+.bk-round-score b { font-family: var(--font-mono); font-size: 1.05rem; }
+.bk-round-score span { font-size: .75rem; color: var(--text-faint); }
+.rb-since .team-logo { width: 18px; height: 18px; vertical-align: -4px; margin: 0 4px 0 2px; }
+tr.bk-out td { color: var(--text-faint); }
+.bk-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+.bk-region { display: grid; grid-template-columns: repeat(4, minmax(190px, 1fr)); gap: 14px; min-width: 800px; }
+.bk-region.bk-ff { grid-template-columns: repeat(2, minmax(190px, 1fr)); min-width: 400px; max-width: 560px; }
+.bk-col { display: flex; flex-direction: column; }
+.bk-col-head { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 8px; }
+.bk-col-games { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 10px; }
+.bk-game { border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--surface); font-size: .85rem; }
+.bk-team { display: flex; align-items: center; gap: 6px; padding: 5px 8px; min-height: 30px; }
+.bk-team + .bk-team { border-top: 1px solid var(--rule); }
+.bk-team .team-logo { width: 18px; height: 18px; }
+.bk-seed { width: 18px; text-align: right; font-family: var(--font-mono); font-size: .75rem; color: var(--text-faint); }
+.bk-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bk-score { font-family: var(--font-mono); min-width: 22px; text-align: right; }
+.bk-won { font-weight: 700; }
+.bk-lost .bk-name, .bk-lost .bk-score { color: var(--text-faint); }
+.bk-tbd .bk-name { color: var(--text-faint); font-style: italic; }
+.bk-pick { color: var(--ours); font-size: .7rem; }
+.bk-foot { padding: 4px 8px; border-top: 1px dashed var(--rule); font-size: .72rem; color: var(--text-muted); }
+.bk-right { color: var(--hit); }
+.bk-wrong, .bk-busted { color: var(--miss); }
+.bk-ff-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+@media (max-width: 560px) {
+  .bk-rounds { grid-template-columns: repeat(3, auto); }
+}

@@ -148,6 +148,11 @@ jobs:
         continue-on-error: true
         run: python cbb/research/train.py
 
+      # March Madness: imports the bracket from ESPN once the field is out (cbb/brackets/).
+      - name: Update CBB bracket
+        continue-on-error: true
+        run: python cbb/bracket.py
+
       # Soccer Edge (Premier League, La Liga, Champions League). Like NBA, its
       # steps can't block the others.
       - name: Run Soccer pipeline
@@ -182,7 +187,7 @@ jobs:
           git add teams/picks_history.json teams/data/ teams/model_weights.json
           [ -f teams/model_history.json ] && git add teams/model_history.json
           for f in nhl/data nhl/picks_history.json nhl/model_weights.json nhl/model_history.json \
-                   cbb/data cbb/picks_history.json cbb/ratings.json cbb/model_weights.json cbb/model_history.json \
+                   cbb/data cbb/brackets cbb/picks_history.json cbb/ratings.json cbb/model_weights.json cbb/model_history.json \
                    soccer/data soccer/picks_history.json soccer/ratings.json soccer/model_weights.json soccer/model_history.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
