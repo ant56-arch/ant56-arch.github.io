@@ -360,7 +360,17 @@ def slate_entry(g):
             "pick": g["pick"], "other": g["other"], "prob": round(g["prob"], 1),
             "price": int(round(ml["price"])) if ml.get("price") is not None else None,
             "book": round(ml["book"], 1) if ml.get("book") is not None else None, "value": bool(ml.get("value")),
-            "final": bool(g.get("final"))}
+            "final": bool(g.get("final")),
+            # Final score [away, home] and whether our pick won, once graded.
+            "score": _final_score(g), "hit": bool(g["hit"]) if g.get("final") and g.get("hit") is not None else None}
+
+
+def _final_score(g):
+    """[away, home] once the game is graded, else None."""
+    a, h = g["away"].get("score"), g["home"].get("score")
+    if not g.get("final") or a is None or h is None or a != a or h != h:
+        return None
+    return [int(a), int(h)]
 
 
 def recap_text(g):
