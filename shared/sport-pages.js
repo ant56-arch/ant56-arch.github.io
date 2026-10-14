@@ -368,10 +368,9 @@ function gcLivePaint(card, e, sport) {
   const pick = card.querySelector(".gc-pick");
   if (!pick || e.state !== "post" || pick.querySelector(".gc-live-res")) return;
   const p = card.dataset.pick;
-  let hit = null;
+  let hit;
   if (p === "Draw") hit = away.score === home.score;
-  else if (away.score !== home.score) hit = (p === card.dataset.away) === (away.score > home.score);
-  if (hit === null) return;
+  else hit = away.score !== home.score && (p === card.dataset.away) === (away.score > home.score);
   const res = edgeNode("span", `pill ${hit ? "pill-positive" : "pill-danger"} gc-live-res`, hit ? "HIT" : "MISS");
   pick.insertBefore(res, pick.querySelector(".gc-pct"));
 }

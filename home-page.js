@@ -105,11 +105,11 @@ async function hgLoad() {
       const home = side(g.home, e && (flip ? e.away : e.home));
       const state = e ? e.state : "pre";
       let hit = null;
-      // Soccer picks can be a draw ("Draw"), and a team pick loses on a draw.
+      // Soccer picks can be a draw ("Draw"); a team pick misses on a draw or tie.
       if (state === "post" && away.score != null && home.score != null) {
         if (g.pick === "Draw") hit = away.score === home.score;
         else if (away.score !== home.score) hit = (g.pick === g.away) === (away.score > home.score);
-        else if (site.sport === "Soccer") hit = false;
+        else hit = false;
       }
       games.push({ ...g, key: site.sport + ":" + g.id, date: edgeDayKey(new Date(g.start)), away, home, state,
                    detail: e ? e.detail : "", tv: e ? e.tv : "", series: e ? e.series : "", hit });
