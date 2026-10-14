@@ -653,13 +653,13 @@ season,week,player_id,player_name,pos,team,opponent,kickoff,our_prob,top10,event
 2026,5,00-0034487,T.Sherfield,WR,BUF,LA,2026-10-13T00:15:00Z,0.055,False,e6d00eedd87d367e510314bd8cab8f6f,draftkings,1100.0,0.0772,2026-10-12T22:54:29Z,Trent Sherfield,-0.0222,False,,void,0.0
 2026,5,00-0040194,J.Hawes,TE,BUF,LA,2026-10-13T00:15:00Z,0.054,False,e6d00eedd87d367e510314bd8cab8f6f,draftkings,850.0,0.0975,2026-10-12T22:54:29Z,Jackson Hawes,-0.0435,False,,void,0.0
 2026,5,00-0035602,A.Bachman,WR,LA,BUF,2026-10-13T00:15:00Z,0.041,False,e6d00eedd87d367e510314bd8cab8f6f,draftkings,2500.0,0.0356,2026-10-12T22:54:29Z,Alex Bachman,0.0054,False,,void,0.0
-2026,6,00-0032764,D.Henry,RB,BAL,CLE,2026-10-18T17:00:00Z,0.697,True,,,,,,,,False,,,
+2026,6,00-0032764,D.Henry,RB,BAL,CLE,2026-10-18T17:00:00Z,0.707,True,,,,,,,,False,,,
 2026,6,00-0036223,J.Taylor,RB,IND,TEN,2026-10-18T17:00:00Z,0.652,True,,,,,,,,False,,,
-2026,6,00-0038542,Bi.Robinson,RB,ATL,CHI,2026-10-18T17:00:00Z,0.579,True,,,,,,,,False,,,
-2026,6,00-0037840,K.Williams,RB,LA,ARI,2026-10-18T20:05:00Z,0.662,True,,,,,,,,False,,,
-2026,6,00-0039075,P.Nacua,WR,LA,ARI,2026-10-18T20:05:00Z,0.579,True,,,,,,,,False,,,
+2026,6,00-0038542,Bi.Robinson,RB,ATL,CHI,2026-10-18T17:00:00Z,0.592,True,,,,,,,,False,,,
+2026,6,00-0037840,K.Williams,RB,LA,ARI,2026-10-18T20:05:00Z,0.659,True,,,,,,,,False,,,
+2026,6,00-0039075,P.Nacua,WR,LA,ARI,2026-10-18T20:05:00Z,0.576,True,,,,,,,,False,,,
 2026,6,00-0034857,J.Allen,QB,BUF,LV,2026-10-18T20:25:00Z,0.66,True,,,,,,,,False,,,
 2026,6,00-0038134,K.Walker,RB,KC,LAC,2026-10-18T20:25:00Z,0.596,True,,,,,,,,False,,,
-2026,6,00-0036997,J.Williams,RB,DAL,GB,2026-10-19T00:20:00Z,0.661,True,,,,,,,,False,,,
-2026,6,00-0035700,J.Jacobs,RB,GB,DAL,2026-10-19T00:20:00Z,0.584,True,,,,,,,,False,,,
+2026,6,00-0036997,J.Williams,RB,DAL,GB,2026-10-19T00:20:00Z,0.665,True,,,,,,,,False,,,
+2026,6,00-0035700,J.Jacobs,RB,GB,DAL,2026-10-19T00:20:00Z,0.588,True,,,,,,,,False,,,
 2026,6,00-0033280,C.McCaffrey,RB,SF,WAS,2026-10-20T00:15:00Z,0.7,True,,,,,,,,False,,,
