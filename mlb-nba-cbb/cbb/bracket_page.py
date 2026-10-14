@@ -99,12 +99,13 @@ def build_bracket(b, page_shell, this_season):
     for t, v in sorted(odds.items(), key=lambda x: (-x[1][5], -x[1][4], -x[1][3], T[x[0]]["seed"])):
         info = T[t]
         gone = t in losers
+        out_tag = ' <span class="faint">out</span>' if gone and not winner else ""
         cells = "".join(f'<td class="num" data-key="r{i}" data-value="{p}">{pct(p)}</td>' for i, p in enumerate(v))
         pre = b["pre_odds"].get(t, [0] * 6)[5]
         pre_cell = f'<td class="num faint" data-key="pre" data-value="{pre}">{pct(pre)}</td>' if live else ""
         rows += (f'<tr class="{"bk-out" if gone else ""}"><td class="num" data-key="seed" data-value="{info["seed"]}">{info["seed"]}</td>'
                  f'<td data-key="team" data-value="{escape(info["name"])}"><span class="matchup-team">{logo(t)}{escape(info["name"])}'
-                 f'</span>{" <span class=\"faint\">out</span>" if gone and not winner else ""}</td>'
+                 f'</span>{out_tag}</td>'
                  f'<td data-key="region" data-value="{escape(info["region"])}">{escape(info["region"])}</td>{cells}{pre_cell}</tr>')
     head = ('<th data-sort-key="seed" class="num">Seed</th><th data-sort-key="team">Team</th>'
             '<th data-sort-key="region">Region</th>'
