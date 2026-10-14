@@ -1,0 +1,40 @@
+name: Model Room
+
+# Builds the owner-only Model Room (every model inside and out) and publishes
+# it to /model-room/ behind a password. Only an encrypted copy is published;
+# the password lives in the MODEL_ROOM_PASSWORD repository secret. Without
+# that secret the page says it isn't set up yet.
+
+on:
+  schedule:
+    - cron: "30 16 * * *"   # daily, after the morning picks runs
+  push:
+    branches: [main]
+    paths:
+      - model_room/**
+      - .github/workflows/model-room.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: model-room
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Model Room
+        run: python3 model_room/build_model_room.py . dist/model-room.html
+
+      - name: Lock it behind the password
+        env:
+          MODEL_ROOM_PASSWORD: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: node model_room/lock_page.mjs dist/model-room.html dist/model-room
+
+      - name: Publish
+        run: ./publish_site.sh dist/model-room:model-room

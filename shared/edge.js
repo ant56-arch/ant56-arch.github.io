@@ -156,8 +156,8 @@ const EDGE_SETTINGS = [
   { k: "homeLayout", label: "Games view", on: "auto", choices: [["auto", "Slate"], ["cards", "Cards"], ["list", "List"]] },
   { k: "homeDay", label: "Opens on", on: "auto", choices: [["auto", "First day with games"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]] },
   { group: "Owner" },
-  // Private Claude page: it only opens for the owner's signed-in account.
-  { link: "https://claude.ai/artifact/4kR546ksBaCno5xDMV7tPN", label: "Model Room" },
+  // Password-locked page built by model_room/ (the Model Room workflow).
+  { link: "/model-room/", label: "Model Room" },
 ];
 const EDGE_TZ = { ET: "America/New_York", CT: "America/Chicago", MT: "America/Denver", PT: "America/Los_Angeles" };
 const EDGE_SPEED = { slow: 35, normal: 60, fast: 100 };  // pixels a second
@@ -461,10 +461,14 @@ function initSiteSettings() {
       return;
     }
     if (s.link) {
-      const a = edgeNode("a", "ticker-teams-btn", s.label + " \u2197");
+      // Pages on this site open in the same tab; other sites open in a new one.
+      const local = s.link.startsWith("/");
+      const a = edgeNode("a", "ticker-teams-btn", local ? s.label : s.label + " \u2197");
       a.href = s.link;
-      a.target = "_blank";
-      a.rel = "noopener";
+      if (!local) {
+        a.target = "_blank";
+        a.rel = "noopener";
+      }
       panel.append(a);
       return;
     }
