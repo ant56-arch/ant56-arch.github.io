@@ -89,6 +89,7 @@ class TeamSite:
     tabs = [("index.html", "Home"), ("history.html", "History"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     sources = "Scores, box scores, injury reports and moneyline prices via ESPN."
     has_games_feed = True  # ESPN scoreboard for the board, games.json and the Schedule redirect
+    has_schedule = True    # a tab on the home site's Schedule page
     board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. Value means "
                   "our chance beats the odds by 6 points or more. Tap a game for injuries and rest.")
     no_games = "No NBA games today."
@@ -435,7 +436,7 @@ class TeamSite:
             "history.html": self.build_history(),
             "accuracy.html": self.build_accuracy(),
         })
-        if slate:
+        if slate and self.has_schedule:
             pages["schedule.html"] = games_mod.schedule_redirect(self.slug)
         pages.update({
             "model.html": self.build_model(load_json(os.path.join(self.here, "model_history.json"), {"runs": []})["runs"]),

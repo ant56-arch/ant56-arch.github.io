@@ -34,6 +34,8 @@ SPORTS = {
     "mlb": {"path": "baseball/mlb", "params": {}},
     "nba": {"path": "basketball/nba", "params": {}},
     "nhl": {"path": "hockey/nhl", "params": {}},
+    # Every Division I men's game that day (the default list is only the top games).
+    "cbb": {"path": "basketball/mens-college-basketball", "params": {"groups": "50", "limit": "500"}},
     # Soccer Edge: three competitions in one slate. With no single ESPN
     # address, its games.json has no "espn" link and the browser shows the
     # published file as is.

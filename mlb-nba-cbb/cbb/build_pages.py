@@ -114,7 +114,8 @@ class CBBSite(TeamSite):
     tabs = [("index.html", "Home"), ("ratings.html", "Ratings"), ("history.html", "History"),
             ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     sources = "Scores, box scores and moneyline prices via ESPN. Not affiliated with KenPom."
-    has_games_feed = False
+    has_games_feed = True
+    has_schedule = False  # not on the shared Schedule tab yet
     board_note = ("Scores are our projections, and the odds are our pick's moneyline. Value means our chance beats the "
                   "odds by 6 points or more. Tap a game for more.")
     no_games = "No Division I games today."

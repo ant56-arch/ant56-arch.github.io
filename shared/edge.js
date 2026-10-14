@@ -20,8 +20,9 @@ const EDGE_SITES = [
     href: "/nhl/index.html", schedule: "/schedule.html#nhl" },
   { sport: "CFB", summary: "/cfb/summary.json", games: "/cfb/games.json",
     href: "/cfb/index.html", schedule: "/schedule.html#cfb" },
-  // CBB Edge has no games.json yet, so it shows on the home page only.
-  { sport: "CBB", summary: "/cbb/summary.json", games: null,
+  // CBB isn't on the Schedule tab or in the ticker yet; its games.json feeds
+  // the live scores on its own game cards.
+  { sport: "CBB", summary: "/cbb/summary.json", games: "/cbb/games.json",
     href: "/cbb/index.html", schedule: "/cbb/index.html" },
   // Soccer Edge: Premier League, La Liga and Champions League in one games.json
   // with no single ESPN address, so it isn't in the score ticker.
