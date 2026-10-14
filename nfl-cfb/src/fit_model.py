@@ -54,6 +54,7 @@ from historical_features import compute_walkforward_features
 from build_features import RECENCY_HALF_LIFE_GAMES
 import model_guard as guard
 import team_ratings
+import game_context
 
 HISTORICAL_RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "historical_raw")
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
@@ -66,22 +67,35 @@ VALIDATION_SEASONS = 2             # most recent N completed seasons held out
 BLEND_GRID = np.round(np.arange(0.0, 1.01, 0.05), 2)
 
 # Recipe search (see model_guard.py): how fast the opponent-adjusted team
-# ratings forget old games (team_ratings.py, in weeks) and how many seasons to
-# fit on. team_half_life is the raw team-form half-life the totals model and
-# build_features.py use; it stays fixed. Scored on the most recent
-# RECENT_HOLDOUT_GAMES games (about a season).
+# ratings forget old games (team_ratings.py, in weeks), how many seasons to
+# fit on, and which game-day context inputs (game_context.py) the spread adds
+# on top of the ratings. team_half_life is the raw team-form half-life the
+# totals model and build_features.py use; it stays fixed. Scored on the most
+# recent RECENT_HOLDOUT_GAMES games (about a season).
+#
+# The 16-week half-life tryouts were dropped on 2026-10-14: they finished last
+# at every retrain. Their places went to two tryouts with new inputs: players
+# out on the injury report, and that plus rest and travel. (Rest and travel on
+# their own lost to the live recipe in 2 of 4 held-out tests, 2023-26.)
 RECENT_HOLDOUT_GAMES = 256
 DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES,
                   "rating_half_life": team_ratings.RATING_HALF_LIFE_WEEKS, "seasons": "all"}
-RECIPES = [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": h, "seasons": n}
-           for h in (4, 8, 16) for n in ("all", 8)]
+RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": h, "seasons": n}
+            for h in (4, 8) for n in ("all", 8)]
+           + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": "all", "extras": extras}
+              for extras in (["injuries"], ["injuries", "rest"])])
+EXTRA_FEATURES = [c for cols in game_context.FEATURES.values() for c in cols]
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 
 def rating_half_life(r):
     return r.get("rating_half_life", team_ratings.RATING_HALF_LIFE_WEEKS)
 
+def recipe_extras(r):
+    return list(r.get("extras", []))
+
 def recipe_name(r):
-    return f"ratings half-life {rating_half_life(r)} weeks, {r['seasons']} seasons"
+    extras = "".join(f" + {kind}" for kind in recipe_extras(r))
+    return f"ratings half-life {rating_half_life(r)} weeks, {r['seasons']} seasons{extras}"
 
 def window(recipe, dataset):
     if recipe["seasons"] == "all" or dataset.empty:
@@ -195,7 +209,14 @@ def make_features(games, suffix="_asof"):
     feats["combined_exp_eff"] = home_exp_eff + away_exp_eff
     for col in team_ratings.FEATURES:
         feats[col] = games[col] if col in games.columns else np.nan
+    # Context inputs only exist on a recipe's dataset when the recipe uses them.
+    for col in EXTRA_FEATURES:
+        if col in games.columns:
+            feats[col] = games[col]
     return feats
+
+def spread_columns(feats):
+    return team_ratings.FEATURES + [c for c in EXTRA_FEATURES if c in feats.columns]
 
 def fit_ols(X, y):
     """Plain OLS via lstsq (no sklearn dependency): y = X @ beta, X's last
@@ -211,25 +232,31 @@ def fit_margin_and_total(feats, games):
     n = len(feats)
     ones = np.ones(n)
 
-    # Spread: opponent-adjusted ratings + starting-QB gap. home_field is 1 for
-    # a true home game and 0 at a neutral site, so its weight is home field.
-    X_margin = feats[team_ratings.FEATURES].values
+    # Spread: opponent-adjusted ratings + starting-QB gap (+ the recipe's
+    # context inputs). home_field is 1 for a true home game and 0 at a neutral
+    # site, so its weight is home field.
+    cols = spread_columns(feats)
+    X_margin = feats[cols].values
     beta_margin, resid_margin = fit_ols(X_margin, games["actual_margin"].values)
 
     X_total = np.column_stack([feats["combined_exp_eff"], ones])
     beta_total, resid_total = fit_ols(X_total, games["actual_total"].values)
 
-    return {
+    coefs = {
         "points_rating_weight": float(beta_margin[0]),
         "success_rating_weight": float(beta_margin[1]),
         "qb_weight": float(beta_margin[2]),
         "home_field_advantage": float(beta_margin[3]),
+    }
+    coefs.update({f"{c}_weight": float(b) for c, b in zip(cols[4:], beta_margin[4:])})
+    coefs.update({
         "margin_std_dev": float(np.std(resid_margin, ddof=X_margin.shape[1])),
         "total_coef": float(beta_total[0]),
         "total_intercept": float(beta_total[1]),
         "total_std_dev": float(np.std(resid_total, ddof=X_total.shape[1])),
         "n_games": int(n),
-    }, valid
+    })
+    return coefs, valid
 
 def model_predict(feats, coefs):
     total = feats["combined_exp_eff"] * coefs["total_coef"] + coefs["total_intercept"]
@@ -238,6 +265,9 @@ def model_predict(feats, coefs):
                   + feats["success_rating_diff"] * coefs["success_rating_weight"]
                   + feats["qb_diff"] * coefs["qb_weight"]
                   + feats["home_field"] * coefs["home_field_advantage"])
+        for col in EXTRA_FEATURES:
+            if f"{col}_weight" in coefs:
+                spread = spread + feats[col] * coefs[f"{col}_weight"]
         return spread, total
     # Coefficients fit before team_ratings.py (raw EPA and rate gaps), so the
     # refit's guard can still score the live model it may replace.
@@ -373,10 +403,11 @@ def run():
     schedules = fetch_historical_schedules()
 
     datasets = {}
+    injury_inputs = []  # loaded once, the first time an injuries recipe needs them
 
     def dataset_for(recipe):
         """Completed games with walk-forward (no-leakage) features at this
-        recipe's half-lives."""
+        recipe's half-lives, plus its context inputs."""
         key = (recipe["team_half_life"], rating_half_life(recipe))
         if key not in datasets:
             hl = recipe["team_half_life"]
@@ -385,7 +416,16 @@ def run():
             dataset = build_dataset(off_walk, def_walk, schedules)
             dataset = dataset[dataset["season"] >= TRAIN_START_SEASON]
             datasets[key] = attach_ratings(dataset, pbp, schedules, half_life=rating_half_life(recipe))
-        return datasets[key]
+        extras = recipe_extras(recipe)
+        if not extras:
+            return datasets[key]
+        full = key + tuple(extras)
+        if full not in datasets:
+            if "injuries" in extras and not injury_inputs:
+                injury_inputs.append(game_context.load_injury_inputs(seasons, HISTORICAL_RAW_DIR))
+            ctx = game_context.context_features(schedules, extras, injury_inputs[0] if injury_inputs else None)
+            datasets[full] = datasets[key].merge(ctx, on=game_context.KEY, how="left")
+        return datasets[full]
 
     live = guard.load_json(COEFFICIENTS_PATH)
     live_recipe = live.get("recipe", DEFAULT_RECIPE)
@@ -405,7 +445,7 @@ def run():
     output = validate_and_fit(dataset)
     trained_through = guard.latest_gameday(dataset)
     output.update({"recipe": chosen, "team_half_life_games": chosen["team_half_life"],
-                   "rating_half_life_weeks": rating_half_life(chosen),
+                   "rating_half_life_weeks": rating_half_life(chosen), "context_inputs": recipe_extras(chosen),
                    "trained_through": trained_through})
     ok, why, new, live_score = guard.deploy_ok(output["coefficients"], live.get("coefficients"), live_recipe, chosen,
                                                dataset_for, make_features, model_predict, report["keys"])

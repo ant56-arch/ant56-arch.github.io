@@ -241,6 +241,7 @@ SETTING_WORDS = {
     "reg": ("Pull toward league average", lambda v: str(v)),
     "xg": ("Share built from shots on target", lambda v: f"{float(v) * 100:.0f}%"),
     "home_reg": ("Pull of each league's home edge", lambda v: "One shared edge" if v is None else str(v)),
+    "extras": ("Extra inputs", lambda v: ", ".join({"rest": "Rest and travel", "injuries": "Players out"}.get(x, x) for x in v) if v else "None"),
 }
 SETTING_HELP = {
     "team_half_life": "how fast it forgets old games when it sizes up a team's form",
@@ -257,6 +258,7 @@ SETTING_HELP = {
     "reg": "how hard a club with few results is pulled toward its league's average",
     "xg": "how much of the rating comes from shots on target instead of goals",
     "home_reg": "how hard each league's home edge is pulled toward the overall one",
+    "extras": "inputs added on top of the power ratings: rest days and travel, or how much of each lineup is on the injury report",
 }
 
 

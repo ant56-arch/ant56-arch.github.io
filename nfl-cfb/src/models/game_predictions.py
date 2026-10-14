@@ -45,6 +45,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from team_overrides import apply_overrides
 from auto_defense_adjustments import apply_auto_adjustments
 import team_ratings
+import game_context
+from fetch_data import current_nfl_season
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
@@ -107,15 +109,25 @@ def load_upcoming_games():
     recent = (pd.Timestamp.now() - pd.Timedelta(days=14)).strftime("%Y-%m-%d")
     return upcoming[upcoming["gameday"].astype(str).str[:10] >= recent]
 
-def load_rating_features(half_life):
-    """team_ratings.FEATURES for every game of the current season, indexed by
-    (season, week, home_team, away_team)."""
+def context_kinds(coefs):
+    """The game_context.py inputs the live recipe's spread uses."""
+    return [kind for kind, cols in game_context.FEATURES.items() if any(f"{c}_weight" in coefs for c in cols)]
+
+def load_rating_features(half_life, kinds=()):
+    """team_ratings.FEATURES (plus any game_context.py inputs in kinds) for
+    every game of the current season, indexed by (season, week, home_team,
+    away_team)."""
     cols = ["game_id", "season", "week", "posteam", "defteam", "play_type", "epa", "success",
             "pass", "qb_dropback", "passer_player_id"]
     pbp = pd.read_parquet(os.path.join(RAW_DIR, "pbp_combined.parquet"), columns=cols)
     schedules = pd.read_csv(os.path.join(RAW_DIR, "schedules.csv"))
     feats = team_ratings.game_features(pbp, schedules, from_season=int(schedules["season"].max()),
                                        half_life=half_life)
+    if kinds:
+        season = current_nfl_season()
+        inputs = (game_context.load_injury_inputs([season - 1, season], os.path.join(RAW_DIR, "context"), season)
+                  if "injuries" in kinds else None)
+        feats = feats.merge(game_context.context_features(schedules, kinds, inputs), on=game_context.KEY, how="left")
     return feats.set_index(["season", "week", "home_team", "away_team"])
 
 def load_vegas_odds():
@@ -160,10 +172,15 @@ def get_vegas_line(vegas_odds, home_team, away_team):
     }
 
 def ratings_spread(rating_row, coefs):
-    return (rating_row["points_rating_diff"] * coefs["points_rating_weight"]
-            + rating_row["success_rating_diff"] * coefs["success_rating_weight"]
-            + rating_row["qb_diff"] * coefs["qb_weight"]
-            + rating_row["home_field"] * coefs["home_field_advantage"])
+    spread = (rating_row["points_rating_diff"] * coefs["points_rating_weight"]
+              + rating_row["success_rating_diff"] * coefs["success_rating_weight"]
+              + rating_row["qb_diff"] * coefs["qb_weight"]
+              + rating_row["home_field"] * coefs["home_field_advantage"])
+    for cols in game_context.FEATURES.values():
+        for c in cols:
+            if f"{c}_weight" in coefs:
+                spread += (0.0 if pd.isna(rating_row.get(c)) else rating_row[c]) * coefs[f"{c}_weight"]
+    return spread
 
 def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True,
                  rating_row=None):
@@ -229,7 +246,7 @@ def predict_all_upcoming(use_current_form=True):
     vegas_odds = load_vegas_odds()
     ratings = None
     if "points_rating_weight" in coefs:
-        ratings = load_rating_features(load_rating_half_life())
+        ratings = load_rating_features(load_rating_half_life(), context_kinds(coefs))
 
     if vegas_odds is None:
         print("  No Vegas odds available yet - predictions will be model-only "
