@@ -66,21 +66,21 @@ em, .it { font-family: var(--f-serif); font-style: italic; font-weight: 400; let
 @media (max-width: 860px) { .nav ul { display: none; } .nav .pill { margin-left: auto; } }
 
 /* --- Hero --- */
-.hero { position: relative; min-height: min(760px, 92vh); color: var(--hero-ink); display: grid; align-content: end; padding: 140px var(--gutter) 0; overflow: hidden; background: #0E1712; }
+.hero { position: relative; min-height: min(520px, 66vh); color: var(--hero-ink); display: grid; align-content: end; padding: 140px var(--gutter) 0; overflow: hidden; background: #0E1712; }
 .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,14,11,.35) 0%, rgba(8,14,11,0) 30%, rgba(8,14,11,.15) 55%, rgba(8,14,11,.78) 100%); pointer-events: none; }
 .hero > *:not(canvas) { position: relative; z-index: 1; }
 .hero-row { display: grid; grid-template-columns: 1fr minmax(0, 330px); gap: 32px; align-items: end; }
 .eyebrow { display: flex; align-items: center; gap: 14px; opacity: .85; }
 .eyebrow::before { content: ""; width: 36px; height: 1px; background: currentColor; opacity: .7; }
-.hero h1 { margin: 18px 0 0; font-weight: 500; font-variation-settings: "wdth" 125; text-transform: uppercase; font-size: clamp(44px, 8.4vw, 132px); line-height: .9; letter-spacing: -.01em; }
+.hero h1 { margin: 18px 0 0; font-weight: 500; font-variation-settings: "wdth" 125; text-transform: uppercase; font-size: clamp(40px, 6.4vw, 96px); line-height: .9; letter-spacing: -.01em; }
 .hero h1 .ln { display: block; overflow: hidden; }
 .hero h1 .ln span { display: inline-block; animation: rise 1.1s cubic-bezier(.2,.7,.1,1) both; }
 .hero h1 .ln:nth-child(2) span { animation-delay: .12s; }
 @keyframes rise { from { transform: translateY(100%); } to { transform: none; } }
 .hero-side .it { font-size: clamp(20px, 2vw, 26px); line-height: 1.2; display: block; }
 .hero-side p { font-size: 13px; opacity: .78; margin: 12px 0 0; max-width: 34ch; }
-.hero-bar { margin-top: 44px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 18px 0 26px; border-top: 1px solid rgba(242,238,230,.28); }
+.hero-bar { margin-top: 28px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 14px 0 34px; border-top: 1px solid rgba(242,238,230,.28); }
 .hero-bar > :last-child { justify-self: end; }
 .scroll-cue { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
 .scroll-cue i { width: 30px; height: 30px; border: 1px solid rgba(242,238,230,.5); border-radius: 50%; display: grid; place-items: center; font-style: normal; }
@@ -92,9 +92,9 @@ em, .it { font-family: var(--f-serif); font-style: italic; font-weight: 400; let
 
 /* --- Sheet and sections --- */
 .sheet { position: relative; z-index: 2; margin-top: -28px; background: var(--paper); border-radius: 28px 28px 0 0; padding: 0 var(--gutter); }
-section { padding-block: clamp(72px, 10vw, 140px); }
+section { padding-block: clamp(48px, 6vw, 88px); }
 section + section { border-top: 1px solid var(--rule); }
-.sec-head { display: flex; justify-content: space-between; gap: 16px; color: var(--ink-soft); margin-bottom: clamp(36px, 5vw, 64px); }
+.sec-head { display: flex; justify-content: space-between; gap: 16px; color: var(--ink-soft); margin-bottom: clamp(24px, 3vw, 40px); }
 .sec-head .num { display: flex; gap: 14px; align-items: center; }
 .sec-head .num::after { content: ""; width: 36px; height: 1px; background: var(--ink-faint); order: 1; }
 .sec-head .num b { order: 2; font-weight: 400; }
@@ -132,7 +132,7 @@ h2 em { font-size: 1.06em; }
 
 /* 02 Slate picker */
 .slate-sec { background: var(--paper-2); margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }
-.slate { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.slate { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 620px); justify-content: space-between; gap: clamp(24px, 4vw, 56px); align-items: start; }
 .slate-left { display: grid; gap: 28px; }
 .g-head { display: flex; align-items: flex-end; gap: 16px; }
 .g-head .big { font-family: var(--f-serif); font-size: 76px; line-height: .8; }
@@ -186,21 +186,48 @@ h2 em { font-size: 1.06em; }
 @media (max-width: 900px) { .slate { grid-template-columns: 1fr; } .field-frame { order: -1; } }
 
 /* 03 Value picks */
-.value-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(36px, 5vw, 64px); }
+.value-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(24px, 3vw, 40px); }
 .vcard { display: grid; gap: 16px; align-content: start; }
-.vart { aspect-ratio: 4 / 5; border-radius: 4px; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: 18px; color: #F2EEE6; max-width: 100%; }
+.vart { aspect-ratio: 3 / 2; border-radius: 4px; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: 14px 16px; color: #F2EEE6; max-width: 100%; }
 .vart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .vart > :not(canvas) { position: relative; }
 .vart .vtop { display: flex; justify-content: space-between; gap: 12px; }
 .vmeter { position: relative; height: 4px; margin-top: 16px; background: rgba(242,238,230,.22); }
 .vmeter i { position: absolute; inset: 0 auto 0 0; background: #F2EEE6; }
 .vmeter b { position: absolute; top: -5px; width: 2px; height: 14px; background: #E59D72; transform: translateX(-1px); }
-.vart .vbig { font-family: var(--f-serif); font-size: clamp(64px, 7vw, 108px); line-height: .85; }
+.vart .vbig { font-family: var(--f-serif); font-size: clamp(48px, 4.6vw, 72px); line-height: .85; }
 .vcard h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; }
 .vcard .vline { color: var(--ink-soft); font-size: 13px; }
 .vcard p { margin: 0; color: var(--ink-soft); max-width: 42ch; }
 .vcard .vfoot { border-top: 1px solid var(--rule); padding-top: 10px; display: flex; justify-content: space-between; color: var(--ink-soft); }
-@media (max-width: 860px) { .value-grid { grid-template-columns: 1fr; } .vart { aspect-ratio: 16 / 10; } }
+@media (max-width: 860px) { .value-grid { grid-template-columns: 1fr; } .vart { aspect-ratio: 2 / 1; } }
+
+/* Game status: start time, live score, final with Hit or Miss */
+.st-live { color: var(--clay); }
+.st-live::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 5px; vertical-align: 1px; animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.st-hit { color: var(--forest); }
+.st-miss { color: var(--clay); }
+[aria-pressed="true"] .st-hit, [aria-pressed="true"] .st-miss, [aria-pressed="true"] .st-live { color: inherit; }
+.g-status { margin-top: 12px; font-size: 12px; letter-spacing: .08em; color: var(--ink-soft); }
+.g-status .st { font-size: 13px; }
+.frame-pill.st-live { background: var(--clay); color: #fff; }
+.frame-pill.st-hit { background: var(--forest); color: var(--forest-ink); }
+.frame-pill.st-miss { background: var(--clay); color: #fff; }
+.glist .st { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; white-space: nowrap; }
+.glist button { grid-template-columns: 44px minmax(0, 1fr) auto auto; }
+.vart .vtop .st { color: inherit; }
+.vart > .vstamp { position: absolute; justify-self: end; width: max-content; right: 14px; top: 42px; transform: rotate(-8deg); border: 2px solid currentColor; padding: 3px 10px 2px; font-family: var(--f-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; }
+.vstamp.st-hit { color: #9FE0B4; } .vstamp.st-miss { color: #F2A07B; } .vstamp.st-live { color: #F2EEE6; }
+.vstamp.st-live::before { display: none; }
+.vstamp:empty { display: none; }
+.vline .st { color: var(--ink); }
+.jump { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 40px 0 0; margin: 0; }
+.jump::-webkit-scrollbar { display: none; }
+.jump a { flex: none; text-decoration: none; padding: 9px 14px; border: 1px solid var(--rule); border-radius: 99px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+.jump a:hover { border-color: var(--ink-faint); background: var(--paper-2); }
+.jump a.go { background: var(--forest); border-color: var(--forest); color: var(--forest-ink); }
+.jump + section { padding-top: clamp(28px, 4vw, 48px); }
 
 /* 04 Method */
 .method { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 80px); }
@@ -502,7 +529,8 @@ a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration
 /* --- Score ticker: the shared edge.js crawl bars, fixed above the nav --- */
 #tick { position: fixed; inset: 0 0 auto 0; z-index: 21; }
 .nav { top: var(--tick-h, 0px); }
-.hero { padding-top: calc(140px + var(--tick-h, 0px)); }
+.hero { padding-top: calc(116px + var(--tick-h, 0px)); }
+@media (max-width: 860px) { .hero { padding-top: calc(140px + var(--tick-h, 0px)); min-height: 0; } .hero-side p { display: none; } .hero-bar { margin-top: 18px; } }
 .crawl { display: flex; align-items: stretch; height: 36px; background: var(--paper-2); border-bottom: 1px solid var(--rule); overflow: hidden; }
 .crawl[hidden] { display: none; }
 .crawl-tag { display: flex; align-items: center; flex-shrink: 0; padding: 0 14px; background: var(--forest); color: var(--forest-ink); font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
@@ -585,6 +613,7 @@ a.crawl-item:hover { background: var(--paper); }
 </header>
 
 <main class="sheet">
+  <nav class="jump mono" id="jump" aria-label="Jump to"></nav>
   <section id="record">
     <div class="sec-head mono"><span class="num">01<b>The record</b></span><span id="recHead">Football · Hockey · Baseball · Soccer</span></div>
     <p class="statement" id="statement">Every game picked, every one <em>posted before</em> the first pitch, puck drop or kickoff. We don't bury the misses. We <em>grade</em> every one of them.</p>
@@ -616,6 +645,7 @@ a.crawl-item:hover { background: var(--paper); }
             <span class="big" id="gNum">01</span>
             <div><small class="mono" id="gOf"></small><h3 id="gTitle"></h3></div>
           </div>
+          <div class="g-status mono" id="gStatus"></div>
           <div class="g-facts" style="margin-top:16px">
             <div><span class="mono">Our pick</span><b id="gPick"></b></div>
             <div><span class="mono">Win chance</span><b id="gProb"></b></div>
@@ -794,9 +824,106 @@ const VENUES = {};
 function loadVenues() {
   return Promise.all(SITES.map(s => fetch(s.file.replace("summary.json", "games.json"), { cache: "no-cache" })
     .then(r => r.ok ? r.json() : null).catch(() => null)
-    .then(d => ((d && d.games) || []).forEach(gm => {
-      if (gm.home && gm.home.abbr) VENUES[`${s.lg}:${gm.home.abbr}`] = { venue: gm.neutral ? "" : gm.venue, ...gm.home };
-    }))));
+    .then(d => {
+      if (d && d.espn) ESPN[s.lg] = d.espn;
+      ((d && d.games) || []).forEach(gm => {
+        if (gm.home && gm.home.abbr) VENUES[`${s.lg}:${gm.home.abbr}`] = { venue: gm.neutral ? "" : gm.venue, ...gm.home };
+        if (gm.start && gm.away && gm.home) {
+          const k = `${s.lg}|${dayKey(new Date(gm.start))}`;
+          (LIVE[k] = LIVE[k] || []).push({ away: gm.away.abbr, home: gm.home.abbr, state: gm.state, detail: gm.detail, a: gm.away.score, h: gm.home.score });
+        }
+      });
+    })));
+}
+
+// ---------- Game status: start time, live score, final ----------
+// games.json carries the scores as of the last site build; ESPN's scoreboard
+// (fetched in the browser, by date) brings them up to the minute. Our slate
+// ids differ by league, so a game is matched by league, date and team.
+const ESPN = {};   // league -> ESPN scoreboard address
+const LIVE = {};   // "league|date" -> [{away, home, state, detail, a, h}]
+const BYKEY = {};  // gKey -> slate game
+const gKey = g => `${g.sp}|${g.date}|${g.away}|${g.home}`;
+function liveFor(g) {
+  const rows = LIVE[`${g.sp}|${g.date}`] || [];
+  let r = rows.find(x => x.away === g.away && x.home === g.home);
+  if (r) return r;
+  r = rows.find(x => x.away === g.home && x.home === g.away);   // listed the other way round
+  if (r) return { ...r, a: r.h, h: r.a };
+  return rows.find(x => x.away === g.away || x.home === g.home) || null;
+}
+function status(g) {
+  const r = liveFor(g);
+  const done = g.final || (r && r.state === "post");
+  const sc = g.score || (r && r.a != null && r.h != null && (done || r.state === "in") ? [r.a, r.h] : null);
+  if (done) {
+    let hit = g.hit;
+    if (hit == null && sc) hit = g.pick === "Draw" ? sc[0] === sc[1] : g.pick === g.away ? sc[0] > sc[1] : g.pick === g.home ? sc[1] > sc[0] : null;
+    const word = hit === true ? "Hit" : hit === false ? "Miss" : "Final";
+    const text = sc ? `Final · ${g.away} ${sc[0]}, ${g.home} ${sc[1]}${hit == null ? "" : " · " + word}` : "Final";
+    return { kind: "final", hit, stamp: hit == null ? "" : word, line: text, result: sc ? `${word} · ${sc[0]}-${sc[1]}` : "Final",
+             short: sc ? `${word} · ${sc[0]}-${sc[1]}` : "Final",
+             text };
+  }
+  if (r && r.state === "in" && sc) {
+    const text = `Live · ${g.away} ${sc[0]}, ${g.home} ${sc[1]}${r.detail ? " · " + r.detail : ""}`;
+    return { kind: "live", stamp: "Live", short: `Live · ${sc[0]}-${sc[1]}`, result: `Live · ${sc[0]}-${sc[1]}`, text, line: text };
+  }
+  // Past its start with no live score (soccer has no ESPN feed here).
+  if (new Date(g.start) <= Date.now()) return { kind: "pre", stamp: "", short: "Started", result: "Started", text: `Started ${g.t} ET · score not in yet`, line: `${g.away} @ ${g.home} · started ${g.t} ET` };
+  const today = dayKey(new Date());
+  const when = g.date === today ? "Today" : g.date === dayKey(new Date(Date.now() + 864e5)) ? "Tomorrow" : longDate(g.date, { weekday: "long" });
+  return { kind: "pre", stamp: "", short: g.t, result: "", text: `${when} · ${g.t} ET`, line: `${g.away} @ ${g.home} · ${when} · ${g.t} ET` };
+}
+// Every <span class="st" data-k data-f> on the page shows one game's status:
+// data-f "short" (Live · 2-1), "result" (blank until it starts), "text"
+// (Live · NYR 2, WSH 1 · 2nd 8:14), "line" (text, or the matchup and start
+// time before it starts) or "stamp" (Hit).
+function updateStatus() {
+  document.querySelectorAll(".st[data-k]").forEach(el => {
+    const g = BYKEY[el.dataset.k]; if (!g) return;
+    const s = status(g);
+    el.textContent = s[el.dataset.f || "short"] || "";
+    el.classList.toggle("st-live", s.kind === "live");
+    el.classList.toggle("st-hit", s.hit === true);
+    el.classList.toggle("st-miss", s.hit === false);
+  });
+}
+const stSpan = (g, f, cls) => `<span class="st${cls ? " " + cls : ""}" data-k="${esc(gKey(g))}" data-f="${f}"></span>`;
+// Ask ESPN for every league and date with a game under way or just finished;
+// again every minute while one is live, else when the next one starts.
+async function fetchLive(games) {
+  clearTimeout(fetchLive.t);
+  const now = Date.now(), want = {};
+  games.forEach(g => {
+    if (g.final || !ESPN[g.sp] || new Date(g.start) - now > 5 * 60e3) return;
+    (want[g.sp] = want[g.sp] || new Set()).add(g.date);
+  });
+  await Promise.all(Object.entries(want).flatMap(([sp, ds]) => [...ds].map(d => {
+    const url = ESPN[sp] + (ESPN[sp].includes("?") ? "&" : "?") + "dates=" + d.replace(/-/g, "");
+    return fetch(url, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null).then(j => {
+      if (!j || !Array.isArray(j.events)) return;
+      LIVE[`${sp}|${d}`] = j.events.map(ev => {
+        const c = (ev.competitions || [])[0] || {}, side = {};
+        (c.competitors || []).forEach(t => side[t.homeAway] = t);
+        if (!side.home || !side.away) return null;
+        const num = t => t.score === undefined || t.score === "" ? null : Number(t.score);
+        const type = ((c.status || ev.status || {}).type) || {};
+        return { away: (side.away.team || {}).abbreviation, home: (side.home.team || {}).abbreviation,
+                 state: type.state || "pre", detail: type.shortDetail || "", a: num(side.away), h: num(side.home) };
+      }).filter(Boolean);
+    });
+  })));
+  updateStatus();
+  // First scores in: move the slate to a live game unless the reader has picked one.
+  if (!fetchLive.done && !userPicked && day && SLATES[day]) setDay(day, false);
+  fetchLive.done = true;
+  const open = games.filter(g => status(g).kind !== "final" && ESPN[g.sp]);
+  if (open.some(g => new Date(g.start) <= now)) fetchLive.t = setTimeout(() => fetchLive(games), 60e3);
+  else if (open.length) {
+    const next = Math.min(...open.map(g => new Date(g.start) - now));
+    fetchLive.t = setTimeout(() => fetchLive(games), Math.min(Math.max(next, 60e3), 3600e3));
+  }
 }
 // The painted-stadium theme for a pick's home team (null when unknown).
 function homeTeam(g) {
@@ -1295,7 +1422,7 @@ function renderChooser() {
   const many = games.length > NUMBERED_MAX;
   chips.hidden = many; glist.hidden = !many; filters.hidden = !many;
   if (!many) {
-    chips.innerHTML = list.map((g, i) => `<button type="button" aria-pressed="false" data-i="${i}">${String(i + 1).padStart(2, "0")}<small>${lgShort(g.sp)}</small></button>`).join("");
+    chips.innerHTML = list.map((g, i) => `<button type="button" aria-pressed="false" data-i="${i}">${String(i + 1).padStart(2, "0")}<small>${lgShort(g.sp)}</small><small>${stSpan(g, "short")}</small></button>`).join("");
   } else {
     const c = counts(games);
     const keys = ["All", "Value", ...Object.keys(c).filter(k => k !== "All" && k !== "Value").sort((a, b) => c[b] - c[a])];
@@ -1307,11 +1434,12 @@ function renderChooser() {
         html += `<h4 class="mono"><span>${g.t} ET</span><span>${n} game${n > 1 ? "s" : ""}</span></h4>`;
         last = g.t;
       }
-      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%${g.value ? '<i class="vdot" title="Value pick"></i>' : ""}</span></button>`;
+      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%${g.value ? '<i class="vdot" title="Value pick"></i>' : ""}</span>${stSpan(g, "result")}</button>`;
     });
     glist.innerHTML = html || `<div class="empty">No games match this filter.</div>`;
   }
   const c = counts(games), pm = games.filter(g => g.h >= 17).length;
+  updateStatus();
   $("totals").innerHTML = `<div>Before 5 PM<b>${games.length - pm} games</b></div><div>5 PM on<b>${pm} games</b></div><div>Value tags<b>${c.Value} picks</b></div>`;
 }
 function show(i, animate) {
@@ -1321,12 +1449,15 @@ function show(i, animate) {
   $("gNum").textContent = n;
   $("gOf").textContent = `Game ${cur + 1} of ${list.length} · ${g.sp}${g.value ? " · Value" : ""}`;
   $("gTitle").innerHTML = g.url ? `<a href="${esc(g.url)}">${esc(g.away)} @ ${esc(g.home)}</a>` : `${esc(g.away)} @ ${esc(g.home)}`;
+  $("gStatus").innerHTML = stSpan(g, "text");
   $("gPick").textContent = g.pick;
   $("gProb").textContent = Math.round(g.prob) + "%";
   $("gPrice").textContent = fmtPrice(g.price);
   $("gNote").textContent = autoNote(g);
   $("frameTag").textContent = `${g.sp} · ${g.away} at ${g.home}`;
-  $("framePill").textContent = `Game ${n} · ${g.t} ET`;
+  const pill = $("framePill");
+  pill.dataset.k = gKey(g); pill.dataset.f = "text"; pill.classList.add("st");
+  updateStatus();
   const box = glist.hidden ? chips : glist;
   box.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === cur));
   const on = box.querySelector('button[aria-pressed="true"]');
@@ -1338,6 +1469,8 @@ function show(i, animate) {
   if (animate && !REDUCE) { svg.classList.add("swap"); setTimeout(() => { drawField(g); svg.classList.remove("swap"); }, 200); }
   else drawField(g);
 }
+let userPicked = false;
+["chips", "glist", "filters", "dayswitch", "prevG", "nextG"].forEach(id => $(id).addEventListener("click", () => userPicked = true, true));
 [chips, glist].forEach(el => el.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i, true); }));
 filters.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; filt = b.dataset.f; renderChooser(); glist.scrollTop = 0; show(0, true); });
 $("dayswitch").addEventListener("click", e => {
@@ -1349,7 +1482,12 @@ function setDay(d, animate) {
   document.querySelectorAll("#dayswitch button").forEach(x => x.setAttribute("aria-pressed", x.dataset.day === d));
   const S = SLATES[day];
   $("slateDate").textContent = S.date; $("slateH2").innerHTML = S.h2; $("slateLede").textContent = S.lede;
-  renderChooser(); glist.scrollTop = 0; show(0, animate);
+  renderChooser(); glist.scrollTop = 0;
+  // Open on a live game, else the next to start, else the first.
+  const st = list.map(status), now = Date.now();
+  let i = st.findIndex(x => x.kind === "live");
+  if (i < 0) i = list.findIndex((g, k) => st[k].kind === "pre" && new Date(g.start) > now);
+  show(Math.max(0, i), animate);
 }
 document.addEventListener("keydown", e => {
   if (e.target.closest("input, textarea, select") || !list.length) return;
@@ -1390,6 +1528,7 @@ function slateGames(sums) {
       sp: g.sport || SITES[i].lg, start: g.start, date: g.date || dayKey(new Date(g.start)),
       t: etTime(g.start), h: etHour(g.start), away: g.away, home: g.home, pick: g.pick,
       prob: +g.prob, price: g.price, book: g.book == null ? null : +g.book, value: !!g.value, final: !!g.final, url: g.url,
+      score: Array.isArray(g.score) ? g.score : null, hit: g.hit == null ? null : !!g.hit,
     });
   }));
   return out.sort((a, b) => a.start.localeCompare(b.start) || (b.prob - a.prob));
@@ -1446,6 +1585,19 @@ function leagueTop(s, today) {
     stats.push([`${lw}-${ll}`, `on ${longDate(last.date, { weekday: "long", month: "short", day: "numeric" })}`]);
   }
   $("stats").innerHTML = stats.map(([b, t]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("");
+}
+
+// Quick links under the banner, so the board, history and model are one tap away.
+function renderJump() {
+  const slate = $("slate").hidden ? null : "#slate";
+  let links;
+  if (LG === "All") links = [[slate, SLATES.today ? "Today's games" : "Next games", true], ["#value", "Value picks"], ["#record", "Record"], ["#calendar", "Past days"],
+                             ["/bets.html", "Betting"], ["/schedule.html", "Schedule"]];
+  else {
+    const base = SITE.href.replace(/index\.html$/, "");
+    links = [[slate, SLATES.today ? "Today's games" : "Next games", true], ...LEAGUE[LG].pages.map(([f, name]) => [base + f, name])];
+  }
+  $("jump").innerHTML = links.filter(l => l[0] && !(l[0][0] === "#" && $(l[0].slice(1)).hidden)).map(([h, t, go]) => `<a href="${h}"${go ? ' class="go"' : ""}>${t}</a>`).join("");
 }
 
 // A league tab's section 05: that league's own pages.
@@ -1507,6 +1659,7 @@ function render(sums) {
 
   // Slate: today, and the next day with games.
   const all = slateGames(sums).filter(g => LG === "All" || g.sp === LG);
+  all.forEach(g => BYKEY[gKey(g)] = g);
   const days = [...new Set(all.filter(g => g.date >= today).map(g => g.date))].sort();
   const todayGames = all.filter(g => g.date === today);
   const nextKey = days.find(d => d > today);
@@ -1534,16 +1687,19 @@ function render(sums) {
   $("valueGrid").innerHTML = VAL.map((g, i) => `
     <article class="vcard">
       <div class="vart" data-k="${i}" data-sp="${g.sp}" data-home="${esc(g.home)}"><canvas aria-hidden="true"></canvas>
-        <div class="vtop mono"><span>${g.sp}${homeTeam(g) && homeTeam(g).venue ? ` · ${esc(homeTeam(g).venue)}` : ""}</span><span>${g.t} ET</span></div>
+        <div class="vtop mono"><span>${g.sp}${homeTeam(g) && homeTeam(g).venue ? ` · ${esc(homeTeam(g).venue)}` : ""}</span>${stSpan(g, "short")}</div>
+        ${stSpan(g, "stamp", "vstamp")}
         <div><div class="mono" style="opacity:.8;margin-bottom:8px">Our chance to win</div><div class="vbig">${Math.round(g.prob)}%</div><div class="mono" style="opacity:.8;margin-top:8px">Vegas odds say ${Math.round(g.book)}%</div>
           <div class="vmeter" aria-hidden="true"><i style="width:${g.prob}%"></i><b style="left:${g.book}%"></b></div></div>
       </div>
       <h3>${g.url ? `<a href="${esc(g.url)}">` : ""}${esc(g.pick)} ${fmtPrice(g.price)}${g.url ? "</a>" : ""}</h3>
-      <div class="vline">${esc(g.away)} @ ${esc(g.home)}</div>
+      <div class="vline">${stSpan(g, "line")}</div>
       <p>${esc(autoNote(g))}</p>
       <div class="vfoot mono"><span>Us ${g.prob.toFixed(1)}%</span><span>Vegas ${g.book.toFixed(1)}%</span></div>
     </article>`).join("");
   drawValueArt();
+  updateStatus();
+  fetchLive(all);
 
   // Leagues (on a league tab: that league's own pages).
   if (LG !== "All") leaguePages(by[LG]);
@@ -1605,6 +1761,7 @@ function render(sums) {
     </li>`;
   }).join("");
   $("calendar").hidden = !cal.length;
+  renderJump();
   $("footDate").textContent = "Figures from the live sites, " + longDate(today, { month: "short", day: "numeric", year: "numeric" });
 }
 
