@@ -98,7 +98,11 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
 
 /* ---------- Network bar: brand + sport tabs ---------- */
 
+/* The top bar sits above the ticker, masthead and sticky tabs so the
+   settings panel that drops out of it is never covered. */
 .topbar {
+  position: relative;
+  z-index: 30;
   background: var(--bar);
   border-top: 3px solid var(--ours);
   border-bottom: 1px solid var(--rule);
@@ -1279,7 +1283,6 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .menu-toggle { display: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 560px) {
-  .topbar { position: relative; z-index: 30; }
   .topbar-inner.has-menu { flex-wrap: nowrap; }
   .has-menu .brand { padding: 10px 0; }
   .has-menu .menu-toggle {
