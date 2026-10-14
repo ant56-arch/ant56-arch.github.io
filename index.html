@@ -108,10 +108,7 @@ h2 em { font-size: 1.06em; }
   .board .bar { display: none; }
 }
 /* 01 Statement */
-.statement { font-size: clamp(26px, 3.4vw, 46px); line-height: 1.14; letter-spacing: -.012em; max-width: 24ch; margin: 0; text-wrap: pretty; }
-.statement .w { color: var(--ink-faint); transition: color .5s; }
-.statement .w.lit { color: var(--ink); }
-.record-grid { margin-top: clamp(48px, 7vw, 96px); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
+.record-grid { margin-top: 0; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
 .board { background: var(--forest); color: var(--forest-ink); border-radius: 6px; padding: clamp(20px, 3vw, 34px); display: grid; gap: 22px; }
 .board-top { display: flex; justify-content: space-between; gap: 12px; opacity: .8; }
 .board table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -230,14 +227,6 @@ h2 em { font-size: 1.06em; }
 .jump + section { padding-top: clamp(28px, 4vw, 48px); }
 
 /* 04 Method */
-.method { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 80px); }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; }
-.steps li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px 16px; padding: 22px 0; border-top: 1px solid var(--rule); }
-.steps li:last-child { border-bottom: 1px solid var(--rule); }
-.steps .n { color: var(--ink-soft); padding-top: 6px; }
-.steps h3 { margin: 0; font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1.05; }
-.steps p { grid-column: 2; margin: 0; color: var(--ink-soft); max-width: 52ch; }
-@media (max-width: 860px) { .method { grid-template-columns: 1fr; } }
 
 /* 05 Leagues */
 .leagues { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: clamp(36px, 5vw, 64px); }
@@ -298,7 +287,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
   .nav ul#tabs a { white-space: nowrap; }
   .hero { padding-top: 160px; }
 }
-.record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
+#record[hidden], .record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
 
 /* --- Settings gear: the shared edge.js menu, mapped onto this page's colors --- */
 .ticker-settings, .team-picker {
@@ -615,9 +604,6 @@ a.crawl-item:hover { background: var(--paper); }
 <main class="sheet">
   <nav class="jump mono" id="jump" aria-label="Jump to"></nav>
   <section id="record">
-    <div class="sec-head mono"><span class="num">01<b>The record</b></span><span id="recHead">Football · Hockey · Baseball · Soccer</span></div>
-    <p class="statement" id="statement">Every game picked, every one <em>posted before</em> the first pitch, puck drop or kickoff. We don't bury the misses. We <em>grade</em> every one of them.</p>
-
     <div class="record-grid">
       <div class="board" aria-label="Record by league">
         <div class="board-top mono"><span id="boardYear">Picks to win</span><span id="boardDate"></span></div>
@@ -625,14 +611,13 @@ a.crawl-item:hover { background: var(--paper); }
           <thead><tr><th>League</th><th>Record</th><th>Win %</th><th>Streak</th></tr></thead>
           <tbody id="boardRows"></tbody>
         </table>
-        <div class="board-foot">Streaks count moneyline picks won or lost in a row, one game at a time.</div>
       </div>
       <div class="stats" id="stats"></div>
     </div>
   </section>
 
   <section id="slate" class="slate-sec">
-    <div class="sec-head mono"><span class="num">02<b>Today's slate</b></span><span id="slateDate"></span></div>
+    <div class="sec-head mono"><span class="num">01<b>Today's slate</b></span><span id="slateDate"></span></div>
     <div class="slate">
       <div class="slate-left">
         <div>
@@ -672,36 +657,20 @@ a.crawl-item:hover { background: var(--paper); }
   </section>
 
   <section id="value">
-    <div class="sec-head mono"><span class="num">03<b>Value picks</b></span><span id="valCount"></span></div>
+    <div class="sec-head mono"><span class="num">02<b>Value picks</b></span><span id="valCount"></span></div>
     <h2 id="valH2">Prices Vegas <em>left on the table.</em></h2>
     <p class="lede" id="valLede">A pick gets the Value tag when we give a team a better chance to win than Vegas's odds do, by at least 6 percentage points. That means the price pays more than it should.</p>
     <div class="value-grid" id="valueGrid"></div>
   </section>
 
-  <section id="method">
-    <div class="sec-head mono"><span class="num">04<b>How a pick is made</b></span><span id="methodSub">Same four steps, every league</span></div>
-    <div class="method">
-      <div>
-        <h2>Built from the box score <em>up.</em></h2>
-        <p class="lede">Each league has its own model, trained on its own seasons and retrained every week. A new version only goes live if it beats the one it would replace.</p>
-      </div>
-      <ol class="steps" id="steps">
-        <li><span class="n mono">01</span><h3>Rate every team</h3><p>Schedule-adjusted ratings for offense and defense, updated after every final.</p></li>
-        <li><span class="n mono">02</span><h3>Read the matchup</h3><p>Starting pitchers in baseball, the starting quarterback in the NFL and home edge in every league go in game by game.</p></li>
-        <li><span class="n mono">03</span><h3>Check the price</h3><p>Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted.</p></li>
-        <li><span class="n mono">04</span><h3>Grade it in public</h3><p>The pick locks at first pitch, puck drop or kickoff, and the result is graded that night. Nothing is edited after.</p></li>
-      </ol>
-    </div>
-  </section>
-
   <section id="leagues">
-    <div class="sec-head mono"><span class="num">05<b id="lgHead">The leagues</b></span><span id="lgSub">Seven sites, one record</span></div>
+    <div class="sec-head mono"><span class="num">03<b id="lgHead">The leagues</b></span><span id="lgSub">Seven sites, one record</span></div>
     <h2 id="lgH2">A model for <em>every season.</em></h2>
     <div class="leagues" id="leagueGrid"></div>
   </section>
 
   <section id="calendar">
-    <div class="sec-head mono"><span class="num">06<b>Results by day</b></span><span>Last six days</span></div>
+    <div class="sec-head mono"><span class="num">04<b>Results by day</b></span><span>Last six days</span></div>
     <h2>The <em>calendar.</em></h2>
     <ul class="cal" id="cal"></ul>
   </section>
@@ -929,42 +898,6 @@ async function fetchLive(games) {
 function homeTeam(g) {
   const v = VENUES[`${g.sp}:${g.home}`];
   return v ? { sp: g.sp, abbr: g.home, short: v.short || g.home, color: v.color, alt: v.alt, logo: v.logo, venue: v.venue } : null;
-}
-
-// ---------- 04 how a pick is made, told for one league on its tab ----------
-const METHOD = {
-  NFL: [["Rate every team", "Schedule-adjusted ratings for all 32 offenses and defenses, updated after every final."],
-        ["Read the matchup", "The starting quarterback and home field go in game by game."],
-        ["Check the price", "Our spread and win chance are set beside Vegas's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "The line locks at kickoff and the pick is graded once the game is final. Nothing is edited after."]],
-  CFB: [["Rate every team", "Our own opponent-adjusted offense and defense ratings for every FBS team, updated after every Saturday."],
-        ["Read the matchup", "Home field goes in game by game, on top of ratings that already account for who each team has played."],
-        ["Check the price", "Our spread and win chance are set beside Vegas's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "Weekend lines lock Friday night, and every pick is graded once the game is final. Nothing is edited after."]],
-  MLB: [["Rate every hitter and team", "Hitters by how often they get a hit, teams by how well they hit and pitch, updated after every game."],
-        ["Read the matchup", "The starting pitchers, the ballpark and the posted lineups go in game by game."],
-        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "The pick locks at first pitch and is graded from the box score that night. Nothing is edited after."]],
-  NHL: [["Rate every team", "Team strength from every result, plus goal differential over the season and the last ten games."],
-        ["Read the matchup", "Rest, back-to-backs and home ice go in game by game."],
-        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "The pick locks at puck drop and is graded that night, overtime and shootouts included. Nothing is edited after."]],
-  NBA: [["Rate every team", "Our own ratings for all 30 teams, updated after every final."],
-        ["Read the matchup", "Home court goes in game by game."],
-        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "The pick locks at tip-off and is graded that night. Nothing is edited after."]],
-  CBB: [["Rate every team", "KenPom-style adjusted offense, defense and tempo for every Division I team, from every box score."],
-        ["Read the matchup", "Both teams' tempo and home court go in game by game."],
-        ["Check the price", "Our win chance is set beside the sportsbook's, with the vig taken out, before the pick is posted."],
-        ["Grade it in public", "The pick locks at tip-off and is graded that night. Nothing is edited after."]],
-  Soccer: [["Rate every club", "Attack and defence ratings from goals and shots on target, with recent matches counting most."],
-           ["Read the matchup", "Each competition's home edge goes in, and the draw gets its own chance, so it can be the pick."],
-           ["Check the price", "Home, draw and away chances are set beside the bookmaker's, with the margin taken out."],
-           ["Grade it in public", "The pick locks at kickoff and is graded on the 90-minute score. Nothing is edited after."]],
-};
-if (LG !== "All" && METHOD[LG]) {
-  $("methodSub").textContent = `How ${LG === "Soccer" ? "soccer" : LG} picks are made`;
-  $("steps").innerHTML = METHOD[LG].map(([h, p], i) => `<li><span class="n mono">0${i + 1}</span><h3>${h}</h3><p>${p}</p></li>`).join("");
 }
 
 // ---------- Nav turns solid over the paper sheet ----------
@@ -1286,33 +1219,6 @@ drawHero();
 let rz, lastW = innerWidth;
 addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; drawHero(); } }, 150); });
 
-// ---------- 01 statement words light up as you read ----------
-function lightStatement() {
-  const st = $("statement");
-  (function splitWords(node) {
-    [...node.childNodes].forEach(n => {
-      if (n.nodeType === 3) {
-        const frag = document.createDocumentFragment();
-        n.textContent.split(/(\s+)/).forEach(p => {
-          if (!p) return;
-          if (/^\s+$/.test(p)) frag.append(p);
-          else { const s = document.createElement("span"); s.className = "w"; s.textContent = p; frag.append(s); }
-        });
-        n.replaceWith(frag);
-      } else if (n.nodeType === 1) { n.classList.add("w"); }
-    });
-  })(st);
-  const words = [...st.querySelectorAll(".w")];
-  function light() {
-    if (REDUCE) { words.forEach(w => w.classList.add("lit")); return; }
-    const r = st.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35)));
-    const n = Math.round(p * words.length);
-    words.forEach((w, i) => w.classList.toggle("lit", i < n));
-  }
-  addEventListener("scroll", light, { passive: true }); light();
-}
-
 // ---------- 02 slate picker with a drawn field per sport ----------
 const NS = "http://www.w3.org/2000/svg";
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -1548,7 +1454,6 @@ function slateText(games, key, isToday) {
 // A league tab's record section: all-time and season rows, its own stats.
 function leagueTop(s, today) {
   const info = LEAGUE[LG];
-  $("recHead").textContent = `${LG} · ${info.season}`;
   $("boardYear").textContent = `${LG} picks to win`;
   document.querySelector(".board th").textContent = "Span";
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
@@ -1565,24 +1470,20 @@ function leagueTop(s, today) {
   $("boardRows").innerHTML = rows.map(b => { const pct = b.w / (b.w + b.l) * 100; return `<tr><td>${b.label}</td><td>${b.w}-${b.l}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (pct - 40) / 40 * 100))}%"></i></span>${pct.toFixed(1)}%</td><td><span class="streak">${b.st}</span></td></tr>`; }).join("");
   const main = rows[0];
   if (!main) {
-    $("statement").innerHTML = `No ${LG} picks graded yet. ${esc(SITE.wait || "Picks start soon.")} Every one will be <em>posted before</em> the ${info.start}, and we'll <em>grade</em> every one of them.`;
-    lightStatement();
-    document.querySelector(".record-grid").hidden = true;
+    $("record").hidden = true;
     $("heroTally").textContent = SITE.wait || "Picks start soon";
     return;
   }
   const N = main.w + main.l, since = src.record.since ? new Date(src.record.since) : null;
-  const sinceMonth = since && !isNaN(since) ? since.toLocaleDateString("en-US", { month: "long" }) : "the start";
-  $("statement").innerHTML = `${Words(N)} ${LG} games picked since ${sinceMonth}, every one <em>posted before</em> the ${info.start}. We don't bury the misses. We <em>grade</em> every one of them.`;
-  lightStatement();
+  const sinceShort = since && !isNaN(since) ? since.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
   $("heroTally").textContent = `${N} games graded · ${(main.w / N * 100).toFixed(1)}% right`;
-  const stats = [[`${main.w}-${main.l}`, `${LG} picks to win since ${src.record.since || "we started"}`]];
-  if (LG === "MLB" && s.record) { const h = wl(s.record.value); if (h) stats.push([`${h[0]}`, `top hitters who got a hit, out of ${h[0] + h[1]} picked (${(h[0] / (h[0] + h[1]) * 100).toFixed(1)}%)`]); }
-  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, `moneyline picks ${src.ml_streak.kind === "W" ? "won" : "lost"} in a row going into today`]);
+  const stats = [[`${main.w}-${main.l}`, `Picks right${sinceShort ? " since " + sinceShort : ""}`]];
+  if (LG === "MLB" && s.record) { const h = wl(s.record.value); if (h) stats.push([`${Math.round(h[0] / (h[0] + h[1]) * 100)}%`, "Top hitters who got a hit"]); }
+  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, src.ml_streak.kind === "W" ? "Win streak" : "Losing streak"]);
   const last = s.last && s.last.games && s.last.games.length ? s.last : null;
   if (last) {
     const lw = last.games.filter(g => g.hit === true).length, ll = last.games.filter(g => g.hit === false).length;
-    stats.push([`${lw}-${ll}`, `on ${longDate(last.date, { weekday: "long", month: "short", day: "numeric" })}`]);
+    stats.push([`${lw}-${ll}`, `${longDate(last.date, { weekday: "long" })}'s picks`]);
   }
   $("stats").innerHTML = stats.map(([b, t]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("");
 }
@@ -1639,21 +1540,17 @@ function render(sums) {
   const W = board.reduce((a, b) => a + b.w, 0), L = board.reduce((a, b) => a + b.l, 0), N = W + L;
   const sinceDates = board.map(b => b.since && new Date(b.since)).filter(d => d && !isNaN(d)).sort((a, b) => a - b);
   const first = sinceDates[0];
-  const sinceMonth = first ? first.toLocaleDateString("en-US", { month: "long" }) : "the start";
   const sinceShort = first ? first.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-  $("statement").innerHTML = `${Words(N)} games picked since ${sinceMonth}, every one <em>posted before</em> ${LG === "All" ? "the first pitch, puck drop or kickoff" : "the " + LEAGUE[LG].start}. We don't bury the misses. We <em>grade</em> every one of them.`;
-  lightStatement();
-  $("recHead").textContent = [...new Set(board.map(b => ({ NFL: "Football", CFB: "Football", NHL: "Hockey", MLB: "Baseball", Soccer: "Soccer", NBA: "Basketball", CBB: "Basketball" }[b.lg])))].join(" · ");
   $("heroTally").textContent = `${N} games graded · ${N ? (W / N * 100).toFixed(1) : "0"}% right`;
 
   const stats = [];
-  stats.push([`${W}-${L}`, `team picks right across ${words(board.length)} league${board.length === 1 ? "" : "s"}${sinceShort ? " since " + sinceShort : ""}`]);
+  stats.push([`${W}-${L}`, `Picks right${sinceShort ? " since " + sinceShort : ""}`]);
   const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
-  if (hits) stats.push([`${hits[0]}`, `MLB top hitters who got a hit, out of ${hits[0] + hits[1]} picked (${(hits[0] / (hits[0] + hits[1]) * 100).toFixed(1)}%)`]);
+  if (hits) stats.push([`${Math.round(hits[0] / (hits[0] + hits[1]) * 100)}%`, "MLB top hitters who got a hit"]);
   const nfl = by.NFL && (by.NFL.moneyline_record || by.NFL.season_record);
-  if (nfl && nfl.value) stats.push([nfl.value, `NFL ${by.NFL.moneyline_record ? "moneyline picks" : "picks to win"} this season`]);
+  if (nfl && nfl.value) stats.push([nfl.value, "NFL this season"]);
   const hot = board.filter(b => b.kind === "W").sort((a, b) => b.n - a.n)[0];
-  if (hot) stats.push([`W${hot.n}`, `${hot.lg} moneyline picks won in a row going into today`]);
+  if (hot) stats.push([`W${hot.n}`, `${hot.lg} win streak`]);
   $("stats").innerHTML = stats.map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("");
   }
 
