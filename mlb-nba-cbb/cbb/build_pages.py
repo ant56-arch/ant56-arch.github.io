@@ -13,8 +13,12 @@ import sys
 from html import escape
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from build_site import DASH, card  # noqa: E402
+from build_site import DASH, NOW, card  # noqa: E402
 from team_pages import TeamSite, day_label, load_json  # noqa: E402
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bracket import season_of  # noqa: E402
+from bracket_page import build_bracket, latest as latest_bracket  # noqa: E402
 
 
 def logo(team_id):
@@ -111,7 +115,7 @@ class CBBSite(TeamSite):
     tagline = ("Who wins every Division I men's basketball game and by how much, from KenPom-style team ratings "
                "graded against every final score.")
     top_n = 5
-    tabs = [("index.html", "Home"), ("ratings.html", "Ratings"), ("history.html", "History"),
+    tabs = [("index.html", "Home"), ("ratings.html", "Ratings"), ("bracket.html", "Bracket"), ("history.html", "History"),
             ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     sources = "Scores, box scores and moneyline prices via ESPN. Not affiliated with KenPom."
     has_games_feed = True
@@ -179,7 +183,8 @@ class CBBSite(TeamSite):
         return ratings_preview(self.ratings)
 
     def extra_pages(self):
-        return {"ratings.html": build_ratings(self.ratings, self.page_shell)}
+        return {"ratings.html": build_ratings(self.ratings, self.page_shell),
+                "bracket.html": build_bracket(latest_bracket(), self.page_shell, season_of(NOW.date().isoformat()))}
 
     def build(self):
         self.ratings = load_json(os.path.join(self.here, "ratings.json"), {})
