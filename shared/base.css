@@ -896,6 +896,7 @@ a.crawl-item:hover { background: var(--surface-2); }
   cursor: pointer;
 }
 .ticker-teams-btn:hover { background: var(--surface); }
+a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration: none; }
 .team-picker-open, .team-picker-open body { overflow: hidden; }
 .team-picker {
   position: fixed;

@@ -154,6 +154,9 @@ const EDGE_SETTINGS = [
   { group: "Home page" },
   { k: "homeLayout", label: "Games view", on: "auto", choices: [["auto", "Slate"], ["cards", "Cards"], ["list", "List"]] },
   { k: "homeDay", label: "Opens on", on: "auto", choices: [["auto", "First day with games"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]] },
+  { group: "Owner" },
+  // Private Claude page: it only opens for the owner's signed-in account.
+  { link: "https://claude.ai/artifact/4kR546ksBaCno5xDMV7tPN", label: "Model Room" },
 ];
 const EDGE_TZ = { ET: "America/New_York", CT: "America/Chicago", MT: "America/Denver", PT: "America/Los_Angeles" };
 const EDGE_SPEED = { slow: 35, normal: 60, fast: 100 };  // pixels a second
@@ -453,6 +456,14 @@ function initSiteSettings() {
       window.addEventListener("edge-favs-change", count);
       b.addEventListener("click", () => { setOpen(false); edgeOpenTeamPicker(); });
       panel.append(b);
+      return;
+    }
+    if (s.link) {
+      const a = edgeNode("a", "ticker-teams-btn", s.label + " \u2197");
+      a.href = s.link;
+      a.target = "_blank";
+      a.rel = "noopener";
+      panel.append(a);
       return;
     }
     if (s.choices) {
