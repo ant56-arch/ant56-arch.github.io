@@ -5481,7 +5481,7 @@
     "starters": -0.144
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-13T20:32:23Z",
    "ml": {
     "team": "TB",
@@ -5493,6 +5493,62 @@
     "value": false,
     "home_ml": -136,
     "away_ml": 113,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.735
+   },
+   "home_runs": 3,
+   "away_runs": 1,
+   "winner": "TB"
+  },
+  {
+   "date": "2026-10-14",
+   "game_id": "849811",
+   "start": "2026-10-14T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "LAD",
+   "away": "MIL",
+   "home_name": "Los Angeles Dodgers",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 119,
+   "away_id": 158,
+   "home_record": "100-62",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 605483,
+    "name": "Blake Snell",
+    "era": 1.94,
+    "ip": 46.3
+   },
+   "away_sp": {
+    "id": 688107,
+    "name": "Robert Gasser",
+    "era": 3.92,
+    "ip": 108.0
+   },
+   "pick": "LAD",
+   "prob": 57.0,
+   "home_prob": 57.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.075,
+    "starters": 0.215
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-14T04:39:07Z",
+   "ml": {
+    "team": "LAD",
+    "side": "home",
+    "price": -180,
+    "prob": 57.0,
+    "book_prob": 61.5,
+    "edge": -4.5,
+    "value": false,
+    "home_ml": -180,
+    "away_ml": 148,
     "book": "DraftKings",
     "won": null,
     "units": null
