@@ -525,7 +525,7 @@ def game_pick(g):
     ml = g.get("ml")
     if ml:
         return {"team": ml["team"], "other": ml["other"], "prob": ml["our"], "value": ml["value"],
-                "hit": {"W": True, "L": False}.get(ml["result"])}
+                "hit": {"W": True, "L": False, "P": False}.get(ml["result"])}  # a tie misses
     other = team_short_label(g, g["favored_team"])
     return {"team": g["favored_team"], "other": other, "prob": g["win_pct"], "value": False, "hit": g["correct"]}
 
@@ -535,8 +535,11 @@ def team_short_label(g, team):
 
 def pick_hit(r):
     """Whether our pick in a graded tracking-log game won: the moneyline pick
-    when the book had one (None for a tie), else the team our model favored."""
+    when the book had one, else the team our model favored. A tie is a miss
+    (the moneyline bet itself is a push, which the units reflect)."""
     if pd.notna(r.get("ml_pick_side")) and pd.notna(r.get("ml_pick_price")):
+        if r.get("ml_push") == 1:
+            return False
         return None if pd.isna(r.get("ml_won")) else r["ml_won"] == 1
     return None if pd.isna(r.get("model_correct_pick")) else r["model_correct_pick"] == 1
 
