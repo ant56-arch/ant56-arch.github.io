@@ -1308,19 +1308,23 @@ function drawField(g) {
 function drawScore(g) {
   const svg = $("fieldArt"), old = svg.querySelector("#fieldScore");
   if (old) old.remove();
-  const s = g && status(g), m = s && s.kind !== "pre" && s.text.match(/(\d+), \S+ (\d+)/);
-  svg.parentNode.classList.toggle("scored", !!m);
-  if (!m) return;
+  const s = g && status(g);
+  svg.parentNode.classList.toggle("scored", !!s);
+  if (!s) return;
+  // Before the game: the start time where the score will go.
+  const m = s.kind !== "pre" && s.text.match(/(\d+), \S+ (\d+)/);
   const bg = s.kind === "live" ? css("--clay") : css("--ink"), fg = s.kind === "live" ? "#fff" : css("--paper");
-  const note = s.kind === "live" ? (s.text.split(" · ")[2] || "Live") : (s.stamp ? `Final · ${s.stamp}` : "Final");
+  const note = !m ? (s.short === "Started" ? "Started · score soon" : s.text.split(" · ")[0]) : s.kind === "live" ? (s.text.split(" · ")[2] || "Live") : (s.stamp ? `Final · ${s.stamp}` : "Final");
+  const mid = m ? `<text x="372" y="78" font-size="38" text-anchor="middle">${m[1]}</text>
+      <text x="400" y="74" font-size="22" text-anchor="middle" opacity=".6">–</text>
+      <text x="428" y="78" font-size="38" text-anchor="middle">${m[2]}</text>`
+    : `<text x="400" y="76" font-size="22" text-anchor="middle">${esc(g.t.replace(/ (AM|PM)/, "").trim())}<tspan font-size="12" dx="3">${/PM/.test(g.t) ? "PM" : "AM"} ET</tspan></text>`;
   svg.insertAdjacentHTML("beforeend", `<g id="fieldScore">
     <rect x="270" y="26" width="260" height="80" rx="10" fill="${bg}"/>
     <g font-family="Archivo, sans-serif" font-weight="600" fill="${fg}">
       <text x="300" y="70" font-size="15" letter-spacing="1.5">${esc(String(g.away).slice(0, 5))}</text>
       <text x="500" y="70" font-size="15" letter-spacing="1.5" text-anchor="end">${esc(String(g.home).slice(0, 5))}</text>
-      <text x="372" y="78" font-size="38" text-anchor="middle">${m[1]}</text>
-      <text x="400" y="74" font-size="22" text-anchor="middle" opacity=".6">–</text>
-      <text x="428" y="78" font-size="38" text-anchor="middle">${m[2]}</text>
+      ${mid}
     </g>
     <text x="400" y="97" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" letter-spacing="2" fill="${fg}" opacity=".85">${esc(note.toUpperCase())}</text>
   </g>`);
