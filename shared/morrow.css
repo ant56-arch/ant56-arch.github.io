@@ -247,3 +247,8 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 :root[data-theme="light"] .crawl-ticker .crawl-tag { background: var(--forest); color: var(--forest-ink); font-family: var(--font-mono); font-stretch: 100%; font-size: 11px; font-weight: 400; letter-spacing: 0.16em; }
 .crawl-plays .crawl-tag { font-family: var(--font-mono); font-stretch: 100%; font-size: 11px; font-weight: 400; letter-spacing: 0.16em; }
 .crawl-sport, .crawl-status { font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; font-size: 10px; }
+/* Team names and scores in the same type as the home page's ticker. */
+.crawl-item { font-size: 13px; }
+.crawl-team b { font-stretch: 100%; font-size: inherit; font-weight: 600; }
+/* Arrow buttons use the site font, not the browser's default. */
+.sp-arrows button { font-family: var(--font); }

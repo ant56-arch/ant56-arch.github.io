@@ -122,7 +122,7 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
   gap: 10px;
   flex-shrink: 0;
   padding: 10px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 22px;
   font-weight: 600;
   font-style: normal;
@@ -150,7 +150,7 @@ table.data th[tabindex]:focus-visible { outline-offset: -2px; }
   align-items: center;
   flex-shrink: 0;
   padding: 0 11px;  /* ten tabs fit the top bar at 1100px+ */
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.6px;
@@ -201,7 +201,7 @@ header.masthead[data-sport]::after {
   position: absolute;
   right: -0.04em;
   bottom: -0.2em;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 170px;
   font-weight: 600;
   font-style: normal;
@@ -221,7 +221,7 @@ header.masthead[data-sport]::after {
 
 .wordmark {
   margin: 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 56px;
   font-weight: 600;
   font-style: normal;
@@ -290,7 +290,7 @@ nav.tabs {
 nav.tabs a {
   flex-shrink: 0;
   padding: 14px 0 11px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.6px;
@@ -319,7 +319,7 @@ nav.tabs a.active { color: var(--text); border-bottom-color: var(--ours); }
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 32px;
   font-weight: 600;
   font-style: normal;
@@ -346,7 +346,7 @@ nav.tabs a.active { color: var(--text); border-bottom-color: var(--ours); }
 
 .section-label {
   margin: 32px 0 10px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 20px;
   font-weight: 700;
   font-style: normal;
@@ -418,7 +418,7 @@ table.data tbody tr:last-child td { border-bottom: none; }
 
 .day-header td {
   padding: 22px 0 6px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 15px;
   font-weight: 700;
   font-style: normal;
@@ -466,7 +466,7 @@ table.record-table td.row-label { font-weight: 700; }
   background: var(--ours);
 }
 .stat-value {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 52px;
   font-weight: 600;
   font-style: normal;
@@ -522,7 +522,7 @@ table.record-table td.row-label { font-weight: 700; }
   border-radius: 999px;
 }
 .subtab {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -555,7 +555,7 @@ table.record-table td.row-label { font-weight: 700; }
 .btn-primary {
   display: inline-block;
   padding: 12px 24px;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 18px;
   font-weight: 600;
   font-style: normal;
@@ -615,7 +615,7 @@ footer.site-footer {
   color: var(--text-muted);
 }
 .footer-brand {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 24px;
   font-weight: 600;
   font-style: normal;
@@ -641,7 +641,7 @@ footer.site-footer {
 .prose { max-width: 68ch; font-size: 16px; line-height: 1.65; }
 .prose h2 {
   margin: 32px 0 8px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 24px;
   font-weight: 600;
   font-style: normal;
@@ -656,19 +656,19 @@ footer.site-footer {
 
 .error-body { padding: 48px 0; }
 .error-code {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 120px;
   font-weight: 600;
   font-style: normal;
   line-height: 1;
   color: var(--ours);
 }
-.error-body h2 { font-family: var(--font-head); font-stretch: 112%; font-size: 32px; font-style: normal; text-transform: uppercase; margin: 16px 0 8px 0; }
+.error-body h2 { font-family: var(--font-head); font-stretch: 100%; font-size: 32px; font-style: normal; text-transform: uppercase; margin: 16px 0 8px 0; }
 .error-body p { max-width: 44ch; margin: 0 0 24px 0; color: var(--text-muted); }
 
 .page-title, .error-title {
   margin: 0 0 16px 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 48px;
   font-weight: 600;
   font-style: normal;
@@ -734,7 +734,7 @@ footer.site-footer {
   padding: 0 14px;
   background: var(--ours);
   color: #121314;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
@@ -764,7 +764,7 @@ footer.site-footer {
 a.crawl-item:hover { background: var(--surface-2); }
 .crawl-sport { color: var(--text-faint); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
 .crawl-team { display: inline-flex; align-items: center; gap: 5px; }
-.crawl-team b { color: var(--text); font-family: var(--font-head); font-stretch: 112%; font-size: 17px; }
+.crawl-team b { color: var(--text); font-family: var(--font-head); font-stretch: 100%; font-size: 17px; }
 .crawl-team.is-winner { color: var(--text); font-weight: 700; }
 .crawl-team.just-scored, .crawl-team.just-scored b { color: var(--ours-hot); }
 .crawl-logo { width: 18px; height: 18px; object-fit: contain; }
@@ -777,7 +777,7 @@ a.crawl-item:hover { background: var(--surface-2); }
 .crawl-plays .crawl-item { color: #fde3e0; border-right-color: rgba(255, 255, 255, 0.18); }
 .crawl-plays a.crawl-item:hover { background: rgba(0, 0, 0, 0.2); }
 .crawl-plays .crawl-sport, .crawl-plays .crawl-status { color: #f5b9b3; }
-.crawl-plays .play-what { color: #fff; font-family: var(--font-head); font-stretch: 112%; font-size: 16px; font-style: normal; text-transform: uppercase; letter-spacing: 0.4px; }
+.crawl-plays .play-what { color: #fff; font-family: var(--font-head); font-stretch: 100%; font-size: 16px; font-style: normal; text-transform: uppercase; letter-spacing: 0.4px; }
 .crawl-plays .play-score { color: #fff; font-weight: 600; }
 .crawl-plays .play-text { color: #fde3e0; }
 
@@ -1077,7 +1077,7 @@ a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration
 .score-toast-head { display: flex; gap: 8px; align-items: baseline; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .score-toast-sport { color: var(--text-faint); }
 .score-toast-what { color: var(--ours-hot); }
-.score-toast-main { display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-stretch: 112%; font-style: normal; font-weight: 600; font-size: 24px; line-height: 1.1; }
+.score-toast-main { display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-stretch: 100%; font-style: normal; font-weight: 600; font-size: 24px; line-height: 1.1; }
 .score-toast-logo { width: 28px; height: 28px; object-fit: contain; }
 .score-toast-line { display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 14px; color: var(--text-muted); }
 .score-toast-line b { color: var(--text); }
@@ -1137,7 +1137,7 @@ a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration
 .sched-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; flex: 1; min-width: 0; font-weight: 700; }
 .sched-name small { flex-basis: 100%; font-size: 12px; font-weight: 400; color: var(--text-muted); }
 .sched-rank { font-size: 12px; color: var(--text-faint); }
-.sched-score { font-family: var(--font-head); font-stretch: 112%; font-size: 22px; font-weight: 700; color: var(--text-muted); }
+.sched-score { font-family: var(--font-head); font-stretch: 100%; font-size: 22px; font-weight: 700; color: var(--text-muted); }
 .sched-score.win { color: var(--text); }
 .sched-sep { font-size: 11px; color: var(--text-faint); padding-left: 38px; line-height: 1; }
 .sched-pick { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding-top: 8px;
@@ -1150,10 +1150,10 @@ a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration
 .tv-grid { display: flex; flex-direction: column; gap: 8px; }
 .tv-row { display: grid; grid-template-columns: 92px repeat(var(--tv-cols, 1), minmax(0, 1fr)); gap: 8px; align-items: start; }
 .tv-head { position: sticky; top: 48px; z-index: 5; padding: 6px 0; background: var(--surface); border-bottom: 1px solid var(--rule); }
-.tv-net, .tv-head .tv-time { font-family: var(--font-head); font-stretch: 112%; font-size: 15px; font-weight: 700; letter-spacing: 0.6px;
+.tv-net, .tv-head .tv-time { font-family: var(--font-head); font-stretch: 100%; font-size: 15px; font-weight: 700; letter-spacing: 0.6px;
   text-transform: uppercase; color: var(--vegas); }
 .tv-head .tv-time { color: var(--text-faint); }
-.tv-time { padding-top: 10px; font-family: var(--font-head); font-stretch: 112%; font-size: 17px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tv-time { padding-top: 10px; font-family: var(--font-head); font-stretch: 100%; font-size: 17px; font-weight: 700; color: var(--text); white-space: nowrap; }
 .tv-cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .tv-empty { min-height: 1px; }
 .tv-grid:not(.is-list) .sched-tv { display: none; }
@@ -1189,7 +1189,7 @@ a.ticker-teams-btn { box-sizing: border-box; text-align: center; text-decoration
 .trend-line { fill: none; stroke: var(--ours); stroke-width: 3; }
 .trend-dot { fill: var(--ours); }
 .trend-grid { stroke: var(--rule); stroke-width: 1; }
-.trend-value { fill: var(--text); font-family: var(--font-head); font-stretch: 112%; font-size: 16px; font-weight: 700; }
+.trend-value { fill: var(--text); font-family: var(--font-head); font-stretch: 100%; font-size: 16px; font-weight: 700; }
 .trend-label { fill: var(--text-muted); font-size: 12px; }
 .change-flat { color: var(--text-faint); }
 .change-move { color: var(--text); font-weight: 600; white-space: nowrap; }
@@ -1295,7 +1295,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
     background: none;
     border: 0;
     color: var(--text);
-    font-family: var(--font-head); font-stretch: 112%;
+    font-family: var(--font-head); font-stretch: 100%;
     font-size: 18px;
     font-weight: 700;
     letter-spacing: 0.6px;
@@ -1361,7 +1361,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 }
 .rb-num {
   margin-top: 8px;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 104px;
   font-weight: 600;
   font-style: normal;
@@ -1398,7 +1398,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .bet-when { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
 .bet-pick { font-size: 15px; color: var(--text-muted); }
 .bet-pick b {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 26px;
   font-style: normal;
   font-weight: 600;
@@ -1407,7 +1407,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 }
 .bet-pct {
   margin-top: 6px;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 54px;
   font-weight: 600;
   font-style: normal;
@@ -1446,7 +1446,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .pl-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
 .pl-pct {
   width: 50px;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 22px;
   font-weight: 600;
   font-style: normal;
@@ -1456,7 +1456,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .pl-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
 .pl-note { padding: 0 8px 16px 8px; font-size: 14px; color: var(--text-muted); }
 .pl-rank {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 22px;
   font-weight: 600;
   font-style: normal;
@@ -1465,7 +1465,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .pick-list.ranked .pl-line { grid-template-columns: 32px minmax(0, 1fr) minmax(150px, 240px) 96px; }
 
 /* TD Props tab (nfl-cfb build_td_page): the book price or $ result on the right. */
-.td-price { font-family: var(--font-head); font-stretch: 112%; font-size: 20px; font-weight: 600; font-style: normal; }
+.td-price { font-family: var(--font-head); font-stretch: 100%; font-size: 20px; font-weight: 600; font-style: normal; }
 .td-money { font-weight: 700; white-space: nowrap; }
 .td-soon { font-size: 13px; white-space: nowrap; }
 .td-value { color: var(--hit); font-weight: 700; }
@@ -1477,7 +1477,7 @@ table.retrain-log td.why-cell { white-space: normal; min-width: 200px; color: va
 .tdg-grid { display: grid; gap: 16px; }
 .tdg { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-2); overflow: hidden; }
 .tdg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
-.tdg-teams { display: flex; align-items: center; gap: 6px; font-family: var(--font-head); font-stretch: 112%; font-size: 20px; font-weight: 600; text-transform: uppercase; }
+.tdg-teams { display: flex; align-items: center; gap: 6px; font-family: var(--font-head); font-stretch: 100%; font-size: 20px; font-weight: 600; text-transform: uppercase; }
 .tdg-when { font-size: 13px; color: var(--text-muted); }
 .tdg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
 .tdg-notes { list-style: none; margin: 0; padding: 10px 14px; display: grid; gap: 4px; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--rule); }
@@ -1494,7 +1494,7 @@ details.tdp > summary { cursor: pointer; list-style: none; display: grid; align-
 details.tdp > summary::-webkit-details-marker { display: none; }
 details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255, 255, 255, 0.03); }
 :root[data-theme="light"] details.tdp > summary:hover, :root[data-theme="light"] details.tdp[open] > summary { background: rgba(23, 24, 26, 0.04); }
-.tdp-rank { font-family: var(--font-head); font-stretch: 112%; font-weight: 600; font-size: 18px; color: var(--text-faint); text-align: center; }
+.tdp-rank { font-family: var(--font-head); font-stretch: 100%; font-weight: 600; font-size: 18px; color: var(--text-faint); text-align: center; }
 .tdp-face { position: relative; width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: var(--surface-2); border: 1px solid var(--rule); }
 .tdp-face::before { content: attr(data-i); position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; color: var(--text-faint); }
 .tdp-face img { position: relative; width: 100%; height: 100%; object-fit: cover; object-position: top; }
@@ -1506,11 +1506,11 @@ details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255,
 .tdp-tag { padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; background: rgba(229, 121, 59, 0.14); color: var(--ours); white-space: nowrap; }
 .tdp-tag.is-due { background: rgba(141, 180, 216, 0.16); color: var(--vegas); }
 .tdp-book { display: grid; justify-items: end; gap: 1px; text-align: right; }
-.tdp-book-price { font-family: var(--font-head); font-stretch: 112%; font-size: 20px; font-weight: 600; font-style: normal; }
+.tdp-book-price { font-family: var(--font-head); font-stretch: 100%; font-size: 20px; font-weight: 600; font-style: normal; }
 .tdp-book-sub { font-size: 12px; color: var(--text-faint); line-height: 1.2; }
 .tdp-value { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; color: #fff; background: var(--hit); }
 .tdp-pct { display: grid; justify-items: center; padding: 6px 0 5px; border-radius: 10px; border: 1px solid var(--rule-strong); }
-.tdp-pct b { font-family: var(--font-head); font-stretch: 112%; font-size: 26px; font-weight: 600; line-height: 1; }
+.tdp-pct b { font-family: var(--font-head); font-stretch: 100%; font-size: 26px; font-weight: 600; line-height: 1; }
 .tdp-pct small { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); }
 .tdp-pct.is-hot { background: var(--hit); border-color: var(--hit); color: #fff; }
 .tdp-pct.is-hot small { color: rgba(255, 255, 255, 0.85); }
@@ -1520,7 +1520,7 @@ details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255,
 .tdp-body { padding: 4px 14px 16px 52px; display: grid; gap: 12px; font-size: 14px; }
 .tdp-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .tdp-tile { display: grid; padding: 9px 10px; border-radius: var(--radius-sm); background: var(--surface-2); }
-.tdp-tile b { font-family: var(--font-head); font-stretch: 112%; font-size: 22px; font-weight: 600; line-height: 1.1; }
+.tdp-tile b { font-family: var(--font-head); font-stretch: 100%; font-size: 22px; font-weight: 600; line-height: 1.1; }
 .tdp-tile span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
 .tdp-tile small { font-size: 12px; color: var(--text-faint); }
 .tdp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -1538,7 +1538,7 @@ details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255,
 /* TD Props results weeks: the same game cards, graded. */
 .tdr-week { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 4px 0 16px; }
 .tdr-week > div { display: grid; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--rule); }
-.tdr-week b { font-family: var(--font-head); font-stretch: 112%; font-size: 26px; font-weight: 600; line-height: 1.1; }
+.tdr-week b { font-family: var(--font-head); font-stretch: 100%; font-size: 26px; font-weight: 600; line-height: 1.1; }
 .tdr-week span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
 .tdr-score { font-size: 22px; margin-left: 2px; color: var(--text-muted); }
 .tdr-res-wrap { margin-top: 3px; }
@@ -1649,7 +1649,7 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
 }
 .gh-team { display: grid; justify-items: center; gap: 4px; min-width: 0; container-type: inline-size; }
 .gh-team b {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: min(42px, 140cqi / var(--n, 8));
   font-style: normal;
   font-weight: 600;
@@ -1660,11 +1660,11 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
 .gh-team.is-pick b { color: var(--ours); }
 .gh-team small { font-size: 14px; color: var(--text-muted); }
 .gh-logo { width: 56px; height: 56px; object-fit: contain; }
-.gh-score { font-family: var(--font-head); font-stretch: 112%; font-size: 40px; font-weight: 600; line-height: 1; }
+.gh-score { font-family: var(--font-head); font-stretch: 100%; font-size: 40px; font-weight: 600; line-height: 1; }
 .gh-at { font-size: 16px; color: var(--text-faint); }
 .gh-verdict { display: grid; justify-items: center; gap: 2px; padding-top: 18px; border-top: 1px solid var(--rule); }
 .gh-big {
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 72px;
   font-style: normal;
   font-weight: 600;
@@ -1684,7 +1684,7 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
 .why-bar { position: relative; height: 6px; overflow: hidden; border-radius: 3px; background: var(--surface-2); }
 .why-bar span { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 3px; background: var(--ours); }
 .why-list li.is-against .why-bar span { background: var(--vegas); }
-.why-pct { font-family: var(--font-head); font-stretch: 112%; font-size: 20px; font-weight: 600; font-style: normal; text-align: right; }
+.why-pct { font-family: var(--font-head); font-stretch: 100%; font-size: 20px; font-weight: 600; font-style: normal; text-align: right; }
 .gh-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; margin: 0; }
 .gh-facts div { display: grid; gap: 2px; align-content: start; min-width: 0; }
 .gh-facts dt { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
@@ -1694,7 +1694,7 @@ a.bet-card:hover { border-color: var(--rule-strong); border-left-color: var(--ou
 .hw-list li { display: grid; grid-template-columns: minmax(0, 1fr) 60px 140px; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--rule); }
 .hw-name { display: grid; min-width: 0; }
 .hw-name small { font-size: 13px; color: var(--text-muted); }
-.hw-pct { font-family: var(--font-head); font-stretch: 112%; font-size: 22px; font-weight: 600; font-style: normal; color: var(--ours); text-align: right; }
+.hw-pct { font-family: var(--font-head); font-stretch: 100%; font-size: 22px; font-weight: 600; font-style: normal; color: var(--ours); text-align: right; }
 .hw-res { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 .gh-back { margin: 8px 0 0 0; }
 .gh-back a { font-weight: 700; color: var(--ours); text-decoration: none; }
@@ -1748,7 +1748,7 @@ header.masthead:not(.home-hero) .updated-chip { margin-top: 0; }
 .slate-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 32px; }
 .slate-head h2 {
   margin: 0;
-  font-family: var(--font-head); font-stretch: 112%;
+  font-family: var(--font-head); font-stretch: 100%;
   font-size: 34px;
   font-weight: 600;
   font-style: normal;
