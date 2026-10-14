@@ -104,7 +104,7 @@ h2 em { font-size: 1.06em; }
 
 @media (max-width: 640px) {
   .sec-head > span:last-child { display: none; }
-  .frame-pill { display: none; }
+  .frame-tag { display: none; }
   .board .bar { display: none; }
 }
 /* 01 Statement */
@@ -176,10 +176,10 @@ h2 em { font-size: 1.06em; }
 .field-frame { position: relative; background: var(--paper); border-radius: 4px; box-shadow: 0 30px 60px -30px rgba(20, 30, 22, .35); overflow: hidden; aspect-ratio: 4 / 3; width: 100%; max-height: calc(100vh - var(--tick-h, 0px) - 120px); min-height: 320px; position: sticky; top: calc(var(--tick-h, 0px) + 84px); }
 .field-frame svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .frame-tag { position: absolute; left: 16px; top: 14px; color: var(--ink-soft); z-index: 1; background: var(--paper); padding: 4px 8px; }
-.frame-pill { position: absolute; right: 16px; bottom: 14px; z-index: 1; background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 99px; }
+.frame-pill { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); z-index: 1; background: var(--ink); color: var(--paper); padding: 11px 20px; border-radius: 99px; font-size: 13px; white-space: nowrap; max-width: calc(100% - 100px); overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .frame-pill { font-size: 10.5px; padding: 8px 14px; top: 12px; max-width: calc(100% - 70px); } }
 .compass { position: absolute; right: 16px; top: 14px; z-index: 1; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--rule); display: grid; place-items: center; background: var(--paper); font-size: 10px; }
 #fieldArt { transition: opacity .35s; }
-@media (max-width: 560px) { .field-frame.scored .frame-tag { display: none; } }
 #fieldArt.swap { opacity: 0; }
 @media (max-width: 900px) { .slate { grid-template-columns: 1fr; } .field-frame { order: -1; position: relative; top: 0; } }
 
@@ -850,7 +850,6 @@ function status(g) {
 // (Live · NYR 2, WSH 1 · 2nd 8:14), "line" (text, or the matchup and start
 // time before it starts) or "stamp" (Hit).
 function updateStatus() {
-  if (list[cur] && $("fieldArt").childElementCount) drawScore(list[cur]);
   document.querySelectorAll(".st[data-k]").forEach(el => {
     const g = BYKEY[el.dataset.k]; if (!g) return;
     const s = status(g);
@@ -1302,32 +1301,6 @@ function drawField(g) {
       ${g.book ? `<line x1="${120 + 560 * b}" y1="534" x2="${120 + 560 * b}" y2="551" stroke="${css("--clay")}" stroke-width="2"/>
       <text x="${Math.min(640, Math.max(160, 120 + 560 * b))}" y="568" text-anchor="middle" fill="${css("--clay")}">VEGAS ${g.book.toFixed(1)}%</text>` : ""}
     </g>`);
-  drawScore(g);
-}
-// A scoreboard over the field once the game is live or final.
-function drawScore(g) {
-  const svg = $("fieldArt"), old = svg.querySelector("#fieldScore");
-  if (old) old.remove();
-  const s = g && status(g);
-  svg.parentNode.classList.toggle("scored", !!s);
-  if (!s) return;
-  // Before the game: the start time where the score will go.
-  const m = s.kind !== "pre" && s.text.match(/(\d+), \S+ (\d+)/);
-  const bg = s.kind === "live" ? css("--clay") : css("--ink"), fg = s.kind === "live" ? "#fff" : css("--paper");
-  const note = !m ? (s.short === "Started" ? "Started · score soon" : s.text.split(" · ")[0]) : s.kind === "live" ? (s.text.split(" · ")[2] || "Live") : (s.stamp ? `Final · ${s.stamp}` : "Final");
-  const mid = m ? `<text x="372" y="78" font-size="38" text-anchor="middle">${m[1]}</text>
-      <text x="400" y="74" font-size="22" text-anchor="middle" opacity=".6">–</text>
-      <text x="428" y="78" font-size="38" text-anchor="middle">${m[2]}</text>`
-    : `<text x="400" y="76" font-size="22" text-anchor="middle">${esc(g.t.replace(/ (AM|PM)/, "").trim())}<tspan font-size="12" dx="3">${/PM/.test(g.t) ? "PM" : "AM"} ET</tspan></text>`;
-  svg.insertAdjacentHTML("beforeend", `<g id="fieldScore">
-    <rect x="270" y="26" width="260" height="80" rx="10" fill="${bg}"/>
-    <g font-family="Archivo, sans-serif" font-weight="600" fill="${fg}">
-      <text x="300" y="70" font-size="15" letter-spacing="1.5">${esc(String(g.away).slice(0, 5))}</text>
-      <text x="500" y="70" font-size="15" letter-spacing="1.5" text-anchor="end">${esc(String(g.home).slice(0, 5))}</text>
-      ${mid}
-    </g>
-    <text x="400" y="97" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" letter-spacing="2" fill="${fg}" opacity=".85">${esc(note.toUpperCase())}</text>
-  </g>`);
 }
 
 const NUMBERED_MAX = 12;
