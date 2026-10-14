@@ -140,7 +140,9 @@ def grade_completed_games(log):
         return log
     log.loc[graded, "actual_margin"] = log.loc[graded, "home_score"] - log.loc[graded, "away_score"]
     log.loc[graded, "actual_total"] = log.loc[graded, "home_score"] + log.loc[graded, "away_score"]
-    # A tie counts as half a win for the Brier score and decides no pick.
+    # A tie counts as half a win for the Brier score, and as a miss for our
+    # pick to win (we picked a winner; nobody won). Moneyline and spread
+    # grading treat it as a push, as the books do.
     home_won = (log["actual_margin"] > 0).astype(float).where(log["actual_margin"] != 0, 0.5)
     tie = log["actual_margin"] == 0
 
@@ -151,7 +153,7 @@ def grade_completed_games(log):
     ]:
         # Straight-up: did the favored team win the game outright?
         picked_home_won = (log[spread_col] > 0) == (log["actual_margin"] > 0)
-        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float).where(~tie[graded])
+        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float).where(~tie[graded], 0.0)
         log.loc[graded, f"{label}_spread_error"] = (log[spread_col] - log["actual_margin"]).abs()[graded]
         log.loc[graded, f"{label}_total_error"] = (log[total_col] - log["actual_total"]).abs()[graded]
         log.loc[graded, f"{label}_brier"] = ((log[wp_col] - home_won) ** 2)[graded]
@@ -210,8 +212,7 @@ def summarize(log):
         window_summary = {}
         for label in ["model", "sharp", "vegas"]:
             wins = int(window_df[f"{label}_correct_pick"].sum())
-            ties = int((window_df["actual_margin"] == 0).sum())
-            losses = int(len(window_df)) - wins - ties
+            losses = int(len(window_df)) - wins
 
             # Against the spread: pushes are decided-neither-way, so they
             # come out of the win/loss denominator (the standard way an ATS
@@ -227,7 +228,7 @@ def summarize(log):
             window_summary[label] = {
                 "wins": wins,
                 "losses": losses,
-                "record": f"{wins}-{losses}" + (f"-{ties}" if ties else ""),
+                "record": f"{wins}-{losses}",
                 "pick_accuracy": round(float(window_df[f"{label}_correct_pick"].mean()), 3),
                 "spread_mae": round(float(window_df[f"{label}_spread_error"].mean()), 2),
                 "total_mae": round(float(window_df[f"{label}_total_error"].mean()), 2),
