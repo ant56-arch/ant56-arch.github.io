@@ -5632,29 +5632,29 @@
     "ip": 78.7
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 675660,
+    "name": "Shane Drohan",
+    "era": 5.07,
+    "ip": 94.0
    },
    "pick": "LAD",
-   "prob": 56.1,
-   "home_prob": 56.1,
+   "prob": 56.3,
+   "home_prob": 56.3,
    "factors": {
     "home_field": 0.141,
     "elo": -0.099,
-    "starters": 0.202
+    "starters": 0.212
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-10-15T16:54:05Z",
+   "set_at": "2026-10-15T18:55:14Z",
    "ml": {
     "team": "LAD",
     "side": "home",
     "price": -157,
-    "prob": 56.1,
+    "prob": 56.3,
     "book_prob": 58.4,
-    "edge": -2.3,
+    "edge": -2.1,
     "value": false,
     "home_ml": -157,
     "away_ml": 130,
