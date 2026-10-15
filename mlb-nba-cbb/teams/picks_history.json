@@ -5537,7 +5537,7 @@
     "starters": 0.215
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-14T23:05:47Z",
    "ml": {
     "team": "LAD",
@@ -5549,6 +5549,115 @@
     "value": false,
     "home_ml": -174,
     "away_ml": 155,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 2,
+   "away_runs": 6,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-15",
+   "game_id": "849818",
+   "start": "2026-10-15T13:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "TB",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 114,
+   "away_id": 139,
+   "home_record": "85-77",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 668909,
+    "name": "Gavin Williams",
+    "era": 3.65,
+    "ip": 195.0
+   },
+   "away_sp": {
+    "id": 643377,
+    "name": "Griffin Jax",
+    "era": 3.14,
+    "ip": 103.3
+   },
+   "pick": "CLE",
+   "prob": 50.5,
+   "home_prob": 50.5,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.121,
+    "starters": 0.001
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-15T08:19:06Z",
+   "ml": {
+    "team": "CLE",
+    "side": "home",
+    "price": -134,
+    "prob": 50.5,
+    "book_prob": 54.7,
+    "edge": -4.2,
+    "value": false,
+    "home_ml": -134,
+    "away_ml": 111,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-15",
+   "game_id": "849810",
+   "start": "2026-10-15T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "LAD",
+   "away": "MIL",
+   "home_name": "Los Angeles Dodgers",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 119,
+   "away_id": 158,
+   "home_record": "100-62",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 607192,
+    "name": "Tyler Glasnow",
+    "era": 3.43,
+    "ip": 78.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "LAD",
+   "prob": 56.1,
+   "home_prob": 56.1,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.099,
+    "starters": 0.202
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-15T08:19:06Z",
+   "ml": {
+    "team": "LAD",
+    "side": "home",
+    "price": -162,
+    "prob": 56.1,
+    "book_prob": 59.1,
+    "edge": -3.0,
+    "value": false,
+    "home_ml": -162,
+    "away_ml": 134,
     "book": "DraftKings",
     "won": null,
     "units": null
