@@ -17846,9 +17846,9 @@
       "reason": "3.7 at-bats per game \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 2,
       "model": "2026-10-13T01:56:17+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -17894,9 +17894,9 @@
       "reason": "3.8 at-bats per game \u00b7 .306 season average",
       "hit_streak": 0,
       "model": "2026-10-13T01:56:17+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -17942,9 +17942,9 @@
       "reason": "Batting 8th \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 1,
       "model": "2026-10-13T01:56:17+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -17990,9 +17990,9 @@
       "reason": "Batting 2nd \u00b7 Platoon edge (RHB vs. LHP)",
       "hit_streak": 0,
       "model": "2026-10-13T01:56:17+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -18416,6 +18416,10 @@
     "2026-10-14": {
       "hitters": 21,
       "with_hit": 12
+    },
+    "2026-10-15": {
+      "hitters": 37,
+      "with_hit": 18
     }
   }
 }

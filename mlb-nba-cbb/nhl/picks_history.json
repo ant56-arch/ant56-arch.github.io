@@ -4530,9 +4530,9 @@
     "home": 1,
     "away": 2
    },
-   "model": "2026-10-09T13:02:28+00:00",
+   "model": "2026-10-16T08:11:48+00:00",
    "correct": null,
-   "set_at": "2026-10-16T08:11:47Z",
+   "set_at": "2026-10-16T11:11:24Z",
    "ml": {
     "team": "COL",
     "side": "home",
@@ -4561,27 +4561,27 @@
    "away_record": "4-2",
    "neutral": false,
    "pick": "BOS",
-   "prob": 50.9,
-   "home_prob": 49.1,
+   "prob": 51.0,
+   "home_prob": 49.0,
    "margin": 0.06,
    "rest": {
     "home": 2,
     "away": 2
    },
-   "model": "2026-10-09T13:02:28+00:00",
+   "model": "2026-10-16T08:11:48+00:00",
    "correct": null,
-   "set_at": "2026-10-16T08:11:47Z",
+   "set_at": "2026-10-16T11:11:24Z",
    "ml": {
     "team": "BOS",
     "side": "away",
     "price": -115,
-    "prob": 50.9,
+    "prob": 51.0,
     "book_prob": 51.1,
-    "edge": -0.2,
+    "edge": -0.1,
     "value": false,
     "home_ml": -105,
     "away_ml": -115,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
