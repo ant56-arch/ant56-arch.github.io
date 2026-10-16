@@ -5685,8 +5685,8 @@
    "home_record": "85-77",
    "away_record": "98-64",
    "home_sp": {
-    "id": null,
-    "name": "TBD",
+    "id": 542888,
+    "name": "Shawn Armstrong",
     "era": null,
     "ip": 0
    },
@@ -5697,23 +5697,23 @@
     "ip": 183.7
    },
    "pick": "TB",
-   "prob": 52.2,
-   "home_prob": 47.8,
+   "prob": 51.0,
+   "home_prob": 49.0,
    "factors": {
     "home_field": 0.141,
     "elo": -0.111,
-    "starters": -0.119
+    "starters": -0.069
    },
    "model": "2026-09-30T01:24:50+00:00",
    "correct": null,
-   "set_at": "2026-10-16T11:11:23Z",
+   "set_at": "2026-10-16T16:33:47Z",
    "ml": {
     "team": "TB",
     "side": "away",
     "price": -112,
-    "prob": 52.2,
+    "prob": 51.0,
     "book_prob": 50.4,
-    "edge": 1.8,
+    "edge": 0.6,
     "value": false,
     "home_ml": -108,
     "away_ml": -112,
