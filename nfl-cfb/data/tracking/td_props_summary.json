@@ -13,8 +13,8 @@
     "predicted": 0.623
   },
   "vs_book": {
-    "n": 508,
-    "our_brier": 0.1612,
-    "book_brier": 0.157
+    "n": 527,
+    "our_brier": 0.1599,
+    "book_brier": 0.1562
   }
 }
