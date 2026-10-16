@@ -5593,7 +5593,7 @@
     "starters": 0.001
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-15T11:16:42Z",
    "ml": {
     "team": "CLE",
@@ -5606,9 +5606,12 @@
     "home_ml": -134,
     "away_ml": 111,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.746
+   },
+   "home_runs": 3,
+   "away_runs": 2,
+   "winner": "CLE"
   },
   {
    "date": "2026-10-15",
@@ -5646,7 +5649,7 @@
     "starters": 0.212
    },
    "model": "2026-09-30T01:24:50+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-15T22:58:31Z",
    "ml": {
     "team": "LAD",
@@ -5658,6 +5661,62 @@
     "value": false,
     "home_ml": -156,
     "away_ml": 129,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 4,
+   "away_runs": 6,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-16",
+   "game_id": "849817",
+   "start": "2026-10-16T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "TB",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 114,
+   "away_id": 139,
+   "home_record": "85-77",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "away_sp": {
+    "id": 607259,
+    "name": "Nick Martinez",
+    "era": 3.14,
+    "ip": 183.7
+   },
+   "pick": "TB",
+   "prob": 52.2,
+   "home_prob": 47.8,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.111,
+    "starters": -0.119
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-16T08:11:46Z",
+   "ml": {
+    "team": "TB",
+    "side": "away",
+    "price": -112,
+    "prob": 52.2,
+    "book_prob": 50.4,
+    "edge": 1.8,
+    "value": false,
+    "home_ml": -108,
+    "away_ml": -112,
     "book": "DraftKings",
     "won": null,
     "units": null
