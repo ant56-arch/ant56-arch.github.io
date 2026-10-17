@@ -60,8 +60,11 @@ PARK_PRIOR_ROWS = 3000  # hitter-games of the fixed table's value blended into e
 TOP_N = 10
 
 DEFAULT_RECIPE = {"seasons": 1, "l2": 0.001, "park": "table"}  # how the model was built before recipes existed
+# 10 versions: every mix of 1-3 seasons, two regularization strengths and fixed or
+# learned park factors, minus the two that score worst (1 season with the fixed table).
 RECIPES = [{"seasons": s, "l2": l2, "park": park}
-           for s in (1, 2, 3) for l2 in (0.001, 0.01) for park in ("table", "learned")]
+           for s in (1, 2, 3) for l2 in (0.001, 0.01) for park in ("table", "learned")
+           if not (s == 1 and park == "table")]
 PARK_COL = F.CANDIDATE_FEATURES.index("park_factor")
 
 

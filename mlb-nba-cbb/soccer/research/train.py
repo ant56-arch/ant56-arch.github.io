@@ -55,17 +55,17 @@ BACKTEST_COMPS = ("E0", "SP1", "UCL")
 COMP_NAMES = {"E0": "Premier League", "SP1": "La Liga", "UCL": "Champions League"}
 BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 
-# Candidates: how fast results fade, how hard clubs are pulled to their league
-# average, and how much the rating target leans on the shots-on-target
-# expected-goals proxy (0 = goals only); every one has per-competition home edges.
-# The two that finished last (half-life 400 and 550, pull 3, goals only) gave
-# their places to two tryouts on the live recipe: one with the short-rest
-# effect, one leaning harder on shots on target (half the target).
-RECIPES = [{"half_life": h, "reg": r, "years": 3, "xg": x, "home_reg": 100.0}
-           for h in (270, 400, 550) for r in (3.0, 5.0, 10.0) for x in (0.0, 0.3)
-           if (h, r, x) not in ((400, 3.0, 0.0), (550, 3.0, 0.0))]
-RECIPES += [{"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.3, "home_reg": 100.0, "rest": True},
-            {"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.5, "home_reg": 100.0}]
+# Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
+# five next-best fade / pull / shots settings, and four tryouts on the live
+# recipe - short rest, a heavier shots-on-target blend, and the promoted-club
+# prior (a club new to its league starts below the league average, as Elo and
+# Dixon-Coles style forecasters do), alone and with the heavier shots blend.
+# Every version has per-competition home edges.
+_LIVE = {"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.3, "home_reg": 100.0}
+RECIPES = ([_LIVE]
+           + [{**_LIVE, "half_life": h, "reg": r} for h, r in ((550, 5.0), (400, 10.0), (400, 5.0), (550, 3.0), (270, 5.0))]
+           + [{**_LIVE, "rest": True}, {**_LIVE, "xg": 0.5}, {**_LIVE, "promoted": 0.15},
+              {**_LIVE, "xg": 0.5, "promoted": 0.15}])
 
 
 def comp_of(m):
@@ -249,7 +249,8 @@ def summary(lines):
 
 def recipe_name(r):
     extra = (f", shots {r['xg']:g}" if r.get("xg") else "") + (", home by comp" if r.get("home_reg") is not None else "") \
-        + (", rest" if r.get("rest") else "") + (f", draws +{r['draw']:g}" if r.get("draw") else "")
+        + (", rest" if r.get("rest") else "") + (f", draws +{r['draw']:g}" if r.get("draw") else "") \
+        + (f", promoted -{r['promoted']:g}" if r.get("promoted") else "")
     return f"half-life {r['half_life']} days, pull {r['reg']:g}, {r['years']} years{extra}"
 
 

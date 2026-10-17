@@ -127,7 +127,8 @@ def load_rating_features(half_life, kinds=()):
         season = current_nfl_season()
         inputs = (game_context.load_injury_inputs([season - 1, season], os.path.join(RAW_DIR, "context"), season)
                   if "injuries" in kinds else None)
-        feats = feats.merge(game_context.context_features(schedules, kinds, inputs), on=game_context.KEY, how="left")
+        history = game_context.full_history(schedules, os.path.join(RAW_DIR, "context")) if "elo" in kinds else None
+        feats = feats.merge(game_context.context_features(schedules, kinds, inputs, history), on=game_context.KEY, how="left")
     return feats.set_index(["season", "week", "home_team", "away_team"])
 
 def load_vegas_odds():
