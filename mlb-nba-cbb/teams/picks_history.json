@@ -5721,6 +5721,59 @@
     "won": null,
     "units": null
    }
+  },
+  {
+   "date": "2026-10-17",
+   "game_id": "849816",
+   "start": "2026-10-17T20:00:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "TB",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 114,
+   "away_id": 139,
+   "home_record": "85-77",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 542888,
+    "name": "Shawn Armstrong",
+    "era": null,
+    "ip": 0
+   },
+   "away_sp": {
+    "id": 607259,
+    "name": "Nick Martinez",
+    "era": 3.14,
+    "ip": 183.7
+   },
+   "pick": "TB",
+   "prob": 51.0,
+   "home_prob": 49.0,
+   "factors": {
+    "home_field": 0.141,
+    "elo": -0.111,
+    "starters": -0.069
+   },
+   "model": "2026-09-30T01:24:50+00:00",
+   "correct": null,
+   "set_at": "2026-10-17T07:49:17Z",
+   "ml": {
+    "team": "TB",
+    "side": "away",
+    "price": -117,
+    "prob": 51.0,
+    "book_prob": 51.5,
+    "edge": -0.5,
+    "value": false,
+    "home_ml": -103,
+    "away_ml": -117,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
