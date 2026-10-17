@@ -26,6 +26,7 @@ testing.
 import json
 import os
 import sys
+from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -171,6 +172,13 @@ def make_picks(history, ratings, weights):
                 print(f"  {comp} {d} unavailable: {e}")
     print(f"{len(slate)} matches {days[0]} to {days[-1]}")
     existing = {p["game_id"]: p for p in history["picks"] if p["date"] in days}
+    # Fixture days of each side in this slate, so a side playing today and
+    # tomorrow counts as short of rest tomorrow.
+    slate_days = defaultdict(set)
+    for g in slate:
+        if not g["postponed"]:
+            for n in (g["home_name"], g["away_name"]):
+                slate_days[names.team_key(n)].add(M.ordinal(g["date"]))
     unknown = set()
     for g in slate:
         old = existing.get(g["id"])
@@ -178,7 +186,9 @@ def make_picks(history, ratings, weights):
             continue  # started, final or postponed: a pick already made stays as it was
         hk, ak = names.team_key(g["home_name"]), names.team_key(g["away_name"])
         unknown |= {n for n, k in ((g["home_name"], hk), (g["away_name"], ak)) if not ratings.known(k)}
-        p = ratings.probs(hk, ak, g["neutral"], store.LEAGUE_OF.get(g["comp"]))
+        day = M.ordinal(g["date"])
+        rest = tuple(ratings.data.days_since(k, day, slate_days[k]) for k in (hk, ak))
+        p = ratings.probs(hk, ak, g["neutral"], store.LEAGUE_OF.get(g["comp"]), rest=rest)
         side = M.pick_of(p)
         pick = {
             "date": g["date"], "game_id": g["id"], "start": g["start"], "comp": g["comp"], "season": g["season"],
