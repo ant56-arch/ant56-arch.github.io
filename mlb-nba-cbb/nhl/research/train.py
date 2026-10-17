@@ -56,8 +56,17 @@ SWITCH_MARGIN = 0.002  # log loss a new recipe must win by
 SANITY_MARGIN = 0.01  # how much worse than the live model the refit may score on the holdout
 
 DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3}
-RECIPES = [{"elo_k": k, "elo_carry": c, "years": y}
-           for k in (5, 8, 12) for c in (0.5, 0.7, 0.85) for y in (2, 3)]
+# The two Elo K 12 / carry 0.5 tryouts were dropped on 2026-10-17: they
+# finished last at every retrain. Their places went to two tryouts with new
+# inputs from box scores (model.EXTRAS): shot share, and that plus goalies.
+RECIPES = ([{"elo_k": k, "elo_carry": c, "years": y}
+            for k in (5, 8, 12) for c in (0.5, 0.7, 0.85) for y in (2, 3) if (k, c) != (12, 0.5)]
+           + [{"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3, "extras": extras}
+              for extras in (["shots"], ["shots", "goalies"])])
+
+
+def recipe_features(recipe):
+    return M.FEATURES + [c for kind in recipe.get("extras", []) for c in M.EXTRAS[kind]]
 
 
 def league_params(recipe):
@@ -73,13 +82,13 @@ def build_rows(params=None):
     key = json.dumps(params or {}, sort_keys=True)
     if key in _walks:
         return _walks[key]
-    games, _ = store.load_all()
+    games, box = store.load_all()
     league = M.League(params)
     rows = []
     for g in games:
         feats = league.features(g)
-        rows.append({"game": g, "x": [feats[k] for k in M.FEATURES], "margin": g["home_pts"] - g["away_pts"]})
-        league.update(g)
+        rows.append({"game": g, "f": feats, "margin": g["home_pts"] - g["away_pts"]})
+        league.update(g, box.get(g["id"]))
     first = rows[0]["game"]["season"] if rows else None
     for r in rows:
         g = r["game"]
@@ -88,20 +97,20 @@ def build_rows(params=None):
     return rows
 
 
-def fit(rows):
-    X = np.array([r["x"] for r in rows])
+def fit(rows, features=None):
+    features = features or M.FEATURES
+    X = np.array([[r["f"][k] for k in features] for r in rows])
     y = np.array([r["margin"] for r in rows], dtype=float)
     coef, *_ = np.linalg.lstsq(X, y, rcond=None)
     sigma = float(np.std(y - X @ coef))
-    return {"features": M.FEATURES, "coef": {k: round(float(c), 4) for k, c in zip(M.FEATURES, coef)},
+    return {"features": features, "coef": {k: round(float(c), 4) for k, c in zip(features, coef)},
             "sigma": round(sigma, 3)}
 
 
 def evaluate(weights, rows):
     preds = []
     for r in rows:
-        feats = dict(zip(M.FEATURES, r["x"]))
-        p_home, m = M.win_prob(weights, feats)
+        p_home, m = M.win_prob(weights, r["f"])
         home_won = r["margin"] > 0
         pick_home = p_home >= 0.5
         conf = p_home if pick_home else 1 - p_home
@@ -151,7 +160,7 @@ def raw_log_loss(weights, rows):
     """Unrounded log loss, for comparing recipes whose scores are close."""
     total = 0.0
     for r in rows:
-        p, _ = M.win_prob(weights, dict(zip(M.FEATURES, r["x"])))
+        p, _ = M.win_prob(weights, r["f"])
         total -= math.log(max(1e-9, p if r["margin"] > 0 else 1 - p))
     return total / len(rows)
 
@@ -172,7 +181,7 @@ def train_recipe(recipe, before_idx=None):
     train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
     if len(train) < MIN_TRAIN_GAMES:
         return None
-    w = fit(train)
+    w = fit(train, recipe_features(recipe))
     w["league"] = league_params(recipe)
     w["recipe"] = recipe
     w["training_games"] = len(train)
@@ -193,16 +202,13 @@ def season_backtest(recipe):
     first = max(seasons[0], test_season - recipe["years"])
     train = [r for r in rows if r["usable"] and first <= r["game"]["season"] < test_season]
     test = [r for r in rows if r["game"]["season"] == test_season]
-    w = fit(train)
+    w = fit(train, recipe_features(recipe))
     w["league"] = league_params(recipe)
     test_regular = [r for r in test if r["game"]["type"] == "regular"]
     playoffs = [r for r in test if r["game"]["type"] != "regular"]
     bt = evaluate(w, test_regular)
 
-    def elo_only(rs):
-        return [{**r, "x": [r["x"][0], r["x"][1]] + [0.0] * (len(M.FEATURES) - 2)} for r in rs]
-
-    elo_bt = evaluate(fit(elo_only(train)), elo_only(test_regular))
+    elo_bt = evaluate(fit(train, ["home_ice", "elo"]), test_regular)
     return {
         "trained_on": f"{season_label(first)} to {season_label(seasons[-1])}",
         "backtest_season": season_label(test_season),
@@ -254,7 +260,8 @@ def summary(lines):
 
 
 def recipe_name(r):
-    return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, {r['years']} years"
+    extras = "".join(f" + {kind}" for kind in r.get("extras", []))
+    return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, {r['years']} years{extras}"
 
 
 def main():

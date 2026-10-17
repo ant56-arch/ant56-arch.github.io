@@ -1,6 +1,7 @@
 """
 pull_seasons.py - pulls every regular-season and playoff game of the given
-NHL seasons from ESPN, for training and backtesting.
+NHL seasons from ESPN, with box scores (shots on goal and goalies), for
+training and backtesting.
 
 SEASONS env var: comma-separated season end years (2026 = the 2025-26
 season). Default: the last three finished seasons. Writes
@@ -47,9 +48,25 @@ def main():
         n = sum(1 for g in games if g["season"] == s and g["type"] == "regular")
         print(f"  {s}: {n} regular-season games")
 
+    _, have = store.load_all()
+    need = [g["id"] for g in games if not have.get(g["id"])]
+    print(f"Fetching {len(need)} box scores ({len(games) - len(need)} already stored)")
+
+    def fetch(gid):
+        try:
+            return gid, espn.boxscore(gid)
+        except Exception as e:  # noqa: BLE001 - a game without a box score still counts
+            print(f"  box score {gid} failed: {e}")
+            return gid, None
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        fetched = dict(pool.map(fetch, need))
+    box = {gid: b for gid, b in {**have, **fetched}.items() if b}
+    print(f"  {sum(1 for g in games if g['id'] in box)} of {len(games)} games have a box score")
+
     for s in seasons:
         sg = [g for g in games if g["season"] == s]
-        store.save_season(s, sg, {})
+        store.save_season(s, sg, {g["id"]: box[g["id"]] for g in sg if g["id"] in box})
 
 
 if __name__ == "__main__":

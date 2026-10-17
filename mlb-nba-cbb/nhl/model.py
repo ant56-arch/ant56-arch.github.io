@@ -11,6 +11,15 @@ Features are home-minus-away differences plus a home-ice flag:
   net        - season goal differential per game, shrunk toward 0 early on
   recent     - goal differential over the last 10 games, shrunk the same way
   rest, b2b  - days since the last game (capped at 3) and back-to-back flags
+Two optional features need box scores, and only recipes that list them in
+"extras" use them (EXTRAS):
+  shot_share - share of shots on goal over the last 20 games, minus 50%,
+               pulled toward 50% with 5 games of an even split
+  goalie     - the goalies a team has been starting: each goalie's goals saved
+               above an average goalie per 100 shots (recent games count
+               most, pulled toward average with 500 shots), weighted by his
+               share of the team's last 10 starts. No starter has to be known
+               before the game, so picks and training see the same thing.
 The model predicts the home team's goal margin; the win chance is the normal
 CDF of margin / sigma. A game decided in overtime or a shootout counts as a
 one-goal win, which is how its final score reads.
@@ -33,6 +42,12 @@ RECENT_SHRINK = 5
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_ice", "elo", "net", "recent", "rest", "b2b_home", "b2b_away"]
+EXTRAS = {"shots": ["shot_share"], "goalies": ["goalie"]}
+SHOT_GAMES = 20
+SHOT_SHRINK = 5        # games of an even shot split mixed in
+GOALIE_PRIOR = 500     # shots of average goaltending mixed into each goalie
+GOALIE_DECAY = 0.98    # a goalie's past shots fade by this much each time he plays
+START_GAMES = 10       # starts that set a team's goalie mix
 
 
 def norm_cdf(x):
@@ -46,6 +61,10 @@ class League:
         self.season = None
         self.margins = defaultdict(list)  # team -> this season's goal margins
         self.last_date = {}
+        self.shots = defaultdict(list)    # team -> [(for, against)] over recent games with box scores
+        self.goalie = defaultdict(lambda: [0.0, 0.0])  # goalie id -> [shots against, saves], decayed
+        self.starts = defaultdict(list)   # team -> recent starting goalie ids
+        self.lg = [0.0, 0.0]              # league shots against, saves (decayed)
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -74,6 +93,23 @@ class League:
             return 3
         return max(0, min(3, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
 
+    def shot_share(self, team):
+        last = self.shots[team][-SHOT_GAMES:]
+        f, a = sum(x[0] for x in last), sum(x[1] for x in last)
+        even = 30.0 * SHOT_SHRINK
+        return (f + even) / (f + a + 2 * even) - 0.5
+
+    def goalie_quality(self, team):
+        starts = self.starts[team][-START_GAMES:]
+        if not starts:
+            return 0.0
+        avg = self.lg[1] / self.lg[0] if self.lg[0] else 0.9
+        total = 0.0
+        for gid in starts:
+            sa, sv = self.goalie[gid]
+            total += 100 * (sv - avg * sa) / (sa + GOALIE_PRIOR)
+        return total / len(starts)
+
     def features(self, g):
         self._check_season(g["season"])
         h, a = g["home"], g["away"]
@@ -88,11 +124,38 @@ class League:
             "rest": float(h_rest - a_rest),
             "b2b_home": 1.0 if h_rest == 0 else 0.0,
             "b2b_away": 1.0 if a_rest == 0 else 0.0,
+            "shot_share": self.shot_share(h) - self.shot_share(a),
+            "goalie": self.goalie_quality(h) - self.goalie_quality(a),
         }
 
     # ── learning from a result ──
-    def update(self, g):
+    def update_box(self, g, box):
+        """Shots and goalies from a box score ({team: {"sog", "goalies"}})."""
+        h, a = g["home"], g["away"]
+        if not box or h not in box or a not in box:
+            return
+        hs, as_ = box[h].get("sog"), box[a].get("sog")
+        if hs is not None and as_ is not None:
+            self.shots[h].append((hs, as_))
+            self.shots[a].append((as_, hs))
+            for t in (h, a):
+                del self.shots[t][:-SHOT_GAMES]
+        for t in (h, a):
+            goalies = box[t].get("goalies") or []
+            if not goalies:
+                continue
+            self.starts[t].append(goalies[0][0])
+            del self.starts[t][:-START_GAMES]
+            for gid, _, sa, sv, _ in goalies:
+                rec = self.goalie[gid]
+                rec[0] = rec[0] * GOALIE_DECAY + sa
+                rec[1] = rec[1] * GOALIE_DECAY + sv
+                self.lg[0] = self.lg[0] * 0.999 + sa
+                self.lg[1] = self.lg[1] * 0.999 + sv
+
+    def update(self, g, box=None):
         self._check_season(g["season"])
+        self.update_box(g, box)
         h, a = g["home"], g["away"]
         margin = g["home_pts"] - g["away_pts"]
         home_adv = 0 if g.get("neutral") else ELO_HOME
