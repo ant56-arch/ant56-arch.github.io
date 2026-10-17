@@ -1,0 +1,16 @@
+{
+ "updated": "2026-10-17T13:48:03.257531-04:00",
+ "heading": null,
+ "picks": [],
+ "record": null,
+ "empty": "No NBA picks yet. They start on opening night in late October.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-10-17T14:57:00+00:00",
+ "model_url": "model.html",
+ "slate": [],
+ "units": null,
+ "last": null
+}

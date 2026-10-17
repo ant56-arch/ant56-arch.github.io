@@ -1,0 +1,51 @@
+{
+ "sport": "MLB",
+ "label": "Sat, Oct 17",
+ "updated": "2026-10-17T13:48:02.894383-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401908027",
+   "start": "2026-10-18T00:00Z",
+   "state": "pre",
+   "detail": "10/17 - 8:00 PM EDT",
+   "tv": "TBS, truTV",
+   "venue": "Progressive Field",
+   "neutral": false,
+   "series": "ALCS \u00b7 Game 4 \u00b7 CLE leads series 2-1",
+   "away": {
+    "abbr": "TB",
+    "name": "Tampa Bay Rays",
+    "short": "Rays",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png",
+    "color": "092c5c",
+    "alt": "8fbce6",
+    "rank": null,
+    "score": 0,
+    "record": "98-64",
+    "probable": "N. Martinez",
+    "winner": false
+   },
+   "home": {
+    "abbr": "CLE",
+    "name": "Cleveland Guardians",
+    "short": "Guardians",
+    "location": "Cleveland",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/cle.png",
+    "color": "002b5c",
+    "alt": "e31937",
+    "rank": null,
+    "score": 0,
+    "record": "85-77",
+    "probable": "S. Armstrong",
+    "winner": false
+   },
+   "pick": {
+    "text": "TB 51%",
+    "result": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,779 @@
+{
+ "sport": "NFL",
+ "label": "Week 6",
+ "updated": "2026-10-17T18:24:03.601348+00:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401872995",
+   "start": "2026-10-16T00:15Z",
+   "state": "post",
+   "detail": "Final/OT",
+   "tv": "Prime Video",
+   "venue": "Empower Field at Mile High",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "SEA",
+    "name": "Seattle Seahawks",
+    "short": "Seahawks",
+    "location": "Seattle",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
+    "color": "002a5c",
+    "alt": "69be28",
+    "rank": null,
+    "score": 14,
+    "record": "3-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "DEN",
+    "name": "Denver Broncos",
+    "short": "Broncos",
+    "location": "Denver",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
+    "color": "0a2343",
+    "alt": "fc4c02",
+    "rank": null,
+    "score": 17,
+    "record": "4-2",
+    "probable": null,
+    "winner": true
+   },
+   "pick": {
+    "text": "SEA to win, 51%",
+    "result": false,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "DEN +2.5, 56% to cover",
+     "short": "DEN +2.5",
+     "result": true,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401872996",
+   "start": "2026-10-18T13:30Z",
+   "state": "pre",
+   "detail": "10/18 - 9:30 AM EDT",
+   "tv": "NFL Net",
+   "venue": "Wembley Stadium",
+   "neutral": true,
+   "series": "",
+   "away": {
+    "abbr": "HOU",
+    "name": "Houston Texans",
+    "short": "Texans",
+    "location": "Houston",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
+    "color": "021018",
+    "alt": "eb0028",
+    "rank": null,
+    "score": 0,
+    "record": "1-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "JAX",
+    "name": "Jacksonville Jaguars",
+    "short": "Jaguars",
+    "location": "Jacksonville",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/jax.png",
+    "color": "007487",
+    "alt": "d7a22a",
+    "rank": null,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "JAX to win, 62%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "JAX -2.5, 55% to cover",
+     "short": "JAX -2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401872997",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "Fox",
+   "venue": "Huntington Bank Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BAL",
+    "name": "Baltimore Ravens",
+    "short": "Ravens",
+    "location": "Baltimore",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+    "color": "29126f",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "CLE",
+    "name": "Cleveland Browns",
+    "short": "Browns",
+    "location": "Cleveland",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cle.png",
+    "color": "472a08",
+    "alt": "ff3c00",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "BAL to win, 67%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "BAL -3.0, 58% to cover",
+     "short": "BAL -3.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401872998",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "CBS",
+   "venue": "Lincoln Financial Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CAR",
+    "name": "Carolina Panthers",
+    "short": "Panthers",
+    "location": "Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+    "color": "0085ca",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "2-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "PHI",
+    "name": "Philadelphia Eagles",
+    "short": "Eagles",
+    "location": "Philadelphia",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
+    "color": "06424d",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "CAR to win, 59%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "PHI +3.5, 52% to cover",
+     "short": "PHI +3.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401872999",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "Fox",
+   "venue": "Mercedes-Benz Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CHI",
+    "name": "Chicago Bears",
+    "short": "Bears",
+    "location": "Chicago",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/chi.png",
+    "color": "0b1c3a",
+    "alt": "e64100",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ATL",
+    "name": "Atlanta Falcons",
+    "short": "Falcons",
+    "location": "Atlanta",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+    "color": "a71930",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ATL to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "ATL +1.5, 70% to cover",
+     "short": "ATL +1.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873000",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "Fox",
+   "venue": "MetLife Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "NO",
+    "name": "New Orleans Saints",
+    "short": "Saints",
+    "location": "New Orleans",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+    "color": "d3bc8d",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "1-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "NYG",
+    "name": "New York Giants",
+    "short": "Giants",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyg.png",
+    "color": "003c7f",
+    "alt": "c9243f",
+    "rank": null,
+    "score": 0,
+    "record": "3-1-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "NYG to win, 63%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "NYG +1.5, 67% to cover",
+     "short": "NYG +1.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873001",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "CBS",
+   "venue": "Gillette Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "NYJ",
+    "name": "New York Jets",
+    "short": "Jets",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png",
+    "color": "115740",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "NE",
+    "name": "New England Patriots",
+    "short": "Patriots",
+    "location": "New England",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
+    "color": "002a5c",
+    "alt": "c60c30",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "NE to win, 79%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "NE -7.5, 60% to cover",
+     "short": "NE -7.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873002",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "CBS",
+   "venue": "Raymond James Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "PIT",
+    "name": "Pittsburgh Steelers",
+    "short": "Steelers",
+    "location": "Pittsburgh",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
+    "color": "000000",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TB",
+    "name": "Tampa Bay Buccaneers",
+    "short": "Buccaneers",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
+    "color": "bd1c36",
+    "alt": "3e3a35",
+    "rank": null,
+    "score": 0,
+    "record": "1-4",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TB to win, 56%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "TB +2.5, 63% to cover",
+     "short": "TB +2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873003",
+   "start": "2026-10-18T17:00Z",
+   "state": "pre",
+   "detail": "10/18 - 1:00 PM EDT",
+   "tv": "Fox",
+   "venue": "Lucas Oil Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TEN",
+    "name": "Tennessee Titans",
+    "short": "Titans",
+    "location": "Tennessee",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png",
+    "color": "4495d2",
+    "alt": "001532",
+    "rank": null,
+    "score": 0,
+    "record": "0-5",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "IND",
+    "name": "Indianapolis Colts",
+    "short": "Colts",
+    "location": "Indianapolis",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png",
+    "color": "003b75",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "IND to win, 72%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "IND -7.0, 52% to cover",
+     "short": "IND -7.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873004",
+   "start": "2026-10-18T20:05Z",
+   "state": "pre",
+   "detail": "10/18 - 4:05 PM EDT",
+   "tv": "Fox",
+   "venue": "SoFi Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "ARI",
+    "name": "Arizona Cardinals",
+    "short": "Cardinals",
+    "location": "Arizona",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
+    "color": "a40227",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "1-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "LAR",
+    "name": "Los Angeles Rams",
+    "short": "Rams",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
+    "color": "003594",
+    "alt": "ffd100",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "LA to win, 79%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "ARI +12.5, 56% to cover",
+     "short": "ARI +12.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873005",
+   "start": "2026-10-18T20:25Z",
+   "state": "pre",
+   "detail": "10/18 - 4:25 PM EDT",
+   "tv": "CBS",
+   "venue": "Allegiant Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BUF",
+    "name": "Buffalo Bills",
+    "short": "Bills",
+    "location": "Buffalo",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png",
+    "color": "00338d",
+    "alt": "d50a0a",
+    "rank": null,
+    "score": 0,
+    "record": "4-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "LV",
+    "name": "Las Vegas Raiders",
+    "short": "Raiders",
+    "location": "Las Vegas",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
+    "color": "000000",
+    "alt": "a5acaf",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "BUF to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "BUF -4.5, 53% to cover",
+     "short": "BUF -4.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873006",
+   "start": "2026-10-18T20:25Z",
+   "state": "pre",
+   "detail": "10/18 - 4:25 PM EDT",
+   "tv": "CBS",
+   "venue": "Arrowhead Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "LAC",
+    "name": "Los Angeles Chargers",
+    "short": "Chargers",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lac.png",
+    "color": "0080c6",
+    "alt": "ffc20e",
+    "rank": null,
+    "score": 0,
+    "record": "0-5",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "KC",
+    "name": "Kansas City Chiefs",
+    "short": "Chiefs",
+    "location": "Kansas City",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
+    "color": "e31837",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "4-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "KC to win, 77%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "KC -7.5, 57% to cover",
+     "short": "KC -7.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873007",
+   "start": "2026-10-19T00:20Z",
+   "state": "pre",
+   "detail": "10/18 - 8:20 PM EDT",
+   "tv": "NBC",
+   "venue": "Lambeau Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "DAL",
+    "name": "Dallas Cowboys",
+    "short": "Cowboys",
+    "location": "Dallas",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+    "color": "002a5c",
+    "alt": "b0b7bc",
+    "rank": null,
+    "score": 0,
+    "record": "2-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "GB",
+    "name": "Green Bay Packers",
+    "short": "Packers",
+    "location": "Green Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
+    "color": "204e32",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "3-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "GB to win, 61%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "GB -1.5, 56% to cover",
+     "short": "GB -1.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  },
+  {
+   "id": "401873008",
+   "start": "2026-10-20T00:15Z",
+   "state": "pre",
+   "detail": "10/19 - 8:15 PM EDT",
+   "tv": "ESPN, ABC",
+   "venue": "Levi's Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "WSH",
+    "name": "Washington Commanders",
+    "short": "Commanders",
+    "location": "Washington",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+    "color": "5a1414",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "1-3-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "SF",
+    "name": "San Francisco 49ers",
+    "short": "49ers",
+    "location": "San Francisco",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
+    "color": "aa0000",
+    "alt": "b3995d",
+    "rank": null,
+    "score": 0,
+    "record": "5-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "SF to win, 81%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "spread": {
+     "text": "SF -7.5, 62% to cover",
+     "short": "SF -7.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   }
+  }
+ ]
+}

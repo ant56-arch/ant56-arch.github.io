@@ -1,0 +1,708 @@
+{
+ "updated": "2026-10-17T13:48:04.342887-04:00",
+ "heading": "Today: Sat, Oct 17",
+ "picks": [
+  {
+   "label": "MNC over IPS",
+   "sub": "Premier League \u00b7 IPS @ MNC \u00b7 10:00 AM ET",
+   "value": "76%",
+   "result": null
+  },
+  {
+   "label": "VIL over ELC",
+   "sub": "La Liga \u00b7 ELC @ VIL \u00b7 10:15 AM ET",
+   "value": "57%",
+   "result": null
+  },
+  {
+   "label": "BAR over BET",
+   "sub": "La Liga \u00b7 BAR @ BET \u00b7 12:30 PM ET",
+   "value": "51%",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "21-17",
+  "label": "our picks",
+  "sub": "55.3%",
+  "since": "Oct 9, 2026"
+ },
+ "empty": "No soccer picks yet. They start once the model is trained.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-10-02T17:56:06+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "21-17",
+  "sub": "55.3%",
+  "season": "2026-27"
+ },
+ "daily": [
+  [
+   "2026-10-09",
+   0,
+   1
+  ],
+  [
+   "2026-10-10",
+   6,
+   3
+  ],
+  [
+   "2026-10-11",
+   3,
+   4
+  ],
+  [
+   "2026-10-12",
+   0,
+   2
+  ],
+  [
+   "2026-10-13",
+   6,
+   3
+  ],
+  [
+   "2026-10-14",
+   6,
+   3
+  ],
+  [
+   "2026-10-16",
+   0,
+   1
+  ]
+ ],
+ "ml_streak": {
+  "kind": "L",
+  "n": 3
+ },
+ "ml_record": {
+  "value": "21-17",
+  "label": "moneyline",
+  "sub": "38 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "Soccer",
+   "id": "401915415",
+   "url": "/soccer/game-401915415.html",
+   "start": "2026-10-14T12:45:00-04:00",
+   "date": "2026-10-14",
+   "away": "LIV",
+   "home": "LAS",
+   "at": "@",
+   "pick": "LIV",
+   "other": "LAS",
+   "prob": 72.8,
+   "price": -255,
+   "book": 68.9,
+   "value": false,
+   "final": true,
+   "score": [
+    6,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915416",
+   "url": "/soccer/game-401915416.html",
+   "start": "2026-10-14T12:45:00-04:00",
+   "date": "2026-10-14",
+   "away": "COMO",
+   "home": "FEY",
+   "at": "@",
+   "pick": "COMO",
+   "other": "FEY",
+   "prob": 39.6,
+   "price": 115,
+   "book": 44.5,
+   "value": false,
+   "final": true,
+   "score": [
+    2,
+    3
+   ],
+   "hit": false
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915393",
+   "url": "/soccer/game-401915393.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "DOR",
+   "home": "BODO",
+   "at": "@",
+   "pick": "DOR",
+   "other": "BODO",
+   "prob": 43.4,
+   "price": 125,
+   "book": 42.7,
+   "value": false,
+   "final": true,
+   "score": [
+    0,
+    1
+   ],
+   "hit": false
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915405",
+   "url": "/soccer/game-401915405.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "VFB",
+   "home": "SLB",
+   "at": "@",
+   "pick": "VFB",
+   "other": "SLB",
+   "prob": 65.0,
+   "price": -260,
+   "book": 68.3,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    0
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915406",
+   "url": "/soccer/game-401915406.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "AEK",
+   "home": "SHK",
+   "at": "@",
+   "pick": "SHK",
+   "other": "AEK",
+   "prob": 48.4,
+   "price": 165,
+   "book": 35.9,
+   "value": true,
+   "final": true,
+   "score": [
+    1,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915407",
+   "url": "/soccer/game-401915407.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "PSG",
+   "home": "MNC",
+   "at": "@",
+   "pick": "MNC",
+   "other": "PSG",
+   "prob": 49.7,
+   "price": 100,
+   "book": 47.5,
+   "value": false,
+   "final": true,
+   "score": [
+    4,
+    2
+   ],
+   "hit": false
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915408",
+   "url": "/soccer/game-401915408.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "FCP",
+   "home": "BET",
+   "at": "@",
+   "pick": "BET",
+   "other": "FCP",
+   "prob": 44.6,
+   "price": 110,
+   "book": 45.2,
+   "value": false,
+   "final": true,
+   "score": [
+    2,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915409",
+   "url": "/soccer/game-401915409.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "FEN",
+   "home": "AVL",
+   "at": "@",
+   "pick": "AVL",
+   "other": "FEN",
+   "prob": 68.3,
+   "price": -150,
+   "book": 57.3,
+   "value": true,
+   "final": true,
+   "score": [
+    0,
+    6
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401915414",
+   "url": "/soccer/game-401915414.html",
+   "start": "2026-10-14T15:00:00-04:00",
+   "date": "2026-10-14",
+   "away": "RMA",
+   "home": "ROMA",
+   "at": "@",
+   "pick": "RMA",
+   "other": "ROMA",
+   "prob": 46.5,
+   "price": -110,
+   "book": 50.0,
+   "value": false,
+   "final": true,
+   "score": [
+    4,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882844",
+   "url": "/soccer/game-401882844.html",
+   "start": "2026-10-16T15:00:00-04:00",
+   "date": "2026-10-16",
+   "away": "LEV",
+   "home": "DEP",
+   "at": "@",
+   "pick": "DEP",
+   "other": "LEV",
+   "prob": 48.1,
+   "price": 105,
+   "book": 46.7,
+   "value": false,
+   "final": true,
+   "score": [
+    1,
+    1
+   ],
+   "hit": false
+  },
+  {
+   "sport": "Soccer",
+   "id": "401878771",
+   "url": "/soccer/game-401878771.html",
+   "start": "2026-10-17T07:30:00-04:00",
+   "date": "2026-10-17",
+   "away": "CHE",
+   "home": "EVE",
+   "at": "@",
+   "pick": "EVE",
+   "other": "CHE",
+   "prob": 36.9,
+   "price": 195,
+   "book": 32.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882843",
+   "url": "/soccer/game-401882843.html",
+   "start": "2026-10-17T08:00:00-04:00",
+   "date": "2026-10-17",
+   "away": "ATM",
+   "home": "ESP",
+   "at": "@",
+   "pick": "ATM",
+   "other": "ESP",
+   "prob": 50.6,
+   "price": -150,
+   "book": 57.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401878770",
+   "url": "/soccer/game-401878770.html",
+   "start": "2026-10-17T10:00:00-04:00",
+   "date": "2026-10-17",
+   "away": "HUL",
+   "home": "FUL",
+   "at": "@",
+   "pick": "FUL",
+   "other": "HUL",
+   "prob": 38.5,
+   "price": -155,
+   "book": 58.0,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879259",
+   "url": "/soccer/game-401879259.html",
+   "start": "2026-10-17T10:00:00-04:00",
+   "date": "2026-10-17",
+   "away": "IPS",
+   "home": "MNC",
+   "at": "@",
+   "pick": "MNC",
+   "other": "IPS",
+   "prob": 75.8,
+   "price": -425,
+   "book": 77.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879262",
+   "url": "/soccer/game-401879262.html",
+   "start": "2026-10-17T10:00:00-04:00",
+   "date": "2026-10-17",
+   "away": "LIV",
+   "home": "BRE",
+   "at": "@",
+   "pick": "LIV",
+   "other": "BRE",
+   "prob": 41.9,
+   "price": 180,
+   "book": 34.0,
+   "value": true,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882837",
+   "url": "/soccer/game-401882837.html",
+   "start": "2026-10-17T10:15:00-04:00",
+   "date": "2026-10-17",
+   "away": "ELC",
+   "home": "VIL",
+   "at": "@",
+   "pick": "VIL",
+   "other": "ELC",
+   "prob": 57.3,
+   "price": -240,
+   "book": 67.2,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879258",
+   "url": "/soccer/game-401879258.html",
+   "start": "2026-10-17T12:30:00-04:00",
+   "date": "2026-10-17",
+   "away": "AVL",
+   "home": "NEW",
+   "at": "@",
+   "pick": "NEW",
+   "other": "AVL",
+   "prob": 42.8,
+   "price": 135,
+   "book": 40.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882846",
+   "url": "/soccer/game-401882846.html",
+   "start": "2026-10-17T12:30:00-04:00",
+   "date": "2026-10-17",
+   "away": "BAR",
+   "home": "BET",
+   "at": "@",
+   "pick": "BAR",
+   "other": "BET",
+   "prob": 50.9,
+   "price": -235,
+   "book": 66.8,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882838",
+   "url": "/soccer/game-401882838.html",
+   "start": "2026-10-17T15:00:00-04:00",
+   "date": "2026-10-17",
+   "away": "ATH",
+   "home": "VAL",
+   "at": "@",
+   "pick": "ATH",
+   "other": "VAL",
+   "prob": 36.0,
+   "price": 135,
+   "book": 40.7,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882840",
+   "url": "/soccer/game-401882840.html",
+   "start": "2026-10-18T08:00:00-04:00",
+   "date": "2026-10-18",
+   "away": "RAC",
+   "home": "OSA",
+   "at": "@",
+   "pick": "OSA",
+   "other": "RAC",
+   "prob": 44.1,
+   "price": 100,
+   "book": 47.7,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879260",
+   "url": "/soccer/game-401879260.html",
+   "start": "2026-10-18T09:00:00-04:00",
+   "date": "2026-10-18",
+   "away": "MAN",
+   "home": "LEE",
+   "at": "@",
+   "pick": "LEE",
+   "other": "MAN",
+   "prob": 38.1,
+   "price": 135,
+   "book": 40.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879261",
+   "url": "/soccer/game-401879261.html",
+   "start": "2026-10-18T09:00:00-04:00",
+   "date": "2026-10-18",
+   "away": "CRY",
+   "home": "BHA",
+   "at": "@",
+   "pick": "BHA",
+   "other": "CRY",
+   "prob": 51.1,
+   "price": -190,
+   "book": 62.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401879263",
+   "url": "/soccer/game-401879263.html",
+   "start": "2026-10-18T09:00:00-04:00",
+   "date": "2026-10-18",
+   "away": "SUN",
+   "home": "BOU",
+   "at": "@",
+   "pick": "BOU",
+   "other": "SUN",
+   "prob": 48.2,
+   "price": 115,
+   "book": 44.7,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882845",
+   "url": "/soccer/game-401882845.html",
+   "start": "2026-10-18T10:15:00-04:00",
+   "date": "2026-10-18",
+   "away": "ALA",
+   "home": "CEL",
+   "at": "@",
+   "pick": "CEL",
+   "other": "ALA",
+   "prob": 46.9,
+   "price": 120,
+   "book": 43.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401878769",
+   "url": "/soccer/game-401878769.html",
+   "start": "2026-10-18T11:30:00-04:00",
+   "date": "2026-10-18",
+   "away": "ARS",
+   "home": "NFO",
+   "at": "@",
+   "pick": "ARS",
+   "other": "NFO",
+   "prob": 53.4,
+   "price": -155,
+   "book": 57.7,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882841",
+   "url": "/soccer/game-401882841.html",
+   "start": "2026-10-18T12:30:00-04:00",
+   "date": "2026-10-18",
+   "away": "RSO",
+   "home": "MCF",
+   "at": "@",
+   "pick": "RSO",
+   "other": "MCF",
+   "prob": 39.9,
+   "price": 115,
+   "book": 44.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "Soccer",
+   "id": "401882839",
+   "url": "/soccer/game-401882839.html",
+   "start": "2026-10-18T15:00:00-04:00",
+   "date": "2026-10-18",
+   "away": "SEV",
+   "home": "RMA",
+   "at": "@",
+   "pick": "RMA",
+   "other": "SEV",
+   "prob": 73.4,
+   "price": -425,
+   "book": 76.8,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  }
+ ],
+ "units": {
+  "picks": 38,
+  "wins": 21,
+  "losses": 17,
+  "units": 0.81,
+  "roi": 0.0212,
+  "since": "2026-10-09",
+  "series": [
+   [
+    "2026-10-09",
+    -1.0
+   ],
+   [
+    "2026-10-10",
+    -0.24
+   ],
+   [
+    "2026-10-11",
+    -1.21
+   ],
+   [
+    "2026-10-12",
+    -3.21
+   ],
+   [
+    "2026-10-13",
+    -0.3
+   ],
+   [
+    "2026-10-14",
+    1.81
+   ],
+   [
+    "2026-10-16",
+    0.81
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 18,
+    "wins": 15,
+    "losses": 3,
+    "units": 4.91,
+    "roi": 0.2726
+   },
+   "underdogs": {
+    "picks": 20,
+    "wins": 6,
+    "losses": 14,
+    "units": -4.1,
+    "roi": -0.205
+   },
+   "value": {
+    "picks": 12,
+    "wins": 4,
+    "losses": 8,
+    "units": -0.88,
+    "roi": -0.0736
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-16",
+  "games": [
+   {
+    "pick": "DEP",
+    "other": "LEV",
+    "hit": false,
+    "text": "DEP drew 1-1",
+    "units": -1.0,
+    "url": "/soccer/game-401882844.html"
+   }
+  ],
+  "hits": []
+ }
+}
