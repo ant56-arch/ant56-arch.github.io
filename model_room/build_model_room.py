@@ -335,80 +335,146 @@ def tryout_scores(cands, live_idx, live_score, key, margin):
     return [None if c.get(key) is None else one(c[key]) for c in cands]
 
 
+def vkey(recipe):
+    """Same settings -> same key (matches model_room/number_versions.py)."""
+    out = {}
+    for k, v in (recipe or {}).items():
+        if v is None or v is False or v == []:
+            continue
+        if isinstance(v, float) and v.is_integer():
+            v = int(v)
+        out[k] = v
+    return json.dumps(out, sort_keys=True)
+
+
+def version_numbers(mid, runs):
+    """Every version's permanent number (from model_room/versions.json, with
+    any recipe it doesn't know yet numbered after, in the order the retrains
+    first tried them), the date each was first tested, and the numbers the
+    retrain tries now."""
+    reg = (load_json(path(ROOT, "model_room", "versions.json"), {}) or {}).get(mid, {})
+    vers = list(reg.get("versions", []))
+    keys = [vkey(r) for r in vers]
+    first = {}
+    for r in runs:
+        for c in r.get("candidates", []):
+            k = vkey(c["recipe"])
+            if k not in keys:
+                vers.append(c["recipe"])
+                keys.append(k)
+            first.setdefault(k, r.get("run_at", ""))
+    return vers, keys, first, reg.get("current")
+
+
+OFF_BY_DEFAULT = ("extras", "elo_only", "rest", "promoted", "draw")
+NEW_DAYS = 14  # a version counts as new until this many days after its first test
+
+
+def settings_lines(recipe, live, keys):
+    """Live: every setting. Others: only what differs from live."""
+    lines = []
+    for k in keys:
+        if live is None and k in OFF_BY_DEFAULT and not recipe.get(k):
+            continue
+        v = recipe_cell(k, recipe.get(k))
+        if live is None or v != recipe_cell(k, live.get(k)):
+            lines.append(f"{SETTING_WORDS.get(k, (k,))[0]}: <b>{esc(v)}</b>")
+    return '<span class="set">' + ("<br>".join(lines) if lines else "Same as live") + "</span>"
+
+
 def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout="",
-                  live_score=None, margin=None):
+                  live_score=None, margin=None, mid=None, runs=None):
     """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)].
-    With margin (the retrain's switch margin on metrics[0]), every version
-    also gets an Edge score from that same number, and the table is ranked by it."""
+    Every version shows by its permanent number. The table lists the versions
+    the retrain tries now (ones not tested yet included); without a numbers
+    file it lists what the latest run tried. With margin (the retrain's switch
+    margin on metrics[0]), every tested version also gets an Edge score from
+    that same number, and the table is ranked by it."""
     if not cands:
         return None
-    keys = []
-    for c in cands:
-        for k in c["recipe"]:
-            if k not in keys:
-                keys.append(k)
-    keys = [k for k in keys if len({json.dumps(c["recipe"].get(k)) for c in cands}) > 1] or keys
-    rows = []
-    live_idx = None
-    # The live version: an exact recipe match, else the first whose settings
-    # all agree with it (older logs left some settings out).
-    live_idx = next((i for i, c in enumerate(cands) if live_recipe is not None and c["recipe"] == live_recipe), None)
-    if live_idx is None:
-        live_idx = next((i for i, c in enumerate(cands) if live_recipe is not None
-                         and all(c["recipe"].get(k) == live_recipe.get(k) for k in c["recipe"])), None)
-    letters = iter(list("BCDEFGHIJKLMNOPQRSTUVWXYZ") + [f"Z{k}" for k in range(2, 200)])
+    vers, keys, first, current = version_numbers(mid, runs or [run])
+    by_key = {vkey(c["recipe"]): c for c in cands}
+    if current:
+        shown = [(n, vers[n - 1], by_key.get(keys[n - 1])) for n in current]
+    else:
+        shown = [(keys.index(vkey(c["recipe"])) + 1, c["recipe"], c) for c in cands]
+    lk = vkey(live_recipe) if live_recipe is not None else None
+    live_idx = next((i for i, (n, r, c) in enumerate(shown) if lk is not None and vkey(r) == lk), None)
+    if live_idx is None:  # older logs left some settings out
+        live_idx = next((i for i, (n, r, c) in enumerate(shown) if live_recipe is not None and c is not None
+                         and all(r.get(k) == live_recipe.get(k) for k in r)), None)
     main_key, _, _, main_lower = metrics[0]
-    edge = tryout_scores(cands, live_idx, live_score, main_key, margin) if main_lower else [None] * len(cands)
+    tested = [c or {} for _, _, c in shown]
+    edge = tryout_scores(tested, live_idx, live_score, main_key, margin) if main_lower else [None] * len(shown)
     has_edge = any(e is not None for e in edge)
-    metric = lambda i: cands[i].get(main_key, 9e9) if main_lower else -cands[i].get(main_key, -9e9)
+    big = 9e9
+    metric = lambda i: (tested[i].get(main_key, big) if main_lower else -tested[i].get(main_key, -big)) if tested[i] else big
     score = (lambda i: (-(edge[i] if edge[i] is not None else -1), metric(i))) if has_edge else metric
-    best_i = min(range(len(cands)), key=metric)
-    others = [i for i in range(len(cands)) if i != live_idx]
-    if has_edge:
-        others = sorted(others, key=score)
-    hidden = 0
-    if len(cands) > 10:
-        others = sorted(others, key=score)
-        hidden = len(others) - 9
-        others = others[:9]
-    order = ([live_idx] if live_idx is not None else []) + others
+    tried = [i for i in range(len(shown)) if shown[i][2] is not None]
+    best_i = min(tried, key=metric) if tried else None
+    others = sorted([i for i in tried if i != live_idx], key=score)
+    untested = [i for i in range(len(shown)) if shown[i][2] is None and i != live_idx]
+    order = ([live_idx] if live_idx is not None else []) + others + untested
+    all_keys = []
+    for _, r, _ in shown:
+        for k in r:
+            if k not in all_keys:
+                all_keys.append(k)
+    live_r = shown[live_idx][1] if live_idx is not None else None
+    multi_runs = len(runs or []) > 1
+    try:
+        ran = dt.datetime.fromisoformat(run.get("run_at", "").replace("Z", "+00:00"))
+        ran = ran if ran.tzinfo else ran.replace(tzinfo=dt.timezone.utc)
+        fresh = (dt.datetime.now(dt.timezone.utc) - ran).days < NEW_DAYS
+    except ValueError:
+        fresh = False
+    rows = []
     for i in order:
-        c = cands[i]
-        name = "Live" if i == live_idx else next(letters)
-        cells = [name + (' <span class="tag">' + ("switched in" if run.get("switched_recipe") else "kept") + "</span>" if i == live_idx else "")]
-        if has_edge:
-            cells.append(score_chip(edge[i]) if edge[i] is not None else "")
-        cells += [esc(recipe_cell(k, c["recipe"].get(k))) for k in keys]
+        n, r, c = shown[i]
+        k = vkey(r)
+        is_new = c is None or (multi_runs and first.get(k) == run.get("run_at") and fresh)
+        tags = ""
+        if i == live_idx:
+            tags += ' <span class="tag">' + ("switched in" if run.get("switched_recipe") else "live") + "</span>"
+        if is_new:
+            tags += ' <span class="tag new">new</span>'
+        cells = [f"<b>#{n}</b>{tags}"]
+        cells.append(score_chip(edge[i]) if edge[i] is not None else ('<span class="set">Not tested yet</span>' if c is None else ""))
+        cells.append(settings_lines(r, None if i == live_idx else live_r, all_keys))
         for mk, _, fmt, _ in metrics:
-            v = c.get(mk)
+            v = (c or {}).get(mk)
             cells.append(S(fmt(v)) if v is not None else "")
-        rows.append({"live": i == live_idx, "best": i == best_i, "cells": cells})
-    head = ["Version"] + (["Edge score"] if has_edge else []) + [SETTING_WORDS.get(k, (k,))[0] for k in keys] + [m[1] for m in metrics]
-    helps = [f"<b>{esc(SETTING_WORDS.get(k, (k,))[0])}</b>: {esc(SETTING_HELP.get(k, k))}." for k in keys]
+        rows.append({"live": i == live_idx, "best": i == best_i and best_i != live_idx, "cells": cells})
+    head = ["Version", "Edge score", "Settings"] + [m[1] for m in metrics]
+    show_keys = [k for k in all_keys if len({recipe_cell(k, r.get(k)) for _, r, _ in shown}) > 1] or all_keys
+    helps = [f"<b>{esc(SETTING_WORDS.get(k, (k,))[0])}</b>: {esc(SETTING_HELP.get(k, k))}." for k in show_keys]
     # Callout: did it switch, and why
     reason = (run.get("reason") or "").strip()
     reason = reason[:1].upper() + reason[1:] if reason else ""
     call = []
-    if live_idx is not None and best_i != live_idx:
-        lv, bv = cands[live_idx].get(main_key), cands[best_i].get(main_key)
+    all_best = min(range(len(cands)), key=lambda i: cands[i].get(main_key, big) if main_lower else -cands[i].get(main_key, -big))
+    live_c = shown[live_idx][2] if live_idx is not None else None
+    if live_c is not None and vkey(cands[all_best]["recipe"]) != vkey(live_c["recipe"]):
+        lv, bv = live_c.get(main_key), cands[all_best].get(main_key)
         fmt0 = metrics[0][2]
-        call.append(f"The best tryout scored {fmt0(bv)} on the accuracy score, against {fmt0(lv)} for the live recipe. "
+        call.append(f"The best tryout scored {fmt0(bv)} on the accuracy score, against {fmt0(lv)} for the live version. "
                     + ("That gap was too small to trust, so the live version stayed." if not run.get("switched_recipe")
                        else "It took over at this retrain."))
-    elif live_idx is not None:
-        call.append("The live recipe had the best accuracy score of every version tried.")
+    elif live_c is not None:
+        call.append("The live version had the best accuracy score of every version tried.")
     elif live_recipe is not None:
-        call.append("The live recipe was not among the versions tried in this run.")
+        call.append("The live version was not among the versions tried in this run.")
     if reason:
         call.append(f"The retrain's own note: “{esc(reason)}.”")
     if extra_callout:
         call.append(extra_callout)
-    if hidden:
-        call.append(f"{len(cands)} versions were tried. The table shows the live one and the 9 best; the other {hidden} all scored worse.")
+    if untested:
+        call.append(f"{len(untested)} new version{'s' if len(untested) != 1 else ''} get{'' if len(untested) != 1 else 's'} a first test at the next retrain.")
     if has_edge:
         call.append(f"Edge scores here come from the accuracy score the retrain picks with. The live version keeps its own score"
                     f"{'' if live_score is not None else ' (50 until it has live picks)'}, and a tryout must score {SWITCH_POINTS}+ more to take over.")
-    return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note}
+    call.append("Each version keeps its number for good, and a brand-new version gets the next number up.")
+    return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note, "cls": "tryouts"}
 
 
 def last_switch(runs):
@@ -836,7 +902,7 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
         ls = last_switch(runs)
         m["tryouts"] = tryouts_block(run.get("candidates", []), live_recipe, mets, run,
                                      extra_callout=(f"The last real switch was on {ls}." if ls else "No switch has happened in the logged retrains."),
-                                     live_score=m.get("score"), margin=0.002)
+                                     live_score=m.get("score"), margin=0.002, mid=mid, runs=runs)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = f"Tested on the {run.get('holdout_games')} most recent games, which none of them trained on. A new version takes over only if it clearly beats the live one."
         note_date(f"{league} retrain", run["run_at"])
@@ -1362,7 +1428,7 @@ def build_hitters():
         ho = run.get("holdout", {})
         m["tryouts"] = tryouts_block(run.get("candidates", []), mw.get("recipe"), mets, run,
                                      extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
-                                     live_score=m.get("score"), margin=0.0005)
+                                     live_score=m.get("score"), margin=0.0005, mid="mlb-hitters", runs=hist)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Every version was tested on {run.get('holdout', {}).get('rows', 0):,} hitter-games from {nice_date(run.get('holdout', {}).get('from', ''))} on that it hadn't seen. "
                              "The sorting score says how well it puts the hitters who got a hit above those who didn't. These are test scores, not live records.")
@@ -1717,7 +1783,7 @@ def build_team(mid):
         ho = run.get("holdout", {})
         m["tryouts"] = tryouts_block(cands, mw.get("recipe"), mets, run,
                                      extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
-                                     live_score=m.get("score"), margin=0.001 if mid == "mlb-games" else 0.002)
+                                     live_score=m.get("score"), margin=0.001 if mid == "mlb-games" else 0.002, mid=mid, runs=hist)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Tested on the {ho.get('games', '?')} most recent {'matches' if soccer else 'games'} (from {nice_date(ho.get('from', ''))}), which none of them trained on. "
                              f"Always guessing the home team scores {ho.get('home_rate_log_loss', '?')}.")
@@ -1855,6 +1921,24 @@ td.game{font-weight:700}
 .live td{font-weight:700}
 .best td:first-child::after{content:" · best score";font-weight:400;color:var(--faint);font-size:.8rem}
 .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:1px 6px;margin-left:6px;color:var(--hit)}
+table.tryouts{min-width:0}
+table.tryouts td:first-child{white-space:nowrap}
+.set{display:block;font-size:.8rem;line-height:1.35;color:var(--muted);font-weight:400;min-width:150px}
+.set b{color:var(--text);font-weight:600}
+.tag.new{color:var(--ours)}
+@media (max-width:640px){
+ table.tryouts thead{display:none}
+ table.tryouts,table.tryouts tbody{display:block}
+ table.tryouts tr{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:12px 14px;border-bottom:1px solid var(--rule)}
+ table.tryouts tr:last-child{border-bottom:0}
+ table.tryouts td{display:block;border:0;padding:0}
+ table.tryouts td:first-child{align-self:center}
+ table.tryouts td:nth-child(n+3){grid-column:1/-1}
+ table.tryouts td:nth-child(n+4):not(:empty){display:flex;justify-content:space-between;gap:12px;font-size:.84rem}
+ table.tryouts td:nth-child(n+4):not(:empty)::before{content:attr(data-l);color:var(--muted);font-weight:400}
+ table.tryouts td:nth-child(n+4):empty{display:none}
+ table.tryouts .set{min-width:0}
+}
 .helps{margin:0;padding-left:1.1em;color:var(--muted);font-size:.86rem;display:grid;gap:3px;max-width:80ch}
 .empty{background:var(--surface);border:1px dashed var(--rule);border-radius:6px;padding:14px 16px;color:var(--muted);margin:0}
 footer{border-top:2px solid var(--text);padding-top:12px;display:grid;gap:6px}
@@ -2004,10 +2088,12 @@ def render_model(m, data):
         if m.get("tryout_intro"):
             o.append(f'<p>{esc(m["tryout_intro"])}</p>')
         if tr:
-            o.append('<div class="tablewrap" style="max-height:none"><table><thead><tr>' + "".join(f"<th>{h}</th>" for h in tr["head"]) + '</tr></thead><tbody>')
+            o.append(f'<div class="tablewrap" style="max-height:none"><table class="{tr.get("cls", "")}"><thead><tr>' + "".join(f"<th>{h}</th>" for h in tr["head"]) + '</tr></thead><tbody>')
             for r in tr["rows"]:
                 cls = " ".join(c for c, on in (("live", r["live"]), ("best", r["best"])) if on)
-                o.append(f'<tr{(" class=" + chr(34) + cls + chr(34)) if cls else ""}>' + "".join(f"<td>{c}</td>" for c in r["cells"]) + "</tr>")
+                labels = [esc(re.sub(r"<br>", " ", h)) for h in tr["head"]]
+                o.append(f'<tr{(" class=" + chr(34) + cls + chr(34)) if cls else ""}>'
+                         + "".join(f'<td data-l="{lab}">{c}</td>' for lab, c in zip(labels, r["cells"])) + "</tr>")
             o.append('</tbody></table></div>')
             if tr.get("helps"):
                 o.append('<details class="more"><summary>What the settings mean</summary><ul class="helps">' + "".join(f"<li>{h}</li>" for h in tr["helps"]) + '</ul></details>')
