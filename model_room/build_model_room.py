@@ -300,22 +300,32 @@ def recipe_cell(k, v):
         return str(v)
 
 
-def tryout_scores(cands, live_idx, live_score, rate_key, n):
-    """Each version's Edge score: the live version's score, plus 10 for every
-    point of pick rate it gained on the same test games (minus 10 per point
-    lost), with the same small-sample pull as the live score."""
-    if live_idx is None or live_score is None or not n or cands[live_idx].get(rate_key) is None:
+SWITCH_POINTS = 5  # Edge score points a tryout must gain on the live version to take over
+
+
+def tryout_scores(cands, live_idx, live_score, key, margin):
+    """Each version's Edge score, from the same accuracy score the retrain
+    picks with: the live version keeps its own score (50 if it has none yet),
+    and every other version moves SWITCH_POINTS for each switch margin it
+    beat (or trailed) the live version by. So a tryout needs SWITCH_POINTS
+    more than the live version to take over, exactly the retrain's rule."""
+    if live_idx is None or not margin or cands[live_idx].get(key) is None:
         return [None] * len(cands)
-    base = cands[live_idx][rate_key]
-    return [None if c.get(rate_key) is None else
-            max(1, min(100, round(live_score + 10 * (c[rate_key] - base) * 100 * n / (n + SCORE_PULL)))) for c in cands]
+    anchor = live_score if live_score is not None else 50
+    base = cands[live_idx][key]
+    def one(v):
+        pts = SWITCH_POINTS * (base - v) / margin
+        if pts < SWITCH_POINTS:  # short of the switch margin: never shown as clearing it
+            pts = min(round(pts), SWITCH_POINTS - 1)
+        return max(1, min(100, round(anchor + pts)))
+    return [None if c.get(key) is None else one(c[key]) for c in cands]
 
 
 def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout="",
-                  live_score=None, rate_key="accuracy", n_test=0):
+                  live_score=None, margin=None):
     """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)].
-    With live_score, every version also gets an Edge score from its pick rate
-    (rate_key) on the n_test test games, and the table is ranked by it."""
+    With margin (the retrain's switch margin on metrics[0]), every version
+    also gets an Edge score from that same number, and the table is ranked by it."""
     if not cands:
         return None
     keys = []
@@ -334,7 +344,7 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
                          and all(c["recipe"].get(k) == live_recipe.get(k) for k in c["recipe"])), None)
     letters = iter(list("BCDEFGHIJKLMNOPQRSTUVWXYZ") + [f"Z{k}" for k in range(2, 200)])
     main_key, _, _, main_lower = metrics[0]
-    edge = tryout_scores(cands, live_idx, live_score, rate_key, n_test)
+    edge = tryout_scores(cands, live_idx, live_score, main_key, margin) if main_lower else [None] * len(cands)
     has_edge = any(e is not None for e in edge)
     metric = lambda i: cands[i].get(main_key, 9e9) if main_lower else -cands[i].get(main_key, -9e9)
     score = (lambda i: (-(edge[i] if edge[i] is not None else -1), metric(i))) if has_edge else metric
@@ -382,7 +392,8 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     if hidden:
         call.append(f"{len(cands)} versions were tried. The table shows the live one and the 7 best; the other {hidden} all scored worse.")
     if has_edge:
-        call.append("Each version's Edge score starts from the live one's and moves 10 for every point of winners picked it gained or lost on the same test games.")
+        call.append(f"Edge scores here come from the accuracy score the retrain picks with. The live version keeps its own score"
+                    f"{'' if live_score is not None else ' (50 until it has live picks)'}, and a tryout must score {SWITCH_POINTS}+ more to take over.")
     return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note}
 
 
@@ -811,7 +822,7 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
         ls = last_switch(runs)
         m["tryouts"] = tryouts_block(run.get("candidates", []), live_recipe, mets, run,
                                      extra_callout=(f"The last real switch was on {ls}." if ls else "No switch has happened in the logged retrains."),
-                                     live_score=m.get("score"), n_test=run.get("holdout_games") or 0)
+                                     live_score=m.get("score"), margin=0.002)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = f"Tested on the {run.get('holdout_games')} most recent games, which none of them trained on. A new version takes over only if it clearly beats the live one."
         note_date(f"{league} retrain", run["run_at"])
@@ -1324,10 +1335,9 @@ def build_hitters():
                 ("top10_hit_rate", "Top-10 picks with a hit", lambda v: pc(v, 1), False),
                 ("auc", "Sorting score<br>(higher is better)", lambda v: f"{v:.3f}", False)]
         ho = run.get("holdout", {})
-        test_days = (dt.date.fromisoformat(run["data_through"][:10]) - dt.date.fromisoformat(ho["from"][:10])).days + 1 if ho.get("from") and run.get("data_through") else 0
         m["tryouts"] = tryouts_block(run.get("candidates", []), mw.get("recipe"), mets, run,
                                      extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
-                                     live_score=m.get("score"), rate_key="top10_hit_rate", n_test=10 * max(test_days, 0))
+                                     live_score=m.get("score"), margin=0.0005)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Every version was tested on {run.get('holdout', {}).get('rows', 0):,} hitter-games from {nice_date(run.get('holdout', {}).get('from', ''))} on that it hadn't seen. "
                              "The sorting score says how well it puts the hitters who got a hit above those who didn't. These are test scores, not live records.")
@@ -1682,7 +1692,7 @@ def build_team(mid):
         ho = run.get("holdout", {})
         m["tryouts"] = tryouts_block(cands, mw.get("recipe"), mets, run,
                                      extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
-                                     live_score=m.get("score"), n_test=ho.get("games") or 0)
+                                     live_score=m.get("score"), margin=0.001 if mid == "mlb-games" else 0.002)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Tested on the {ho.get('games', '?')} most recent {'matches' if soccer else 'games'} (from {nice_date(ho.get('from', ''))}), which none of them trained on. "
                              f"Always guessing the home team scores {ho.get('home_rate_log_loss', '?')}.")
