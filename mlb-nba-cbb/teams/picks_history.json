@@ -5725,7 +5725,7 @@
   {
    "date": "2026-10-17",
    "game_id": "849816",
-   "start": "2026-10-17T20:00:00-04:00",
+   "start": "2026-10-17T20:08:00-04:00",
    "type": "postseason",
    "round": "LCS",
    "doubleheader": 0,
@@ -5750,26 +5750,26 @@
     "ip": 183.7
    },
    "pick": "TB",
-   "prob": 51.0,
-   "home_prob": 49.0,
+   "prob": 50.8,
+   "home_prob": 49.2,
    "factors": {
-    "home_field": 0.141,
-    "elo": -0.111,
-    "starters": -0.069
+    "home_field": 0.146,
+    "elo": -0.114,
+    "starters": -0.066
    },
-   "model": "2026-09-30T01:24:50+00:00",
+   "model": "2026-10-17T14:57:08+00:00",
    "correct": null,
-   "set_at": "2026-10-17T10:30:04Z",
+   "set_at": "2026-10-17T15:28:22Z",
    "ml": {
     "team": "TB",
     "side": "away",
-    "price": -116,
-    "prob": 51.0,
-    "book_prob": 51.3,
-    "edge": -0.3,
+    "price": -114,
+    "prob": 50.8,
+    "book_prob": 50.9,
+    "edge": -0.1,
     "value": false,
-    "home_ml": -104,
-    "away_ml": -116,
+    "home_ml": -106,
+    "away_ml": -114,
     "book": "DraftKings",
     "won": null,
     "units": null
