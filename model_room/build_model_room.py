@@ -267,8 +267,14 @@ SETTING_WORDS = {
     "reg": ("Pull toward league average", lambda v: str(v)),
     "xg": ("Share built from shots on target", lambda v: f"{float(v) * 100:.0f}%"),
     "home_reg": ("Pull of each league's home edge", lambda v: "One shared edge" if v is None else str(v)),
-    "extras": ("Extra inputs", lambda v: ", ".join({"rest": "Rest and travel", "injuries": "Players out"}.get(x, x) for x in v) if v else "None"),
+    "extras": ("Extra inputs", lambda v: ", ".join(EXTRA_WORDS.get(x, x) for x in v) if v else "None"),
+    "elo_only": ("Inputs", lambda v: "Elo + home only" if v else "All"),
+    "rest": ("Short-rest effect", lambda v: "On" if v else "Off"),
+    "promoted": ("New-club start", lambda v: f"{float(v):g} below average" if v else "Off"),
+    "draw": ("Extra draw chance", lambda v: f"+{float(v) * 100:.0f}%" if v else "Off"),
 }
+EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "Shot share", "goalies": "Goalies",
+               "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating"}
 SETTING_HELP = {
     "team_half_life": "how fast it forgets old games when it sizes up a team's form",
     "rating_half_life": "how fast the power ratings forget old games",
@@ -284,7 +290,12 @@ SETTING_HELP = {
     "reg": "how hard a club with few results is pulled toward its league's average",
     "xg": "how much of the rating comes from shots on target instead of goals",
     "home_reg": "how hard each league's home edge is pulled toward the overall one",
-    "extras": "inputs added on top of the power ratings: rest days and travel, or how much of each lineup is on the injury report",
+    "extras": ("inputs added on top: rest and travel, players out, shot share, goalies, a Massey rating (scoring margin adjusted "
+               "for opponents), a Pythagorean record (the win rate points scored and allowed point to) or a FiveThirtyEight-style Elo rating"),
+    "elo_only": "whether it uses every input or only the Elo rating and home edge, the classic FiveThirtyEight way",
+    "rest": "whether a club that played 3 or fewer days earlier gets a fitted penalty",
+    "promoted": "where a club new to its league starts, instead of the league average",
+    "draw": "a nudge up to the draw chance",
 }
 
 
@@ -292,6 +303,8 @@ def recipe_cell(k, v):
     lab, f = SETTING_WORDS.get(k, (k, str))
     if v is None and k == "xg":
         return "0% (off)"
+    if v is None and k in ("elo_only", "rest", "promoted", "draw", "extras"):
+        v = [] if k == "extras" else None
     if isinstance(v, float) and v.is_integer() and k in ("reg", "home_reg"):
         v = int(v)
     try:
@@ -301,6 +314,7 @@ def recipe_cell(k, v):
 
 
 SWITCH_POINTS = 5  # Edge score points a tryout must gain on the live version to take over
+PROPS_MARGIN = 0.1  # yards of receiving miss that count as one switch margin for the player-stats settings
 
 
 def tryout_scores(cands, live_idx, live_score, key, margin):
@@ -353,10 +367,10 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     if has_edge:
         others = sorted(others, key=score)
     hidden = 0
-    if len(cands) > 8:
+    if len(cands) > 10:
         others = sorted(others, key=score)
-        hidden = len(others) - 7
-        others = others[:7]
+        hidden = len(others) - 9
+        others = others[:9]
     order = ([live_idx] if live_idx is not None else []) + others
     for i in order:
         c = cands[i]
@@ -390,7 +404,7 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     if extra_callout:
         call.append(extra_callout)
     if hidden:
-        call.append(f"{len(cands)} versions were tried. The table shows the live one and the 7 best; the other {hidden} all scored worse.")
+        call.append(f"{len(cands)} versions were tried. The table shows the live one and the 9 best; the other {hidden} all scored worse.")
     if has_edge:
         call.append(f"Edge scores here come from the accuracy score the retrain picks with. The live version keeps its own score"
                     f"{'' if live_score is not None else ' (50 until it has live picks)'}, and a tryout must score {SWITCH_POINTS}+ more to take over.")
@@ -927,6 +941,10 @@ def build_td():
     # grade
     v_ok = len(val) >= MIN_N and vprof > 0
     b_ok = ob is not None and ob <= bb
+    # Edge score: how often its top-10 picks scored vs the chance the sportsbook gave the same players
+    t10b = [r for r in t10 if r["bp"] is not None]
+    if t10b:
+        m["score"] = edge_score(mean([1.0 if r["res"] == "W" else 0.0 for r in t10b]), mean([r["bp"] for r in t10b]), len(t10b))
     if n < GRADE_MIN_N:
         m["grade"] = "Not graded"
     else:
@@ -1022,14 +1040,16 @@ def build_td():
     rh = tdc.get("recent_holdout") or {}
     if rh:
         rows_t = []
-        for k, lab in (("live", "Live"), ("refit", "Refit with newest games")):
-            v = rh.get(k)
-            if v:
-                rows_t.append({"live": k == "live", "best": False, "cells": [lab + (' <span class="tag">kept</span>' if k == "live" else ""),
-                               S(f"{v['brier']:.4f}".lstrip("0")), S(pc(v["mean_pred"], 1)), S(pc(v["actual_rate"], 1)), S(f"{v['n']:,}")]})
-        m["tryouts"] = {"head": ["Version", "Accuracy score<br>(lower is better)", "Average chance it gave", "How often they scored", "Player-games"],
+        vers = [(k, lab, rh.get(k)) for k, lab in (("live", "Live"), ("refit", "Refit with newest games")) if rh.get(k)]
+        sc = tryout_scores([{"brier": v["brier"]} for _, _, v in vers], 0 if vers and vers[0][0] == "live" else None,
+                           m.get("score"), "brier", 0.002)
+        for (k, lab, v), e in zip(vers, sc):
+            rows_t.append({"live": k == "live", "best": False, "cells": [lab + (' <span class="tag">kept</span>' if k == "live" else ""),
+                           score_chip(e) if e is not None else "",
+                           S(f"{v['brier']:.4f}".lstrip("0")), S(pc(v["mean_pred"], 1)), S(pc(v["actual_rate"], 1)), S(f"{v['n']:,}")]})
+        m["tryouts"] = {"head": ["Version", "Edge score", "Accuracy score<br>(lower is better)", "Average chance it gave", "How often they scored", "Player-games"],
                         "rows": rows_t, "helps": [],
-                        "callout": "The two versions are within a hair of each other on the last few weeks of games, and both average chance and real scoring rate line up on that test. These are test scores, not live records."}
+                        "callout": "Edge scores come from the accuracy score the refit is judged on. The refit goes live unless it scores 5+ points below the live version. These are test scores, not live records."}
         m["tryout_title"] = f"Refit check, {nice_date(tdc.get('fit_at', ''))}"
         m["tryout_intro"] = f"The refit was tested on the last {rh.get('weeks')} weeks of games it hadn't seen, against the live version."
     m["note"] = f"Live picks only, {season} season. {n} graded players ({len([r for r in rows if r['res'] == 'void'])} who didn't play left out)."
@@ -1086,14 +1106,19 @@ def build_props():
     grid = d.get("half_life_grid_search") or []
     if grid:
         best = min(grid, key=lambda g: g["receiving_baseline_mae"])
+        live_i = next((i for i, g in enumerate(grid) if g["half_life"] == d.get("half_life_games")), None)
+        sc = tryout_scores([{"mae": g["receiving_baseline_mae"]} for g in grid], live_i, None, "mae", PROPS_MARGIN)
+        order = sorted(range(len(grid)), key=lambda i: (i != live_i, -(sc[i] or 0)))
         rows = []
-        for g in grid:
-            is_live = g["half_life"] == d.get("half_life_games")
+        for i in order:
+            g = grid[i]
+            is_live = i == live_i
             rows.append({"live": is_live, "best": g is best, "cells": [("Live" + ' <span class="tag">kept</span>') if is_live else f"{g['half_life']} games",
+                                                                      score_chip(sc[i]) if sc[i] is not None else "",
                                                                       esc(f"half after {g['half_life']} games"), S(f"{g['receiving_baseline_mae']:.2f}"), S(f"{g['n']:,}")]})
-        m["tryouts"] = {"head": ["Version", "Forgets old games", "Receiving yards miss<br>(lower is better)", "Player-games"], "rows": rows,
+        m["tryouts"] = {"head": ["Version", "Edge score", "Forgets old games", "Receiving yards miss<br>(lower is better)", "Player-games"], "rows": rows,
                         "helps": ["<b>Forgets old games</b>: how fast his old games stop counting toward his average."],
-                        "callout": f"The fit picks the setting with the smallest miss, so {d.get('half_life_games')} games is live. There is no “only if better” check against the previous version."}
+                        "callout": f"The fit picks the setting with the smallest miss, so {d.get('half_life_games')} games is live. There is no “only if better” check against the previous version. Edge scores start at 50 for the live setting and move 5 points per 0.1 yards of miss."}
         m["tryout_title"] = f"Settings tried at the {nice_date(d.get('fitted_at', ''))} fit"
         m["tryout_intro"] = "Each setting is how fast a player's old games fade. All were tested on games they hadn't seen."
     m["note"] = "Held-back test games only. Nothing on this card is a live record."

@@ -58,8 +58,32 @@ SWITCH_MARGIN = 0.001  # log loss a new recipe must win by
 SANITY_MARGIN = 0.005  # how much worse than the live model the refit may score on the holdout
 
 DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "sp_shrink": M.SP_SHRINK_IP, "years": 2}
-RECIPES = [{"elo_k": k, "elo_carry": c, "sp_shrink": s, "years": y}
-           for k in (3, 4, 6) for c in (0.5, 0.67) for s in (25, 40, 60) for y in (2, 3)]
+# Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
+# best settings on three test windows (the latest games and the end of each
+# of the two regular seasons before; a slower Elo, K 2, and more starter
+# shrinkage did best, so they joined), and tryouts built on published methods
+# (model.EXTRAS) - plain FiveThirtyEight-style Elo, Massey / SRS ratings and
+# Pythagorean expectation. Massey plus Pythagorean together added nothing over
+# either alone, so the fourth tryout is Massey on the best Elo setting.
+_L = {"elo_k": 3, "elo_carry": 0.67, "sp_shrink": 60, "years": 2}
+_SLOW = {"elo_k": 2, "elo_carry": 0.5, "sp_shrink": 80, "years": 3}
+RECIPES = [
+    _L,
+    {"elo_k": 3, "elo_carry": 0.5, "sp_shrink": 60, "years": 3},
+    {"elo_k": 3, "elo_carry": 0.67, "sp_shrink": 60, "years": 3},
+    {"elo_k": 2, "elo_carry": 0.5, "sp_shrink": 60, "years": 3},
+    _SLOW,
+    {**_SLOW, "elo_carry": 0.67},
+    {**_L, "elo_only": True},
+    {**_L, "extras": ["massey"]},
+    {**_L, "extras": ["pyth"]},
+    {**_SLOW, "extras": ["massey"]},
+]
+
+
+def recipe_features(recipe):
+    base = ["home_field", "elo"] if recipe.get("elo_only") else M.FEATURES
+    return base + [c for kind in recipe.get("extras", []) for c in M.EXTRAS[kind]]
 
 
 def league_params(recipe):
@@ -79,7 +103,7 @@ def build_rows(params=None):
     rows = []
     for g in store.load_all():
         feats = league.features_for_past(g)
-        rows.append({"game": g, "x": [feats[k] for k in M.FEATURES],
+        rows.append({"game": g, "f": feats,
                      "home_won": g["home_runs"] > g["away_runs"]})
         league.update(g)
     first = rows[0]["game"]["season"] if rows else None
@@ -90,12 +114,13 @@ def build_rows(params=None):
     return rows
 
 
-def fit(rows):
+def fit(rows, features=None):
     """Ridge-penalized logistic regression by Newton's method."""
-    X = np.array([r["x"] for r in rows])
+    features = features or M.FEATURES
+    X = np.array([[r["f"][k] for k in features] for r in rows])
     y = np.array([r["home_won"] for r in rows], dtype=float)
     pen = np.full(X.shape[1], L2)
-    pen[M.FEATURES.index("home_field")] = 0.0
+    pen[features.index("home_field")] = 0.0
     w = np.zeros(X.shape[1])
     for _ in range(50):
         p = 1 / (1 + np.exp(-(X @ w)))
@@ -105,13 +130,13 @@ def fit(rows):
         w -= step
         if np.max(np.abs(step)) < 1e-8:
             break
-    return {"features": M.FEATURES, "coef": {k: round(float(c), 5) for k, c in zip(M.FEATURES, w)}}
+    return {"features": features, "coef": {k: round(float(c), 5) for k, c in zip(features, w)}}
 
 
 def evaluate(weights, rows):
     preds = []
     for r in rows:
-        p_home = M.win_prob(weights, dict(zip(M.FEATURES, r["x"])))
+        p_home = M.win_prob(weights, r["f"])
         pick_home = p_home >= 0.5
         preds.append({"date": r["game"]["date"], "p_home": p_home, "conf": p_home if pick_home else 1 - p_home,
                       "correct": pick_home == r["home_won"], "home_won": r["home_won"]})
@@ -157,7 +182,7 @@ def raw_log_loss(weights, rows):
     """Unrounded log loss, for comparing recipes whose scores are close."""
     total = 0.0
     for r in rows:
-        p = M.win_prob(weights, dict(zip(M.FEATURES, r["x"])))
+        p = M.win_prob(weights, r["f"])
         total -= math.log(max(1e-9, p if r["home_won"] else 1 - p))
     return total / len(rows)
 
@@ -178,7 +203,7 @@ def train_recipe(recipe, before_idx=None):
     train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
     if len(train) < MIN_TRAIN_GAMES:
         return None
-    w = fit(train)
+    w = fit(train, recipe_features(recipe))
     w["league"] = league_params(recipe)
     w["recipe"] = recipe
     w["training_games"] = len(train)
@@ -202,17 +227,13 @@ def season_backtest(recipe):
     test = [r for r in rows if r["game"]["season"] == test_season]
     if len(train) < MIN_TRAIN_GAMES:
         return {}
-    w = fit(train)
+    w = fit(train, recipe_features(recipe))
     test_regular = [r for r in test if r["game"]["type"] == "regular"]
     post = [r for r in test if r["game"]["type"] != "regular"]
     bt = evaluate(w, test_regular)
     home_rate = float(np.mean([r["home_won"] for r in train]))
 
-    def only(rs, keep):
-        return [{**r, "x": [v if M.FEATURES[i] in keep else 0.0 for i, v in enumerate(r["x"])]} for r in rs]
-
-    elo_keep = {"home_field", "elo"}
-    elo_bt = evaluate(fit(only(train, elo_keep)), only(test_regular, elo_keep))
+    elo_bt = evaluate(fit(train, ["home_field", "elo"]), test_regular)
     return {
         "trained_on": f"{first} to {test_season - 1}",
         "backtest_season": str(test_season),
@@ -265,7 +286,8 @@ def summary(lines):
 
 
 def recipe_name(r):
-    return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, SP shrink {r['sp_shrink']}, {r['years']} years"
+    extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
+    return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, SP shrink {r['sp_shrink']}, {r['years']} years{extras}"
 
 
 def main():

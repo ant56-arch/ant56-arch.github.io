@@ -15,6 +15,15 @@ for the two extra tryouts in fit_model.py's recipe search:
                           of snaps over his last 4 games, times how likely his
                           status is to keep him out. QBs are left out: the
                           ratings' qb_diff already uses the starting QB.
+  "elo"       elo_diff    FiveThirtyEight-style Elo, home minus away, in
+                          hundreds of points: K 20, a margin-of-victory
+                          multiplier that shrinks for big favorites, 1/3 pulled
+                          back to average each offseason. Walks every game
+                          nflverse has, so it needs the full history.
+  "pyth"      pyth_diff   Pythagorean expectation (points scored^2.37 over
+                          scored^2.37 + allowed^2.37) for this season so far,
+                          with 2 games of league-average scoring mixed in,
+                          home minus away in log-odds (the log5 matchup)
 
 Every input comes from nflverse and is known before kickoff: rest days and
 division games from the schedule, injuries from the Wednesday-Friday reports,
@@ -33,7 +42,12 @@ KEY = ["season", "week", "home_team", "away_team"]
 FEATURES = {
     "rest": ["rest_diff", "travel_tz", "div_home"],
     "injuries": ["inj_off_diff", "inj_def_diff"],
+    "elo": ["elo_diff"],
+    "pyth": ["pyth_diff"],
 }
+ELO_K, ELO_HOME, ELO_CARRY = 20.0, 48.0, 2 / 3
+PYTH_EXP, PYTH_PRIOR = 2.37, 2.0
+GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 
 # Hours behind Eastern at each team's home stadium (Arizona keeps standard
 # time, so it is 2 or 3 behind; 2.5 splits the season).
@@ -59,6 +73,83 @@ def rest_features(schedules):
     g["travel_tz"] = tz * home
     g["div_home"] = g["div_game"].fillna(0).astype(float) * home
     return g[KEY + FEATURES["rest"]]
+
+
+def _in_order(schedules):
+    g = schedules.copy()
+    g["_day"] = g["gameday"].astype(str).str[:10]
+    return g.sort_values(["season", "_day", "week"], kind="stable")
+
+
+ELO_ALIAS = {"OAK": "LV", "SD": "LAC", "STL": "LA"}  # a relocated team keeps its rating
+
+
+def elo_features(schedules):
+    """elo_diff before every game in schedules (finished or not), walking the
+    finished games in date order."""
+    elo, season, out = {}, None, []
+    for r in _in_order(schedules).itertuples(index=False):
+        hk, ak = ELO_ALIAS.get(r.home_team, r.home_team), ELO_ALIAS.get(r.away_team, r.away_team)
+        if r.season != season:
+            if season is not None and elo:
+                mean = sum(elo.values()) / len(elo)
+                elo = {t: mean + ELO_CARRY * (v - mean) for t, v in elo.items()}
+            season = r.season
+        h, a = elo.get(hk, 1500.0), elo.get(ak, 1500.0)
+        out.append((r.season, r.week, r.home_team, r.away_team, (h - a) / 100))
+        if pd.isna(r.home_score) or pd.isna(r.away_score):
+            continue
+        margin = r.home_score - r.away_score
+        diff = h + (0 if r.location == "Neutral" else ELO_HOME) - a
+        expected = 1 / (1 + 10 ** (-diff / 400))
+        won = 1.0 if margin > 0 else 0.5 if margin == 0 else 0.0
+        winner_diff = diff if margin > 0 else -diff
+        mult = np.log(abs(margin) + 1) * 2.2 / (winner_diff * 0.001 + 2.2) if margin else 1.0
+        shift = ELO_K * mult * (won - expected)
+        elo[hk], elo[ak] = h + shift, a - shift
+    return pd.DataFrame(out, columns=KEY + ["elo_diff"])
+
+
+def pyth_features(schedules):
+    """pyth_diff before every game in schedules, from this season's finished games."""
+    pf, pa, season, out = {}, {}, None, []
+    tot = [0.0, 0]
+    for r in _in_order(schedules).itertuples(index=False):
+        if r.season != season:
+            pf, pa, tot, season = {}, {}, [0.0, 0], r.season
+        avg = tot[0] / tot[1] if tot[1] else 22.0
+
+        def lo(t):
+            f = pf.get(t, 0.0) + PYTH_PRIOR * avg
+            x = pa.get(t, 0.0) + PYTH_PRIOR * avg
+            p = f ** PYTH_EXP / (f ** PYTH_EXP + x ** PYTH_EXP)
+            return np.log(p / (1 - p))
+        out.append((r.season, r.week, r.home_team, r.away_team, lo(r.home_team) - lo(r.away_team)))
+        if pd.isna(r.home_score) or pd.isna(r.away_score):
+            continue
+        for t, f, x in ((r.home_team, r.home_score, r.away_score), (r.away_team, r.away_score, r.home_score)):
+            pf[t] = pf.get(t, 0.0) + f
+            pa[t] = pa.get(t, 0.0) + x
+            tot[0] += f
+            tot[1] += 1
+    return pd.DataFrame(out, columns=KEY + ["pyth_diff"])
+
+
+def full_history(schedules, cache_dir=None):
+    """Every NFL game nflverse has, for the Elo walk. Falls back to the
+    schedules given if the download fails."""
+    try:
+        games = pd.read_csv(GAMES_URL)
+        if cache_dir:
+            os.makedirs(cache_dir, exist_ok=True)
+            games.to_csv(os.path.join(cache_dir, "games_all.csv"), index=False)
+        return games
+    except Exception as e:  # noqa: BLE001
+        cached = os.path.join(cache_dir or "", "games_all.csv")
+        if cache_dir and os.path.exists(cached):
+            return pd.read_csv(cached)
+        print(f"  Full game history unavailable ({e}); Elo starts from the schedules given.")
+        return schedules
 
 
 def _usual_shares(snaps):
@@ -138,9 +229,15 @@ def load_injury_inputs(seasons, cache_dir, current_season=None):
     return cat(inj), cat(snaps), players
 
 
-def context_features(schedules, kinds, injury_inputs=None):
-    """KEY + the features of each kind in kinds, one row per game in schedules."""
+def context_features(schedules, kinds, injury_inputs=None, history=None):
+    """KEY + the features of each kind in kinds, one row per game in schedules.
+    history: every game to walk the Elo through (defaults to schedules)."""
     out = schedules[KEY].copy()
+    if "elo" in kinds:
+        h = history if history is not None else schedules
+        out = out.merge(elo_features(h).drop_duplicates(KEY), on=KEY, how="left")
+    if "pyth" in kinds:
+        out = out.merge(pyth_features(schedules).drop_duplicates(KEY), on=KEY, how="left")
     if "rest" in kinds:
         out = out.merge(rest_features(schedules), on=KEY, how="left")
     if "injuries" in kinds:

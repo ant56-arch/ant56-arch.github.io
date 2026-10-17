@@ -59,14 +59,27 @@ DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3}
 # The two Elo K 12 / carry 0.5 tryouts were dropped on 2026-10-17: they
 # finished last at every retrain. Their places went to two tryouts with new
 # inputs from box scores (model.EXTRAS): shot share, and that plus goalies.
-RECIPES = ([{"elo_k": k, "elo_carry": c, "years": y}
-            for k in (5, 8, 12) for c in (0.5, 0.7, 0.85) for y in (2, 3) if (k, c) != (12, 0.5)]
-           + [{"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3, "extras": extras}
-              for extras in (["shots"], ["shots", "goalies"])])
+# Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
+# best plain-Elo settings, and tryouts built on published methods - plain
+# FiveThirtyEight-style Elo, Massey / SRS ratings and Pythagorean expectation.
+_L = {"elo_k": 8, "elo_carry": 0.7, "years": 3}
+RECIPES = [
+    {**_L, "extras": ["shots", "goalies"]},
+    {**_L, "extras": ["shots"]},
+    _L,
+    {"elo_k": 5, "elo_carry": 0.85, "years": 3},
+    {"elo_k": 12, "elo_carry": 0.85, "years": 3},
+    {**_L, "elo_only": True},
+    {**_L, "elo_only": True, "extras": ["shots", "goalies"]},
+    {**_L, "extras": ["shots", "goalies", "massey"]},
+    {**_L, "extras": ["shots", "goalies", "pyth"]},
+    {**_L, "extras": ["shots", "goalies", "massey", "pyth"]},
+]
 
 
 def recipe_features(recipe):
-    return M.FEATURES + [c for kind in recipe.get("extras", []) for c in M.EXTRAS[kind]]
+    base = ["home_ice", "elo"] if recipe.get("elo_only") else M.FEATURES
+    return base + [c for kind in recipe.get("extras", []) for c in M.EXTRAS[kind]]
 
 
 def league_params(recipe):
@@ -260,7 +273,7 @@ def summary(lines):
 
 
 def recipe_name(r):
-    extras = "".join(f" + {kind}" for kind in r.get("extras", []))
+    extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
     return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, {r['years']} years{extras}"
 
 

@@ -28,15 +28,26 @@ Features are home-minus-away and favor the home team when positive:
               team's defense, season to date, shrunk toward average early on
   recent      point differential over the last 5 games, shrunk the same way
   rest        days since the last game (capped at 4)
+Two optional features follow published rating methods (game_methods.py), and
+only recipes that list them in "extras" use them. Both use Division I games
+only and stand as they did that morning, like AdjEM:
+  massey      Massey / Simple Rating System point margin, opponent-adjusted
+  pyth        Pythagorean expectation from points for and against (Pomeroy's
+              old exponent, 11.5), as log-odds
 The model predicts the home team's margin; the win chance is the normal CDF of
 margin / sigma.
 """
 
 import math
+import os
+import sys
 from collections import defaultdict
 from datetime import date
 
 import numpy as np
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game_methods import SeasonMethods  # noqa: E402
 
 ELO_START = 1500
 ELO_K = 24
@@ -53,6 +64,8 @@ DI_MIN_GAMES = 5  # games in a season that make a team Division I (ESPN lists D-
 DEFAULT_PARAMS = {"half_life": 60, "carry": 0.6, "prior": 4, "elo_k": ELO_K, "elo_carry": ELO_CARRY}
 
 FEATURES = ["home_court", "em", "elo", "efg", "tov", "orb", "ftr", "recent", "rest"]
+EXTRAS = {"massey": ["massey"], "pyth": ["pyth"]}
+PYTH_EXPONENT = 11.5  # KenPom's Pythagorean exponent before he moved to AdjEM
 
 # League-average four factors, used to shrink small samples.
 AVG = {"efg": 0.505, "tov": 0.175, "orb": 0.29, "ftr": 0.32}
@@ -126,6 +139,8 @@ class League:
         self.factor_games = defaultdict(int)
         self._ratings = None
         self._ratings_key = None  # how many of self.games the cached ratings used
+        self.methods = SeasonMethods(PYTH_EXPONENT, shrink=4.0, prior=4.0)
+        self.methods_pending = []  # D-I results not yet in self.methods: they go in when a later day is asked
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -264,9 +279,20 @@ class League:
         w, l = self.wins[team]
         return f"{w}-{l}"
 
+    def _methods_through(self, day):
+        """Add every pending result from before `day` to the Massey /
+        Pythagorean ratings, so they are solved once a day (the solve is the
+        slow part of a walk) and stand as they did that morning."""
+        ready = [x for x in self.methods_pending if x[0] < day]
+        if ready:
+            for _, h, a, hp, ap, neutral in ready:
+                self.methods.add(h, a, hp, ap, neutral)
+            self.methods_pending = [x for x in self.methods_pending if x[0] >= day]
+
     # ── features ──
     def features(self, g):
         self._check_season(g["season"])
+        self._methods_through(g["date"])
         h, a = g["home"], g["away"]
         r = self.ratings(g["date"])
         _, _, em_h, _ = self.team_rating(r, h)
@@ -288,6 +314,8 @@ class League:
             "ftr": matchup("ftr"),
             "recent": self.recent(h) - self.recent(a),
             "rest": float(self.rest_days(h, g["date"]) - self.rest_days(a, g["date"])),
+            "massey": self.methods.massey(h) - self.methods.massey(a),
+            "pyth": self.methods.pyth(h) - self.methods.pyth(a),
         }
 
     # ── learning from a result ──
@@ -304,6 +332,7 @@ class League:
             return  # non-Division I opponents don't move ratings, like KenPom
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
+        self.methods_pending.append((g["date"], h, a, g["home_pts"], g["away_pts"], bool(g.get("neutral"))))
 
         self.opponents[h].append(a)
         self.opponents[a].append(h)

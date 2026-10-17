@@ -18,6 +18,11 @@ Season run differential and bullpen ERA were tried too; neither added
 anything once Elo and the starters are in (tested on the 2025 and 2026
 seasons), so they aren't features. The stored games keep bullpen lines in
 case that changes.
+Two optional features follow published rating methods (game_methods.py), and
+only recipes that list them in "extras" use them:
+  massey     - Massey / Simple Rating System run margin, opponent-adjusted
+  pyth       - Pythagorean expectation from runs scored and allowed (Bill
+               James, exponent 1.83), as log-odds
 A starter's line blends his ERA and FIP this season and (at a discount) his
 past seasons, shrunk toward league average; an unannounced or unknown starter
 counts as a bit worse than average. The win chance is a logistic regression
@@ -25,8 +30,13 @@ on these features (research/train.py fits it).
 """
 
 import math
+import os
+import sys
 from collections import defaultdict
 from datetime import date
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game_methods import SeasonMethods  # noqa: E402
 
 ELO_START = 1500
 ELO_HOME = 24
@@ -41,6 +51,8 @@ LEAGUE_RA = 4.3  # starting point for league ERA before any games are stored
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "sp_shrink": SP_SHRINK_IP}
 
 FEATURES = ["home_field", "elo", "starters"]
+EXTRAS = {"massey": ["massey"], "pyth": ["pyth"]}
+PYTH_EXPONENT = 1.83  # baseball-reference's Pythagorean exponent
 
 
 def sigmoid(z):
@@ -65,6 +77,8 @@ class League:
         self.sp_name = {}
         self.lg = [0.0] * 6  # league starter totals this season
         self.lg_prior = None  # last season's league starter totals
+        self.methods = SeasonMethods(PYTH_EXPONENT, shrink=10.0, prior=10.0)
+        self.methods_pending = []  # results not yet in self.methods: they go in when a later day is asked
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -80,6 +94,8 @@ class League:
             self.sp_season.clear()
             self.wins.clear()
             self.lg = [0.0] * 6
+            self.methods.reset()
+            self.methods_pending = []
         self.season = season
 
     def check_season(self, season):
@@ -144,14 +160,29 @@ class League:
             return 3
         return max(0, min(3, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
 
+    def _methods_through(self, day):
+        """Add every pending result from before `day` to the Massey /
+        Pythagorean ratings. Holding back a day's results until the next day
+        means the ratings are solved once a day, not after every game (the
+        solve is the slow part of a walk), and stand as they did that morning,
+        as at pick time."""
+        ready = [r for r in self.methods_pending if r[0] < day]
+        if ready:
+            for _, h, a, hp, ap in ready:
+                self.methods.add(h, a, hp, ap)
+            self.methods_pending = [r for r in self.methods_pending if r[0] >= day]
+
     def features(self, g, home_sp=None, away_sp=None):
         """Features for game g with the given starter ids (None = not announced)."""
         self.check_season(g["season"])
+        self._methods_through(g["date"])
         h, a = g["home"], g["away"]
         return {
             "home_field": 1.0,
             "elo": (self.elo[h] - self.elo[a]) / 100,
             "starters": self.sp_rating(home_sp) - self.sp_rating(away_sp),
+            "massey": self.methods.massey(h) - self.methods.massey(a),
+            "pyth": self.methods.pyth(h) - self.methods.pyth(a),
         }
 
     def features_for_past(self, g):
@@ -179,6 +210,7 @@ class League:
         if g["type"] == "regular":
             self.wins[h][0 if margin > 0 else 1] += 1
             self.wins[a][1 if margin > 0 else 0] += 1
+        self.methods_pending.append((g["date"], h, a, g["home_runs"], g["away_runs"]))
         self.last_date[h] = self.last_date[a] = g["date"]
 
         for side in ("home", "away"):

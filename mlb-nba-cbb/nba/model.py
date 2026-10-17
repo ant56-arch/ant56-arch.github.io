@@ -13,13 +13,22 @@ Features are home-minus-away differences plus a home-court flag:
   rest, b2b  - days since the last game (capped at 3) and back-to-back flags
   missing    - value of regular rotation players who aren't playing, from
                each player's average game score this season
+Two optional features follow published rating methods (game_methods.py), and
+only recipes that list them in "extras" use them:
+  massey     - Massey / Simple Rating System point margin, opponent-adjusted
+  pyth       - Pythagorean expectation from points for and against (log-odds)
 The model predicts the home team's margin; the win chance is the normal CDF of
 margin / sigma.
 """
 
 import math
+import os
+import sys
 from collections import defaultdict, deque
 from datetime import date
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game_methods import SeasonMethods  # noqa: E402
 
 ELO_START = 1500
 ELO_K = 20
@@ -36,6 +45,8 @@ PLAYER_PRIOR_GAMES = 8  # last season's average fades out over this many games t
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_court", "elo", "net", "recent", "rest", "b2b_home", "b2b_away", "missing_home", "missing_away"]
+EXTRAS = {"massey": ["massey"], "pyth": ["pyth"]}
+PYTH_EXPONENT = 14.0  # the usual NBA Pythagorean exponent (Morey / Hollinger)
 
 
 def game_score(p):
@@ -60,6 +71,7 @@ class League:
         self.player_name = {}
         self.p_season = defaultdict(lambda: [0, 0.0])  # player -> [games, game score sum] this season
         self.p_prior = {}  # player -> last season's average game score
+        self.methods = SeasonMethods(PYTH_EXPONENT, shrink=5.0, prior=5.0)
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -71,6 +83,7 @@ class League:
             self.p_season.clear()
             self.margins.clear()
             self.team_rosters.clear()
+            self.methods.reset()
         self.season = season
 
     def _check_season(self, season):
@@ -131,6 +144,8 @@ class League:
             "b2b_away": 1.0 if a_rest == 0 else 0.0,
             "missing_home": home_missing / 10,
             "missing_away": away_missing / 10,
+            "massey": self.methods.massey(h) - self.methods.massey(a),
+            "pyth": self.methods.pyth(h) - self.methods.pyth(a),
         }
 
     def features_from_box(self, g, box):
@@ -162,6 +177,7 @@ class League:
 
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
+        self.methods.add(h, a, g["home_pts"], g["away_pts"], g.get("neutral"))
         self.last_date[h] = self.last_date[a] = g["date"]
 
         for team in (h, a):

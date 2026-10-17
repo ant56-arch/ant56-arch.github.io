@@ -20,14 +20,22 @@ Two optional features need box scores, and only recipes that list them in
                most, pulled toward average with 500 shots), weighted by his
                share of the team's last 10 starts. No starter has to be known
                before the game, so picks and training see the same thing.
+Two more optional features follow published rating methods (game_methods.py):
+  massey     - Massey / Simple Rating System goal margin, opponent-adjusted
+  pyth       - Pythagorean expectation from goals for and against (log-odds)
 The model predicts the home team's goal margin; the win chance is the normal
 CDF of margin / sigma. A game decided in overtime or a shootout counts as a
 one-goal win, which is how its final score reads.
 """
 
 import math
+import os
+import sys
 from collections import defaultdict
 from datetime import date
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game_methods import SeasonMethods  # noqa: E402
 
 ELO_START = 1500
 ELO_K = 8
@@ -42,7 +50,8 @@ RECENT_SHRINK = 5
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_ice", "elo", "net", "recent", "rest", "b2b_home", "b2b_away"]
-EXTRAS = {"shots": ["shot_share"], "goalies": ["goalie"]}
+EXTRAS = {"shots": ["shot_share"], "goalies": ["goalie"], "massey": ["massey"], "pyth": ["pyth"]}
+PYTH_EXPONENT = 2.0    # hockey's usual Pythagorean exponent
 SHOT_GAMES = 20
 SHOT_SHRINK = 5        # games of an even shot split mixed in
 GOALIE_PRIOR = 500     # shots of average goaltending mixed into each goalie
@@ -65,6 +74,7 @@ class League:
         self.goalie = defaultdict(lambda: [0.0, 0.0])  # goalie id -> [shots against, saves], decayed
         self.starts = defaultdict(list)   # team -> recent starting goalie ids
         self.lg = [0.0, 0.0]              # league shots against, saves (decayed)
+        self.methods = SeasonMethods(PYTH_EXPONENT, shrink=8.0, prior=8.0)
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -73,6 +83,7 @@ class League:
             for t in list(self.elo):
                 self.elo[t] = mean + self.p["elo_carry"] * (self.elo[t] - mean)
             self.margins.clear()
+            self.methods.reset()
         self.season = season
 
     def _check_season(self, season):
@@ -126,6 +137,8 @@ class League:
             "b2b_away": 1.0 if a_rest == 0 else 0.0,
             "shot_share": self.shot_share(h) - self.shot_share(a),
             "goalie": self.goalie_quality(h) - self.goalie_quality(a),
+            "massey": self.methods.massey(h) - self.methods.massey(a),
+            "pyth": self.methods.pyth(h) - self.methods.pyth(a),
         }
 
     # ── learning from a result ──
@@ -170,6 +183,7 @@ class League:
         self.elo[a] -= shift
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
+        self.methods.add(h, a, g["home_pts"], g["away_pts"], g.get("neutral"))
         self.last_date[h] = self.last_date[a] = g["date"]
 
 
