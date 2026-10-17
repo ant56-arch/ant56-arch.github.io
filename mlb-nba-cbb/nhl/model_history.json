@@ -588,6 +588,220 @@
     "b2b_home": -0.2022,
     "b2b_away": 0.2264
    }
+  },
+  {
+   "run_at": "2026-10-17T05:38:23+00:00",
+   "data_through": "2026-10-16",
+   "holdout": {
+    "from": "2026-04-09",
+    "games": 250,
+    "home_rate_log_loss": 0.6933
+   },
+   "live_model": {
+    "trained_at": "2026-10-16T08:11:48+00:00",
+    "recipe": {
+     "elo_k": 8,
+     "elo_carry": 0.7,
+     "years": 3
+    },
+    "holdout_log_loss": 0.6716
+   },
+   "current_recipe_log_loss": 0.6726,
+   "best_recipe": {
+    "recipe": {
+     "elo_k": 8,
+     "elo_carry": 0.7,
+     "years": 3,
+     "extras": [
+      "shots",
+      "goalies"
+     ]
+    },
+    "log_loss": 0.6634
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.5,
+      "years": 2
+     },
+     "log_loss": 0.6727
+    },
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.5,
+      "years": 3
+     },
+     "log_loss": 0.6727
+    },
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.7,
+      "years": 2
+     },
+     "log_loss": 0.672
+    },
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.7,
+      "years": 3
+     },
+     "log_loss": 0.6721
+    },
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.85,
+      "years": 2
+     },
+     "log_loss": 0.672
+    },
+    {
+     "recipe": {
+      "elo_k": 5,
+      "elo_carry": 0.85,
+      "years": 3
+     },
+     "log_loss": 0.6722
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.5,
+      "years": 2
+     },
+     "log_loss": 0.6735
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.5,
+      "years": 3
+     },
+     "log_loss": 0.6734
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 2
+     },
+     "log_loss": 0.6726
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3
+     },
+     "log_loss": 0.6726
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.85,
+      "years": 2
+     },
+     "log_loss": 0.6725
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.85,
+      "years": 3
+     },
+     "log_loss": 0.6725
+    },
+    {
+     "recipe": {
+      "elo_k": 12,
+      "elo_carry": 0.7,
+      "years": 2
+     },
+     "log_loss": 0.6733
+    },
+    {
+     "recipe": {
+      "elo_k": 12,
+      "elo_carry": 0.7,
+      "years": 3
+     },
+     "log_loss": 0.6733
+    },
+    {
+     "recipe": {
+      "elo_k": 12,
+      "elo_carry": 0.85,
+      "years": 2
+     },
+     "log_loss": 0.6731
+    },
+    {
+     "recipe": {
+      "elo_k": 12,
+      "elo_carry": 0.85,
+      "years": 3
+     },
+     "log_loss": 0.673
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "extras": [
+       "shots"
+      ]
+     },
+     "log_loss": 0.6638
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "extras": [
+       "shots",
+       "goalies"
+      ]
+     },
+     "log_loss": 0.6634
+    }
+   ],
+   "switched_recipe": true,
+   "deployed": true,
+   "reason": "new recipe beat the current one on held-out games",
+   "trigger": "manual",
+   "live_picks_last_14_days": {
+    "days": 14,
+    "picks": 97,
+    "accuracy": 0.6701,
+    "predicted": 0.5635
+   },
+   "weights_before": {
+    "home_ice": 0.1863,
+    "elo": 0.6778,
+    "net": 0.2522,
+    "recent": -0.0738,
+    "rest": 0.1016,
+    "b2b_home": -0.2022,
+    "b2b_away": 0.2264
+   },
+   "weights_after": {
+    "home_ice": 0.1882,
+    "elo": 0.4352,
+    "net": 0.265,
+    "recent": -0.0736,
+    "rest": 0.0925,
+    "b2b_home": -0.24,
+    "b2b_away": 0.2623,
+    "shot_share": 7.0635,
+    "goalie": -0.0544
+   }
   }
  ]
 }
