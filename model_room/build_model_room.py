@@ -156,9 +156,35 @@ def grade_chip(name):
     return f'<span class="grade {cls}">{esc(name)}</span>'
 
 
-def grade_from(model_pct, base_pct, n):
+SCORE_PULL = 100  # picks of "no edge" mixed into every Edge score, so a short hot streak can't max it out
+
+
+def edge_score(model_pct, base_pct, n):
+    """One 1-100 score for every model in every league: 50 means it picks winners
+    exactly as often as its baseline (the Vegas favorite, or the home team / the
+    average hitter where there are no odds) on the same games. Each point of
+    pick rate above the baseline adds 10, each point below takes 10 away, after
+    pulling small samples toward 50: the gap counts n / (n + SCORE_PULL) of its
+    size. None under GRADE_MIN_N picks."""
+    if n < GRADE_MIN_N:
+        return None
+    gap = (model_pct - base_pct) * 100 * n / (n + SCORE_PULL)
+    return max(1, min(100, round(50 + 10 * gap)))
+
+
+def score_chip(score):
+    if score is None:
+        return ""
+    cls = "g-good" if score >= 60 else "g-bad" if score < 45 else "g-mixed"
+    return f'<span class="score {cls}" title="Edge score: 50 matches the baseline">{score}<small>/100</small></span>'
+
+
+def grade_from(model_pct, base_pct, n, m=None):
     """Simple rule: at least GRADE_MIN_N live picks, then 2+ points better than
-    the baseline is Working, 3+ points worse is Falling short, else Mixed."""
+    the baseline is Working, 3+ points worse is Falling short, else Mixed. With
+    m, also sets the model's Edge score from the same numbers."""
+    if m is not None:
+        m["score"] = edge_score(model_pct, base_pct, n)
     if n < GRADE_MIN_N:
         return "Not graded"
     d = (model_pct - base_pct) * 100
@@ -342,7 +368,7 @@ def last_switch(runs):
 
 # ── model block skeleton ─────────────────────────────────────────────────────
 def new_model(mid, name):
-    return {"id": mid, "name": name, "grade": "Not graded", "verdict": "", "summary": "",
+    return {"id": mid, "name": name, "grade": "Not graded", "score": None, "verdict": "", "summary": "",
             "how": None, "table": None, "chart": "", "good": [], "bad": [], "why": [], "tryouts": None,
             "tryout_title": "", "tryout_intro": "", "next": "", "note": "", "status_line": ""}
 
@@ -725,7 +751,7 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
         why.append(("Keep in mind", f"It's {n} games. A record this size can swing a lot with a few more weeks."))
 
     # ── Grade + verdict ──
-    m["grade"] = grade_from(pct_of(mW, n), pct_of(vW, len(vg)), n)
+    m["grade"] = grade_from(pct_of(mW, n), pct_of(vW, len(vg)), n, m)
     ats_bad = len(ats) >= MIN_N and pct_of(sum(int(g["m_ats"]) for g in ats), len(ats)) < 0.524
     if m["grade"] == "Working":
         m["verdict"] = "Good at picking who wins." + (" Not good enough to set its own spread, which is why spreads on the site come straight from Vegas." if ats_bad and blend.get("spread") == 0
@@ -1072,7 +1098,7 @@ def build_cfb_ratings():
         err_v = mean([abs(g["vs"] - (g["hs"] - g["as"])) for g in vg])
         (good if err_r <= err_v else bad).append(f"On those games its line missed the final margin by {S(f'{err_r:.1f}')} points on average. Vegas missed by {err_v:.1f}.")
     pairs = [(norm_cdf(abs(g["line"]) / 16.95), int((g["line"] > 0) == (g["hs"] > g["as"]))) for g in live if g["line"] != 0]
-    m["grade"] = grade_from(pct_of(rW, len(vg)), pct_of(vW, len(vg)), len(vg)) if len(vg) >= GRADE_MIN_N else grade_from(pct_of(W, n), pct_of(hW, n), n)
+    m["grade"] = grade_from(pct_of(rW, len(vg)), pct_of(vW, len(vg)), len(vg), m) if len(vg) >= GRADE_MIN_N else grade_from(pct_of(W, n), pct_of(hW, n), n, m)
     base_word = "Vegas favorites" if len(vg) >= GRADE_MIN_N else "always taking the home team"
     m["verdict"] = (f"Tracked on the side. It feeds the picks only as a backup, on runs where the advanced stats feed is down. "
                     f"So far it picks winners {('better than' if m['grade'] == 'Working' else 'worse than' if m['grade'] == 'Falling short' else 'about as well as')} {base_word}.")
@@ -1200,6 +1226,7 @@ def build_hitters():
     if voids >= MIN_N:
         bad.append(f"{voids} picks were voided because the player didn't bat (benched, scratched or postponed). They aren't counted either way.")
     d = pct_of(W, n) - (bl_rate or 0)
+    m["score"] = edge_score(pct_of(W, n), bl_rate or 0, n)
     m["grade"] = "Not graded" if n < GRADE_MIN_N else ("Working" if d >= 0.05 else "Mixed" if d >= 0 else "Falling short")
     m["verdict"] = (f"Its picks get a hit more often than the average hitter ({pc(pct_of(W, n))} vs {pc(bl_rate or 0)}), "
                     + ("by a clear margin." if d >= 0.05 else "but only by a little." if d >= 0 else "but it isn't beating the average hitter."))
@@ -1589,11 +1616,11 @@ def build_team(mid):
         m["status_line"] = "No live picks yet"
     else:
         if len(bf) >= GRADE_MIN_N:
-            m["grade"] = grade_from(pct_of(ourW_bf, len(bf)), pct_of(bW, len(bf)), len(bf))
+            m["grade"] = grade_from(pct_of(ourW_bf, len(bf)), pct_of(bW, len(bf)), len(bf), m)
             base_txt = f"sportsbook favorites ({rec(bW, len(bf) - bW)})"
             mine = rec(ourW_bf, len(bf) - ourW_bf)
         else:
-            m["grade"] = grade_from(pct_of(W, n), pct_of(hW, n), n)
+            m["grade"] = grade_from(pct_of(W, n), pct_of(hW, n), n, m)
             base_txt = f"always taking the home team ({rec(hW, n - hW)})"
             mine = rec(W, n - W)
         g = m["grade"]
@@ -1664,6 +1691,18 @@ h1 i{color:var(--ours)}
 .sum h3{margin:0;font-size:.95rem;font-stretch:112%;font-weight:800}
 .sum p{margin:0;font-size:.88rem;color:var(--muted)}
 .grade{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid currentColor;justify-self:start;white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.score{font-family:var(--mono);font-weight:500;font-size:13px;padding:1px 8px;border-radius:999px;background:var(--surface-2);white-space:nowrap}
+.score small{font-size:10px;opacity:.7}
+.chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.board{width:100%;border-collapse:collapse;font-size:14px}
+.board th,.board td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--rule)}
+.board th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:400}
+@media (max-width:520px){.board .barcol{display:none}}
+.board td.n{font-family:var(--mono);white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--surface-2);position:relative;min-width:80px}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:currentColor}
+.bar b{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--faint)}
 .g-good{color:var(--hit)}.g-mixed{color:var(--warn)}.g-bad{color:var(--miss)}.g-none{color:var(--faint)}
 .model{display:grid;gap:14px;border-top:1px solid var(--rule);padding-top:20px;min-width:0}
 .model-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -1788,9 +1827,35 @@ JS = r"""
 """
 
 
+def scoreboard(sports):
+    """Every model's Edge score on one board, best first."""
+    rows = [(m.get("score"), lab, m["name"]) for _, lab, models in sports for m in models]
+    scored = sorted((r for r in rows if r[0] is not None), key=lambda r: -r[0])
+    if not scored:
+        return ""
+    o = ['<section class="sub" aria-labelledby="h-board"><h3 id="h-board">Edge scores, every league</h3>',
+         '<p class="note">One score from 1 to 100 for every model. 50 means it picks winners exactly as often as the simple baseline '
+         '(the Vegas favorite, or the home team or average hitter where there are no odds) on the same games. '
+         f'Each point of pick rate above the baseline adds 10 and each point below takes 10 away. Small samples are pulled toward 50, '
+         f'and a model needs {GRADE_MIN_N}+ live picks to get a score.</p>',
+         '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Model</th><th>Score</th><th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
+    for sc, lab, name in scored:
+        cls = "g-good" if sc >= 60 else "g-bad" if sc < 45 else "g-mixed"
+        o.append(f'<tr><td>{esc(lab)}</td><td>{esc(name)}</td><td class="n">{sc}</td>'
+                 f'<td class="barcol"><div class="bar {cls}"><i style="width:{sc}%"></i><b></b></div></td></tr>')
+    rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
+    o.append('</tbody></table></div>')
+    o.append('<p class="note">MLB hitters have no sportsbook line to beat, so they are measured against the average hitter. '
+             'That bar is easier than Vegas, so their score runs high.</p>')
+    if rest:
+        o.append(f'<p class="note">No score yet (too few live picks, off-season, or not graded on picks): {esc(", ".join(rest))}.</p>')
+    o.append('</section>')
+    return "".join(o)
+
+
 def render_model(m, data):
     o = [f'<section class="model" id="m-{m["id"]}" aria-labelledby="h-{m["id"]}">',
-         f'<div class="model-h"><h2 id="h-{m["id"]}">{esc(m["name"])}</h2>{grade_chip(m["grade"])}</div>',
+         f'<div class="model-h"><h2 id="h-{m["id"]}">{esc(m["name"])}</h2><span class="chips">{score_chip(m.get("score"))}{grade_chip(m["grade"])}</span></div>',
          f'<p class="verdict">{esc(m["verdict"])}</p>']
     how = m.get("how")
     if how:
@@ -1908,7 +1973,9 @@ def main():
            '<header><div class="eyebrow">Inside every model</div><h1>Model <i>room</i></h1>'
            '<p class="lede">Pick a sport. For each model you can see how it makes a pick, what it would have predicted in every live game, '
            'how it is doing against a simple baseline, our best explanation for where it falls short, and the versions that tried out at the last retrain.</p></header>',
-           '<nav class="tabs" role="tablist" aria-label="Sport">']
+           ]
+    out.append(scoreboard(sports))
+    out.append('<nav class="tabs" role="tablist" aria-label="Sport">')
     for i, (key, lab, _) in enumerate(sports):
         out.append(f'<button role="tab" id="tab-{key}" aria-controls="p-{key}" aria-selected="{"true" if i == 0 else "false"}" data-p="{key}">{lab}</button>')
     out.append('</nav>')
@@ -1917,7 +1984,7 @@ def main():
         out.append('<div class="summary">')
         for m in models:
             out.append(f'<a class="sum" href="#{key}" onclick="var e=document.getElementById(\'m-{m["id"]}\');if(e){{e.scrollIntoView({{behavior:\'smooth\'}});}}return false;">'
-                       f'{grade_chip(m["grade"])}<h3>{esc(m["name"])}</h3><p>{esc(m["summary"])}</p></a>')
+                       f'<span class="chips">{score_chip(m.get("score"))}{grade_chip(m["grade"])}</span><h3>{esc(m["name"])}</h3><p>{esc(m["summary"])}</p></a>')
         out.append('</div>')
         for m in models:
             out.append(render_model(m, data))
