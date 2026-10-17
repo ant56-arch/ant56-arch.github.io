@@ -69,7 +69,13 @@ def sync():
                 break
             finals = [g for g in day_games if g["final"] and g["home_pts"] is not None]
             if finals:
-                store.save_day(d, finals, {})
+                box = {}
+                for g in finals:
+                    try:
+                        box[g["id"]] = espn.boxscore(g["id"])
+                    except Exception as e:  # noqa: BLE001 - scores still count without a box score
+                        print(f"  box score {g['id']} failed: {e}")
+                store.save_day(d, finals, box)
                 print(f"  stored {d}: {len(finals)} games")
         through = d
         day += timedelta(days=1)
@@ -164,7 +170,7 @@ def main():
     history = load(HISTORY_FILE, {"picks": []})
     print(f"NHL Edge run for {TODAY}")
     sync()
-    games, _ = store.load_all()
+    games, box = store.load_all()
     grade(history, {g["id"]: g for g in games})
 
     if not in_season(TODAY):
@@ -172,7 +178,7 @@ def main():
     league = M.League((weights or {}).get("league"))
     for g in games:
         if g["date"] < TODAY:
-            league.update(g)
+            league.update(g, box.get(g["id"]))
     if weights and in_season(TODAY):
         make_picks(history, league, weights)
     grade_moneylines(history)

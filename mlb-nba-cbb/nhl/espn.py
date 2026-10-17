@@ -95,3 +95,89 @@ def scoreboard(day):
         if g:
             games.append(g)
     return games
+
+
+def _num(s):
+    try:
+        return float(str(s).replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+
+
+def _minutes(s):
+    """'59:12' -> 59.2 minutes."""
+    try:
+        m, sec = str(s).split(":")
+        return int(m) + int(sec) / 60
+    except ValueError:
+        return _num(s) or 0.0
+
+
+DEBUG_SHAPE = {"printed": False}
+
+
+def boxscore(game_id):
+    """Shots on goal and goalies for one final game.
+
+    Returns {team_abbr: {"sog": shots on goal or None, "goalies": [[athlete_id,
+    name, shots_against, saves, minutes], ...]}} with the starter (most
+    minutes) first. Shots fall back to the other side's shots against when
+    the team totals don't list them.
+    """
+    data = get("summary", event=game_id)
+    box = data.get("boxscore", {})
+    if not DEBUG_SHAPE["printed"]:  # one sample of the layout in the run log, to check the parse
+        DEBUG_SHAPE["printed"] = True
+        for t in box.get("teams", [])[:1]:
+            print("  box teams stats:", [(s.get("name"), s.get("displayValue")) for s in t.get("statistics", [])][:20])
+        for t in box.get("players", [])[:1]:
+            print("  box player groups:", [(g.get("name"), g.get("keys") or g.get("names"), g.get("labels"))
+                                           for g in t.get("statistics", [])])
+    out = {}
+    for t in box.get("teams", []):
+        abbr = t.get("team", {}).get("abbreviation")
+        if not abbr:
+            continue
+        sog = None
+        for s in t.get("statistics", []):
+            name = (s.get("name") or "").lower()
+            if name in ("shotstotal", "shots", "shotsongoal"):
+                sog = _num(s.get("displayValue"))
+                break
+        out[abbr] = {"sog": sog, "goalies": []}
+    for t in box.get("players", []):
+        abbr = t.get("team", {}).get("abbreviation")
+        if not abbr:
+            continue
+        side = out.setdefault(abbr, {"sog": None, "goalies": []})
+        for group in t.get("statistics", []):
+            keys = [str(k) for k in (group.get("keys") or group.get("names") or [])]
+            labels = [str(k).upper() for k in (group.get("labels") or [])]
+            low = [k.lower() for k in keys]
+            if "saves" not in low and "SV" not in labels:
+                continue
+
+            def col(row, key, label):
+                if key in low:
+                    return row[low.index(key)] if low.index(key) < len(row) else None
+                if label in labels:
+                    return row[labels.index(label)] if labels.index(label) < len(row) else None
+                return None
+
+            for a in group.get("athletes", []):
+                stats = a.get("stats") or []
+                if not stats:
+                    continue
+                sa, sv = _num(col(stats, "shotsagainst", "SA")), _num(col(stats, "saves", "SV"))
+                toi = _minutes(col(stats, "timeonice", "TOI") or 0)
+                if sa is None or sv is None or toi <= 0:
+                    continue
+                ath = a.get("athlete", {})
+                side["goalies"].append([ath.get("id"), ath.get("displayName", ""), sa, sv, round(toi, 1)])
+        side["goalies"].sort(key=lambda g: -g[4])
+    teams = list(out)
+    if len(teams) == 2:
+        for me, opp in ((teams[0], teams[1]), (teams[1], teams[0])):
+            if out[me]["sog"] is None and out[opp]["goalies"]:
+                out[me]["sog"] = sum(g[2] for g in out[opp]["goalies"])
+    return out
