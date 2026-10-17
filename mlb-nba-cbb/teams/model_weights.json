@@ -5,9 +5,9 @@
   "starters"
  ],
  "coef": {
-  "home_field": 0.14149,
-  "elo": 0.48506,
-  "starters": 0.19708
+  "home_field": 0.14628,
+  "elo": 0.49536,
+  "starters": 0.18841
  },
  "league": {
   "elo_k": 3,
@@ -20,10 +20,10 @@
   "sp_shrink": 60,
   "years": 2
  },
- "training_games": 4980,
+ "training_games": 4950,
  "training_dates": [
-  "2024-09-28",
-  "2026-09-27"
+  "2024-10-16",
+  "2026-10-15"
  ],
  "trained_on": "2024 to 2025",
  "backtest_season": "2026",
@@ -125,18 +125,18 @@
   ]
  },
  "backtest_postseason": {
-  "games": 24,
-  "correct": 15,
+  "games": 32,
+  "correct": 20,
   "accuracy": 0.625,
-  "predicted_accuracy": 0.5617,
-  "log_loss": 0.6765,
-  "brier": 0.2418,
-  "home_win_rate": 0.5,
+  "predicted_accuracy": 0.5587,
+  "log_loss": 0.6865,
+  "brier": 0.2467,
+  "home_win_rate": 0.5312,
   "top3": {
-   "days": 9,
-   "picks": 20,
-   "correct": 12,
-   "accuracy": 0.6
+   "days": 15,
+   "picks": 28,
+   "correct": 17,
+   "accuracy": 0.6071
   },
   "bands": [
    {
@@ -144,27 +144,27 @@
      0.5,
      0.55
     ],
-    "n": 12,
-    "predicted": 0.53,
-    "actual": 0.75
+    "n": 16,
+    "predicted": 0.5287,
+    "actual": 0.8125
    },
    {
     "range": [
      0.55,
      0.6
     ],
-    "n": 9,
-    "predicted": 0.5745,
-    "actual": 0.4444
+    "n": 12,
+    "predicted": 0.5718,
+    "actual": 0.4167
    },
    {
     "range": [
      0.6,
      0.65
     ],
-    "n": 2,
-    "predicted": 0.6404,
-    "actual": 0.5
+    "n": 3,
+    "predicted": 0.6289,
+    "actual": 0.3333
    },
    {
     "range": [
@@ -185,9 +185,9 @@
    },
    {
     "month": "2026-10",
-    "n": 16,
-    "correct": 9,
-    "predicted": 0.5677
+    "n": 24,
+    "correct": 14,
+    "predicted": 0.5616
    }
   ]
  },
@@ -197,22 +197,22 @@
   "home_team_accuracy": 0.5286,
   "home_rate_log_loss": 0.6915
  },
- "trained_at": "2026-09-30T01:24:50+00:00",
- "trained_through": "2026-09-27",
+ "trained_at": "2026-10-17T14:57:08+00:00",
+ "trained_through": "2026-10-15",
  "recent_holdout": {
-  "from": "2026-09-05",
+  "from": "2026-09-07",
   "games": 300,
-  "correct": 182,
-  "accuracy": 0.6067,
-  "predicted_accuracy": 0.5718,
-  "log_loss": 0.6569,
-  "brier": 0.2324,
-  "home_win_rate": 0.55,
+  "correct": 183,
+  "accuracy": 0.61,
+  "predicted_accuracy": 0.5722,
+  "log_loss": 0.659,
+  "brier": 0.2334,
+  "home_win_rate": 0.5433,
   "top3": {
-   "days": 23,
-   "picks": 69,
-   "correct": 50,
-   "accuracy": 0.7246
+   "days": 36,
+   "picks": 91,
+   "correct": 63,
+   "accuracy": 0.6923
   }
  }
 }

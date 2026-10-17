@@ -738,6 +738,417 @@
     "elo": 0.48506,
     "starters": 0.19708
    }
+  },
+  {
+   "run_at": "2026-10-17T14:57:08+00:00",
+   "data_through": "2026-10-15",
+   "holdout": {
+    "from": "2026-09-07",
+    "games": 300,
+    "home_rate_log_loss": 0.6899
+   },
+   "live_model": {
+    "trained_at": "2026-09-30T01:24:50+00:00",
+    "recipe": {
+     "elo_k": 3,
+     "elo_carry": 0.67,
+     "sp_shrink": 60,
+     "years": 2
+    },
+    "holdout_log_loss": 0.6582
+   },
+   "current_recipe_log_loss": 0.659,
+   "best_recipe": {
+    "recipe": {
+     "elo_k": 3,
+     "elo_carry": 0.5,
+     "sp_shrink": 60,
+     "years": 3
+    },
+    "log_loss": 0.6585
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6588,
+     "accuracy": 0.6
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6587,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6586,
+     "accuracy": 0.6133
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6586,
+     "accuracy": 0.5867
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6585,
+     "accuracy": 0.61
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6585,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6593,
+     "accuracy": 0.6167
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6591,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6591,
+     "accuracy": 0.6167
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.659,
+     "accuracy": 0.5967
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.659,
+     "accuracy": 0.61
+    },
+    {
+     "recipe": {
+      "elo_k": 3,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6589,
+     "accuracy": 0.6033
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6596,
+     "accuracy": 0.59
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6597,
+     "accuracy": 0.59
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6594,
+     "accuracy": 0.5967
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6595,
+     "accuracy": 0.59
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6593,
+     "accuracy": 0.6033
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6594,
+     "accuracy": 0.59
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.66,
+     "accuracy": 0.6033
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.66,
+     "accuracy": 0.5867
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6598,
+     "accuracy": 0.6067
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6598,
+     "accuracy": 0.59
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6597,
+     "accuracy": 0.61
+    },
+    {
+     "recipe": {
+      "elo_k": 4,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6597,
+     "accuracy": 0.6033
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6614,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6615,
+     "accuracy": 0.58
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6611,
+     "accuracy": 0.5967
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6612,
+     "accuracy": 0.5867
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.661,
+     "accuracy": 0.6
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.5,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6611,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 2
+     },
+     "log_loss": 0.6616,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 25,
+      "years": 3
+     },
+     "log_loss": 0.6617,
+     "accuracy": 0.58
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 2
+     },
+     "log_loss": 0.6614,
+     "accuracy": 0.5967
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 40,
+      "years": 3
+     },
+     "log_loss": 0.6615,
+     "accuracy": 0.5933
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 2
+     },
+     "log_loss": 0.6612,
+     "accuracy": 0.6
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.67,
+      "sp_shrink": 60,
+      "years": 3
+     },
+     "log_loss": 0.6613,
+     "accuracy": 0.5933
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "trigger": "manual",
+   "live_picks_last_14_days": {
+    "days": 14,
+    "picks": 23,
+    "accuracy": 0.5652,
+    "predicted": 0.5637
+   },
+   "weights_before": {
+    "home_field": 0.14149,
+    "elo": 0.48506,
+    "starters": 0.19708
+   },
+   "weights_after": {
+    "home_field": 0.14628,
+    "elo": 0.49536,
+    "starters": 0.18841
+   }
   }
  ]
 }

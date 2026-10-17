@@ -210,7 +210,7 @@
   "elo_only_log_loss": 0.6893,
   "home_team_accuracy": 0.5221
  },
- "trained_at": "2026-10-17T05:38:23+00:00",
+ "trained_at": "2026-10-17T14:56:56+00:00",
  "trained_through": "2026-10-16",
  "recent_holdout": {
   "from": "2026-04-09",
