@@ -1226,7 +1226,11 @@ def build_hitters():
     if voids >= MIN_N:
         bad.append(f"{voids} picks were voided because the player didn't bat (benched, scratched or postponed). They aren't counted either way.")
     d = pct_of(W, n) - (bl_rate or 0)
-    m["score"] = edge_score(pct_of(W, n), bl_rate or 0, n)
+    # Two halves, as Anthony suggested: beating the average hitter, and getting
+    # a hit as often as the model said it would (picks since the trained model).
+    vs_avg = edge_score(pct_of(W, n), bl_rate or 0, n)
+    vs_own = edge_score(pct_of(eW, len(era)), mean([p["confidence"] / 100 for p in era]), len(era)) if era else None
+    m["score"] = vs_avg if vs_own is None or vs_avg is None else round((vs_avg + vs_own) / 2)
     m["grade"] = "Not graded" if n < GRADE_MIN_N else ("Working" if d >= 0.05 else "Mixed" if d >= 0 else "Falling short")
     m["verdict"] = (f"Its picks get a hit more often than the average hitter ({pc(pct_of(W, n))} vs {pc(bl_rate or 0)}), "
                     + ("by a clear margin." if d >= 0.05 else "but only by a little." if d >= 0 else "but it isn't beating the average hitter."))
@@ -1845,8 +1849,8 @@ def scoreboard(sports):
                  f'<td class="barcol"><div class="bar {cls}"><i style="width:{sc}%"></i><b></b></div></td></tr>')
     rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
     o.append('</tbody></table></div>')
-    o.append('<p class="note">MLB hitters have no sportsbook line to beat, so they are measured against the average hitter. '
-             'That bar is easier than Vegas, so their score runs high.</p>')
+    o.append('<p class="note">MLB hitters have no sportsbook line to beat, so their score is half "beats the average hitter" '
+             'and half "gets a hit as often as the model said it would" (each scored the same way, 50 = even).</p>')
     if rest:
         o.append(f'<p class="note">No score yet (too few live picks, off-season, or not graded on picks): {esc(", ".join(rest))}.</p>')
     o.append('</section>')
