@@ -58,8 +58,14 @@ BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 # Candidates: how fast results fade, how hard clubs are pulled to their league
 # average, and how much the rating target leans on the shots-on-target
 # expected-goals proxy (0 = goals only); every one has per-competition home edges.
+# The two that finished last (half-life 400 and 550, pull 3, goals only) gave
+# their places to two tryouts on the live recipe: one with the short-rest
+# effect, one leaning harder on shots on target (half the target).
 RECIPES = [{"half_life": h, "reg": r, "years": 3, "xg": x, "home_reg": 100.0}
-           for h in (270, 400, 550) for r in (3.0, 5.0, 10.0) for x in (0.0, 0.3)]
+           for h in (270, 400, 550) for r in (3.0, 5.0, 10.0) for x in (0.0, 0.3)
+           if (h, r, x) not in ((400, 3.0, 0.0), (550, 3.0, 0.0))]
+RECIPES += [{"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.3, "home_reg": 100.0, "rest": True},
+            {"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.5, "home_reg": 100.0}]
 
 
 def comp_of(m):
@@ -80,7 +86,7 @@ def walk(data, recipe, idx):
         warm = r
         for i in by_day[day]:
             m = data.matches[i]
-            p = r.probs(m["hk"], m["ak"], m.get("neutral"), m["league"])
+            p = r.probs(m["hk"], m["ak"], m.get("neutral"), m["league"], rest=(data.rest_h[i], data.rest_a[i]))
             out.append((i, p))
     return out
 
@@ -225,6 +231,8 @@ def coef(r):
     out = {"home": round(math.exp(r.mu + r.home) - math.exp(r.mu), 4), "rho": round(r.rho, 4),
            "goals": round(math.exp(r.mu), 4)}
     out.update({f"league_{k}": round(v, 4) for k, v in r.league_strengths().items()})
+    if r.recipe.get("rest"):
+        out["rest"] = round(r.rest_beta, 4)
     if r.recipe.get("home_reg") is not None:
         out.update({f"home_{k}": round(v, 4) for k, v in r.home_edges().items()})
     return out
@@ -240,7 +248,8 @@ def summary(lines):
 
 
 def recipe_name(r):
-    extra = (f", shots {r['xg']:g}" if r.get("xg") else "") + (", home by comp" if r.get("home_reg") is not None else "")
+    extra = (f", shots {r['xg']:g}" if r.get("xg") else "") + (", home by comp" if r.get("home_reg") is not None else "") \
+        + (", rest" if r.get("rest") else "") + (f", draws +{r['draw']:g}" if r.get("draw") else "")
     return f"half-life {r['half_life']} days, pull {r['reg']:g}, {r['years']} years{extra}"
 
 

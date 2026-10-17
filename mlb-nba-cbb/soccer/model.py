@@ -44,11 +44,23 @@ DEFAULT_RECIPE = {"half_life": 400, "reg": 3.0, "years": 3, "xg": 0.3, "home_reg
 #   draw       draw inflation: the draw chance is scaled by 1 + draw, then the
 #              three chances are renormalised
 #   rho        a fixed low-score correction instead of the fitted one
+#   rest       True: a fitted effect for short rest. A side that played 3 or
+#              fewer days earlier (league or Champions League) scores and
+#              concedes by a fitted factor; see tiredness()
 LEAGUE_REG = 1.0  # a light pull on league levels, which have plenty of evidence
 OTHER = "OTHER"   # clubs seen only in the Champions League
 MAX_GOALS = 10
 MIN_MATCHES = 300
 RHO_GRID = np.round(np.arange(-0.25, 0.101, 0.01), 3)
+NO_MATCH_DAYS = 30  # rest for a side with no earlier stored match
+REST_REG = 50.0     # a pull on the rest effect toward none, in matches' worth
+
+
+def tiredness(days):
+    """1 after 2 days' rest or fewer, 0.5 after 3, 0 after 4 or more. Only
+    stored matches count (the ten leagues and the Champions League), so a
+    domestic cup or Europa League midweek game is missed."""
+    return np.clip((4 - np.asarray(days, dtype=float)) / 2, 0, 1)
 
 
 def ordinal(day):
@@ -77,6 +89,26 @@ class Data:
         shots = [m.get("shots") or [np.nan] * 4 for m in matches]
         self.shots = np.array(shots, dtype=float).reshape(n, 4)  # HS, AS, HST, AST
         self.n = n
+        # Days since each side's previous stored match (the fixture list is
+        # known in advance, so this never peeks at a result).
+        last, rh, ra = {}, np.full(n, NO_MATCH_DAYS, dtype=float), np.full(n, NO_MATCH_DAYS, dtype=float)
+        for i in range(n):
+            for t, out in ((self.h[i], rh), (self.a[i], ra)):
+                if t in last and self.ord[i] > last[t]:
+                    out[i] = min(self.ord[i] - last[t], NO_MATCH_DAYS)
+            last[self.h[i]] = last[self.a[i]] = self.ord[i]  # matches are in date order
+        self.rest_h, self.rest_a = rh, ra
+
+    def days_since(self, key, day, extra=()):
+        """Days from a side's previous match to day (an ordinal): stored
+        matches, plus extra fixture ordinals (an upcoming slate)."""
+        i = self.tidx.get(key)
+        before = [o for o in extra if o < day]
+        if i is not None:
+            m = ((self.h == i) | (self.a == i)) & (self.ord < day)
+            if m.any():
+                before.append(int(self.ord[m].max()))
+        return min(day - max(before), NO_MATCH_DAYS) if before else NO_MATCH_DAYS
 
     def team_leagues(self, mask):
         """Each club's league: that of its latest league match in the window."""
@@ -110,6 +142,7 @@ class Ratings:
     def __init__(self, data, tl, params, rho, as_of, n_used, recipe):
         self.data, self.tl, self.rho, self.as_of, self.n_used, self.recipe = data, tl, rho, as_of, n_used, recipe
         self.mu, self.home, self.A, self.D, self.att, self.dfn, self.dh = params
+        self.rest_beta = 0.0
 
     def _side(self, key, league):
         i = self.data.tidx.get(key)
@@ -132,9 +165,14 @@ class Ratings:
         la = math.exp(self.mu + aa - hd)
         return lh, la
 
-    def probs(self, hk, ak, neutral=False, league=None):
-        """{"home", "draw", "away"} chances (0-1) and the expected goals."""
+    def probs(self, hk, ak, neutral=False, league=None, rest=None):
+        """{"home", "draw", "away"} chances (0-1) and the expected goals.
+        rest: (home, away) days since each side's previous match, used when
+        the recipe has the rest effect."""
         lh, la = self.expected_goals(hk, ak, neutral, league)
+        if self.rest_beta and rest is not None:
+            th, ta = float(tiredness(rest[0])), float(tiredness(rest[1]))
+            lh, la = lh * math.exp(self.rest_beta * (ta - th)), la * math.exp(self.rest_beta * (th - ta))
         p = outcome_probs(lh, la, self.rho, self.recipe.get("draw") or 0.0)
         return {"home": p[0], "draw": p[1], "away": p[2], "xg": (lh, la)}
 
@@ -217,6 +255,10 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
             y = y.copy()
             y[ok] = (1 - xw) * y[ok] + xw * proxy
     hf = np.concatenate([data.hf[sel], np.zeros(len(sel))])
+    # Rest: a side scores more when its opponent is tired, less when it is.
+    use_rest = bool(recipe.get("rest"))
+    th, ta = tiredness(data.rest_h[sel]), tiredness(data.rest_a[sel])
+    z = np.concatenate([ta - th, th - ta]) if use_rest else np.zeros(2 * len(sel))
     grp = np.concatenate([data.grp[sel], data.grp[sel]])
     hreg = recipe.get("home_reg")
     w = np.concatenate([wm[sel], wm[sel]])
@@ -238,13 +280,15 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
     if warm is not None:
         mu, home = warm.mu, warm.home
         A, D, att, dfn, dh = warm.A.copy(), warm.D.copy(), warm.att.copy(), warm.dfn.copy(), warm.dh.copy()
+        beta = warm.rest_beta if use_rest else 0.0
     else:
         mu = math.log(max(np.average(y, weights=w), 0.1))
         home, A, D, att, dfn = 0.25, np.zeros(nl), np.zeros(nl), np.zeros(nt), np.zeros(nt)
         dh = np.zeros(nl)
+        beta = 0.0
 
     def eta():
-        return mu + (home + dh[grp]) * hf + A[la_i] + att[att_i] - D[ld_i] - dfn[def_i]
+        return mu + (home + dh[grp]) * hf + A[la_i] + att[att_i] - D[ld_i] - dfn[def_i] + beta * z
 
     for _ in range(iters):
         biggest = 0.0
@@ -288,6 +332,11 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
             step = np.clip((np.bincount(grp, r, nl) - hreg * dh) / (np.bincount(grp, c, nl) + hreg), -1, 1)
             dh += step
             biggest = max(biggest, float(np.abs(step).max()))
+        if use_rest:
+            lam = np.exp(eta())
+            bs = float(np.clip(((w * z * (y - lam)).sum() - REST_REG * beta) / ((w * z * z * lam).sum() + REST_REG), -1, 1))
+            beta += bs
+            biggest = max(biggest, abs(bs))
         if biggest < tol:
             break
 
@@ -305,7 +354,9 @@ def fit(data, as_of, recipe=None, warm=None, iters=80, tol=1e-5):
         ll = float((wmatch[low] * np.log(t)).sum())
         if ll > best:
             best, rho = ll, float(r_)
-    return Ratings(data, tl, (mu, home, A, D, att, dfn, dh), rho, as_of, used, recipe)
+    out = Ratings(data, tl, (mu, home, A, D, att, dfn, dh), rho, as_of, used, recipe)
+    out.rest_beta = float(beta)
+    return out
 
 
 def pick_of(p):
