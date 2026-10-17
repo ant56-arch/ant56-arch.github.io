@@ -300,8 +300,22 @@ def recipe_cell(k, v):
         return str(v)
 
 
-def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout=""):
-    """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)]."""
+def tryout_scores(cands, live_idx, live_score, rate_key, n):
+    """Each version's Edge score: the live version's score, plus 10 for every
+    point of pick rate it gained on the same test games (minus 10 per point
+    lost), with the same small-sample pull as the live score."""
+    if live_idx is None or live_score is None or not n or cands[live_idx].get(rate_key) is None:
+        return [None] * len(cands)
+    base = cands[live_idx][rate_key]
+    return [None if c.get(rate_key) is None else
+            max(1, min(100, round(live_score + 10 * (c[rate_key] - base) * 100 * n / (n + SCORE_PULL)))) for c in cands]
+
+
+def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout="",
+                  live_score=None, rate_key="accuracy", n_test=0):
+    """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)].
+    With live_score, every version also gets an Edge score from its pick rate
+    (rate_key) on the n_test test games, and the table is ranked by it."""
     if not cands:
         return None
     keys = []
@@ -312,15 +326,22 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     keys = [k for k in keys if len({json.dumps(c["recipe"].get(k)) for c in cands}) > 1] or keys
     rows = []
     live_idx = None
-    for i, c in enumerate(cands):
-        is_live = live_recipe is not None and all(c["recipe"].get(k) == live_recipe.get(k) for k in c["recipe"])
-        if is_live and live_idx is None:
-            live_idx = i
+    # The live version: an exact recipe match, else the first whose settings
+    # all agree with it (older logs left some settings out).
+    live_idx = next((i for i, c in enumerate(cands) if live_recipe is not None and c["recipe"] == live_recipe), None)
+    if live_idx is None:
+        live_idx = next((i for i, c in enumerate(cands) if live_recipe is not None
+                         and all(c["recipe"].get(k) == live_recipe.get(k) for k in c["recipe"])), None)
     letters = iter(list("BCDEFGHIJKLMNOPQRSTUVWXYZ") + [f"Z{k}" for k in range(2, 200)])
     main_key, _, _, main_lower = metrics[0]
-    score = lambda i: cands[i].get(main_key, 9e9) if main_lower else -cands[i].get(main_key, -9e9)
-    best_i = min(range(len(cands)), key=score)
+    edge = tryout_scores(cands, live_idx, live_score, rate_key, n_test)
+    has_edge = any(e is not None for e in edge)
+    metric = lambda i: cands[i].get(main_key, 9e9) if main_lower else -cands[i].get(main_key, -9e9)
+    score = (lambda i: (-(edge[i] if edge[i] is not None else -1), metric(i))) if has_edge else metric
+    best_i = min(range(len(cands)), key=metric)
     others = [i for i in range(len(cands)) if i != live_idx]
+    if has_edge:
+        others = sorted(others, key=score)
     hidden = 0
     if len(cands) > 8:
         others = sorted(others, key=score)
@@ -331,12 +352,14 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
         c = cands[i]
         name = "Live" if i == live_idx else next(letters)
         cells = [name + (' <span class="tag">' + ("switched in" if run.get("switched_recipe") else "kept") + "</span>" if i == live_idx else "")]
+        if has_edge:
+            cells.append(score_chip(edge[i]) if edge[i] is not None else "")
         cells += [esc(recipe_cell(k, c["recipe"].get(k))) for k in keys]
         for mk, _, fmt, _ in metrics:
             v = c.get(mk)
             cells.append(S(fmt(v)) if v is not None else "")
         rows.append({"live": i == live_idx, "best": i == best_i, "cells": cells})
-    head = ["Version"] + [SETTING_WORDS.get(k, (k,))[0] for k in keys] + [m[1] for m in metrics]
+    head = ["Version"] + (["Edge score"] if has_edge else []) + [SETTING_WORDS.get(k, (k,))[0] for k in keys] + [m[1] for m in metrics]
     helps = [f"<b>{esc(SETTING_WORDS.get(k, (k,))[0])}</b>: {esc(SETTING_HELP.get(k, k))}." for k in keys]
     # Callout: did it switch, and why
     reason = (run.get("reason") or "").strip()
@@ -358,6 +381,8 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
         call.append(extra_callout)
     if hidden:
         call.append(f"{len(cands)} versions were tried. The table shows the live one and the 7 best; the other {hidden} all scored worse.")
+    if has_edge:
+        call.append("Each version's Edge score starts from the live one's and moves 10 for every point of winners picked it gained or lost on the same test games.")
     return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note}
 
 
@@ -785,10 +810,10 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
         live_recipe = coefs_file.get("recipe") or run.get("live_recipe")
         ls = last_switch(runs)
         m["tryouts"] = tryouts_block(run.get("candidates", []), live_recipe, mets, run,
-                                     extra_callout=(f"The last real switch was on {ls}." if ls else "No switch has happened in the logged retrains."))
+                                     extra_callout=(f"The last real switch was on {ls}." if ls else "No switch has happened in the logged retrains."),
+                                     live_score=m.get("score"), n_test=run.get("holdout_games") or 0)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
-        m["tryout_intro"] = (f"Every version was trained on older games and tested on the {run.get('holdout_games')} most recent ones it hadn't seen. "
-                             "A new version takes over only if it beats the live one by a clear margin. These are test scores, not live records.")
+        m["tryout_intro"] = f"Tested on the {run.get('holdout_games')} most recent games, which none of them trained on. A new version takes over only if it clearly beats the live one."
         note_date(f"{league} retrain", run["run_at"])
     m["status_line"] = f"{season} season, {n} graded games"
     return m, {"season": season, "weeks": weeks}
@@ -1298,8 +1323,11 @@ def build_hitters():
         mets = [("log_loss", "Accuracy score<br>(lower is better)", lambda v: f"{v:.4f}", True),
                 ("top10_hit_rate", "Top-10 picks with a hit", lambda v: pc(v, 1), False),
                 ("auc", "Sorting score<br>(higher is better)", lambda v: f"{v:.3f}", False)]
+        ho = run.get("holdout", {})
+        test_days = (dt.date.fromisoformat(run["data_through"][:10]) - dt.date.fromisoformat(ho["from"][:10])).days + 1 if ho.get("from") and run.get("data_through") else 0
         m["tryouts"] = tryouts_block(run.get("candidates", []), mw.get("recipe"), mets, run,
-                                     extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""))
+                                     extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
+                                     live_score=m.get("score"), rate_key="top10_hit_rate", n_test=10 * max(test_days, 0))
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Every version was tested on {run.get('holdout', {}).get('rows', 0):,} hitter-games from {nice_date(run.get('holdout', {}).get('from', ''))} on that it hadn't seen. "
                              "The sorting score says how well it puts the hitters who got a hit above those who didn't. These are test scores, not live records.")
@@ -1647,14 +1675,17 @@ def build_team(mid):
     # Tryouts
     run = hist[-1] if hist else None
     if run:
-        cands = [{"recipe": c["recipe"], "log_loss": c.get("log_loss")} for c in run.get("candidates", [])]
+        cands = [{"recipe": c["recipe"], "log_loss": c.get("log_loss"), "accuracy": c.get("accuracy")} for c in run.get("candidates", [])]
         mets = [("log_loss", "Accuracy score<br>(lower is better)", lambda v: f"{v:.4f}", True)]
-        m["tryouts"] = tryouts_block(cands, mw.get("recipe"), mets, run,
-                                     extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""))
+        if any(c["accuracy"] is not None for c in cands):
+            mets.append(("accuracy", "Winners picked", lambda v: pc(v, 1), False))
         ho = run.get("holdout", {})
+        m["tryouts"] = tryouts_block(cands, mw.get("recipe"), mets, run,
+                                     extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
+                                     live_score=m.get("score"), n_test=ho.get("games") or 0)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
-        m["tryout_intro"] = (f"Every version was tested on the {ho.get('games', '?')} most recent {'matches' if soccer else 'games'} it hadn't seen (from {nice_date(ho.get('from', ''))}). "
-                             f"For scale, always guessing the usual home win rate scores {ho.get('home_rate_log_loss', '?')}. These are test scores, not live records.")
+        m["tryout_intro"] = (f"Tested on the {ho.get('games', '?')} most recent {'matches' if soccer else 'games'} (from {nice_date(ho.get('from', ''))}), which none of them trained on. "
+                             f"Always guessing the home team scores {ho.get('home_rate_log_loss', '?')}.")
         note_date(cfg["league"] + " retrain", run["run_at"])
     return m
 
@@ -1702,7 +1733,9 @@ h1 i{color:var(--ours)}
 .board{width:100%;border-collapse:collapse;font-size:14px}
 .board th,.board td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--rule)}
 .board th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:400}
-@media (max-width:520px){.board .barcol{display:none}}
+@media (max-width:520px){.board .barcol{display:none}table.board{min-width:0}}
+.more summary{cursor:pointer;font-weight:600;color:var(--ours);padding:4px 0}
+.more[open] summary{margin-bottom:10px}
 .board td.n{font-family:var(--mono);white-space:nowrap}
 .bar{height:8px;border-radius:4px;background:var(--surface-2);position:relative;min-width:80px}
 .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:currentColor}
@@ -1838,10 +1871,8 @@ def scoreboard(sports):
     if not scored:
         return ""
     o = ['<section class="sub" aria-labelledby="h-board"><h3 id="h-board">Edge scores, every league</h3>',
-         '<p class="note">One score from 1 to 100 for every model. 50 means it picks winners exactly as often as the simple baseline '
-         '(the Vegas favorite, or the home team or average hitter where there are no odds) on the same games. '
-         f'Each point of pick rate above the baseline adds 10 and each point below takes 10 away. Small samples are pulled toward 50, '
-         f'and a model needs {GRADE_MIN_N}+ live picks to get a score.</p>',
+         '<p class="note">50 = picks winners as often as the Vegas favorite (or the home team / average hitter) on the same games. '
+         f'Each point better adds 10, each point worse takes 10. Needs {GRADE_MIN_N}+ live picks.</p>',
          '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Model</th><th>Score</th><th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
     for sc, lab, name in scored:
         cls = "g-good" if sc >= 60 else "g-bad" if sc < 45 else "g-mixed"
@@ -1849,10 +1880,9 @@ def scoreboard(sports):
                  f'<td class="barcol"><div class="bar {cls}"><i style="width:{sc}%"></i><b></b></div></td></tr>')
     rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
     o.append('</tbody></table></div>')
-    o.append('<p class="note">MLB hitters have no sportsbook line to beat, so their score is half "beats the average hitter" '
-             'and half "gets a hit as often as the model said it would" (each scored the same way, 50 = even).</p>')
+    o.append('<p class="note">Hitters: half vs the average hitter, half vs the hit rate the model expected.</p>')
     if rest:
-        o.append(f'<p class="note">No score yet (too few live picks, off-season, or not graded on picks): {esc(", ".join(rest))}.</p>')
+        o.append(f'<p class="note">No score yet: {esc(", ".join(rest))}.</p>')
     o.append('</section>')
     return "".join(o)
 
@@ -1877,9 +1907,11 @@ def render_model(m, data):
             o.append('</div>')
         if how.get("bar_note"):
             o.append(f'<p class="note">{esc(how["bar_note"])}</p>')
+        wk = how.get("walk")
+        if how.get("formula") or wk:
+            o.append('<details class="more"><summary>' + ("Walk through one pick" if wk else "The formula") + '</summary>')
         if how.get("formula"):
             o.append(f'<pre class="formula">{esc(how["formula"])}</pre>')
-        wk = how.get("walk")
         if wk:
             o.append(f'<p class="matchup">{esc(wk["title"])}</p><p class="subp">{esc(wk["sub"])}</p><ol class="steps">')
             for h_, p_, out, cls in wk["steps"]:
@@ -1889,6 +1921,8 @@ def render_model(m, data):
             o.append('</ol>')
             if wk.get("note"):
                 o.append(f'<p class="note">{esc(wk["note"])}</p>')
+        if how.get("formula") or wk:
+            o.append('</details>')
         o.append('</div>')
     t = m.get("table")
     if t or m["grade"] == "Off-season":
@@ -1920,13 +1954,13 @@ def render_model(m, data):
                  f'</tbody></table></div><p class="key">{esc(ex["caption"])}</p>')
     if m["grade"] != "Off-season" or m["good"] or m["bad"]:
         o.append('<div class="two">')
-        for cls, title, items in (("good", "What's working", m["good"]), ("bad", "Where it falls short", m["bad"])):
+        for cls, title, items in (("good", "What's working", m["good"][:3]), ("bad", "Where it falls short", m["bad"][:3])):
             body = "<ul>" + "".join(f"<li>{x}</li>" for x in items) + "</ul>" if items else f'<p class="none">Nothing with at least {MIN_N} games to show yet.</p>'
             o.append(f'<div class="col {cls}"><h3>{title}</h3>{body}</div>')
         o.append('</div>')
     if m["why"]:
         o.append('<div class="why"><h3>Why we think ' + ("it falls short" if m["bad"] else "it does what it does") + '</h3><ol>')
-        for tag, txt in m["why"]:
+        for tag, txt in m["why"][:2]:
             o.append(f'<li><span class="tag">{esc(tag)}</span><br>{esc(txt)}</li>')
         o.append('</ol></div>')
     tr = m.get("tryouts")
@@ -1941,7 +1975,7 @@ def render_model(m, data):
                 o.append(f'<tr{(" class=" + chr(34) + cls + chr(34)) if cls else ""}>' + "".join(f"<td>{c}</td>" for c in r["cells"]) + "</tr>")
             o.append('</tbody></table></div>')
             if tr.get("helps"):
-                o.append('<ul class="helps">' + "".join(f"<li>{h}</li>" for h in tr["helps"]) + '</ul>')
+                o.append('<details class="more"><summary>What the settings mean</summary><ul class="helps">' + "".join(f"<li>{h}</li>" for h in tr["helps"]) + '</ul></details>')
             if tr.get("callout"):
                 o.append(f'<div class="callout"><p>{tr["callout"]}</p></div>')
         o.append('</div>')
@@ -1975,8 +2009,7 @@ def main():
            f'<div class="top"><b>EDGE</b> &nbsp;·&nbsp; Model Room &nbsp;·&nbsp; updated {esc(nice_date(updated, year=True))}</div>',
            '<main class="wrap">',
            '<header><div class="eyebrow">Inside every model</div><h1>Model <i>room</i></h1>'
-           '<p class="lede">Pick a sport. For each model you can see how it makes a pick, what it would have predicted in every live game, '
-           'how it is doing against a simple baseline, our best explanation for where it falls short, and the versions that tried out at the last retrain.</p></header>',
+           '<p class="lede">How every model picks, how it has done, and the versions trying to replace it.</p></header>',
            ]
     out.append(scoreboard(sports))
     out.append('<nav class="tabs" role="tablist" aria-label="Sport">')

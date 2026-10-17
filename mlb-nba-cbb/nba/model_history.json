@@ -198,6 +198,224 @@
     "missing_home": -1.3915,
     "missing_away": 1.0081
    }
+  },
+  {
+   "run_at": "2026-10-17T14:57:00+00:00",
+   "data_through": "2026-06-13",
+   "holdout": {
+    "from": "2026-03-23",
+    "games": 250,
+    "home_rate_log_loss": 0.6797
+   },
+   "live_model": {
+    "trained_at": "2026-09-23T03:31:35+00:00",
+    "recipe": {
+     "elo_k": 15,
+     "elo_carry": 0.6,
+     "years": 2
+    },
+    "holdout_log_loss": 0.5343
+   },
+   "current_recipe_log_loss": 0.5384,
+   "best_recipe": {
+    "recipe": {
+     "elo_k": 15,
+     "elo_carry": 0.6,
+     "years": 2
+    },
+    "log_loss": 0.5384
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.6,
+      "years": 2
+     },
+     "log_loss": 0.5384,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.6,
+      "years": 3
+     },
+     "log_loss": 0.539,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.75,
+      "years": 2
+     },
+     "log_loss": 0.5395,
+     "accuracy": 0.744
+    },
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.75,
+      "years": 3
+     },
+     "log_loss": 0.5399,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.9,
+      "years": 2
+     },
+     "log_loss": 0.5406,
+     "accuracy": 0.744
+    },
+    {
+     "recipe": {
+      "elo_k": 15,
+      "elo_carry": 0.9,
+      "years": 3
+     },
+     "log_loss": 0.5408,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.6,
+      "years": 2
+     },
+     "log_loss": 0.5399,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.6,
+      "years": 3
+     },
+     "log_loss": 0.5407,
+     "accuracy": 0.736
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.75,
+      "years": 2
+     },
+     "log_loss": 0.5408,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.75,
+      "years": 3
+     },
+     "log_loss": 0.5413,
+     "accuracy": 0.736
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.9,
+      "years": 2
+     },
+     "log_loss": 0.5417,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 20,
+      "elo_carry": 0.9,
+      "years": 3
+     },
+     "log_loss": 0.542,
+     "accuracy": 0.736
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.6,
+      "years": 2
+     },
+     "log_loss": 0.5419,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.6,
+      "years": 3
+     },
+     "log_loss": 0.5428,
+     "accuracy": 0.736
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.75,
+      "years": 2
+     },
+     "log_loss": 0.5425,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.75,
+      "years": 3
+     },
+     "log_loss": 0.5432,
+     "accuracy": 0.736
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.9,
+      "years": 2
+     },
+     "log_loss": 0.5431,
+     "accuracy": 0.74
+    },
+    {
+     "recipe": {
+      "elo_k": 28,
+      "elo_carry": 0.9,
+      "years": 3
+     },
+     "log_loss": 0.5437,
+     "accuracy": 0.736
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "trigger": "manual",
+   "live_picks_last_14_days": null,
+   "weights_before": {
+    "home_court": 2.9488,
+    "elo": 2.7022,
+    "net": 0.2974,
+    "recent": 0.1352,
+    "rest": 0.059,
+    "b2b_home": -2.3512,
+    "b2b_away": 1.5051,
+    "missing_home": -1.3915,
+    "missing_away": 1.0081
+   },
+   "weights_after": {
+    "home_court": 2.9488,
+    "elo": 2.7022,
+    "net": 0.2974,
+    "recent": 0.1352,
+    "rest": 0.059,
+    "b2b_home": -2.3512,
+    "b2b_away": 1.5051,
+    "missing_home": -1.3915,
+    "missing_away": 1.0081
+   }
   }
  ]
 }

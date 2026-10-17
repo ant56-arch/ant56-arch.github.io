@@ -349,7 +349,8 @@ def main():
                        "holdout_log_loss": round(live_ll, 4) if live_ll is not None else None},
         "current_recipe_log_loss": round(cur[2], 4) if cur else None,
         "best_recipe": {"recipe": best[0], "log_loss": round(best[2], 4)},
-        "candidates": [{"recipe": r, "log_loss": round(ll, 4)} for r, _, ll in results],
+        "candidates": [{"recipe": r, "log_loss": round(ll, 4), "accuracy": evaluate(w, holdout(r))["accuracy"]}
+                       for r, w, ll in results],
         "switched_recipe": bool(switched and ok),
         "deployed": ok,
         "reason": "; ".join(x for x in (

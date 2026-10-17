@@ -199,7 +199,7 @@
   "ratings_only_log_loss": 0.5349,
   "home_team_accuracy": 0.6406
  },
- "trained_at": "2026-09-30T03:56:54+00:00",
+ "trained_at": "2026-10-17T15:00:23+00:00",
  "trained_through": "2026-04-06",
  "recent_holdout": {
   "from": "2026-03-02",
