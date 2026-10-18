@@ -172,6 +172,64 @@ def edge_score(model_pct, base_pct, n):
     return max(1, min(100, round(50 + 10 * gap)))
 
 
+SKILL_POINTS = 10  # Edge score points per 1% of accuracy-score skill over the benchmark
+LUCK_Z = 1.28      # only the part of the lead (or deficit) bigger than luck at 80% confidence counts
+
+
+def skill_score(pairs, m=None):
+    """The Edge score, the way forecasters rate a model against the market:
+    on the same games, compare our chance with the benchmark's chance (the
+    Vegas line, or the average hitter) using the accuracy score (Brier: the
+    squared miss of each chance, so a confident miss costs more than a
+    shy one). Skill = how much smaller our total miss is, as a % of the
+    benchmark's. Only the part of that gap bigger than luck counts (the gap
+    minus LUCK_Z standard errors of the game-by-game differences), so a hot
+    streak over a few games stays near 50. 50 = even with the benchmark;
+    each 1% of skill beyond luck adds SKILL_POINTS.
+    pairs: [(our chance, benchmark chance, 1 if it happened else 0)]."""
+    pairs = [(o, b, y) for o, b, y in pairs if o is not None and b is not None and y is not None]
+    n = len(pairs)
+    if n < GRADE_MIN_N:
+        return None
+    d = [(b - y) ** 2 - (o - y) ** 2 for o, b, y in pairs]  # > 0: ours missed by less
+    bb = mean([(b - y) ** 2 for o, b, y in pairs])
+    db = mean(d)
+    sd = math.sqrt(sum((x - db) ** 2 for x in d) / (n - 1)) if n > 1 else 0.0
+    se = sd / math.sqrt(n)
+    sure = math.copysign(max(0.0, abs(db) - LUCK_Z * se), db)
+    raw, kept = 100 * db / bb, 100 * sure / bb
+    score = max(1, min(100, round(50 + SKILL_POINTS * kept)))
+    if m is not None:
+        m["score"] = score
+        m["skill"] = {"n": n, "raw": raw, "kept": kept, "luck": 100 * LUCK_Z * se / bb}
+    return score
+
+
+def skill_line(m):
+    sk = m.get("skill")
+    if not sk:
+        return ""
+    bench = BENCH_WORDS.get(m["id"], "Vegas")
+    raw, luck = sk["raw"], sk["luck"]
+    unit = "picks" if m["id"] in ("mlb-hitters", "nfl-td") else "matches" if m["id"] == "soccer" else "games"
+    better = "more" if raw >= 0 else "less"
+    return (f"On {sk['n']} {unit}, our chances were {abs(raw):.1f}% {better} accurate than {bench}'s. "
+            f"Luck alone could explain up to {luck:.1f}%, so "
+            + (f"{abs(sk['kept']):.1f}% counts toward the score." if sk["kept"] else "none of it counts yet."))
+
+
+BENCH_WORDS = {"mlb-hitters": "the average hitter", "nfl-td": "the sportsbook", "mlb-games": "the sportsbook",
+               "nhl": "the sportsbook", "nba": "the sportsbook", "cbb": "the sportsbook", "soccer": "the sportsbook"}
+
+
+def honest_grade(m):
+    """Once a model has an Edge score from the accuracy score, its grade
+    follows that score, so the grade never claims more than luck allows."""
+    if m.get("skill") and m["grade"] not in ("Off-season",):
+        sc = m["score"]
+        m["grade"] = "Working" if sc >= 55 else "Falling short" if sc <= 45 else "Mixed"
+
+
 def score_chip(score):
     if score is None:
         return ""
@@ -869,6 +927,9 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
 
     # ── Grade + verdict ──
     m["grade"] = grade_from(pct_of(mW, n), pct_of(vW, len(vg)), n, m)
+    sig = coefs_file.get("margin_std_dev") or (13.5 if sport == "nfl" else 16.95)
+    skill_score([(g["mp"], g["vp"] if g["vp"] is not None else norm_cdf(g["vs"] / sig), int(g["margin"] > 0))
+                 for g in vg if g["mp"] is not None], m)
     ats_bad = len(ats) >= MIN_N and pct_of(sum(int(g["m_ats"]) for g in ats), len(ats)) < 0.524
     if m["grade"] == "Working":
         m["verdict"] = "Good at picking who wins." + (" Not good enough to set its own spread, which is why spreads on the site come straight from Vegas." if ats_bad and blend.get("spread") == 0
@@ -1011,7 +1072,7 @@ def build_td():
     # Edge score: how often its top-10 picks scored vs the chance the sportsbook gave the same players
     t10b = [r for r in t10 if r["bp"] is not None]
     if t10b:
-        m["score"] = edge_score(mean([1.0 if r["res"] == "W" else 0.0 for r in t10b]), mean([r["bp"] for r in t10b]), len(t10b))
+        skill_score([(r["p"], r["bp"], 1 if r["res"] == "W" else 0) for r in t10b], m)
     if n < GRADE_MIN_N:
         m["grade"] = "Not graded"
     else:
@@ -1227,6 +1288,8 @@ def build_cfb_ratings():
         (good if err_r <= err_v else bad).append(f"On those games its line missed the final margin by {S(f'{err_r:.1f}')} points on average. Vegas missed by {err_v:.1f}.")
     pairs = [(norm_cdf(abs(g["line"]) / 16.95), int((g["line"] > 0) == (g["hs"] > g["as"]))) for g in live if g["line"] != 0]
     m["grade"] = grade_from(pct_of(rW, len(vg)), pct_of(vW, len(vg)), len(vg), m) if len(vg) >= GRADE_MIN_N else grade_from(pct_of(W, n), pct_of(hW, n), n, m)
+    skill_score([(norm_cdf(g["line"] / 16.95), norm_cdf(g["vs"] / 16.95), int(g["hs"] > g["as"]))
+                 for g in vg if g.get("line") is not None and g.get("vs") is not None and g["hs"] != g["as"]], m)
     base_word = "Vegas favorites" if len(vg) >= GRADE_MIN_N else "always taking the home team"
     m["verdict"] = (f"Tracked on the side. It feeds the picks only as a backup, on runs where the advanced stats feed is down. "
                     f"So far it picks winners {('better than' if m['grade'] == 'Working' else 'worse than' if m['grade'] == 'Falling short' else 'about as well as')} {base_word}.")
@@ -1359,6 +1422,8 @@ def build_hitters():
     vs_avg = edge_score(pct_of(W, n), bl_rate or 0, n)
     vs_own = edge_score(pct_of(eW, len(era)), mean([p["confidence"] / 100 for p in era]), len(era)) if era else None
     m["score"] = vs_avg if vs_own is None or vs_avg is None else round((vs_avg + vs_own) / 2)
+    day_rate = {d_: b["with_hit"] / b["hitters"] for d_, b in base.items() if b and b.get("hitters")}
+    skill_score([(p["confidence"] / 100, day_rate.get(p["date"]), int(p["got_hit"])) for p in era], m)
     m["grade"] = "Not graded" if n < GRADE_MIN_N else ("Working" if d >= 0.05 else "Mixed" if d >= 0 else "Falling short")
     m["verdict"] = (f"Its picks get a hit more often than the average hitter ({pc(pct_of(W, n))} vs {pc(bl_rate or 0)}), "
                     + ("by a clear margin." if d >= 0.05 else "but only by a little." if d >= 0 else "but it isn't beating the average hitter."))
@@ -1751,6 +1816,8 @@ def build_team(mid):
     else:
         if len(bf) >= GRADE_MIN_N:
             m["grade"] = grade_from(pct_of(ourW_bf, len(bf)), pct_of(bW, len(bf)), len(bf), m)
+            skill_score([(p["prob"] / 100, (p.get("ml") or {}).get("book_prob") / 100 if (p.get("ml") or {}).get("book_prob") is not None else None,
+                          int(p["correct"])) for p, _, _ in bf], m)
             base_txt = f"sportsbook favorites ({rec(bW, len(bf) - bW)})"
             mine = rec(ourW_bf, len(bf) - ourW_bf)
         else:
@@ -2040,8 +2107,10 @@ def scoreboard(sports):
     if not scored:
         return ""
     o = ['<section class="sub" aria-labelledby="h-board"><h3 id="h-board">Edge scores, every league</h3>',
-         '<p class="note">50 = picks winners as often as the Vegas favorite (or the home team / average hitter) on the same games. '
-         f'Each point better adds 10, each point worse takes 10. Needs {GRADE_MIN_N}+ live picks.</p>',
+         '<p class="note">How sharp each model\'s chances are next to Vegas (or the average hitter) on the same live games, '
+         'judged the way forecasters judge the market: by the accuracy score, which punishes a confident miss more than a timid one. '
+         f'50 = as accurate as Vegas. Each 1% more accurate adds {SKILL_POINTS}, but only the part bigger than luck counts, '
+         f'so a hot streak can\'t inflate it. Needs {GRADE_MIN_N}+ live picks.</p>',
          '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Model</th><th>Score</th><th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
     for sc, lab, name in scored:
         cls = "g-good" if sc >= 60 else "g-bad" if sc < 45 else "g-mixed"
@@ -2049,7 +2118,6 @@ def scoreboard(sports):
                  f'<td class="barcol"><div class="bar {cls}"><i style="width:{sc}%"></i><b></b></div></td></tr>')
     rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
     o.append('</tbody></table></div>')
-    o.append('<p class="note">Hitters: half vs the average hitter, half vs the hit rate the model expected.</p>')
     if rest:
         o.append(f'<p class="note">No score yet: {esc(", ".join(rest))}.</p>')
     o.append('</section>')
@@ -2062,6 +2130,8 @@ def render_model(m, data):
          f'<p class="verdict">{esc(m["verdict"])}</p>']
     if goal_line(m):
         o.append(f'<p class="goal">{esc(goal_line(m))}</p>')
+    if skill_line(m):
+        o.append(f'<p class="goal">{esc(skill_line(m))}</p>')
     how = m.get("how")
     if how:
         o.append('<div class="sub"><h3>How it makes a pick</h3>')
@@ -2173,6 +2243,9 @@ def main():
         ("nba", "NBA", [build_team("nba")]),
         ("cbb", "CBB", [build_team("cbb")]),
     ]
+    for _, _, models in sports:
+        for m in models:
+            honest_grade(m)
     updated = max(DATA_DATES.values()) if DATA_DATES else dt.date.today().isoformat()
     data = {}
     out = ['<title>Model Room</title>',
