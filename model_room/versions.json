@@ -672,14 +672,35 @@
      "massey",
      "pyth"
     ]
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "extras": [
+     "shots",
+     "goalies"
+    ],
+    "calib": true
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "elo_only": true,
+    "extras": [
+     "shots",
+     "goalies"
+    ],
+    "calib": true
    }
   ],
   "current": [
    20,
    19,
    10,
-   6,
-   18,
+   26,
+   27,
    21,
    22,
    23,
