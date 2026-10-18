@@ -18134,9 +18134,9 @@
       "reason": "Batting 3rd \u00b7 .306 season average",
       "hit_streak": 0,
       "model": "2026-10-16T00:32:32+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -18182,9 +18182,9 @@
       "reason": "Batting 3rd \u00b7 Faces Nick Martinez (3.10 ERA, 1.09 WHIP)",
       "hit_streak": 2,
       "model": "2026-10-16T00:32:32+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -18612,6 +18612,10 @@
     "2026-10-15": {
       "hitters": 37,
       "with_hit": 18
+    },
+    "2026-10-17": {
+      "hitters": 23,
+      "with_hit": 13
     }
   }
 }
