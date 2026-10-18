@@ -185,6 +185,7 @@ def grade_from(model_pct, base_pct, n, m=None):
     m, also sets the model's Edge score from the same numbers."""
     if m is not None:
         m["score"] = edge_score(model_pct, base_pct, n)
+        m["win"] = (model_pct, base_pct, n)
     if n < GRADE_MIN_N:
         return "Not graded"
     d = (model_pct - base_pct) * 100
@@ -1845,6 +1846,7 @@ h1 i{color:var(--ours)}
 .model{display:grid;gap:14px;border-top:1px solid var(--rule);padding-top:20px;min-width:0}
 .model-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .model-h h2{margin:0;font-stretch:112%;font-weight:800;font-size:1.35rem}
+.goal{margin:0;font-size:.92rem;color:var(--muted);border-left:3px solid var(--ours);padding-left:10px;max-width:70ch}
 .verdict{margin:0;font-family:var(--serif);font-size:1.35rem;line-height:1.25;max-width:60ch}
 .sub{display:grid;gap:12px;min-width:0}
 .sub>h3{margin:6px 0 0;font-size:1.05rem;font-weight:800;font-stretch:112%;border-top:2px solid var(--text);padding-top:10px}
@@ -1983,6 +1985,51 @@ JS = r"""
 """
 
 
+# Season goal for picking winners, per game model (Anthony, 2026-10-18): about
+# 2 points better than Vegas favorites usually win over a full season.
+WIN_GOALS = {"nfl-games": 68, "cfb-games": 77, "mlb-games": 60, "nhl": 62, "soccer": 55, "nba": 70, "cbb": 75}
+
+
+def goal_line(m):
+    goal = WIN_GOALS.get(m["id"])
+    if goal is None:
+        return ""
+    pct, base, n = m.get("win") or (None, None, 0)
+    if not n:
+        return f"Goal: pick {goal}% of winners this season. No live picks yet."
+    now = pct * 100
+    gap = goal - now
+    tail = (f"{gap:.0f} point{'s' if round(gap) != 1 else ''} to go." if gap >= 0.5
+            else "On pace. Keep it there." if gap > -0.5 else f"{-gap:.0f} point{'s' if round(-gap) != 1 else ''} past the goal.")
+    return f"Goal: pick {goal}% of winners this season. Now {now:.0f}% ({rec(round(pct * n), n - round(pct * n))}), Vegas favorites {base * 100:.0f}% on the same games. {tail}"
+
+
+def goals_board(sports):
+    """Each game model's winner rate against its season goal."""
+    rows = [(lab, m) for _, lab, models in sports for m in models if m["id"] in WIN_GOALS]
+    if not rows:
+        return ""
+    o = ['<section class="sub" aria-labelledby="h-goals"><h3 id="h-goals">Winner goals</h3>',
+         '<p class="note">Each sport aims to pick winners about 2 points more often than Vegas favorites usually do over a season. '
+         'The bar fills toward the goal; the thin mark is Vegas favorites on the same games.</p>',
+         '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Now</th><th>Goal</th>'
+         '<th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
+    for lab, m in rows:
+        goal = WIN_GOALS[m["id"]]
+        pct, base, n = m.get("win") or (None, None, 0)
+        if not n:
+            o.append(f'<tr><td>{esc(lab)}</td><td class="n">–</td><td class="n">{goal}%</td><td class="barcol"><span class="note">No live picks yet</span></td></tr>')
+            continue
+        now = pct * 100
+        cls = "g-good" if now >= goal - 0.5 else "g-mixed" if now >= base * 100 else "g-bad"
+        fill = min(100, now / goal * 100)
+        mark = min(100, base * 100 / goal * 100)
+        o.append(f'<tr><td>{esc(lab)}</td><td class="n">{now:.0f}%</td><td class="n">{goal}%</td>'
+                 f'<td class="barcol"><div class="bar {cls}"><i style="width:{fill:.0f}%"></i><b style="left:{mark:.0f}%"></b></div></td></tr>')
+    o.append('</tbody></table></div></section>')
+    return "".join(o)
+
+
 def scoreboard(sports):
     """Every model's Edge score on one board, best first."""
     rows = [(m.get("score"), lab, m["name"]) for _, lab, models in sports for m in models]
@@ -2010,6 +2057,8 @@ def render_model(m, data):
     o = [f'<section class="model" id="m-{m["id"]}" aria-labelledby="h-{m["id"]}">',
          f'<div class="model-h"><h2 id="h-{m["id"]}">{esc(m["name"])}</h2><span class="chips">{score_chip(m.get("score"))}{grade_chip(m["grade"])}</span></div>',
          f'<p class="verdict">{esc(m["verdict"])}</p>']
+    if goal_line(m):
+        o.append(f'<p class="goal">{esc(goal_line(m))}</p>')
     how = m.get("how")
     if how:
         o.append('<div class="sub"><h3>How it makes a pick</h3>')
@@ -2133,6 +2182,7 @@ def main():
            '<p class="lede">How every model picks, how it has done, and the versions trying to replace it.</p></header>',
            ]
     out.append(scoreboard(sports))
+    out.append(goals_board(sports))
     out.append('<nav class="tabs" role="tablist" aria-label="Sport">')
     for i, (key, lab, _) in enumerate(sports):
         out.append(f'<button role="tab" id="tab-{key}" aria-controls="p-{key}" aria-selected="{"true" if i == 0 else "false"}" data-p="{key}">{lab}</button>')
