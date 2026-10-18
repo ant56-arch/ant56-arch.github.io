@@ -52,7 +52,7 @@ import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import moneyline  # noqa: E402
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone, time as dtime
 from zoneinfo import ZoneInfo
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
@@ -1381,12 +1381,27 @@ def assemble_season_weeks(sport, games, log, comparison, season):
             g["week_label"], g["week"] = wk["label"], wk["week"]
     return weeks
 
-def current_week_key(weeks):
-    """The week to default to: the earliest one with a game not yet played.
-    Falls back to the earliest week overall if the whole season is graded."""
+# A finished week stays the current one until this time ET (Tuesday 6 AM)
+# after its last game, so its results are still up the morning after.
+HOLD_WEEKDAY, HOLD_HOUR = 1, 6
+
+def week_held(wk, now=None):
+    days = [g["gameday"] for g in wk["games"] if g.get("gameday")]
+    if not days:
+        return False
+    last = datetime.fromisoformat(max(days)).date()
+    until = last + timedelta(days=(HOLD_WEEKDAY - last.weekday()) % 7 or 7)
+    return (now or datetime.now(ET)) < datetime.combine(until, dtime(HOLD_HOUR), ET)
+
+def current_week_key(weeks, now=None):
+    """The week to default to: the earliest one with a game not yet played,
+    unless the week before it just finished (see week_held). Falls back to
+    the earliest week overall if the whole season is graded."""
     ordered = sorted(weeks.items(), key=lambda kv: kv[1]["week"])
-    for key, wk in ordered:
+    for i, (key, wk) in enumerate(ordered):
         if any(not g["graded"] for g in wk["games"]):
+            if i and week_held(ordered[i - 1][1], now):
+                return ordered[i - 1][0]
             return key
     return ordered[0][0] if ordered else None
 
@@ -1910,7 +1925,7 @@ def build_summary(sport, games, log, comparison, accuracy_summary):
                "empty": ("No games available yet. " + sport["no_games_note"]).strip(),
                "retrained": load_coefficients(sport).get("fitted_at"), "model_url": "model.html"}
     # Offseason (every game graded): no picks, rather than last season's.
-    if key and any(not g["graded"] for g in weeks[key]["games"]):
+    if key and (any(not g["graded"] for g in weeks[key]["games"]) or week_held(weeks[key])):
         week = weeks[key]
         summary["heading"] = week["label"]
         top = sorted(week["games"], key=lambda g: (g["graded"], -g["win_pct"]))[:3]
