@@ -1988,6 +1988,7 @@ JS = r"""
 # Season goal for picking winners, per game model (Anthony, 2026-10-18): about
 # 2 points better than Vegas favorites usually win over a full season.
 WIN_GOALS = {"nfl-games": 68, "cfb-games": 77, "mlb-games": 60, "nhl": 62, "soccer": 55, "nba": 70, "cbb": 75}
+STRETCH = 3  # the stretch target sits this many points above the goal: the goal is a floor, not a ceiling
 
 
 def goal_line(m):
@@ -1996,12 +1997,14 @@ def goal_line(m):
         return ""
     pct, base, n = m.get("win") or (None, None, 0)
     if not n:
-        return f"Goal: pick {goal}% of winners this season. No live picks yet."
-    now = pct * 100
+        return f"Goal: pick {goal}% of winners this season, stretch {goal + STRETCH}%. No live picks yet."
+    now = round(pct * 100)
     gap = goal - now
+    stretch = goal + STRETCH
     tail = (f"{gap:.0f} point{'s' if round(gap) != 1 else ''} to go." if gap >= 0.5
-            else "On pace. Keep it there." if gap > -0.5 else f"{-gap:.0f} point{'s' if round(-gap) != 1 else ''} past the goal.")
-    return f"Goal: pick {goal}% of winners this season. Now {now:.0f}% ({rec(round(pct * n), n - round(pct * n))}), Vegas favorites {base * 100:.0f}% on the same games. {tail}"
+            else f"Goal reached. Next stop: the {stretch}% stretch target." if now < stretch
+            else f"Past the {stretch}% stretch target too.")
+    return f"Goal: pick {goal}% of winners this season, stretch {stretch}%. Now {now:.0f}% ({rec(round(pct * n), n - round(pct * n))}), Vegas favorites {base * 100:.0f}% on the same games. {tail}"
 
 
 def goals_board(sports):
@@ -2011,20 +2014,20 @@ def goals_board(sports):
         return ""
     o = ['<section class="sub" aria-labelledby="h-goals"><h3 id="h-goals">Winner goals</h3>',
          '<p class="note">Each sport aims to pick winners about 2 points more often than Vegas favorites usually do over a season. '
-         'The bar fills toward the goal; the thin mark is Vegas favorites on the same games.</p>',
-         '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Now</th><th>Goal</th>'
+         'The goal is the floor. The stretch target is where great looks like. The bar fills toward the goal; the thin mark is Vegas favorites on the same games.</p>',
+         '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Now</th><th>Goal</th><th>Stretch</th>'
          '<th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
     for lab, m in rows:
         goal = WIN_GOALS[m["id"]]
         pct, base, n = m.get("win") or (None, None, 0)
         if not n:
-            o.append(f'<tr><td>{esc(lab)}</td><td class="n">–</td><td class="n">{goal}%</td><td class="barcol"><span class="note">No live picks yet</span></td></tr>')
+            o.append(f'<tr><td>{esc(lab)}</td><td class="n">–</td><td class="n">{goal}%</td><td class="n">{goal + STRETCH}%</td><td class="barcol"><span class="note">No live picks yet</span></td></tr>')
             continue
-        now = pct * 100
-        cls = "g-good" if now >= goal - 0.5 else "g-mixed" if now >= base * 100 else "g-bad"
+        now = round(pct * 100)
+        cls = "g-good" if now >= goal else "g-mixed" if now >= base * 100 else "g-bad"
         fill = min(100, now / goal * 100)
         mark = min(100, base * 100 / goal * 100)
-        o.append(f'<tr><td>{esc(lab)}</td><td class="n">{now:.0f}%</td><td class="n">{goal}%</td>'
+        o.append(f'<tr><td>{esc(lab)}</td><td class="n">{now:.0f}%</td><td class="n">{goal}%</td><td class="n">{goal + STRETCH}%</td>'
                  f'<td class="barcol"><div class="bar {cls}"><i style="width:{fill:.0f}%"></i><b style="left:{mark:.0f}%"></b></div></td></tr>')
     o.append('</tbody></table></div></section>')
     return "".join(o)
