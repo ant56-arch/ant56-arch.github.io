@@ -5758,7 +5758,7 @@
     "starters": -0.066
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-17T22:06:18Z",
    "ml": {
     "team": "TB",
@@ -5770,6 +5770,62 @@
     "value": false,
     "home_ml": -107,
     "away_ml": -112,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.893
+   },
+   "home_runs": 3,
+   "away_runs": 7,
+   "winner": "TB"
+  },
+  {
+   "date": "2026-10-18",
+   "game_id": "849817",
+   "start": "2026-10-18T17:08:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "CLE",
+   "away": "TB",
+   "home_name": "Cleveland Guardians",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 114,
+   "away_id": 139,
+   "home_record": "85-77",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 800048,
+    "name": "Parker Messick",
+    "era": 2.59,
+    "ip": 198.0
+   },
+   "away_sp": {
+    "id": 656876,
+    "name": "Drew Rasmussen",
+    "era": 2.56,
+    "ip": 186.0
+   },
+   "pick": "TB",
+   "prob": 50.1,
+   "home_prob": 49.9,
+   "factors": {
+    "home_field": 0.146,
+    "elo": -0.138,
+    "starters": -0.012
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-18T08:02:58Z",
+   "ml": {
+    "team": "TB",
+    "side": "away",
+    "price": -136,
+    "prob": 50.1,
+    "book_prob": 55.1,
+    "edge": -5.0,
+    "value": false,
+    "home_ml": 113,
+    "away_ml": -136,
     "book": "DraftKings",
     "won": null,
     "units": null
