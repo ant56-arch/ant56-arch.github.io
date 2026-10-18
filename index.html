@@ -758,6 +758,17 @@ if (LG !== "All") {
 }
 
 const dayKey = d => new Intl.DateTimeFormat("en-CA", { timeZone: ET, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+// The slate's "today" turns over at 6 AM ET, not midnight, so a night's
+// results stay up until morning.
+const DAY_TURNS_HOUR = 6;
+const sportsDay = () => dayKey(new Date(Date.now() - DAY_TURNS_HOUR * 36e5));
+// Weekly leagues keep their last game day up until Tuesday 6 AM ET.
+const WEEKLY = ["NFL", "CFB"];
+function weekHeld(key) {
+  const d = new Date(key + "T12:00:00Z"), dow = d.getUTCDay();
+  d.setUTCDate(d.getUTCDate() + (((2 - dow) % 7 + 7) % 7 || 7));
+  return sportsDay() < d.toISOString().slice(0, 10);
+}
 const etTime = iso => new Date(iso).toLocaleTimeString("en-US", { timeZone: ET, hour: "numeric", minute: "2-digit" });
 const etHour = iso => +new Intl.DateTimeFormat("en-US", { timeZone: ET, hour: "numeric", hourCycle: "h23" }).format(new Date(iso));
 const longDate = (key, opts) => new Date(key + "T12:00:00").toLocaleDateString("en-US", opts);
@@ -1511,7 +1522,7 @@ function leaguePages(s) {
 
 function render(sums) {
   const by = {}; SITES.forEach((s, i) => by[s.lg] = sums[i]);
-  const today = dayKey(new Date());
+  const today = sportsDay();
 
   if (LG !== "All") leagueTop(by[LG], today);
   else {
@@ -1553,14 +1564,21 @@ function render(sums) {
   const days = [...new Set(all.filter(g => g.date >= today).map(g => g.date))].sort();
   const todayGames = all.filter(g => g.date === today);
   const nextKey = days.find(d => d > today);
+  // The latest finished day, so last night's results are a tap away.
+  const lastKey = [...new Set(all.filter(g => g.date < today && g.final).map(g => g.date))].sort().pop();
   SLATES = {};
+  if (lastKey) SLATES.last = slateText(all.filter(g => g.date === lastKey), lastKey, false);
   if (todayGames.length) SLATES.today = slateText(todayGames, today, true);
   if (nextKey) SLATES.next = slateText(all.filter(g => g.date === nextKey), nextKey, false);
   const sw = $("dayswitch");
-  const label = k => k === nextKey && nextKey === dayKey(new Date(Date.now() + 864e5)) ? "Tomorrow" : longDate(k, { weekday: "long" });
-  sw.innerHTML = (SLATES.today ? `<button type="button" data-day="today" aria-pressed="true">Today · ${todayGames.length}</button>` : "") +
+  const shift = n => dayKey(new Date(Date.now() - DAY_TURNS_HOUR * 36e5 + n * 864e5));
+  const label = k => k === shift(1) ? "Tomorrow" : k === shift(-1) ? "Yesterday" : longDate(k, { weekday: "long" });
+  sw.innerHTML = (SLATES.last ? `<button type="button" data-day="last" aria-pressed="false">${label(lastKey)} · ${SLATES.last.games.length}</button>` : "") +
+                 (SLATES.today ? `<button type="button" data-day="today" aria-pressed="true">Today · ${todayGames.length}</button>` : "") +
                  (SLATES.next ? `<button type="button" data-day="next" aria-pressed="false">${label(nextKey)} · ${SLATES.next.games.length}</button>` : "");
-  const start = SLATES.today ? "today" : (SLATES.next ? "next" : null);
+  // NFL and CFB tabs open on the week's last game day until Tuesday morning.
+  const holdLast = SLATES.last && WEEKLY.includes(LG) && weekHeld(lastKey);
+  const start = SLATES.today ? "today" : holdLast ? "last" : (SLATES.next ? "next" : (SLATES.last ? "last" : null));
   if (start) setDay(start, false);
   else {
     $("slate").hidden = true;
@@ -1571,7 +1589,7 @@ function render(sums) {
   const VAL = vsrc.filter(g => g.value && g.book).sort((a, b) => (b.prob - b.book) - (a.prob - a.book)).slice(0, 3);
   const vn = vsrc.filter(g => g.value).length;
   $("value").hidden = LG !== "All" && !vsrc.length;
-  $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "next" ? label(nextKey).toLowerCase() : "today"}`;
+  $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "today" ? "today" : label(start === "next" ? nextKey : lastKey).toLowerCase()}`;
   $("valH2").innerHTML = VAL.length ? `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} Vegas <em>left on the table.</em>` : `No prices left <em>on the table.</em>`;
   if (!VAL.length) $("valLede").textContent = "No pick beats Vegas's win chance by 6 points or more.";
   $("valueGrid").innerHTML = VAL.map((g, i) => `
