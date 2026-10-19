@@ -5719,8 +5719,10 @@
     "away_ml": -114,
     "book": "DraftKings",
     "won": null,
-    "units": null
-   }
+    "units": 0.0,
+    "void": true
+   },
+   "void": true
   },
   {
    "date": "2026-10-17",
@@ -5814,7 +5816,7 @@
     "starters": -0.012
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T17:52:34Z",
    "ml": {
     "team": "TB",
@@ -5826,6 +5828,62 @@
     "value": false,
     "home_ml": 110,
     "away_ml": -132,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.758
+   },
+   "home_runs": 1,
+   "away_runs": 3,
+   "winner": "TB"
+  },
+  {
+   "date": "2026-10-19",
+   "game_id": "849815",
+   "start": "2026-10-19T20:08:00-04:00",
+   "type": "postseason",
+   "round": "LCS",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "CLE",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Cleveland Guardians",
+   "home_id": 139,
+   "away_id": 114,
+   "home_record": "98-64",
+   "away_record": "85-77",
+   "home_sp": {
+    "id": 642547,
+    "name": "Freddy Peralta",
+    "era": 4.21,
+    "ip": 179.7
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "TB",
+   "prob": 60.2,
+   "home_prob": 60.2,
+   "factors": {
+    "home_field": 0.146,
+    "elo": 0.154,
+    "starters": 0.112
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:17Z",
+   "ml": {
+    "team": "TB",
+    "side": "home",
+    "price": -150,
+    "prob": 60.2,
+    "book_prob": 57.3,
+    "edge": 2.9,
+    "value": false,
+    "home_ml": -150,
+    "away_ml": 124,
     "book": "DraftKings",
     "won": null,
     "units": null

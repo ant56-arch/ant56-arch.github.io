@@ -2379,7 +2379,7 @@
     "away": 1.24
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "home",
@@ -2392,10 +2392,13 @@
     "draw_ml": 275,
     "away_ml": 270,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.952,
     "team": "OSA"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 0,
+   "winner": "OSA"
   },
   {
    "date": "2026-10-18",
@@ -2425,7 +2428,7 @@
     "away": 1.32
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "home",
@@ -2438,10 +2441,13 @@
     "draw_ml": 245,
     "away_ml": 175,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "LEE"
-   }
+   },
+   "home_pts": 1,
+   "away_pts": 1,
+   "winner": "Draw"
   },
   {
    "date": "2026-10-18",
@@ -2471,7 +2477,7 @@
     "away": 1.1
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "home",
@@ -2484,10 +2490,13 @@
     "draw_ml": 370,
     "away_ml": 550,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.465,
     "team": "BHA"
-   }
+   },
+   "home_pts": 5,
+   "away_pts": 0,
+   "winner": "BHA"
   },
   {
    "date": "2026-10-18",
@@ -2517,7 +2526,7 @@
     "away": 1.06
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "home",
@@ -2530,10 +2539,13 @@
     "draw_ml": 240,
     "away_ml": 250,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 1.15,
     "team": "BOU"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 0,
+   "winner": "BOU"
   },
   {
    "date": "2026-10-18",
@@ -2563,7 +2575,7 @@
     "away": 0.99
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "home",
@@ -2576,10 +2588,13 @@
     "draw_ml": 210,
     "away_ml": 245,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 1.3,
     "team": "CEL"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 1,
+   "winner": "CEL"
   },
   {
    "date": "2026-10-18",
@@ -2609,7 +2624,7 @@
     "away": 1.51
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T10:51:03Z",
    "ml": {
     "side": "away",
@@ -2622,10 +2637,13 @@
     "draw_ml": 295,
     "away_ml": -160,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.625,
     "team": "ARS"
-   }
+   },
+   "home_pts": 0,
+   "away_pts": 1,
+   "winner": "ARS"
   },
   {
    "date": "2026-10-18",
@@ -2655,7 +2673,7 @@
     "away": 1.28
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T15:48:52Z",
    "ml": {
     "side": "away",
@@ -2668,10 +2686,13 @@
     "draw_ml": 265,
     "away_ml": 110,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 1.1,
     "team": "RSO"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 5,
+   "winner": "RSO"
   },
   {
    "date": "2026-10-18",
@@ -2701,7 +2722,7 @@
     "away": 0.85
    },
    "model": "2026-10-02T17:56:06+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-18T17:53:12Z",
    "ml": {
     "side": "home",
@@ -2714,10 +2735,13 @@
     "draw_ml": 600,
     "away_ml": 1000,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.222,
     "team": "RMA"
-   }
+   },
+   "home_pts": 4,
+   "away_pts": 1,
+   "winner": "RMA"
   },
   {
    "date": "2026-10-19",
@@ -2739,8 +2763,8 @@
    "prob": 46.5,
    "probs": {
     "home": 46.5,
-    "draw": 25.5,
-    "away": 28.1
+    "draw": 25.4,
+    "away": 28.0
    },
    "xg": {
     "home": 1.62,
@@ -2748,17 +2772,17 @@
    },
    "model": "2026-10-02T17:56:06+00:00",
    "correct": null,
-   "set_at": "2026-10-19T00:19:59Z",
+   "set_at": "2026-10-19T08:54:56Z",
    "ml": {
     "side": "home",
-    "price": -200,
+    "price": -190,
     "prob": 46.5,
-    "book_prob": 63.4,
-    "edge": -17.0,
+    "book_prob": 62.3,
+    "edge": -15.8,
     "value": false,
-    "home_ml": -200,
-    "draw_ml": 360,
-    "away_ml": 500,
+    "home_ml": -190,
+    "draw_ml": 350,
+    "away_ml": 475,
     "book": "DraftKings",
     "won": null,
     "units": null,
@@ -2782,10 +2806,10 @@
    "neutral": false,
    "pick": "GET",
    "pick_side": "home",
-   "prob": 35.8,
+   "prob": 35.7,
    "probs": {
-    "home": 35.8,
-    "draw": 33.3,
+    "home": 35.7,
+    "draw": 33.4,
     "away": 30.9
    },
    "xg": {
@@ -2794,21 +2818,435 @@
    },
    "model": "2026-10-02T17:56:06+00:00",
    "correct": null,
-   "set_at": "2026-10-19T00:19:59Z",
+   "set_at": "2026-10-19T08:54:56Z",
    "ml": {
     "side": "home",
-    "price": 200,
-    "prob": 35.8,
-    "book_prob": 31.8,
-    "edge": 4.1,
+    "price": 210,
+    "prob": 35.7,
+    "book_prob": 30.9,
+    "edge": 4.8,
     "value": false,
-    "home_ml": 200,
-    "draw_ml": 195,
+    "home_ml": 210,
+    "draw_ml": 190,
     "away_ml": 165,
     "book": "DraftKings",
     "won": null,
     "units": null,
     "team": "GET"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915403",
+   "start": "2026-10-20T12:45:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "FEN",
+   "away": "SLP",
+   "home_name": "Fenerbahce",
+   "away_name": "Slavia Prague",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/436.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/494.png",
+   "home_record": "0-1-1",
+   "away_record": "0-0-2",
+   "neutral": false,
+   "pick": "FEN",
+   "pick_side": "home",
+   "prob": 64.0,
+   "probs": {
+    "home": 64.0,
+    "draw": 19.3,
+    "away": 16.7
+   },
+   "xg": {
+    "home": 2.35,
+    "away": 1.14
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -145,
+    "prob": 64.0,
+    "book_prob": 56.8,
+    "edge": 7.2,
+    "value": true,
+    "home_ml": -145,
+    "draw_ml": 320,
+    "away_ml": 370,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "FEN"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915404",
+   "start": "2026-10-20T12:45:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "SAB",
+   "away": "DOR",
+   "home_name": "Sabah FK",
+   "away_name": "Borussia Dortmund",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/21922.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/124.png",
+   "home_record": "1-0-1",
+   "away_record": "1-0-1",
+   "neutral": false,
+   "pick": "DOR",
+   "pick_side": "away",
+   "prob": 59.9,
+   "probs": {
+    "home": 18.6,
+    "draw": 21.4,
+    "away": 59.9
+   },
+   "xg": {
+    "home": 1.08,
+    "away": 2.08
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "away",
+    "price": -330,
+    "prob": 59.9,
+    "book_prob": 73.4,
+    "edge": -13.5,
+    "value": false,
+    "home_ml": 800,
+    "draw_ml": 500,
+    "away_ml": -330,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "DOR"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915392",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "VFB",
+   "away": "ATM",
+   "home_name": "VfB Stuttgart",
+   "away_name": "Atl\u00e9tico Madrid",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/134.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/1068.png",
+   "home_record": "2-0-0",
+   "away_record": "1-0-1",
+   "neutral": false,
+   "pick": "ATM",
+   "pick_side": "away",
+   "prob": 39.9,
+   "probs": {
+    "home": 36.2,
+    "draw": 23.9,
+    "away": 39.9
+   },
+   "xg": {
+    "home": 1.59,
+    "away": 1.68
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "away",
+    "price": 110,
+    "prob": 39.9,
+    "book_prob": 45.6,
+    "edge": -5.7,
+    "value": false,
+    "home_ml": 220,
+    "draw_ml": 290,
+    "away_ml": 110,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "ATM"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915397",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "LIV",
+   "away": "VIL",
+   "home_name": "Liverpool",
+   "away_name": "Villarreal",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/364.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/102.png",
+   "home_record": "2-0-0",
+   "away_record": "1-0-1",
+   "neutral": false,
+   "pick": "LIV",
+   "pick_side": "home",
+   "prob": 69.2,
+   "probs": {
+    "home": 69.2,
+    "draw": 17.4,
+    "away": 13.4
+   },
+   "xg": {
+    "home": 2.53,
+    "away": 1.05
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -210,
+    "prob": 69.2,
+    "book_prob": 64.6,
+    "edge": 4.5,
+    "value": false,
+    "home_ml": -210,
+    "draw_ml": 390,
+    "away_ml": 500,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "LIV"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915398",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "FCP",
+   "away": "PSV",
+   "home_name": "FC Porto",
+   "away_name": "PSV Eindhoven",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/437.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/148.png",
+   "home_record": "0-0-2",
+   "away_record": "0-1-1",
+   "neutral": false,
+   "pick": "FCP",
+   "pick_side": "home",
+   "prob": 52.6,
+   "probs": {
+    "home": 52.6,
+    "draw": 22.4,
+    "away": 25.0
+   },
+   "xg": {
+    "home": 2.0,
+    "away": 1.33
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -165,
+    "prob": 52.6,
+    "book_prob": 59.4,
+    "edge": -6.8,
+    "value": false,
+    "home_ml": -165,
+    "draw_ml": 360,
+    "away_ml": 380,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "FCP"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915399",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "PSG",
+   "away": "BAR",
+   "home_name": "Paris Saint-Germain",
+   "away_name": "Barcelona",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/160.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+   "home_record": "2-0-0",
+   "away_record": "2-0-0",
+   "neutral": false,
+   "pick": "PSG",
+   "pick_side": "home",
+   "prob": 53.6,
+   "probs": {
+    "home": 53.6,
+    "draw": 20.3,
+    "away": 26.1
+   },
+   "xg": {
+    "home": 2.33,
+    "away": 1.61
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": 140,
+    "prob": 53.6,
+    "book_prob": 39.7,
+    "edge": 14.0,
+    "value": true,
+    "home_ml": 140,
+    "draw_ml": 360,
+    "away_ml": 140,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "PSG"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915400",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "NAP",
+   "away": "BODO",
+   "home_name": "Napoli",
+   "away_name": "Bodo/Glimt",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/114.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2980.png",
+   "home_record": "0-0-2",
+   "away_record": "1-0-1",
+   "neutral": false,
+   "pick": "NAP",
+   "pick_side": "home",
+   "prob": 50.6,
+   "probs": {
+    "home": 50.6,
+    "draw": 24.9,
+    "away": 24.5
+   },
+   "xg": {
+    "home": 1.7,
+    "away": 1.12
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -165,
+    "prob": 50.6,
+    "book_prob": 59.4,
+    "edge": -8.7,
+    "value": false,
+    "home_ml": -165,
+    "draw_ml": 350,
+    "away_ml": 390,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "NAP"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915401",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "MNC",
+   "away": "AEK",
+   "home_name": "Manchester City",
+   "away_name": "AEK Athens",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/382.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/887.png",
+   "home_record": "1-0-1",
+   "away_record": "1-0-1",
+   "neutral": false,
+   "pick": "MNC",
+   "pick_side": "home",
+   "prob": 90.7,
+   "probs": {
+    "home": 90.7,
+    "draw": 6.7,
+    "away": 2.6
+   },
+   "xg": {
+    "home": 3.72,
+    "away": 0.61
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -1000,
+    "prob": 90.7,
+    "book_prob": 86.8,
+    "edge": 4.0,
+    "value": false,
+    "home_ml": -1000,
+    "draw_ml": 1000,
+    "away_ml": 2000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "MNC"
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401915402",
+   "start": "2026-10-20T15:00:00-04:00",
+   "comp": "UCL",
+   "season": 2026,
+   "home": "ROMA",
+   "away": "SLB",
+   "home_name": "AS Roma",
+   "away_name": "Slovan Bratislava",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/104.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/521.png",
+   "home_record": "0-1-1",
+   "away_record": "0-0-2",
+   "neutral": false,
+   "pick": "ROMA",
+   "pick_side": "home",
+   "prob": 81.4,
+   "probs": {
+    "home": 81.4,
+    "draw": 12.2,
+    "away": 6.4
+   },
+   "xg": {
+    "home": 2.99,
+    "away": 0.78
+   },
+   "model": "2026-10-02T17:56:06+00:00",
+   "correct": null,
+   "set_at": "2026-10-19T08:54:56Z",
+   "ml": {
+    "side": "home",
+    "price": -550,
+    "prob": 81.4,
+    "book_prob": 81.2,
+    "edge": 0.2,
+    "value": false,
+    "home_ml": -550,
+    "draw_ml": 700,
+    "away_ml": 1300,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "ROMA"
    }
   }
  ]
