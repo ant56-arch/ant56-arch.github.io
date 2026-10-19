@@ -334,7 +334,8 @@ SETTING_WORDS = {
     "calib": ("Win chances", lambda v: "Tuned to real win rates" if v else "Standard"),
 }
 EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "Shot share", "goalies": "Goalies",
-               "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating"}
+               "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating",
+               "home": "This season's home field"}
 SETTING_HELP = {
     "team_half_life": "how fast it forgets old games when it sizes up a team's form",
     "rating_half_life": "how fast the power ratings forget old games",

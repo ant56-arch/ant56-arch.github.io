@@ -80,14 +80,18 @@ BLEND_GRID = np.round(np.arange(0.0, 1.01, 0.05), 2)
 RECENT_HOLDOUT_GAMES = 256
 DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES,
                   "rating_half_life": team_ratings.RATING_HALF_LIFE_WEEKS, "seasons": "all"}
-# Ten versions (Anthony, 2026-10-17: ten per sport). The last four add
-# published rating methods on top of the live inputs: FiveThirtyEight-style
-# Elo and Pythagorean expectation (game_context.py).
-RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": h, "seasons": n}
-            for h in (4, 8) for n in ("all", 8)]
+# Ten versions (Anthony, 2026-10-17: ten per sport). Elo and Pythagorean are
+# published rating methods: FiveThirtyEight-style Elo and Pythagorean
+# expectation (game_context.py).
+#
+# 2026-10-19 (Anthony: keep ten, drop the bottom two and add new ones each
+# time): the 8-week ratings half-life recipes went, after finishing behind the
+# 4-week ones at every retrain. In came home field learned from this season
+# (home teams won 47% of 2026 games through Week 6), alone and with injuries.
+RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": n} for n in ("all", 8)]
            + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": "all", "extras": extras}
               for extras in (["injuries"], ["injuries", "rest"], ["elo"], ["pyth"], ["injuries", "elo"],
-                             ["injuries", "elo", "pyth"])])
+                             ["injuries", "elo", "pyth"], ["home"], ["injuries", "home"])])
 EXTRA_FEATURES = [c for cols in game_context.FEATURES.values() for c in cols]
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 
