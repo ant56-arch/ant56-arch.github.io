@@ -55,6 +55,9 @@ BACKTEST_COMPS = ("E0", "SP1", "UCL")
 COMP_NAMES = {"E0": "Premier League", "SP1": "La Liga", "UCL": "Champions League"}
 BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 
+# On 2026-10-19 the bottom two (pull 3 and half-life 270) made way for two
+# "stretch" versions that sharpen the three chances toward the likeliest
+# result (the pick never changes), after live favorites won more than rated.
 # Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
 # five next-best fade / pull / shots settings, and four tryouts on the live
 # recipe - short rest, a heavier shots-on-target blend, and the promoted-club
@@ -63,9 +66,10 @@ BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 # Every version has per-competition home edges.
 _LIVE = {"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.3, "home_reg": 100.0}
 RECIPES = ([_LIVE]
-           + [{**_LIVE, "half_life": h, "reg": r} for h, r in ((550, 5.0), (400, 10.0), (400, 5.0), (550, 3.0), (270, 5.0))]
+           + [{**_LIVE, "half_life": h, "reg": r} for h, r in ((550, 5.0), (400, 10.0), (400, 5.0))]
            + [{**_LIVE, "rest": True}, {**_LIVE, "xg": 0.5}, {**_LIVE, "promoted": 0.15},
-              {**_LIVE, "xg": 0.5, "promoted": 0.15}])
+              {**_LIVE, "xg": 0.5, "promoted": 0.15},
+              {**_LIVE, "stretch": 1.1}, {**_LIVE, "stretch": 1.2}])
 
 
 def comp_of(m):
@@ -250,7 +254,8 @@ def summary(lines):
 def recipe_name(r):
     extra = (f", shots {r['xg']:g}" if r.get("xg") else "") + (", home by comp" if r.get("home_reg") is not None else "") \
         + (", rest" if r.get("rest") else "") + (f", draws +{r['draw']:g}" if r.get("draw") else "") \
-        + (f", promoted -{r['promoted']:g}" if r.get("promoted") else "")
+        + (f", promoted -{r['promoted']:g}" if r.get("promoted") else "") \
+        + (f", stretch {r['stretch']:g}" if r.get("stretch") else "")
     return f"half-life {r['half_life']} days, pull {r['reg']:g}, {r['years']} years{extra}"
 
 

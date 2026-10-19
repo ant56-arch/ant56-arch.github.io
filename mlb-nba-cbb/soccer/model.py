@@ -174,6 +174,10 @@ class Ratings:
             th, ta = float(tiredness(rest[0])), float(tiredness(rest[1]))
             lh, la = lh * math.exp(self.rest_beta * (ta - th)), la * math.exp(self.rest_beta * (th - ta))
         p = outcome_probs(lh, la, self.rho, self.recipe.get("draw") or 0.0)
+        s = self.recipe.get("stretch")
+        if s:  # sharpen the three chances (power, then rescale), for tuned-confidence tryouts
+            q = [x ** s for x in p]
+            p = [x / sum(q) for x in q]
         return {"home": p[0], "draw": p[1], "away": p[2], "xg": (lh, la)}
 
     def known(self, key):

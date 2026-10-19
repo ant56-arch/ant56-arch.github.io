@@ -45,7 +45,12 @@ PLAYER_PRIOR_GAMES = 8  # last season's average fades out over this many games t
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_court", "elo", "net", "recent", "rest", "b2b_home", "b2b_away", "missing_home", "missing_away"]
-EXTRAS = {"massey": ["massey"], "pyth": ["pyth"]}
+EXTRAS = {"massey": ["massey"], "pyth": ["pyth"], "travel": ["travel"]}
+# Each team's home time zone (hours from UTC, standard time), for the travel tryout.
+TEAM_TZ = {**{t: -5 for t in ("ATL", "BKN", "BOS", "CHA", "CLE", "DET", "IND", "MIA", "NY", "ORL", "PHI", "TOR", "WSH")},
+           **{t: -6 for t in ("CHI", "DAL", "HOU", "MEM", "MIL", "MIN", "NO", "OKC", "SA")},
+           **{t: -7 for t in ("DEN", "PHX", "UTAH")},
+           **{t: -8 for t in ("GS", "LAC", "LAL", "POR", "SAC")}}
 PYTH_EXPONENT = 14.0  # the usual NBA Pythagorean exponent (Morey / Hollinger)
 
 
@@ -66,6 +71,7 @@ class League:
         self.season = None
         self.margins = defaultdict(list)  # team -> this season's margins
         self.last_date = {}
+        self.last_tz = {}  # team -> time zone of the arena it last played in
         self.team_rosters = defaultdict(lambda: deque(maxlen=ROTATION_GAMES))  # team -> sets of player ids
         self.player_team = {}  # player -> team he last played for
         self.player_name = {}
@@ -82,6 +88,7 @@ class League:
             self.p_prior = {pid: s / g for pid, (g, s) in self.p_season.items() if g >= 10}
             self.p_season.clear()
             self.margins.clear()
+            self.last_tz.clear()
             self.team_rosters.clear()
             self.methods.reset()
         self.season = season
@@ -146,7 +153,14 @@ class League:
             "missing_away": away_missing / 10,
             "massey": self.methods.massey(h) - self.methods.massey(a),
             "pyth": self.methods.pyth(h) - self.methods.pyth(a),
+            # Time zones crossed since each team's last game, road team minus home team.
+            "travel": float(self.tz_moved(a, h) - self.tz_moved(h, h)),
         }
+
+    def tz_moved(self, team, host):
+        here = TEAM_TZ.get(host)
+        last = self.last_tz.get(team)
+        return 0 if here is None or last is None else abs(here - last)
 
     def features_from_box(self, g, box):
         """Features for a past game, taking who played from its box score."""
@@ -179,6 +193,8 @@ class League:
         self.margins[a].append(-margin)
         self.methods.add(h, a, g["home_pts"], g["away_pts"], g.get("neutral"))
         self.last_date[h] = self.last_date[a] = g["date"]
+        if h in TEAM_TZ:
+            self.last_tz[h] = self.last_tz[a] = TEAM_TZ[h]
 
         for team in (h, a):
             rows = (box or {}).get(team, {}).get("players", [])

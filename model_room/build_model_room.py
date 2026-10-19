@@ -332,10 +332,11 @@ SETTING_WORDS = {
     "promoted": ("New-club start", lambda v: f"{float(v):g} below average" if v else "Off"),
     "draw": ("Extra draw chance", lambda v: f"+{float(v) * 100:.0f}%" if v else "Off"),
     "calib": ("Win chances", lambda v: "Tuned to real win rates" if v else "Standard"),
+    "stretch": ("Win chances", lambda v: f"Sharpened x{float(v):g}" if v else "Standard"),
 }
 EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "Shot share", "goalies": "Goalies",
                "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating",
-               "home": "This season's home field"}
+               "home": "This season's home field", "travel": "Time zones crossed"}
 SETTING_HELP = {
     "team_half_life": "how fast it forgets old games when it sizes up a team's form",
     "rating_half_life": "how fast the power ratings forget old games",
@@ -358,6 +359,7 @@ SETTING_HELP = {
     "promoted": "where a club new to its league starts, instead of the league average",
     "draw": "a nudge up to the draw chance",
     "calib": "whether its win chances are stretched to match how often teams it favored actually won",
+    "stretch": "how much the home, draw and away chances are sharpened toward the likeliest result (the pick itself never changes)",
 }
 
 
@@ -365,7 +367,7 @@ def recipe_cell(k, v):
     lab, f = SETTING_WORDS.get(k, (k, str))
     if v is None and k == "xg":
         return "0% (off)"
-    if v is None and k in ("elo_only", "rest", "promoted", "draw", "extras", "calib"):
+    if v is None and k in ("elo_only", "rest", "promoted", "draw", "extras", "calib", "stretch"):
         v = [] if k == "extras" else None
     if isinstance(v, float) and v.is_integer() and k in ("reg", "home_reg"):
         v = int(v)

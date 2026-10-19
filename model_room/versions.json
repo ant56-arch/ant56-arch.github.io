@@ -106,19 +106,36 @@
      "elo",
      "pyth"
     ]
+   },
+   {
+    "team_half_life": 4,
+    "rating_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "home"
+    ]
+   },
+   {
+    "team_half_life": 4,
+    "rating_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "injuries",
+     "home"
+    ]
    }
   ],
   "current": [
    7,
    8,
-   9,
-   10,
    13,
    14,
    15,
    16,
    17,
-   18
+   18,
+   19,
+   20
   ]
  },
  "cfb-games": {
@@ -839,19 +856,33 @@
     "extras": [
      "massey"
     ]
+   },
+   {
+    "elo_k": 15,
+    "elo_carry": 0.6,
+    "years": 2,
+    "calib": true
+   },
+   {
+    "elo_k": 15,
+    "elo_carry": 0.6,
+    "years": 2,
+    "extras": [
+     "travel"
+    ]
    }
   ],
   "current": [
    1,
    2,
    3,
-   7,
    19,
    20,
-   21,
    22,
    23,
-   24
+   24,
+   25,
+   26
   ]
  },
  "cbb": {
@@ -975,6 +1006,18 @@
     "extras": [
      "pyth"
     ]
+   },
+   {
+    "half_life": 60,
+    "carry": 0.6,
+    "years": 3,
+    "calib": true
+   },
+   {
+    "half_life": null,
+    "carry": 0.4,
+    "years": 3,
+    "calib": true
    }
   ],
   "current": [
@@ -984,10 +1027,10 @@
    8,
    9,
    16,
-   19,
-   20,
    21,
-   22
+   22,
+   23,
+   24
   ]
  },
  "soccer": {
@@ -1213,6 +1256,22 @@
     "xg": 0.5,
     "home_reg": 100.0,
     "promoted": 0.15
+   },
+   {
+    "half_life": 550,
+    "reg": 10.0,
+    "years": 3,
+    "xg": 0.3,
+    "home_reg": 100.0,
+    "stretch": 1.1
+   },
+   {
+    "half_life": 550,
+    "reg": 10.0,
+    "years": 3,
+    "xg": 0.3,
+    "home_reg": 100.0,
+    "stretch": 1.2
    }
   ],
   "current": [
@@ -1220,12 +1279,12 @@
    29,
    25,
    23,
-   27,
-   17,
    32,
    33,
    34,
-   35
+   35,
+   36,
+   37
   ]
  }
 }
