@@ -1,7 +1,7 @@
 """
 game_context.py
 Game-day context the opponent-adjusted ratings (team_ratings.py) don't see,
-for the two extra tryouts in fit_model.py's recipe search:
+for the extra tryouts in fit_model.py's recipe search:
 
   "rest"      rest_diff   home team's days of rest minus the away team's,
                           capped at a week either way (byes, Thursday games)
@@ -24,6 +24,11 @@ for the two extra tryouts in fit_model.py's recipe search:
                           scored^2.37 + allowed^2.37) for this season so far,
                           with 2 games of league-average scoring mixed in,
                           home minus away in log-odds (the log5 matchup)
+  "home"      home_season how far this season's league-wide home margin (true
+                          home games, earlier days only) sits from the last
+                          3 seasons', with HOME_PRIOR games of "no change"
+                          mixed in, so a season where home teams stop winning
+                          can lower home field (0 at a neutral site)
 
 Every input comes from nflverse and is known before kickoff: rest days and
 division games from the schedule, injuries from the Wednesday-Friday reports,
@@ -44,9 +49,11 @@ FEATURES = {
     "injuries": ["inj_off_diff", "inj_def_diff"],
     "elo": ["elo_diff"],
     "pyth": ["pyth_diff"],
+    "home": ["home_season"],
 }
 ELO_K, ELO_HOME, ELO_CARRY = 20.0, 48.0, 2 / 3
 PYTH_EXP, PYTH_PRIOR = 2.37, 2.0
+HOME_PRIOR, HOME_SEASONS = 64, 3
 GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 
 # Hours behind Eastern at each team's home stadium (Arizona keeps standard
@@ -133,6 +140,30 @@ def pyth_features(schedules):
             tot[0] += f
             tot[1] += 1
     return pd.DataFrame(out, columns=KEY + ["pyth_diff"])
+
+
+def home_features(schedules):
+    """home_season before every game in schedules, from finished true home
+    games on earlier days (a game never sees its own day's results)."""
+    g = _in_order(schedules)
+    home = (g["location"] != "Neutral").astype(float)
+    margin = (g["home_score"] - g["away_score"]).where(home == 1)
+    by_day = (pd.DataFrame({"season": g["season"], "_day": g["_day"], "m": margin})
+              .dropna().groupby(["season", "_day"])["m"].agg(["sum", "count"]))
+    by_season = by_day.groupby(level="season").sum()
+    out = []
+    for r, day, h in zip(g.itertuples(index=False), g["_day"], home):
+        past = by_season.loc[[s for s in by_season.index if r.season - HOME_SEASONS <= s < r.season]]
+        base = past["sum"].sum() / past["count"].sum() if past["count"].sum() else 0.0
+        if r.season in by_day.index.get_level_values("season"):
+            done = by_day.loc[r.season]
+            done = done[done.index < day]
+        else:
+            done = by_day.iloc[0:0]
+        n = done["count"].sum()
+        mean = done["sum"].sum() / n if n else base
+        out.append((r.season, r.week, r.home_team, r.away_team, h * n / (n + HOME_PRIOR) * (mean - base)))
+    return pd.DataFrame(out, columns=KEY + ["home_season"])
 
 
 def full_history(schedules, cache_dir=None):
@@ -238,6 +269,8 @@ def context_features(schedules, kinds, injury_inputs=None, history=None):
         out = out.merge(elo_features(h).drop_duplicates(KEY), on=KEY, how="left")
     if "pyth" in kinds:
         out = out.merge(pyth_features(schedules).drop_duplicates(KEY), on=KEY, how="left")
+    if "home" in kinds:
+        out = out.merge(home_features(schedules).drop_duplicates(KEY), on=KEY, how="left")
     if "rest" in kinds:
         out = out.merge(rest_features(schedules), on=KEY, how="left")
     if "injuries" in kinds:

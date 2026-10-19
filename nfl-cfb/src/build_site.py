@@ -1708,6 +1708,7 @@ FACTOR_LABELS = {
     "inj_def_diff_weight": ("Defense players out", "points per full-time defensive starter out (other team minus ours)", 1, "pts"),
     "elo_diff_weight": ("Elo rating gap", "points per 100 Elo points between the teams", 1, "pts"),
     "pyth_diff_weight": ("Pythagorean record gap", "points per unit of log-odds gap in points-based win rate", 1, "pts"),
+    "home_season_weight": ("This season's home field", "points per point this season's home margin differs from the last 3 seasons'", 1, "pts"),
     "margin_std_dev": ("Game-to-game swing", "how many points results typically miss by", 1, "plain"),
     "blend_weight_on_model_winprob": ("Model's say in the win chance", "the rest comes from the Vegas line", 1, "share"),
     "blend_weight_on_model_spread": ("Model's say in the spread", "the rest comes from the Vegas line", 1, "share"),
