@@ -106,7 +106,8 @@ function initTeamsPicker() {
       } else {
         resultCell = "<span class='faint'>-</span>";
       }
-      rows += `<tr>
+      const live = g.graded ? "" : ` data-live data-day="${g.gameday || ""}" data-away="${g.away_label}" data-home="${g.home_label}" data-pick="${g.favored_team}"`;
+      rows += `<tr${live}>
         <td>${g.matchup_html}</td>
         <td class="num mono accent" data-label="Model Pick">${pick}</td>
         <td class="num mono market-color" data-label="Vegas">${vegas}</td>
@@ -124,6 +125,44 @@ function initTeamsPicker() {
   }, (data) => data.default_week || data.week_order[data.week_order.length - 1]);
 }
 initTeamsPicker();
+
+// Teams table rows for games not graded yet: ESPN's live score or final, with
+// HIT / MISS on the model pick (a tie misses), until the next run grades them.
+// Uses the game-card helpers in sport-pages.js, which loads after this file.
+let teamsLiveTimer = null;
+async function teamsLive() {
+  clearTimeout(teamsLiveTimer);
+  const rows = [...document.querySelectorAll("#teams-week-content tr[data-live]")];
+  const site = gcLiveSite();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const days = [...new Set(rows.map(r => r.dataset.day).filter(d => d && d <= today))];
+  if (!rows.length || !site || !days.length) return;
+  const events = await gcLiveEvents(site, days);
+  let live = false;
+  rows.forEach(row => {
+    const e = gcLiveMatch(row, events, site.sport);
+    if (!e || e.state === "pre") return;
+    const k = a => edgeFavKey(site.sport, a);
+    const flip = k(row.dataset.away) === k(e.home.abbr) || k(row.dataset.home) === k(e.away.abbr);
+    const away = flip ? e.home : e.away, home = flip ? e.away : e.home;
+    if (away.score == null || home.score == null) return;
+    const cell = row.querySelector('[data-label="Result"] span');
+    if (!cell) return;
+    if (e.state === "in") {
+      live = true;
+      cell.innerHTML = `${away.score}-${home.score} <span class="gc-when is-live">${e.detail || "Live"}</span>`;
+      return;
+    }
+    const hit = away.score !== home.score && (row.dataset.pick === row.dataset.away) === (away.score > home.score);
+    cell.innerHTML = `${away.score}-${home.score} <span class='pill ${hit ? "pill-positive" : "pill-danger"}'>${hit ? "HIT" : "MISS"}</span>`;
+  });
+  if (live) teamsLiveTimer = setTimeout(teamsLive, 60000);
+}
+if (typeof TEAMS_DATA !== "undefined") {
+  setTimeout(teamsLive, 0);  // after sport-pages.js has loaded
+  const pick = document.getElementById("teams-week-select");
+  if (pick) pick.addEventListener("change", () => setTimeout(teamsLive, 0));
+}
 
 // --- In-page category tabs (players.html) ---
 function initSubtabs() {
