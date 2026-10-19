@@ -5858,32 +5858,32 @@
     "ip": 179.7
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 542888,
+    "name": "Shawn Armstrong",
+    "era": 0.0,
+    "ip": 1.0
    },
    "pick": "TB",
-   "prob": 60.2,
-   "home_prob": 60.2,
+   "prob": 58.8,
+   "home_prob": 58.8,
    "factors": {
     "home_field": 0.146,
     "elo": 0.154,
-    "starters": 0.112
+    "starters": 0.054
    },
    "model": "2026-10-17T14:57:08+00:00",
    "correct": null,
-   "set_at": "2026-10-19T12:52:03Z",
+   "set_at": "2026-10-19T18:41:55Z",
    "ml": {
     "team": "TB",
     "side": "home",
-    "price": -149,
-    "prob": 60.2,
-    "book_prob": 57.2,
-    "edge": 3.0,
+    "price": -158,
+    "prob": 58.8,
+    "book_prob": 58.5,
+    "edge": 0.3,
     "value": false,
-    "home_ml": -149,
-    "away_ml": 123,
+    "home_ml": -158,
+    "away_ml": 130,
     "book": "DraftKings",
     "won": null,
     "units": null
