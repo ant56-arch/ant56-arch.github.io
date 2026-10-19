@@ -32,6 +32,10 @@ on:
     # Sunday to Friday at noon ET: the daily CFB update (odds included), and
     # an NFL run an hour before Sunday's early slate.
     - cron: "5 16 * * 0-5"
+    # Sunday 9:35 AM ET: NFL lines and anytime TD prices for the 1 PM and
+    # 4 PM slates, so a late GitHub start still lands before kickoff. The
+    # noon run is the backup; it keeps TD prices pulled in the last 6 hours.
+    - cron: "35 13 * * 0"
     # 7:15 PM ET, about an hour before the TNF, SNF and MNF kickoffs. Friday's
     # also takes CFB's last odds before the 9 PM ET lock. Tuesday's and
     # Wednesday's only refresh results and the site.
@@ -98,7 +102,7 @@ jobs:
 
       - name: Fetch Vegas odds
         id: fetch_odds
-        if: (github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == ''
+        if: (github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '35 13 * * 0' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == ''
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python src/fetch_odds.py
