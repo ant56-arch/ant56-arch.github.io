@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-18T22:20:27Z",
+ "updated": "2026-10-19T00:20:00Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -14,7 +14,7 @@
    "last_retrain": "2026-10-16",
    "alarm_since": "2026-10-04",
    "cleared_on": null,
-   "early_retrain": false
+   "early_retrain": true
   },
   "mlb_games": {
    "label": "MLB games",
