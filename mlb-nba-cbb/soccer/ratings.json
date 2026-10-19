@@ -33,7 +33,8 @@
   "reg": 10.0,
   "years": 3,
   "xg": 0.3,
-  "home_reg": 100.0
+  "home_reg": 100.0,
+  "stretch": 1.2
  },
  "teams": [
   {
