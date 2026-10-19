@@ -56,6 +56,9 @@ SWITCH_MARGIN = 0.002  # log loss a new recipe must win by
 SANITY_MARGIN = 0.01  # how much worse than the live model the refit may score on the holdout
 
 DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3}  # the model before recipes existed
+# On 2026-10-19 the bottom two (Elo K 20 and Elo only) made way for a
+# "calib" version (win chances tuned to real win rates) and a "travel" one
+# (time zones crossed since the last game).
 # Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
 # best Elo settings on three test windows (the latest games and the end of
 # each of the two seasons before; lower K did best, so K 10 and 12 joined),
@@ -68,13 +71,13 @@ RECIPES = [
     _L,
     {"elo_k": 15, "elo_carry": 0.6, "years": 3},
     {"elo_k": 15, "elo_carry": 0.75, "years": 2},
-    {"elo_k": 20, "elo_carry": 0.6, "years": 2},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2},
     {"elo_k": 12, "elo_carry": 0.6, "years": 2},
-    {**_L, "elo_only": True},
     {**_L, "extras": ["massey"]},
     {**_L, "extras": ["pyth"]},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["massey"]},
+    {**_L, "calib": True},
+    {**_L, "extras": ["travel"]},
 ]
 
 
@@ -112,12 +115,27 @@ def build_rows(params=None):
     return rows
 
 
-def fit(rows, features=None):
+def calibrated_sigma(pred, won):
+    """The spread that makes the margins' win chances best match how often
+    the home team actually won (lowest log loss), for "calib" versions. The
+    leftover spread of the margins, the default, can run timid, as NHL's did."""
+    best = None
+    for s in np.arange(4.0, 20.0, 0.05):
+        p = np.clip(np.array([M.norm_cdf(m / s) for m in pred]), 1e-9, 1 - 1e-9)
+        ll = -np.mean(np.where(won, np.log(p), np.log(1 - p)))
+        if best is None or ll < best[0]:
+            best = (ll, float(s))
+    return best[1]
+
+
+def fit(rows, features=None, calib=False):
     features = features or M.FEATURES
     X = np.array([[r["f"][k] for k in features] for r in rows])
     y = np.array([r["margin"] for r in rows], dtype=float)
     coef, *_ = np.linalg.lstsq(X, y, rcond=None)
     sigma = float(np.std(y - X @ coef))
+    if calib:
+        sigma = calibrated_sigma(X @ coef, y > 0)
     return {"features": features, "coef": {k: round(float(c), 4) for k, c in zip(features, coef)},
             "sigma": round(sigma, 3)}
 
@@ -196,7 +214,7 @@ def train_recipe(recipe, before_idx=None):
     train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
     if len(train) < MIN_TRAIN_GAMES:
         return None
-    w = fit(train, recipe_features(recipe))
+    w = fit(train, recipe_features(recipe), recipe.get("calib", False))
     w["league"] = league_params(recipe)
     w["recipe"] = recipe
     w["training_games"] = len(train)
@@ -217,7 +235,7 @@ def season_backtest(recipe):
     first = max(seasons[0], test_season - recipe["years"])
     train = [r for r in rows if r["usable"] and first <= r["game"]["season"] < test_season]
     test = [r for r in rows if r["game"]["season"] == test_season]
-    w = fit(train, recipe_features(recipe))
+    w = fit(train, recipe_features(recipe), recipe.get("calib", False))
     w["league"] = league_params(recipe)
     test_regular = [r for r in test if r["game"]["type"] == "regular"]
     playoffs = [r for r in test if r["game"]["type"] != "regular"]
@@ -276,6 +294,7 @@ def summary(lines):
 
 def recipe_name(r):
     extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
+    extras += " + calib" if r.get("calib") else ""
     return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, {r['years']} years{extras}"
 
 
