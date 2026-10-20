@@ -1,5 +1,5 @@
 {
-  "fitted_at": "2026-10-13T17:50:37.714581+00:00",
+  "fitted_at": "2026-10-20T15:16:35.925534+00:00",
   "train_seasons": [
     2013,
     2014,
@@ -20,82 +20,82 @@
   "half_life_grid_search": [
     {
       "half_life": 3,
-      "receiving_baseline_mae": 21.385,
-      "n": 4479
+      "receiving_baseline_mae": 21.326,
+      "n": 4658
     },
     {
       "half_life": 4,
-      "receiving_baseline_mae": 21.198,
-      "n": 4523
+      "receiving_baseline_mae": 21.147,
+      "n": 4701
     },
     {
       "half_life": 6,
-      "receiving_baseline_mae": 21.028,
-      "n": 4586
+      "receiving_baseline_mae": 20.982,
+      "n": 4762
     },
     {
       "half_life": 8,
-      "receiving_baseline_mae": 20.98,
-      "n": 4622
+      "receiving_baseline_mae": 20.942,
+      "n": 4799
     },
     {
       "half_life": 10,
-      "receiving_baseline_mae": 20.963,
-      "n": 4657
+      "receiving_baseline_mae": 20.929,
+      "n": 4834
     },
     {
       "half_life": 13,
-      "receiving_baseline_mae": 20.938,
-      "n": 4714
+      "receiving_baseline_mae": 20.905,
+      "n": 4892
     },
     {
       "half_life": 16,
-      "receiving_baseline_mae": 20.977,
-      "n": 4740
+      "receiving_baseline_mae": 20.948,
+      "n": 4918
     },
     {
       "half_life": 20,
-      "receiving_baseline_mae": 21.051,
-      "n": 4766
+      "receiving_baseline_mae": 21.022,
+      "n": 4945
     },
     {
       "half_life": 26,
-      "receiving_baseline_mae": 21.173,
-      "n": 4774
+      "receiving_baseline_mae": 21.14,
+      "n": 4954
     },
     {
       "half_life": 34,
-      "receiving_baseline_mae": 21.283,
-      "n": 4783
+      "receiving_baseline_mae": 21.249,
+      "n": 4964
     }
   ],
   "matchup_scaling": {
     "receiving": {
-      "baseline_scale": 0.9188485260942629,
-      "matchup_scale": 0.23892284851670548,
-      "n_samples": 45108,
-      "mae_baseline_only": 21.76533038196667,
-      "mae_fitted": 21.18594274747238
+      "baseline_scale": 0.9189056064672256,
+      "matchup_scale": 0.2382612872293889,
+      "n_samples": 45286,
+      "mae_baseline_only": 21.758527041407064,
+      "mae_fitted": 21.17998861031097
     },
     "rushing": {
-      "baseline_scale": 0.950191023027208,
-      "matchup_scale": 0.6355967424259501,
-      "n_samples": 17538,
-      "mae_baseline_only": 22.286595491743185,
-      "mae_fitted": 21.9133478858492
+      "baseline_scale": 0.9500087864754966,
+      "matchup_scale": 0.6312466651150851,
+      "n_samples": 17610,
+      "mae_baseline_only": 22.26763106195357,
+      "mae_fitted": 21.893144360233975
     },
     "passing": {
-      "baseline_scale": 0.9596743938181325,
-      "matchup_scale": 0.21740058203044327,
-      "n_samples": 7437,
-      "mae_baseline_only": 68.77620925822929,
-      "mae_fitted": 68.16559367190582
+      "baseline_scale": 0.9599530791331783,
+      "matchup_scale": 0.21485485834185258,
+      "n_samples": 7466,
+      "mae_baseline_only": 68.69647545959643,
+      "mae_fitted": 68.10038377540006
     }
   },
   "injury_multipliers": {
     "Questionable": {
       "multiplier": 0.84,
-      "n_samples": 2339
+      "n_samples": 2357
     }
   },
   "holdout_validation": {
@@ -105,22 +105,22 @@
     ],
     "by_stat_type": {
       "receiving": {
-        "n_games": 4714,
-        "mae_baseline_only": 20.938099254573935,
-        "mae_original_handpicked": 22.0350601821452,
-        "mae_fitted": 20.30386469059859
+        "n_games": 4892,
+        "mae_baseline_only": 20.905219258681377,
+        "mae_original_handpicked": 22.012833510938922,
+        "mae_fitted": 20.277987734442178
       },
       "rushing": {
-        "n_games": 1848,
-        "mae_baseline_only": 21.290756932201475,
-        "mae_original_handpicked": 22.03494148805512,
-        "mae_fitted": 20.945169616414173
+        "n_games": 1920,
+        "mae_baseline_only": 21.154161498707644,
+        "mae_original_handpicked": 21.892696849203773,
+        "mae_fitted": 20.806732581920006
       },
       "passing": {
-        "n_games": 807,
-        "mae_baseline_only": 67.66079056298452,
-        "mae_original_handpicked": 80.28086240970876,
-        "mae_fitted": 67.22910304031875
+        "n_games": 836,
+        "mae_baseline_only": 66.98741089978986,
+        "mae_original_handpicked": 80.10907817045549,
+        "mae_fitted": 66.68024776964988
       }
     }
   }
