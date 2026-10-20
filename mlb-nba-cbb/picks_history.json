@@ -18326,9 +18326,9 @@
       "reason": "Batting 5th \u00b7 .306 season average",
       "hit_streak": 0,
       "model": "2026-10-19T00:20:19+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 1,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -18374,9 +18374,9 @@
       "reason": "Batting 3rd \u00b7 Platoon edge (LHB vs. RHP)",
       "hit_streak": 2,
       "model": "2026-10-19T00:20:19+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 5,
       "void": false
     }
   ],
@@ -18720,6 +18720,10 @@
     "2026-10-18": {
       "hitters": 20,
       "with_hit": 11
+    },
+    "2026-10-19": {
+      "hitters": 19,
+      "with_hit": 10
     }
   }
 }
