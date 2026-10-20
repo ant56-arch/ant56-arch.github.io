@@ -1,3 +1,124 @@
 {
- "picks": []
+ "picks": [
+  {
+   "date": "2026-10-20",
+   "game_id": "401909088",
+   "start": "2026-10-20T15:00:00-04:00",
+   "type": "regular",
+   "home": "DET",
+   "away": "BOS",
+   "home_name": "Detroit Pistons",
+   "away_name": "Boston Celtics",
+   "home_record": "0-0",
+   "away_record": "0-0",
+   "neutral": false,
+   "pick": "DET",
+   "prob": 59.4,
+   "home_prob": 59.4,
+   "margin": 3.1,
+   "home_out": [],
+   "away_out": [],
+   "rest": {
+    "home": 3,
+    "away": 3
+   },
+   "model": "2026-10-19T20:50:32+00:00",
+   "correct": null,
+   "set_at": "2026-10-20T08:34:03Z",
+   "ml": {
+    "team": "DET",
+    "side": "home",
+    "price": -105,
+    "prob": 59.4,
+    "book_prob": 48.9,
+    "edge": 10.5,
+    "value": true,
+    "home_ml": -105,
+    "away_ml": -115,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401909089",
+   "start": "2026-10-20T19:00:00-04:00",
+   "type": "regular",
+   "home": "NY",
+   "away": "PHI",
+   "home_name": "New York Knicks",
+   "away_name": "Philadelphia 76ers",
+   "home_record": "0-0",
+   "away_record": "0-0",
+   "neutral": false,
+   "pick": "NY",
+   "prob": 69.9,
+   "home_prob": 69.9,
+   "margin": 6.8,
+   "home_out": [],
+   "away_out": [],
+   "rest": {
+    "home": 3,
+    "away": 3
+   },
+   "model": "2026-10-19T20:50:32+00:00",
+   "correct": null,
+   "set_at": "2026-10-20T08:34:03Z",
+   "ml": {
+    "team": "NY",
+    "side": "home",
+    "price": -180,
+    "prob": 69.9,
+    "book_prob": 61.6,
+    "edge": 8.3,
+    "value": true,
+    "home_ml": -180,
+    "away_ml": 150,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "game_id": "401909090",
+   "start": "2026-10-20T21:30:00-04:00",
+   "type": "regular",
+   "home": "SA",
+   "away": "OKC",
+   "home_name": "San Antonio Spurs",
+   "away_name": "Oklahoma City Thunder",
+   "home_record": "0-0",
+   "away_record": "0-0",
+   "neutral": false,
+   "pick": "SA",
+   "prob": 59.3,
+   "home_prob": 59.3,
+   "margin": 3.1,
+   "home_out": [],
+   "away_out": [],
+   "rest": {
+    "home": 3,
+    "away": 3
+   },
+   "model": "2026-10-19T20:50:32+00:00",
+   "correct": null,
+   "set_at": "2026-10-20T08:34:03Z",
+   "ml": {
+    "team": "SA",
+    "side": "home",
+    "price": -115,
+    "prob": 59.3,
+    "book_prob": 51.1,
+    "edge": 8.2,
+    "value": true,
+    "home_ml": -115,
+    "away_ml": -105,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  }
+ ]
 }

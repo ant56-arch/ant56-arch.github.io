@@ -5872,7 +5872,7 @@
     "starters": 0.054
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-19T23:30:09Z",
    "ml": {
     "team": "TB",
@@ -5885,9 +5885,12 @@
     "home_ml": -152,
     "away_ml": 135,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.658
+   },
+   "home_runs": 7,
+   "away_runs": 3,
+   "winner": "TB"
   }
  ]
 }
