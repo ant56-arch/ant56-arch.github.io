@@ -33,7 +33,7 @@ em.it, .it { font-family: var(--font-serif); font-style: italic; font-weight: 40
 .topbar .sport-tab { color: var(--text); opacity: 0.82; font-size: 12px; font-weight: 400; letter-spacing: 0.14em; font-family: var(--font-mono); font-stretch: 100%; font-style: normal; text-transform: uppercase; }
 .topbar .sport-tab:hover, .topbar .sport-tab.active { color: var(--text); opacity: 1; }
 .topbar .sport-tab::after { height: 1px; background: currentColor; }
-.topbar .ticker-gear, .topbar .menu-btn, .topbar .menu-toggle, .topbar button { color: var(--text); }
+.topbar .ticker-gear, .topbar .menu-toggle, .topbar button { color: var(--text); }
 
 /* ---------- Masthead: the stadium ---------- */
 
@@ -102,7 +102,6 @@ header.masthead.home-hero { min-height: min(560px, 74vh); display: grid; align-c
 .home-hero .wordmark .ln:nth-child(2) > b { animation-delay: 0.12s; }
 @keyframes edge-hero-rise { from { transform: translateY(100%); } to { transform: none; } }
 .home-hero .home-hero-meta { text-align: right; max-width: 34ch; font-size: 14px; }
-.home-hero .hero-side-it { display: block; font-family: var(--font-serif); font-style: italic; font-size: 24px; line-height: 1.2; color: var(--night-ink); margin-bottom: 10px; }
 @media (max-width: 760px) {
   header.masthead.home-hero { min-height: 0; }
   .home-hero .masthead-inner { padding-top: 70px; padding-bottom: 46px; }
@@ -169,7 +168,7 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 .section-label { font-weight: 500; font-stretch: 125%; font-size: 16px; letter-spacing: 0.06em; }
 
 /* Panels that hold a single game or tile: paper cards with a hairline. */
-.gc, .bet-card, .hg-card, .rc-card, .tile, .record-tile, .sp-frame, .ticker-panel, .settings-panel {
+.gc, .bet-card, .hg-card, .rc-card, .tile, .sp-frame, .ticker-panel {
   border-radius: var(--radius);
 }
 .team-logo { background: #f8f5ef; border-radius: 4px; }
@@ -226,7 +225,6 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 .hr-val i { font-family: var(--font-serif); font-style: italic; font-size: 22px; }
 .hr-tile.is-soon .hr-val { font-family: var(--font-serif); font-style: italic; font-size: 22px; }
 @media (max-width: 560px) {
-  .home-hero .hero-side-it { font-size: 20px; }
   .hr-val { font-size: 30px; }
 }
 .slate-head { margin-bottom: 18px; }
