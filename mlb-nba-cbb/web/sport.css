@@ -33,30 +33,6 @@ td.prob { font-family: var(--font-head); font-stretch: 100%; font-size: 24px; fo
   td.prob { font-size: 20px; }
 }
 
-/* Model tab: the hit model and the team model, one after the other. */
-.model-jump { margin-bottom: 8px; }
-.model-jump .subtab { text-decoration: none; }
-.model-group {
-  font-family: var(--font-head); font-stretch: 100%;
-  font-size: 30px;
-  font-weight: 600;
-  font-style: normal;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin: 28px 0 14px;
-  scroll-margin-top: 16px;
-}
-.model-group span {
-  display: block;
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 500;
-  font-style: normal;
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--text-muted);
-}
-
 /* Moneyline picks (Games tab, NBA Home and History): "BUF +135" with its
    VALUE tag, our chance vs. the book's, and the graded units. */
 .ml-pick { font-weight: 700; white-space: nowrap; }
