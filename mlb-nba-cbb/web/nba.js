@@ -59,7 +59,8 @@ function initNbaHistory() {
     picker.appendChild(opt);
   });
   picker.addEventListener("change", () => render(picker.value));
-  picker.value = H.order[0];
+  // Open on the newest day with a graded game; today's pending picks are on Home.
+  picker.value = H.order.find(day => H.days[day].games.some(g => g.correct === true || g.correct === false)) || H.order[0];
   render(picker.value);
 }
 initNbaHistory();
