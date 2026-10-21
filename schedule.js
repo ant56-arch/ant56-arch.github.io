@@ -337,6 +337,12 @@ async function initSchedule() {
   const sites = SCHED_SPORTS.map(cfg => EDGE_SITES.find(s => s.sport === cfg.sport));
   const slates = await Promise.all(sites.map(site => (site ? edgeLoadGames(site) : null)));
   const tabs = document.querySelectorAll(".sched-tabs a");
+  // How many games each sport has, so you can see who plays without clicking.
+  tabs.forEach(a => {
+    const i = SCHED_SPORTS.findIndex(cfg => cfg.key === a.dataset.sport);
+    const n = slates[i] ? slates[i].games.length : 0;
+    if (n) a.append(edgeNode("span", "tab-count", String(n)));
+  });
 
   const show = () => {
     const key = location.hash.slice(1).toLowerCase();
