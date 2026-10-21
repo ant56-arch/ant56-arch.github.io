@@ -86,7 +86,12 @@ def _change(now, before, fmt):
 
 def render(spec, calendar=True):
     parts = []
-    runs = spec["runs"]
+    # One row per day: same-day reruns (setup days) keep only the day's last run.
+    runs, seen = [], set()
+    for r in spec["runs"]:
+        if r.get("date") not in seen:
+            seen.add(r.get("date"))
+            runs.append(r)
     fmt = spec["score_fmt"]
 
     # How it learns: the headline numbers and the current setup in plain words.

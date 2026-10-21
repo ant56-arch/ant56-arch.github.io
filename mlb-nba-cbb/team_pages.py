@@ -87,7 +87,7 @@ class TeamSite:
     strong = 70  # win chance, in percent, that counts as a strong pick
     favicon_letter = "M8 23V9h3.3l6.9 8.6V9H24v14h-3.3l-6.9-8.6V23z"
     tabs = [("index.html", "Home"), ("history.html", "History"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
-    sources = "Scores, box scores, injury reports and moneyline prices via ESPN."
+    sources = "Scores, box scores, injury reports and Vegas odds via ESPN."
     has_games_feed = True  # ESPN scoreboard for the board, games.json and the Schedule redirect
     has_schedule = True    # a tab on the home site's Schedule page
     board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. Value means "

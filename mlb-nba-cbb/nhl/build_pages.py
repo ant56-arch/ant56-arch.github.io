@@ -20,7 +20,7 @@ class NHLSite(TeamSite):
     tagline = "Who wins every NHL game tonight and how likely it is, from a model graded against every final score."
     strong = 65
     favicon_letter = "M8 23V9h3.4v5.4h9.2V9H24v14h-3.4v-5.6h-9.2V23z"
-    sources = "Scores and moneyline prices via ESPN."
+    sources = "Scores and Vegas odds via ESPN."
     board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. Value means "
                   "our chance is at least 6% higher than Vegas's. Tap a game for rest.")
     no_games = "No NHL games today."

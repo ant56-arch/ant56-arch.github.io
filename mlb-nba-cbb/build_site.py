@@ -220,7 +220,7 @@ def slim_footer(name, sources):
 
 
 def footer():
-    return slim_footer("MLB Edge", "Stats, lineups and box scores via the MLB Stats API; moneyline prices via "
+    return slim_footer("MLB Edge", "Stats, lineups and box scores via the MLB Stats API; Vegas odds via "
                                    "ESPN's scoreboard.")
 
 
