@@ -94,30 +94,32 @@ def build_ratings(ratings, page_shell):
                     'starts from part of last season\'s rating.</div>')
         return page_shell("Ratings", "ratings.html", body)
     avg = ratings.get("average", {})
-    note = f"""<div class="table-footnote">Computed from every Division I box score this season, the way KenPom
-      does it. Possessions = FGA - offensive rebounds + turnovers + 0.475 x FTA. AdjO and AdjD are points scored and
-      allowed per 100 possessions, adjusted for each opponent's strength and for home court. AdjEM is the gap
-      between them: how many points per 100 possessions a team would beat an average team by. AdjT is possessions
-      against an average opponent. An average offense scores {avg.get('eff', DASH)} per 100 possessions at a tempo
-      of {avg.get('tempo', DASH)}, and home court is worth about {avg.get('home_court', DASH)} points. The four
-      factors are effective FG%, turnover rate, offensive rebound rate and free throw rate (FTA per FGA), for the
-      team's offense (O) and what its defense allows (D), not adjusted for opponents. SOS is the average AdjEM of
-      the opponents played. Early in the season every team
-      starts from part of last season's rating. Select a column header to sort.</div>"""
-    body = card("Ratings", f"All {len(teams)} Division I teams, best first. {as_of(ratings)}.",
-                ratings_table(teams) + note)
+    how = f"""<details class="how-to"><summary>How the ratings work</summary><div>
+      <p>Computed from every Division I box score this season, the way KenPom does it. Possessions = FGA - offensive
+      rebounds + turnovers + 0.475 x FTA. AdjO and AdjD are points scored and allowed per 100 possessions, adjusted
+      for each opponent's strength and for home court. AdjEM is the gap between them: how many points per 100
+      possessions a team would beat an average team by. AdjT is possessions against an average opponent.</p>
+      <p>An average offense scores {avg.get('eff', DASH)} per 100 possessions at a tempo of {avg.get('tempo', DASH)},
+      and home court is worth about {avg.get('home_court', DASH)} points. The four factors are effective FG%, turnover
+      rate, offensive rebound rate and free throw rate (FTA per FGA), for the team's offense (O) and what its defense
+      allows (D), not adjusted for opponents. SOS is the average AdjEM of the opponents played. Early in the season
+      every team starts from part of last season's rating.</p></div></details>"""
+    # The top 25 (of whichever column it's sorted by) until "Show all" opens the rest.
+    table = ratings_table(teams).replace('class="data ratings-table"', 'class="data ratings-table is-short"', 1)
+    more = f'<button type="button" class="show-all" data-show-all>Show all {len(teams)} teams</button>'
+    body = card("Ratings", f"All {len(teams)} Division I teams, best first. {as_of(ratings)}. Tap a column to sort.",
+                table + more + how)
     return page_shell("Ratings", "ratings.html", body)
 
 
 class CBBSite(TeamSite):
     sport = "CBB"
     slug = "cbb"
-    tagline = ("Who wins every Division I men's basketball game and by how much, from KenPom-style team ratings "
-               "graded against every final score.")
+    tagline = "Picks for every Division I men's basketball game, graded every night."
     top_n = 5
     tabs = [("index.html", "Home"), ("ratings.html", "Ratings"), ("bracket.html", "Bracket"), ("history.html", "History"),
             ("accuracy.html", "Accuracy"), ("model.html", "Model")]
-    sources = "Scores, box scores and moneyline prices via ESPN. Not affiliated with KenPom."
+    sources = "Scores, box scores and Vegas odds via ESPN. Not affiliated with KenPom."
     has_games_feed = True
     has_schedule = False  # not on the shared Schedule tab yet
     board_note = ("Scores are our projections, and the odds are our pick's moneyline. Value means our chance is at least 6% "
@@ -131,7 +133,7 @@ class CBBSite(TeamSite):
     factor_labels = {
         "home_court": ("Home court", "points for the home team"),
         "em": ("Adjusted efficiency margin", "per point of margin projected from AdjEM and tempo"),
-        "elo": ("Team strength gap", "points per 100 rating points"),
+        "elo": ("Team strength gap", "points for the stronger team, from our running team rating"),
         "efg": ("Shooting matchup (eFG%)", "points per percentage point of edge"),
         "tov": ("Turnover matchup", "points per percentage point of edge"),
         "orb": ("Offensive rebounding matchup", "points per percentage point of edge"),

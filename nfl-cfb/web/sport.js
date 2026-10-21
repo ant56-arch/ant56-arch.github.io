@@ -191,13 +191,3 @@ function initSubtabs() {
   });
 }
 initSubtabs();
-
-
-// --- Ratings: the top 25 until "Show all" opens the rest ---
-document.querySelectorAll("[data-show-all]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const table = btn.previousElementSibling;
-    if (table) table.classList.remove("is-short");
-    btn.remove();
-  });
-});
