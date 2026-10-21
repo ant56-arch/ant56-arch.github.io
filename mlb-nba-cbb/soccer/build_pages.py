@@ -48,8 +48,7 @@ SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", 
                ("MLB", f"{MLB_EDGE}/"), ("NHL", f"{HOME_URL}nhl/index.html"),
                ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"), ("Soccer", None),
                ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
-TAGLINE = ("Home win, draw or away win for every Premier League, La Liga and Champions League match, from a model "
-           "graded against every final score.")
+TAGLINE = "Picks for every Premier League, La Liga and Champions League match, draws included."
 TOP_N = 3
 COMPS = {"EPL": "Premier League", "LALIGA": "La Liga", "UCL": "Champions League"}
 LEAGUE_NAMES = {"E0": "Premier League", "SP1": "La Liga", "D1": "Bundesliga", "I1": "Serie A", "F1": "Ligue 1",
@@ -176,7 +175,7 @@ def page_shell(title, active, body_html, charts=False):
 
 
 def footer():
-    return slim_footer("Soccer Edge", "Scores and moneyline prices via ESPN; league results and closing odds via "
+    return slim_footer("Soccer Edge", "Scores and Vegas odds via ESPN; league results and past Vegas odds via "
                                       "football-data.co.uk.")
 
 
@@ -355,18 +354,18 @@ def comp_table(model):
         rows += f"""<tr><td class="row-label">{escape(s.get('name', code))}</td>
           <td data-label="Matches" class="num">{s['games']}</td>
           <td data-label="Pick right" class="num accent">{pct(s['accuracy'], 1)}</td>
-          <td data-label="Odds favorite right" class="num">{pct(book['accuracy'], 1) if book else '&mdash;'}</td>
-          <td data-label="Log loss (ours)" class="num">{s['log_loss']:.3f}</td>
-          <td data-label="Log loss (closing odds)" class="num">{f"{book['log_loss']:.3f}" if book else '&mdash;'}</td></tr>"""
+          <td data-label="Vegas favorite right" class="num">{pct(book['accuracy'], 1) if book else '&mdash;'}</td>
+          <td data-label="Win-chance score (ours)" class="num">{s['log_loss']:.3f}</td>
+          <td data-label="Win-chance score (Vegas)" class="num">{f"{book['log_loss']:.3f}" if book else '&mdash;'}</td></tr>"""
     if not rows:
         return ""
     return f"""<div class="section-label">By competition</div><table class="data record-table responsive-stack">
       <thead><tr><th>Competition</th><th class="num">Matches</th><th class="num">Pick right</th>
-      <th class="num">Odds favorite right</th><th class="num">Log loss (ours)</th><th class="num">Log loss (closing odds)</th></tr></thead>
+      <th class="num">Vegas favorite right</th><th class="num">Win-chance score (ours)</th><th class="num">Win-chance score (Vegas)</th></tr></thead>
       <tbody>{rows}</tbody></table>
-      <div class="table-footnote">Log loss scores all three chances at once (lower is better). Closing odds are the
-      bookmakers' last prices with their margin removed, from football-data.co.uk; there are none for the Champions
-      League. Beating them is hard: they're the market's best guess right before kickoff.</div>"""
+      <div class="table-footnote">The win-chance score grades all three chances (home, draw, away) against what
+      happened; lower is better. Vegas is the bookmakers' final odds before kickoff with their cut taken out, from
+      football-data.co.uk; there are none for the Champions League. Beating Vegas is hard.</div>"""
 
 
 def build_accuracy(history, model):
@@ -384,11 +383,11 @@ def build_accuracy(history, model):
         book = bt.get("book") or {}
         stats = [(f"{bt['correct']}-{bt['games'] - bt['correct']}", f"{model['backtest_season']} backtest",
                   f"{pct(bt['accuracy'], 1)} of picks right"),
-                 (f"{bt['log_loss']:.3f}", "Log loss, ours", "lower is better")]
+                 (f"{bt['log_loss']:.3f}", "Win-chance score, ours", "lower is better")]
         if book:
-            stats.append((f"{book['log_loss']:.3f}", "Log loss, closing odds",
+            stats.append((f"{book['log_loss']:.3f}", "Win-chance score, Vegas",
                           f"on the same {book['games']} league matches we score {book['model_log_loss']:.3f}"))
-        note = (f"Walk-forward: before each match day the ratings were refitted on only the results before it, the "
+        note = (f"Before each match day the ratings were refitted on only the results before it, the "
                 f"way the daily picks are made. The model expected {pct(bt['predicted_accuracy'], 1)} of its picks "
                 f"to be right and got {pct(bt['accuracy'], 1)}. Draws were {pct(bt['draw_rate'], 0)} of results; "
                 f"{bt['draw_picks']} of its picks were draws.")
@@ -449,7 +448,7 @@ def factors(model, before):
     now = model.get("coef") or {}
     out = [{"label": "Home advantage", "note": "extra goals a match for the home side", "now": now["home"],
             "before": before.get("home"), "fmt": lambda v: f"{v:+.2f} goals"},
-           {"label": "Draw adjustment (rho)", "note": "below zero means more 0-0 and 1-1 draws than plain odds",
+           {"label": "Draw adjustment", "note": "below zero means more 0-0 and 1-1 draws than the goal rates alone predict",
             "now": now["rho"], "before": before.get("rho"), "fmt": lambda v: f"{v:+.2f}"}] if now else []
     for code, name in (("E0", "Premier League"), ("SP1", "La Liga"), ("OTHER", "Champions League")):
         k = f"home_{code}"
