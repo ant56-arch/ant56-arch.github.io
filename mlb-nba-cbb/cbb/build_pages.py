@@ -131,13 +131,15 @@ class CBBSite(TeamSite):
     factor_labels = {
         "home_court": ("Home court", "points for the home team"),
         "em": ("Adjusted efficiency margin", "per point of margin projected from AdjEM and tempo"),
-        "elo": ("Team rating (Elo) gap", "points per 100 rating points"),
+        "elo": ("Team strength gap", "points per 100 rating points"),
         "efg": ("Shooting matchup (eFG%)", "points per percentage point of edge"),
         "tov": ("Turnover matchup", "points per percentage point of edge"),
         "orb": ("Offensive rebounding matchup", "points per percentage point of edge"),
         "ftr": ("Free throw rate matchup", "points per percentage point of edge"),
         "recent": ("Last 5 games form gap", "points per point of differential"),
         "rest": ("Extra rest", "points per extra day off vs. the opponent"),
+        "massey": ("Schedule-adjusted margin gap", "points per point of opponent-adjusted margin"),
+        "pyth": ("Expected record gap", "from points scored and allowed"),
     }
 
     def logo_url(self, p, side):

@@ -31,12 +31,16 @@ class NHLSite(TeamSite):
     looks_at = ""
     factor_labels = {
         "home_ice": ("Home ice", "goals for the home team"),
-        "elo": ("Team rating (Elo) gap", "goals per 100 rating points"),
+        "elo": ("Team strength gap", "goals per 100 rating points"),
         "net": ("Season goal differential gap", "goals per goal of differential per game"),
         "recent": ("Last 10 games form gap", "goals per goal of differential per game"),
         "rest": ("Extra rest", "goals per extra day off vs. the opponent"),
         "b2b_home": ("Home team on a back-to-back", ""),
         "b2b_away": ("Away team on a back-to-back", ""),
+        "shot_share": ("Shot share gap", "goals per 100 points of shots-on-goal share (55% is 5 points)"),
+        "goalie": ("Goalie gap", "goals per goal saved above average per 100 shots"),
+        "massey": ("Schedule-adjusted margin gap", "goals per goal of opponent-adjusted margin"),
+        "pyth": ("Expected record gap", "from goals scored and allowed"),
     }
 
     def game_notes(self, p):
@@ -61,7 +65,7 @@ class NHLSite(TeamSite):
         speed = "steady" if k <= 5 else "medium" if k <= 8 else "fast"
         return [
             ("Learns from:", f"the last {years} seasons of games"),
-            ("Team ratings:", f"{speed} - a typical result moves a team's Elo rating by about {k} points"),
+            ("Team ratings:", f"{speed} - a typical result moves a team's strength rating by about {k} points"),
             ("Over the summer:", f"keeps {carry:.0%} of each team's rating; the rest resets toward average"),
         ]
 

@@ -101,7 +101,7 @@ class TeamSite:
     looks_at = ", including injuries on the day"
     factor_labels = {
         "home_court": ("Home court", "points for the home team"),
-        "elo": ("Team rating (Elo) gap", "points per 100 rating points"),
+        "elo": ("Team strength gap", "points per 100 rating points"),
         "net": ("Season point differential gap", "points per point of differential"),
         "recent": ("Last 10 games form gap", "points per point of differential"),
         "rest": ("Extra rest", "points per extra day off vs. the opponent"),
@@ -109,6 +109,9 @@ class TeamSite:
         "b2b_away": ("Away team on a back-to-back", ""),
         "missing_home": ("Home team's missing players", "per 10 points of missing player value"),
         "missing_away": ("Away team's missing players", "per 10 points of missing player value"),
+        "travel": ("Time zones traveled", "points per time zone the away team moved"),
+        "massey": ("Schedule-adjusted margin gap", "points per point of opponent-adjusted margin"),
+        "pyth": ("Expected record gap", "from points scored and allowed"),
     }
 
     def __init__(self):
@@ -147,7 +150,7 @@ class TeamSite:
         speed = "steady" if k <= 15 else "medium" if k <= 20 else "fast"
         return [
             ("Learns from:", f"the last {years} seasons of games"),
-            ("Team ratings:", f"{speed} - each result moves a team's Elo rating by up to {k} points"),
+            ("Team ratings:", f"{speed} - each result moves a team's strength rating by up to {k} points"),
             ("Over the summer:", f"keeps {carry:.0%} of each team's rating; the rest resets toward average"),
         ]
 
