@@ -1074,8 +1074,8 @@ initSportMenu();
 // Sliding tab highlight, rolling score digits, records that count up, and
 // the per-day results (summary.json "daily": [[date, wins, losses], ...])
 // behind trend lines, the record chart and the Model tab's results
-// calendar. Streak badges read "ml_streak": moneyline picks won or lost in
-// a row. Every animation is skipped for prefers-reduced-motion.
+// calendar. Streak badges read "ml_streak": winning or losing days (weeks for
+// NFL/CFB) in a row. Every animation is skipped for prefers-reduced-motion.
 const EDGE_REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
 
 // Puts a highlight behind (kind "pill") or under (kind "line") a button
@@ -1161,13 +1161,14 @@ function edgeRunning(daily) {
     .filter(r => r.w + r.l >= EDGE_MIN_PICKS);
 }
 
-// A badge for summary.json "ml_streak" ({kind: "W"|"L", n}): moneyline
-// picks won or lost in a row, one game at a time. null without one.
+// A badge for summary.json "ml_streak" ({kind: "W"|"L", n, unit}): winning
+// or losing days (weeks for NFL/CFB) in a row. null without one.
 function edgeStreakBadge(s) {
   if (!s || !s.n) return null;
   const won = s.kind === "W";
   const b = edgeNode("span", "streak " + (won ? "is-w" : "is-l"), s.kind + s.n);
-  b.title = `${won ? "Won" : "Lost"} the last ${s.n === 1 ? "" : s.n + " "}moneyline ${s.n === 1 ? "pick" : "picks"}`;
+  const u = s.unit || "pick";
+  b.title = `${s.n} ${won ? "winning" : "losing"} ${u}${s.n === 1 ? "" : "s"} in a row`;
   b.setAttribute("aria-label", b.title);
   return b;
 }
