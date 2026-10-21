@@ -136,7 +136,6 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 
 /* ---------- Schedule page: Cards / TV Guide toggle and guide view ---------- */
 
-.schedule-main .card-header h2::before { content: none; }
 .sched-tabs .tab-count { margin-left: 6px; color: var(--text-faint); }
 .sched-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 16px; }
 .sched-toolbar-label { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }

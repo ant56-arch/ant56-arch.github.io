@@ -213,7 +213,6 @@ def slim_footer(name, sources):
       <a href="{HOME_URL}terms.html">Terms</a>
       <a href="{HOME_URL}privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
       <span>&copy; {NOW.year} {name}</span>
     </nav>
   </footer>"""
@@ -788,7 +787,7 @@ def games_band(picks):
 
 
 BOARD_NOTE = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. "
-              "Value means our chance beats the odds by 6 points or more. Tap a game for more.")
+              "Value means our chance is at least 6% higher than Vegas's. Tap a game for more.")
 
 
 def build_games(team_history, espn_games=()):
