@@ -2042,3 +2042,9 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 :root[data-theme="light"] .sp-view button[aria-pressed="true"] { color: #fff; }
 .sp-view:not(.has-slide) button[aria-pressed="true"] { background: var(--ours); }
 .gc-day.sp-off { display: none; }
+
+/* Ratings: the top 25 until "Show all" opens the rest */
+.ratings-table.is-short tbody tr:nth-child(n+26) { display: none; }
+.show-all { display: block; margin: 18px auto 0; padding: 10px 22px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  background: none; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.show-all:hover { border-color: var(--ours); color: var(--ours); }
