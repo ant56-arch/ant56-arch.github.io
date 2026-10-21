@@ -13,6 +13,7 @@ spec keys:
   runs         newest first: {date, data_through, tested, decision, tone, reason,
                before, after} - before/after are held-out scores or None
   score_name   what before/after measure, e.g. "Top 10 hit rate"
+  score_note   optional sentence saying what that score means
   score_fmt    number -> display string
   higher_better
   factors      [{label, now, before, fmt, note}] - before may be None
@@ -20,6 +21,10 @@ spec keys:
   empty        text when there are no retrains yet
 """
 from html import escape
+
+# What "Edge over a blind guess" means on the team models' Model tabs.
+BLIND_GUESS_NOTE = ("A blind guess gives every game the home team's usual win chance; this is how much closer the "
+                    "model's win chances came to what actually happened.")
 
 
 def _card(title, subtitle, body):
@@ -115,6 +120,7 @@ def render(spec, calendar=True):
                      'compare.</div>')
         body += (f'<div class="table-footnote">{escape(spec["score_name"])} on the most recent games, which each '
                  f"version is scored on before it's trained on them. "
+                 f'{escape(spec.get("score_note", ""))}{" " if spec.get("score_note") else ""}'
                  f'{"Higher" if spec["higher_better"] else "Lower"} is better. Live results are on the '
                  f'Accuracy tab.</div>')
         parts.append(_card("Is It Getting Better?", "Score on recent games at each retrain", body))

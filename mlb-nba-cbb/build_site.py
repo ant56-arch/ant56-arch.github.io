@@ -28,6 +28,7 @@ ant56-arch.github.io by .github/workflows/daily.yml (see publish_site.sh).
 
 import hashlib
 import json
+import math
 import os
 import shutil
 import sys
@@ -464,6 +465,22 @@ def no_games_today(slate):
     return bool(slate) and not slate.get("games") and slate.get("date") == NOW.date().isoformat()
 
 
+def season_over(team_history):
+    """Between the World Series and Opening Day: October to March with no
+    game picked in the last five days (longer than any postseason break)."""
+    if NOW.month not in (10, 11, 12, 1, 2, 3):
+        return False
+    dates = [p["date"] for p in team_history.get("picks", [])]
+    return not dates or (NOW.date() - date.fromisoformat(max(dates))).days >= 5
+
+
+def no_games_note(team_history):
+    """The empty-state line for a day without MLB games."""
+    if season_over(team_history):
+        return "The season's over. Picks are back on Opening Day."
+    return "No MLB games today. Picks resume on the next game day."
+
+
 # ── Home ─────────────────────────────────────────────────────────────────────
 # A quick look: both all-time records side by side, today's three surest
 # hitters and games, and how the latest picks did. Everything else is one tap
@@ -525,8 +542,7 @@ def build_index(history, slate, team_history, espn_games=()):
             board + more("games.html", f"All {n} of today's games" if n > 3 else "Every game and past results"))
     latest, day_picks = latest_hitters(history)
     if no_games_today(slate):
-        body += extras.board_section("Today", "", '<div class="empty-state">No MLB games today. Picks resume on '
-                                     'the next game day.</div>')
+        body += extras.board_section("Today", "", f'<div class="empty-state">{no_games_note(team_history)}</div>')
     elif day_picks:
         when = "Today's" if latest == NOW.date().isoformat() else "Latest"
         body += extras.board_section(
@@ -541,7 +557,7 @@ def build_index(history, slate, team_history, espn_games=()):
 # ── Player Hits ──────────────────────────────────────────────────────────────
 # The hitter record, today's 10 picks, every hitter in today's games, then
 # any past day's picks.
-def todays_picks(history, slate):
+def todays_picks(history, slate, team_history):
     latest, day_picks = latest_hitters(history)
     if not day_picks:
         return card("Today's Hitters", "", '<div class="empty-state">No picks yet.</div>')
@@ -551,8 +567,7 @@ def todays_picks(history, slate):
                                 "Tap one for why.",
                                 picks_list(day_picks) + HOW_TO_READ)
     if no_games_today(slate):
-        html = card("Today's Hitters", "", '<div class="empty-state">No MLB games today. Picks resume on the '
-                    'next game day.</div>') + html
+        html = card("Today's Hitters", "", f'<div class="empty-state">{no_games_note(team_history)}</div>') + html
     return html
 
 
@@ -567,7 +582,7 @@ def every_hitter(slate):
         order = p.get("batting_order")
         order_html = ordinal(order) if order else '<span class="faint">TBD</span>'
         pick_tag = " " + pill("PICK", "primary") if p["player_id"] in pick_ids else ""
-        era = f"{p['opp_era']:.2f}" if p.get("opp_era") is not None else DASH
+        era = f"{p['opp_era']:.2f} ERA" if p.get("opp_era") is not None else DASH
         rows += f"""<tr>
           <td data-key="player" data-value="{escape(p['player_name'])}"><div class="player-cell">{logo(p['team_id'])}<div>
             <div class="player-name">{escape(p['player_name'])}{pick_tag}</div>
@@ -583,7 +598,7 @@ def every_hitter(slate):
       <thead><tr>
         <th data-sort-key="player">Player</th><th data-sort-key="prob" class="num">Hit chance</th>
         <th data-sort-key="avg" class="num">AVG</th><th data-sort-key="recent" class="num">Last 2 wks</th>
-        <th data-sort-key="abpg" class="num">AB/G</th><th data-sort-key="pitcher">Opp. starter (ERA)</th>
+        <th data-sort-key="abpg" class="num">AB/G</th><th data-sort-key="pitcher">Opp. starter</th>
         <th data-sort-key="order" class="num">Batting</th>
       </tr></thead>
       <tbody>{rows}</tbody>
@@ -626,7 +641,9 @@ def past_days(history):
 
 
 def build_players(history, slate, team_history):
-    body = record_band(history, team_history) + todays_picks(history, slate) + every_hitter(slate) + past_days(history)
+    # On a day without games "Today's Hitters" already says so; skip the empty every-hitter table.
+    hitters = "" if no_games_today(slate) else every_hitter(slate)
+    body = record_band(history, team_history) + todays_picks(history, slate, team_history) + hitters + past_days(history)
     return page_shell("Player Hits", "players.html", body)
 
 
@@ -700,7 +717,7 @@ def starter_text(sp):
         return "TBD"
     parts = sp["name"].split(" ", 1)
     name = f"{parts[0][0]}. {parts[1]}" if len(parts) == 2 else sp["name"]
-    return f"{name} ({sp['era']:.2f})" if sp.get("era") is not None else f"{name} (1st start)"
+    return f"{name} ({sp['era']:.2f} ERA)" if sp.get("era") is not None else f"{name} (1st start)"
 
 
 # ── Moneyline picks (moneyline.py), shared with NBA Edge ─────────────────────
@@ -798,6 +815,9 @@ def build_games(team_history, espn_games=()):
     if todays:
         board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays])
         body += extras.board_section(f"Today's games: {day_label(today)}", BOARD_NOTE, board)
+    elif picks and season_over(team_history):
+        body += card("Today's Games", "", '<div class="empty-state">The season\'s over. Picks are back on Opening '
+                     'Day; every past day is under Results below.</div>')
     elif picks:
         body += card("Today's Games", "", '<div class="empty-state">No MLB games today, or the slate isn\'t up '
                      'yet. Picks go up on the next game day; past days are under Results below.</div>')
@@ -1131,10 +1151,15 @@ def hit_model_html(model, runs):
 
 TEAM_FACTOR_LABELS = {
     "home_field": ("Home field", "for the home team, before anything else"),
-    "elo": ("Team rating (Elo) gap", "per 100 rating points"),
+    "elo": ("Team strength gap", "per 100 rating points"),
     "starters": ("Starting pitcher gap", "per run per 9 innings better than the other starter"),
     "bullpen": ("Bullpen ERA gap", "per run of bullpen ERA"),
 }
+
+
+def win_chance_points(v):
+    """A log-odds weight as the win chance it adds to an even (50/50) game."""
+    return f"{(1 / (1 + math.exp(-v)) - 0.5) * 100:+.1f}%"
 
 
 def team_recipe_setup(recipe):
@@ -1143,8 +1168,8 @@ def team_recipe_setup(recipe):
     speed = "steady" if k <= 3 else "medium" if k <= 4 else "fast"
     return [
         ("Learns from:", f"the last {years} seasons of games"),
-        ("Team ratings:", f"{speed} - one game moves a team's Elo rating only a few points, a bit more for "
-                          f"a blowout"),
+        ("Team ratings:", f"{speed} - one game moves a team's strength rating only a few points, a bit more "
+                          f"for a blowout"),
         ("Over the winter:", f"keeps {carry:.0%} of each team's rating; the rest resets toward average"),
         ("Starters:", f"ERA and FIP this season and past seasons, blended with {shrink} innings of a "
                       f"league-average starter so a few starts don't swing it"),
@@ -1174,7 +1199,7 @@ def team_model_html(model, runs):
     last = runs[0] if runs else {}
     now_w, before_w = model.get("coef", {}), last.get("weights_before") or {}
     factors = [{"label": TEAM_FACTOR_LABELS.get(f, (f, ""))[0], "note": TEAM_FACTOR_LABELS.get(f, (f, ""))[1],
-                "now": now_w[f], "before": before_w.get(f), "fmt": lambda v: f"{v:+.3f}"}
+                "now": now_w[f], "before": before_w.get(f), "fmt": win_chance_points}
                for f in model.get("features", []) if f in now_w]
     trained = model.get("trained_at")
     spec = {
@@ -1193,14 +1218,14 @@ def team_model_html(model, runs):
             ("Looks at:", f"{len(now_w)} factors for every game, listed below, with the day's probable starters"),
         ],
         "runs": rows,
-        "score_name": "Better than guessing",
+        "score_name": "Edge over a blind guess",
         "score_fmt": lambda v: pct(v, 1),
         "higher_better": True,
         "factors": factors,
-        "factors_note": "Each number is how much that factor moves the home team's log-odds of winning (negative "
-                        "helps the away team); 0.1 is about 2.5 points of win chance near a coin flip. Better than "
-                        "guessing is how much less wrong (log loss) the model is than always giving the home team "
-                        "its usual win rate. Before is the model that was live until the last retrain.",
+        "factors_note": "Each number is how much that factor adds to the home team's win chance in an otherwise "
+                        "even game (negative helps the away team). Before is the model that was live until the "
+                        "last retrain.",
+        "score_note": model_page.BLIND_GUESS_NOTE,
         "empty": "No retrains logged yet. The first one runs about a week into the season.",
     }
     return model_page.render(spec, calendar=False)
@@ -1218,13 +1243,14 @@ def team_backtest(model):
         (f"{bt['correct']}-{bt['games'] - bt['correct']}", f"{model['backtest_season']} backtest",
          f"{pct(bt['accuracy'], 1)} of games; model said {pct(bt['predicted_accuracy'], 1)}"),
         (pct(tw["accuracy"], 1), f"Top {TOP_GAMES} picks each day", f"{tw['correct']}-{tw['picks'] - tw['correct']}"),
-        (f"{bt['log_loss']:.3f}", "Log loss", f"{b.get('home_rate_log_loss', 0):.3f} for home-team rate"),
+        (f"{bt['log_loss']:.3f}", "Win-chance score", f"blind guess {b.get('home_rate_log_loss', 0):.3f}; lower is better"),
     ]
     note = (f"Fit only on {model['trained_on'].replace(' to ', '-')} and never shown {model['backtest_season']}, "
             f"then used to pick all {bt['games']} regular-season games of {model['backtest_season']} with only "
             f"what was known that morning. The home team won {pct(b.get('home_team_accuracy'), 1)} of those "
-            f"games, and team ratings alone picked {pct(b.get('elo_only_accuracy'), 1)}. Lower log loss is "
-            f"better.")
+            f"games, and team ratings alone picked {pct(b.get('elo_only_accuracy'), 1)}. The win-chance score "
+            f"measures how close the chances came to what happened; a blind guess gives every game the home "
+            f"team's usual win chance.")
     if post:
         note += f" In the postseason it went {post['correct']}-{post['games'] - post['correct']}."
     return {"subtitle": "How the team model did on a season it was never trained on", "tiles": tiles,
