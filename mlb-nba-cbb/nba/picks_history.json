@@ -104,7 +104,7 @@
    },
    "model": "2026-10-19T20:50:32+00:00",
    "correct": null,
-   "set_at": "2026-10-20T23:04:37Z",
+   "set_at": "2026-10-21T00:43:05Z",
    "ml": {
     "team": "SA",
     "side": "home",
@@ -115,7 +115,7 @@
     "value": true,
     "home_ml": -102,
     "away_ml": -118,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
