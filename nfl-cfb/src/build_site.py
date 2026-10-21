@@ -71,7 +71,7 @@ SPORTS = {
     "nfl": {
         "slug": "nfl",
         "wordmark": "NFL",
-        "tagline": "Model-driven NFL spreads, totals and player props, graded against the closing line every week.",
+        "tagline": "NFL game picks, Vegas lines and touchdown scorers, graded every week.",
         "meta_description": "Model-driven NFL spreads, totals and player props, validated against the closing Vegas line every week.",
         "team_csv": "teams.csv",
         "team_abbr_col": "team_abbr", "team_name_col": "team_name", "team_color_col": "team_color", "team_color2_col": "team_color2", "team_logo_col": "team_logo_espn",
@@ -89,7 +89,7 @@ SPORTS = {
     "cfb": {
         "slug": "cfb",
         "wordmark": "CFB",
-        "tagline": "Model-driven spreads and totals for Power-conference college football, graded against the closing line every week.",
+        "tagline": "Picks for every Power-conference college football game, graded every week.",
         "meta_description": "Model-driven college football spreads and totals for the Power conferences, validated against the closing Vegas line every week.",
         "team_csv": "cfb_teams.csv",
         "team_abbr_col": "team", "team_short_col": "abbreviation", "team_color_col": "color", "team_color2_col": "alt_color", "team_logo_col": "logo",
@@ -101,7 +101,7 @@ SPORTS = {
         "coefficients_json": "fitted_cfb_coefficients.json",
         "live_tracking_start_season": 2026,
         "ats_since_year": 2026,
-        "data_source_text": "Team efficiency (PPA, success rate, explosiveness) via CollegeFootballData.com. Vegas lines via the-odds-api.com, where available. Covers SEC, Big Ten, Big 12, ACC and FBS independent teams.",
+        "data_source_text": "Stats from CollegeFootballData.com. Vegas lines via the-odds-api.com. Covers SEC, Big Ten, Big 12, ACC and independents.",
         "no_games_note": "Covers Power-conference and independent FBS teams only.",
         "ratings": True,
     },
@@ -1465,15 +1465,17 @@ def build_ratings_page(sport, log):
         line += "</p>"
     else:
         line = '<p class="lead">The ratings\' record starts once this week\'s games are final.</p>'
-    intro = (f'{line}<p class="muted">Each team\'s offense is the points it would score against an average FBS '
-             f'defense, its defense the points it would allow to an average FBS offense (lower is better), and '
-             f'overall is the difference: its expected margin against an average FBS team on a neutral field. '
-             f'Every result is adjusted for who the team played, and both the score and how efficiently the team '
-             f'moved the ball (garbage time left out) count. Each team starts the season from last year\'s rating, '
-             f'kept more for teams bringing back more of their production, plus roster talent, and this '
-             f'season\'s games take over as they come in. Tested on 2022-2026 games, they picked 72% of FBS '
-             f'winners (the Vegas favorite: 73%). Home field is worth {data["home_field"]:.1f} points. These ratings are being '
-             f'tracked on their own and don\'t feed the picks yet.</p>')
+    intro = (f'{line}<p class="muted">Overall is how many points a team would beat an average FBS team by on a '
+             f'neutral field. These ratings are tracked on their own and don\'t feed the picks yet.</p>')
+    how = (f'<details class="how-to"><summary>How the ratings work</summary><div>'
+           f'<p>Offense is the points a team would score against an average FBS defense, and defense the points it '
+           f'would allow to an average FBS offense (lower is better). Overall is the difference.</p>'
+           f'<p>Every result is adjusted for who the team played, and both the score and how efficiently the team '
+           f'moved the ball count (garbage time left out). Each team starts the season from last year\'s rating, '
+           f'kept more for teams bringing back more of their production, plus roster talent, and this season\'s '
+           f'games take over as they come in.</p>'
+           f'<p>Tested on 2022-2026 games, they picked 72% of FBS winners (the Vegas favorite: 73%). Home field is '
+           f'worth {data["home_field"]:.1f} points.</p></div></details>')
 
     rows = ""
     for t in data["teams"]:
@@ -1485,14 +1487,16 @@ def build_ratings_page(sport, log):
           <td data-key="offense" data-value="{t["offense"]}" data-label="Offense" class="num">{t["offense"]:.1f} <span class="muted">({t["offense_rank"]})</span></td>
           <td data-key="defense" data-value="{-t["defense"]}" data-label="Defense" class="num">{t["defense"]:.1f} <span class="muted">({t["defense_rank"]})</span></td>
         </tr>"""
-    table = f"""<table class="data responsive-stack" data-sortable>
+    # The top 25 (of whichever column it's sorted by) until "Show all" opens the rest.
+    table = f"""<table class="data responsive-stack ratings-table is-short" data-sortable>
       <thead><tr><th data-sort-key="overall_rank" class="num">#</th><th data-sort-key="team">Team</th>
       <th data-sort-key="overall" class="num">Overall</th><th data-sort-key="offense" class="num">Offense</th>
       <th data-sort-key="defense" class="num">Defense</th></tr></thead>
-      <tbody>{rows}</tbody></table>"""
+      <tbody>{rows}</tbody></table>
+    <button type="button" class="show-all" data-show-all>Show all {len(data["teams"])} teams</button>"""
     sub = (f'All {len(data["teams"])} FBS teams through week {data["games_through_week"]}, '
            f'updated {model_page.short_date(data["updated"])}. Tap a column to sort.')
-    return page_shell(sport, "Ratings", "ratings", card("Power Ratings", sub, intro + table))
+    return page_shell(sport, "Ratings", "ratings", card("Power Ratings", sub, intro + how + table))
 
 def past_season_weeks(sport, log, season):
     """Graded weeks from seasons before `season` (backfilled picks), for the

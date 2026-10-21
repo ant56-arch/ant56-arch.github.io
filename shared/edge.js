@@ -1240,10 +1240,10 @@ function edgePickNote(g) {
   if (g.book == null) s = `We have ${pk} at ${p}% to win. No price is posted yet, so there's nothing to compare it with.`;
   else {
     const gap = g.prob - g.book, b = g.book.toFixed(0);
-    if (g.value) s = `Value pick. We have ${pk} at ${p}%, ${gap.toFixed(0)} points higher than the ${b}% the price implies.`;
-    else if (gap >= 2) s = `We like ${pk} a little more than the market does, ${p}% to ${b}%, but not by enough for a Value tag.`;
-    else if (gap <= -2) s = `We pick ${pk} too, but the market likes ${them} more, ${b}% to our ${p}%, so the price runs ahead of our numbers.`;
-    else s = `Our numbers and the market agree on ${pk}, ${p}% to ${b}%.`;
+    if (g.value) s = `Value pick. We have ${pk} at ${p}%, Vegas has ${b}%.`;
+    else if (gap >= 2) s = `We like ${pk} a little more than Vegas does, ${p}% to ${b}%, but not by enough for a Value tag.`;
+    else if (gap <= -2) s = `We pick ${pk} too, but Vegas likes ${them} more, ${b}% to our ${p}%.`;
+    else s = `Vegas agrees with us on ${pk}, ${b}% to our ${p}%.`;
   }
   if (g.why && g.why[0]) s += ` The biggest factor is ${g.why[0].toLowerCase()}, which helps ${name(g.why[1])}.`;
   return s;
