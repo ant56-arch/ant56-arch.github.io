@@ -258,7 +258,7 @@ def ml_cell_html(ml):
     elif ml["result"] == "P":
         tags += f' {pill("NO DECISION", "market")}'
     lines = [ml_payout(ml["price"]),
-             f'We give {ml["team"]} {ml["our"]:.0%}, the price implies {ml["book"]:.0%}']
+             f'We give {ml["team"]} {ml["our"]:.0%}, Vegas {ml["book"]:.0%}']
     sub = "".join(f'<span class="ml-sub">{escape(line)}</span>' for line in lines)
     return (f'<span class="ml-pick"><span class="ml-line"><span class="accent">{ml["team"]} to win '
             f'{moneyline.format_price(ml["price"])}</span>{tags}</span>{sub}</span>')

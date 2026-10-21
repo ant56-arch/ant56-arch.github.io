@@ -194,8 +194,8 @@ def payout_text(price):
 
 
 def detail(ml):
-    """ "We give BUF 48%, the price implies 42%" """
-    return f"We give {ml['team']} {ml['prob']:.0f}%, the price implies {ml['book_prob']:.0f}%"
+    """ "We give BUF 48%, Vegas 42%" """
+    return f"We give {ml['team']} {ml['prob']:.0f}%, Vegas {ml['book_prob']:.0f}%"
 
 
 def detail_lines(ml, other=None):

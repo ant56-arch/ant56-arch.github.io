@@ -11,17 +11,12 @@ function nbaResult(g) {
   return `${edgeEsc(g.score)} ${pillHtml}`;
 }
 
-// The moneyline bet: "BUF to win +135", the model's pick, VALUE at a 6+ point edge, and once graded
-// whether it won (units live on the home site's Betting tab).
+// The moneyline bet: "BUF to win +135", the model's pick, and VALUE at a 6+ point edge. The bet is
+// always on our pick, so whether it won is the Result column's (units live on the Betting tab).
 function nbaMoneyline(m) {
   if (!m) return "<span class='faint'>No odds</span>";
-  let res = "";
-  if (m.void) res = " <span class='pill pill-void'>NO DECISION</span>";
-  else if (m.won !== null && m.won !== undefined) {
-    res = ` <span class='pill ${m.won ? "pill-positive" : "pill-danger"}'>${m.won ? "WON" : "LOST"}</span>`;
-  }
   const value = m.value ? " <span class='pill pill-primary'>VALUE</span>" : "";
-  return `<div class="ml"><div class="ml-pick">${edgeEsc(m.text)}${value}${res}</div>
+  return `<div class="ml"><div class="ml-pick">${edgeEsc(m.text)}${value}</div>
     <div class="ml-sub">${edgeEsc(m.detail)}</div>${m.locked ? `<div class="lock-note locked">Locked ${edgeEsc(m.locked)}</div>` : ""}</div>`;
 }
 
