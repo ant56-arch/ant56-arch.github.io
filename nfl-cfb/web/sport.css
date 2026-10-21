@@ -20,3 +20,9 @@ table.data.slate td.num { white-space: normal; }
 .acc-weeks label { font-weight: 600; }
 .acc-weeks #acc-week-summary { flex-basis: 100%; font-size: 14px; }
 table.data tr[hidden] { display: none !important; }
+
+/* Ratings: the top 25 until "Show all" opens the rest */
+.ratings-table.is-short tbody tr:nth-child(n+26) { display: none; }
+.show-all { display: block; margin: 18px auto 0; padding: 10px 22px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  background: none; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.show-all:hover { border-color: var(--ours); color: var(--ours); }
