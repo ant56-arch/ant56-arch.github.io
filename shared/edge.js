@@ -107,6 +107,32 @@ function edgeSeriesLabel(ev, comp) {
   return parts.join(" · ");
 }
 
+// A finished game's pick is graded when the site rebuilds overnight; until then
+// grade it here from the final score so it shows Hit or Miss right away.
+// Picks name a team by its abbreviation first ("MTL 65%", "SEA to win, 51%",
+// "DEN +2.5") or say "Draw"; anything else (MLB's top hitter) stays ungraded.
+function edgeGradePick(g, pick) {
+  const a = Number(g.away.score), h = Number(g.home.score);
+  if (g.state !== "post" || g.away.score == null || g.home.score == null || isNaN(a) || isNaN(h)) return pick;
+  const margin = (text, line) => {
+    const tok = (text || "").split(/[\s,]/)[0];
+    if (tok === "Draw") return a === h ? 0.5 : -1;
+    const m = tok === g.away.abbr ? a - h : tok === g.home.abbr ? h - a : null;
+    return m == null ? null : m + (line || 0);
+  };
+  const out = { ...pick };
+  if (out.result == null) {
+    const m = margin(out.text);
+    if (m != null) out.result = m > 0;
+  }
+  if (out.spread && out.spread.result == null) {
+    const line = parseFloat(((out.spread.short || out.spread.text || "").split(" ")[1]) || "");
+    const m = isNaN(line) ? null : margin(out.spread.short || out.spread.text, line);
+    if (m != null && m !== 0) out.spread = { ...out.spread, result: m > 0 };  // a push stays ungraded
+  }
+  return out;
+}
+
 async function edgeLoadGames(site) {
   if (!site.games) return null;
   // The published file only changes when the site rebuilds, so fetch it once.
@@ -119,7 +145,7 @@ async function edgeLoadGames(site) {
     (published.games || []).forEach(g => { if (g.pick) picks[g.id] = g.pick; });
     let games = live.events.map(edgeParseEspn).filter(Boolean);
     if (published.top25_only) games = games.filter(g => g.away.rank || g.home.rank);
-    games.forEach(g => { if (picks[g.id]) g.pick = picks[g.id]; });
+    games.forEach(g => { if (picks[g.id]) g.pick = edgeGradePick(g, picks[g.id]); });
     const week = live.week && live.week.number;
     return { label: week && !["MLB", "NBA", "NHL"].includes(site.sport) ? `Week ${week}` : published.label,
              games, live: true };
