@@ -68,6 +68,7 @@ a.hr-tile:hover .hr-val { color: var(--ours); }
 
 /* $10 a pick: a tile per sport and the running total (home.js). */
 .money-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.money-tile:only-child { max-width: 340px; }
 .money-tile {
   display: grid;
   gap: 2px;
