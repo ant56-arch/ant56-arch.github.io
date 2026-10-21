@@ -103,7 +103,6 @@ h2 em { font-size: 1.06em; }
 @media (max-width: 640px) {
   .sec-head > span:last-child { display: none; }
   .frame-tag { display: none; }
-  .board .bar { display: none; }
 }
 /* 01 Statement */
 .record-grid { margin-top: 0; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
@@ -116,6 +115,8 @@ h2 em { font-size: 1.06em; }
 .board th:not(:first-child), .board td:not(:first-child) { text-align: right; }
 .board .bar { display: inline-block; width: 72px; height: 4px; background: color-mix(in srgb, var(--forest-ink) 20%, transparent); vertical-align: middle; margin-right: 10px; position: relative; }
 .board .bar i { position: absolute; inset: 0 auto 0 0; background: var(--forest-ink); }
+.board th:not(:first-child), .board td:not(:first-child) { padding-left: 14px; white-space: nowrap; }
+@media (max-width: 640px) { .board .bar { display: none; } .jump { flex-wrap: wrap; overflow: visible; } }
 .streak { font-family: var(--f-mono); font-size: 11px; padding: 2px 7px; border-radius: 99px; border: 1px solid currentColor; opacity: .9; }
 .board-foot { opacity: .7; font-size: 12.5px; }
 .stats { display: grid; gap: 0; }
@@ -279,7 +280,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 #tabs a[aria-current="page"] { opacity: 1; border-bottom-color: currentColor; }
 @media (max-width: 860px) {
   .nav { flex-wrap: wrap; row-gap: 10px; }
-  .nav ul#tabs { display: flex; order: 3; flex: 1 0 100%; margin: 0; gap: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .nav ul#tabs { display: flex; order: 3; flex: 1 0 100%; margin: 0; gap: 14px; justify-content: space-between; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .nav ul#tabs::-webkit-scrollbar { display: none; }
   .nav ul#tabs a { white-space: nowrap; }
   .hero { padding-top: 160px; }
