@@ -596,27 +596,25 @@ def daily_results(sport, log):
     return [[day, w, l] for day, (w, l) in sorted(by_day.items())]
 
 def ml_streak(sport, log):
-    """The current run of moneyline picks won ("W") or lost ("L") in a row
-    since live tracking began, one game at a time in kickoff order (pushes
-    left out; of games that kick off together, losses count as the later ones):
-    {"kind", "n"}, or None. What the home page's streak badge shows."""
+    """Winning or losing weeks in a row for the moneyline picks since live
+    tracking began: a week counts as a win when more picks won than lost, and
+    an even week is skipped (pushes left out). Picks post a week at a time, so
+    a week, not a game, is what a streak counts. {"kind", "n", "unit": "week"},
+    or None. What the home page's streak column shows."""
     if log is None or log.empty or "ml_won" not in log.columns:
         return None
     done = log[(log["season"] >= sport["live_tracking_start_season"]) & log["ml_won"].notna()]
-    rows = []
-    for _, r in done.iterrows():
-        t = pd.to_datetime(r.get("ml_commence_time"), errors="coerce", utc=True)
-        if pd.isna(t):
-            t = pd.to_datetime(r.get("gameday"), errors="coerce", utc=True)
-        if not pd.isna(t):
-            rows.append((t, bool(r["ml_won"])))
     kind, n = None, 0
-    for _, won in sorted(rows, key=lambda x: (x[0], not x[1]), reverse=True):
-        k = "W" if won else "L"
+    for _, g in sorted(done.groupby(["season", "week"]), key=lambda x: x[0], reverse=True):
+        w = int(g["ml_won"].astype(bool).sum())
+        l = len(g) - w
+        if w == l:
+            continue
+        k = "W" if w > l else "L"
         if kind and k != kind:
             break
         kind, n = k, n + 1
-    return {"kind": kind, "n": n} if kind else None
+    return {"kind": kind, "n": n, "unit": "week"} if kind else None
 
 def record_band(sport, rec):
     """The Home tab's first panel: our all-time record, big."""

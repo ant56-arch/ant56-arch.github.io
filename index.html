@@ -1449,6 +1449,19 @@ function slateText(games, key, isToday) {
   return { games, date, h2, lede };
 }
 
+// summary.json "ml_streak" ({kind, n, unit: "day"|"week"}): winning or
+// losing days (weeks for NFL/CFB) in a row, e.g. "W3 wks". Older summaries
+// without a unit counted games.
+function streakText(st) {
+  if (!st || !st.n) return "—";
+  const u = st.unit === "week" ? "wk" : st.unit === "day" ? "day" : "";
+  return `${st.kind}${st.n}${u ? " " + u + (st.n > 1 ? "s" : "") : ""}`;
+}
+function streakLabel(st) {
+  const u = st.unit === "week" ? "week" : st.unit === "day" ? "day" : "pick";
+  return `${st.kind === "W" ? "Winning" : "Losing"} ${u}${st.n > 1 ? "s" : ""} in a row`;
+}
+
 // A league tab's record section: all-time and season rows, its own stats.
 function leagueTop(s, today) {
   const info = LEAGUE[LG];
@@ -1459,7 +1472,7 @@ function leagueTop(s, today) {
   const rows = [];
   const row = (label, r, st) => { const x = r && wl(r.value); if (x && x[0] + x[1]) rows.push({ label, w: x[0], l: x[1], st }); };
   if (src) {
-    const st = src.ml_streak && src.ml_streak.n ? `${src.ml_streak.kind}${src.ml_streak.n}` : "—";
+    const st = streakText(src.ml_streak);
     row("All-time", src.record, st);
     if (src.season_record && src.season_record.value !== (src.record || {}).value) row(`${src.season_record.season} season`, src.season_record, "—");
     else if (src.season_record) row(`${src.season_record.season} season`, src.season_record, st);
@@ -1477,7 +1490,7 @@ function leagueTop(s, today) {
   $("heroTally").textContent = `${N} games graded · ${(main.w / N * 100).toFixed(1)}% right`;
   const stats = [[`${main.w}-${main.l}`, `Picks right${sinceShort ? " since " + sinceShort : ""}`]];
   if (LG === "MLB" && s.record) { const h = wl(s.record.value); if (h) stats.push([`${Math.round(h[0] / (h[0] + h[1]) * 100)}%`, "Top hitters who got a hit"]); }
-  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, src.ml_streak.kind === "W" ? "Win streak" : "Losing streak"]);
+  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, streakLabel(src.ml_streak)]);
   const last = s.last && s.last.games && s.last.games.length ? s.last : null;
   if (last) {
     const lw = last.games.filter(g => g.hit === true).length, ll = last.games.filter(g => g.hit === false).length;
@@ -1520,7 +1533,7 @@ function render(sums) {
 
   if (LG !== "All") leagueTop(by[LG], today);
   else {
-  // Board: picks to win per league, with the moneyline streak.
+  // Board: picks to win per league, with the winning-days (weeks) streak.
   const board = [];
   BOARD_ORDER.forEach(lg => {
     const s = by[lg]; if (!s) return;
@@ -1529,7 +1542,7 @@ function render(sums) {
     if (!rec || rec[0] + rec[1] === 0) return;
     const st = src.ml_streak;
     board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
-                 streak: st && st.n ? `${st.kind}${st.n}` : "—", since: src.record.since, kind: st && st.kind, n: st && st.n });
+                 streak: streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
   });
   $("boardRows").innerHTML = board.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td><span class="streak">${b.streak}</span></td></tr>`).join("");
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });

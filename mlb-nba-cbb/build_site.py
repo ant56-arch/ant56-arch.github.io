@@ -409,24 +409,31 @@ def daily_results(g, wl):
     return [[day, *wl(ps)] for day, ps in sorted(by_day.items())]
 
 
-def ml_streak(picks):
-    """The current run of moneyline picks won ("W") or lost ("L") in a row,
-    one game at a time in start order: {"kind", "n"}, or None before the
-    first graded pick. Of games that start together, losses count as the
-    later ones, so a tie never stretches a winning run. What the home page's
-    streak badge shows."""
-    def when(p):
-        try:
-            return datetime.fromisoformat(p["start"].replace("Z", "+00:00")).timestamp()
-        except (KeyError, AttributeError, TypeError, ValueError):
-            return datetime.fromisoformat(p["date"]).timestamp()
+def day_streak(days):
+    """The current run of winning ("W") or losing ("L") slates from
+    (key, won, lost) rows, newest last: a slate counts as a win when more
+    picks won than lost, and an even one is skipped. Picks post a whole slate
+    at once, so a slate, not a game, is what a streak counts."""
     kind, n = None, 0
-    for p in sorted(moneyline.graded(picks), key=lambda p: (when(p), not p["ml"]["won"]), reverse=True):
-        k = "W" if p["ml"]["won"] else "L"
+    for _, w, l in reversed(days):
+        if w == l:
+            continue
+        k = "W" if w > l else "L"
         if kind and k != kind:
             break
         kind, n = k, n + 1
-    return {"kind": kind, "n": n} if kind else None
+    return (kind, n)
+
+
+def ml_streak(picks):
+    """Winning or losing days in a row for the moneyline picks:
+    {"kind", "n", "unit": "day"}, or None before the first graded day. What
+    the home page's streak column shows."""
+    by_day = {}
+    for p in moneyline.graded(picks):
+        by_day.setdefault(p["date"], [0, 0])[0 if p["ml"]["won"] else 1] += 1
+    kind, n = day_streak([(d, w, l) for d, (w, l) in sorted(by_day.items())])
+    return {"kind": kind, "n": n, "unit": "day"} if kind else None
 
 
 def record_band(history, team_history):
