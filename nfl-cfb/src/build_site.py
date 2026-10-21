@@ -23,12 +23,12 @@ Pages per sport (see SPORTS below for which apply to which sport):
                   of the season)
   teams.html    - every game this season, week 1 through the postseason,
                   browsable via a dropdown - past weeks graded, future weeks
-                  straight from the season's game_predictions.csv
+                  straight from the season's game_predictions.csv - plus
+                  every graded week of earlier seasons
   players.html  - player projections by category (Passing/Rushing/Receiving)
                   - NFL only, no college football player props in this pass
-  history.html  - every graded week across all seasons (backfill included),
-                  browsable via a dropdown (client-side, no per-week routing
-                  needed for a site this size)
+  history.html  - stub forwarding to teams.html, whose week picker now
+                  reaches back through earlier seasons
   accuracy.html - trend charts of our model's own accuracy vs Vegas's over time
 
 Published to GitHub Pages by weekly-picks.yml. This script only builds the
@@ -392,7 +392,6 @@ def page_shell(sport, title, active_tab, body_html):
         tabs.append(("players.html", "players", "Players"))
         tabs.append(("td.html", "td", "TD Props"))
     tabs += [
-        ("history.html", "history", "History"),
         ("accuracy.html", "accuracy", "Accuracy"),
         ("model.html", "model", "Model"),
     ]
@@ -450,7 +449,6 @@ def page_shell(sport, title, active_tab, body_html):
       <a href="https://ant56-arch.github.io/terms.html">Terms</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
       <span>&copy; {now.year} {sport["wordmark"]} Edge</span>
     </nav>
   </footer>
@@ -664,7 +662,7 @@ def build_moneyline_block(season, ml, with_label=True):
     v = ml["value"]
     stats = [
         (ml["record"], f"{season} moneyline", f"{ml['n_decided']} picks graded{pushes}"),
-        (v["record"] if v["n_decided"] else DASH, "Value picks", "our chance 6+ points over the price's"),
+        (v["record"] if v["n_decided"] else DASH, "Value picks", "our chance 6%+ higher than Vegas's"),
     ]
     statline = '<div class="statline">' + "".join(
         f'<div class="stat"><div class="stat-value">{val}</div><div class="stat-label">{lab}</div>'
@@ -795,11 +793,11 @@ def td_player_row(rank, r, sport, b, defense):
     if isinstance(r.get("injury_status"), str) and r["injury_status"]:
         inj = " " + pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger")
     if pd.notna(r.get("price")):
-        book = f'<span class="tdp-book-price">{moneyline.format_price(r["price"])}</span><span class="tdp-book-sub">book {r["book_prob"] * 100:.0f}%</span>'
+        book = f'<span class="tdp-book-price">{moneyline.format_price(r["price"])}</span><span class="tdp-book-sub">Vegas {r["book_prob"] * 100:.0f}%</span>'
         if r["value"]:
             book = '<span class="tdp-value">VALUE</span>' + book
     else:
-        book = '<span class="tdp-book-sub">Odds on <br>game day</span>'
+        book = ""  # no price posted yet; it shows once there is one
     pos = r.get("pos") if isinstance(r.get("pos"), str) else ""
     detail = td_player_detail(r, b, defense)
     price_note = td_price_bits(r).strip()
@@ -1033,7 +1031,7 @@ def td_record_band(summary):
     return f"""<section class="card record-card"><div class="record-band">
       <div>{eyebrow}
         <div class="rb-num">{v['wins']}-{v['losses']}<small>{v['wins'] / n:.0%}</small></div>
-        <div class="rb-since">Value: our chance at least 6 points over the book's, at +300 or shorter. Graded at the price locked at kickoff.</div>
+        <div class="rb-since">Value: our chance at least 6% higher than Vegas's, at +300 or shorter. Graded at the price locked at kickoff.</div>
       </div>
       <div class="rb-side">{side_html}</div>
     </div></section>"""
@@ -1091,7 +1089,7 @@ def build_td_page(sport, props):
       25%+ more TDs to his position than average; <b>Due For TD</b> at least one more expected TD than he has scored over his last
       10 games (TD debt). Tags explain the chance; they don't add to it.</p>
       <p>The price is DraftKings' (or FanDuel's) anytime TD price, pulled the day of the game. A <b>Value</b> pick is one where
-      our chance is at least 6 points over the book's with the vig taken out, at +300 or shorter. Prices lock at kickoff.
+      our chance is at least 6% higher than Vegas's, at +300 or shorter. Prices lock at kickoff.
       A player with no carry or target is no decision, like a voided bet.</p></div></details>"""
     card_html = card("TD Props", "Who's most likely to score, against the books' anytime TD prices", body + how)
     return page_shell(sport, "TD Props", "td", band + card_html)
@@ -1116,7 +1114,7 @@ def build_td_record_card():
         (f"{v['wins']}-{v['losses']}" if n else DASH, "Value picks", f"{money(v['profit'])} on ${v['risked']} risked" if n else "none graded yet"),
         (f"{top['scored']}/{top['graded']}" if top["graded"] else DASH, "Top 10 scored",
          f"we expected {top['predicted'] * 100:.0f}%" if top["graded"] else ""),
-        (f"{vb['our_brier']:.3f}" if vb["n"] else DASH, "Our Brier", f"book {vb['book_brier']:.3f}, {vb['n']} priced players (lower is better)" if vb["n"] else ""),
+        (f"{vb['our_brier']:.3f}" if vb["n"] else DASH, "Win-chance score", f"Vegas {vb['book_brier']:.3f}, {vb['n']} priced players (lower is better)" if vb["n"] else ""),
     ]
     statline = '<div class="statline">' + "".join(
         f'<div class="stat"><div class="stat-value">{val}</div><div class="stat-label">{lab}</div>'
@@ -1128,7 +1126,7 @@ def build_td_record_card():
         res = pill("SCORED", "positive") if r["result"] == "W" else pill("NO TD", "danger")
         rows += f"""<tr data-week="Week {int(r['week'])}" data-res="{r['result']}" data-kind="td">
           <td>Week {int(r['week'])}<div class="faint" style="font-size:13px;">{r['player_name']}, {r['team']} vs {r['opponent']}</div></td>
-          <td data-label="Price" class="num">{moneyline.format_price(r['price'])}<div class="faint" style="font-size:13px;">ours {r['our_prob'] * 100:.0f}%, book {r['book_prob'] * 100:.0f}%</div></td>
+          <td data-label="Price" class="num">{moneyline.format_price(r['price'])}<div class="faint" style="font-size:13px;">ours {r['our_prob'] * 100:.0f}%, Vegas {r['book_prob'] * 100:.0f}%</div></td>
           <td data-label="Result" class="num">{res}<div class="faint" style="font-size:13px;">{money(r['profit'])}</div></td>
         </tr>"""
     table = (f"""<table class="data responsive-stack"><thead><tr><th>Pick</th><th class="num">Price</th><th class="num">Result</th></tr></thead>
@@ -1222,7 +1220,7 @@ def display_season(sport, games, log):
     return sport["live_tracking_start_season"]
 
 BOARD_NOTE = ("Scores are our projections, lines show the favored team, and the odds are our pick's moneyline. "
-              "Value means our chance beats the odds by 6 points or more. Tap a game for more.")
+              "Value means our chance is at least 6% higher than Vegas's. Tap a game for more.")
 
 def build_index_page(sport, games, log, comparison, espn=None):
     season = display_season(sport, games, log)
@@ -1415,8 +1413,12 @@ def build_teams_page(sport, games, log, comparison):
         return page_shell(sport, "Teams", "teams", body)
 
     week_order = [k for k, _ in sorted(weeks.items(), key=lambda kv: kv[1]["week"])]
-    teams_json = json.dumps({"week_order": week_order, "weeks": weeks, "default_week": current_week_key(weeks)})
-    body = card("Teams", f"Every {season} matchup from week 1 through the postseason, picked by our model and graded once final",
+    default_week = current_week_key(weeks)
+    for wk in weeks.values():
+        wk["group"] = f"{season} season"
+    past = past_season_weeks(sport, log, season)
+    teams_json = json.dumps({"week_order": week_order + list(past), "weeks": {**past, **weeks}, "default_week": default_week})
+    body = card("Teams", f"Every {season} matchup, picked by our model and graded once final. Earlier seasons are in the week list too.",
                 '<select id="teams-week-select" class="week-picker"></select><div id="teams-week-content" style="margin-top:16px;"></div>'
                 f'<script>const TEAMS_DATA = {teams_json};</script>')
     return page_shell(sport, "Teams", "teams", body)
@@ -1492,18 +1494,12 @@ def build_ratings_page(sport, log):
            f'updated {model_page.short_date(data["updated"])}. Tap a column to sort.')
     return page_shell(sport, "Ratings", "ratings", card("Power Ratings", sub, intro + table))
 
-def build_history_page(sport, log):
-    graded = log[log["actual_margin"].notna()].copy() if not log.empty else log
-    if graded.empty:
-        body = card("History", "Every graded week, once there's one to show", '<div class="empty-state">No games graded yet.</div>')
-        return page_shell(sport, "History", "history", body)
-
-    graded = graded.sort_values(["season", "week"])
+def past_season_weeks(sport, log, season):
+    """Graded weeks from seasons before `season` (backfilled picks), for the
+    Teams week picker: our pick and Vegas's, each marked hit or miss."""
+    graded = log[log["actual_margin"].notna() & (log["season"] < season)] if not log.empty else log
     weeks = {}
-    week_order = []
-    for (season, week), g in graded.groupby(["season", "week"]):
-        key = f"{int(season)}-{int(week)}"
-        week_order.append(key)
+    for (yr, week), g in graded.sort_values(["season", "week"]).groupby(["season", "week"]):
         games_list = []
         for _, r in g.iterrows():
             def pick_str(spread_col):
@@ -1517,15 +1513,29 @@ def build_history_page(sport, log):
                 "away_score": int(r["away_score"]) if pd.notna(r.get("away_score")) else None,
                 "home_score": int(r["home_score"]) if pd.notna(r.get("home_score")) else None,
                 "model_pick": pick_str("model_spread"), "model_correct": bool(r["model_correct_pick"]) if pd.notna(r.get("model_correct_pick")) else None,
-                "vegas_pick": pick_str("vegas_home_favored_by"), "vegas_correct": bool(r["vegas_correct_pick"]) if pd.notna(r.get("vegas_correct_pick")) else None,
+                "vegas_pick": pick_str("vegas_home_favored_by"),
             })
-        weeks[key] = {"label": f"{int(season)}, Week {int(week)}", "games": games_list}
+        weeks[f"{int(yr)}-{int(week)}"] = {"label": f"Week {int(week)}", "group": f"{int(yr)} season",
+                                           "past": True, "games": games_list}
+    # Newest season first, weeks in order within each.
+    return dict(sorted(weeks.items(), key=lambda kv: (-int(kv[0].split("-")[0]), int(kv[0].split("-")[1]))))
 
-    history_json = json.dumps({"week_order": week_order, "weeks": weeks})
-    body = card("History", "Every graded week. Choose a week to see how the picks did.",
-                f'<select id="week-select" class="week-picker"></select><div id="week-content" style="margin-top:16px;"></div>'
-                f'<script>const HISTORY_DATA = {history_json};</script>')
-    return page_shell(sport, "History", "history", body)
+def history_redirect():
+    """A stub at the old history.html (folded into the Teams tab, whose week
+    picker now reaches back through earlier seasons) that forwards there."""
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=teams.html">
+<link rel="canonical" href="teams.html">
+<title>Teams | Sports Edge</title>
+</head>
+<body>
+<p>History moved to the Teams tab. <a href="teams.html">Open Teams</a>.</p>
+</body>
+</html>
+"""
 
 def moneyline_picks_html(sport, season, log):
     """Every graded moneyline pick this season, for the Accuracy tab's extras."""
@@ -1574,12 +1584,13 @@ def build_accuracy_page(sport, log, games=None):
         backtest = {
             "subtitle": f"Seasons {', '.join(str(x) for x in hv['seasons'])}, held out while the model was fit",
             "tiles": [(f"{hv['n_games']:,}", "Games tested", "never seen in training"),
-                      (f"±{hv['model_only_spread_mae']:.1f}", "Spread error, ours",
-                       f"Vegas ±{hv['vegas_only_spread_mae']:.1f}; lower is sharper"),
-                      (f"{hv['model_only_brier']:.3f}", "Brier score, ours",
-                       f"Vegas {hv['vegas_only_brier']:.3f}; lower is sharper")],
-            "note": "Points off the final margin, and how well the win chances matched what happened, on games the "
-                    "model wasn't fit on. The picks you see blend in the market where that helped on these games.",
+                      (f"{hv['model_only_spread_mae']:.1f}", "Points off the final margin",
+                       f"Vegas {hv['vegas_only_spread_mae']:.1f}; lower is better"),
+                      (f"{hv['model_only_brier']:.3f}", "Win-chance score",
+                       f"Vegas {hv['vegas_only_brier']:.3f}; lower is better")],
+            "note": "How far our lines were from the final margin, and how close our win chances came to what "
+                    "happened (0 would be perfect), on games the model wasn't fit on. The picks you see blend in "
+                    "Vegas's line where that helped on these games.",
         }
 
     extras = []
@@ -1590,14 +1601,14 @@ def build_accuracy_page(sport, log, games=None):
             us_brier=("model_brier", "mean"), vegas_brier=("vegas_brier", "mean")).reset_index()
         labels = [week_label(x) for x in w["week"]]
         charts = [
-            accuracy_page.chart("vs-spread", "Spread Error by Week (lower is sharper)", labels, [
+            accuracy_page.chart("vs-spread", "Points Off the Final Margin by Week (lower is better)", labels, [
                 {"label": "Our model", "data": w["us_mae"].round(2).tolist(), "color": accuracy_page.OURS},
                 {"label": "Vegas", "data": w["vegas_mae"].round(2).tolist(), "color": accuracy_page.VEGAS}], "pm1"),
-            accuracy_page.chart("vs-brier", "Win Chance Calibration by Week (Brier score, lower is sharper)", labels, [
+            accuracy_page.chart("vs-brier", "Win-Chance Score by Week (lower is better)", labels, [
                 {"label": "Our model", "data": w["us_brier"].round(4).tolist(), "color": accuracy_page.OURS},
                 {"label": "Vegas", "data": w["vegas_brier"].round(4).tolist(), "color": accuracy_page.VEGAS}], "num3"),
         ]
-        extras.append(("Against Vegas", f"{season}: how far off our lines and win chances were, next to the market's",
+        extras.append(("Against Vegas", f"{season}: how far off our lines and win chances were, next to Vegas's",
                        accuracy_page.charts_html(charts)))
     ml_rows = moneyline_picks_html(sport, season, log) if ml else ""
     td = build_td_record_card() if sport.get("player_props_csv") else ""
@@ -1650,7 +1661,6 @@ def root_page_shell(title, body_html):
       <a href="https://ant56-arch.github.io/terms.html">Terms of Use</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy Policy</a>
       <a href="{HOME_URL}">All sites</a>
-      <a href="https://github.com/ant56-arch/ant56-arch.github.io">Source code</a>
       <span>&copy; {now.year} NFL Edge</span>
     </nav>
   </footer>
@@ -2003,7 +2013,7 @@ def build_sport_pages(sport):
     pages = {
         "index.html": build_index_page(sport, games, log, comparison, espn),
         "teams.html": build_teams_page(sport, games, log, comparison),
-        "history.html": build_history_page(sport, log),
+        "history.html": history_redirect(),
         "accuracy.html": build_accuracy_page(sport, log, games),
         "model.html": build_model_page(sport),
         **({"ratings.html": build_ratings_page(sport, log)} if sport.get("ratings") else {}),

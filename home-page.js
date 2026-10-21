@@ -113,7 +113,7 @@ async function initBestBets() {
   const value = games.filter(g => g.value && g.price != null && g.book != null);
   if (value.length) list.replaceChildren(...value.map(edgeValueRow));
   else list.replaceChildren(edgeNode("div", "empty-state",
-    "No value picks right now. They show up here when our chance beats a betting price by 6 points or more."));
+    "No value picks right now. They show up here when our chance is at least 6% higher than Vegas's."));
 
   const cards = [];
   EDGE_SITES.forEach((site, i) => {
@@ -261,8 +261,8 @@ async function initDollars() {
   const howBody = edgeNode("div");
   howBody.append(
     edgeNode("p", null, "A winning favorite pays less than it risks (1 unit at −150 wins 0.67) and a winning underdog " +
-      "pays more (1 unit at +130 wins 1.30). Value picks are the ones where our win chance beat Vegas's by 6 points " +
-      "or more. Return is units won per unit risked. A postponed game or a tie is no bet."),
+      "pays more (1 unit at +130 wins 1.30). Value picks are the ones where our win chance was at least 6% " +
+      "higher than Vegas's. Return is units won per unit risked. A postponed game or a tie is no bet."),
     edgeNode("p", null, "MLB hitter picks have no betting price, so they aren't in this." +
       (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
         " join with their first graded pick." : "")));

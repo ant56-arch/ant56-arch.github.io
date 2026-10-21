@@ -262,7 +262,7 @@ def record_band(history):
 
 
 BOARD_NOTE = ("Each club's chance to win, with the draw's below. Our pick is the likeliest of the three, a draw "
-              "included, at its moneyline; Value means our chance beats the odds by 6+ points. 90 minutes only.")
+              "included, at its moneyline; Value means our chance is at least 6% higher than Vegas's. 90 minutes only.")
 
 
 def comp_chips(picks):

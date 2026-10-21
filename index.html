@@ -651,7 +651,7 @@ a.crawl-item:hover { background: var(--paper); }
   <section id="value">
     <div class="sec-head mono"><span class="num">02<b>Value picks</b></span><span id="valCount"></span></div>
     <h2 id="valH2">Prices Vegas <em>left on the table.</em></h2>
-    <p class="lede" id="valLede">Our win chance beats Vegas's by 6 points or more.</p>
+    <p class="lede" id="valLede">Our win chance is at least 6% higher than Vegas's.</p>
     <div class="value-grid" id="valueGrid"></div>
   </section>
 
@@ -696,17 +696,15 @@ const BOARD_ORDER = ["NHL", "MLB", "NFL", "CFB", "Soccer", "NBA", "CBB"];
 const LEAGUE = {
   NFL: { kind: "pitch", word: "Kickoffs,", start: "kickoff", season: "Football", pages: [
     ["index.html", "Game board", "Every game this week as a card: our line, Vegas's line and the pick."],
-    ["teams.html", "Teams", "Schedule-adjusted ratings for all 32 teams."],
+    ["teams.html", "Teams", "Every game this season and earlier ones, picked and graded."],
     ["players.html", "Players", "Top 10s and the anytime touchdown scorers."],
-    ["td.html", "TD Props", "Anytime touchdown picks with book prices."],
-    ["history.html", "History", "Every pick we've posted, graded."],
+    ["td.html", "TD Props", "Anytime touchdown picks with Vegas prices."],
     ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
     ["model.html", "Model", "How the NFL model works."]] },
   CFB: { kind: "pitch", word: "Saturdays,", start: "kickoff", season: "Football", pages: [
     ["index.html", "Game board", "Every FBS game with a line this week."],
-    ["teams.html", "Teams", "Every FBS team and its schedule."],
+    ["teams.html", "Teams", "Every game this season and earlier ones, picked and graded."],
     ["ratings.html", "Ratings", "Our own power ratings for 138 teams."],
-    ["history.html", "History", "Every pick we've posted, graded."],
     ["accuracy.html", "Accuracy", "Record, calibration and backtests."],
     ["model.html", "Model", "How the CFB model works."]] },
   MLB: { kind: "park", word: "Innings,", start: "first pitch", season: "Baseball", pages: [
@@ -1584,7 +1582,7 @@ function render(sums) {
   $("valH2").innerHTML = !VAL.length ? `No prices left <em>on the table.</em>`
     : vn > VAL.length ? `${Words(VAL.length)} of ${words(vn)} prices Vegas <em>left on the table.</em>`
     : `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} Vegas <em>left on the table.</em>`;
-  if (!VAL.length) $("valLede").textContent = "No pick beats Vegas's win chance by 6 points or more.";
+  if (!VAL.length) $("valLede").textContent = "No pick has a win chance at least 6% higher than Vegas's.";
   $("valueGrid").innerHTML = VAL.map((g, i) => `
     <article class="vcard">
       <div class="vart" data-k="${i}" data-sp="${g.sp}" data-home="${esc(g.home)}"><canvas aria-hidden="true"></canvas>

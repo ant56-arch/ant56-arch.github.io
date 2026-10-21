@@ -22,7 +22,7 @@ class NHLSite(TeamSite):
     favicon_letter = "M8 23V9h3.4v5.4h9.2V9H24v14h-3.4v-5.6h-9.2V23z"
     sources = "Scores and moneyline prices via ESPN."
     board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. Value means "
-                  "our chance beats the odds by 6 points or more. Tap a game for rest.")
+                  "our chance is at least 6% higher than Vegas's. Tap a game for rest.")
     no_games = "No NHL games today."
     preseason = "The season opens in early October"
     summary_empty = "No NHL picks yet. They start on opening night."

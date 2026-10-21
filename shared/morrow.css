@@ -127,9 +127,8 @@ nav.tabs, :root[data-theme="light"] nav.tabs { background: color-mix(in srgb, va
 nav.tabs a { font-family: var(--font-mono); font-stretch: 100%; font-size: 12px; font-weight: 500; letter-spacing: 0.14em; padding: 16px 0 13px; border-bottom-width: 2px; }
 nav.tabs a.active { border-bottom-color: var(--ours); }
 
-/* ---------- Sections: numbered, editorial ---------- */
+/* ---------- Sections: editorial ---------- */
 
-main { counter-reset: edge-sec; }
 .card, :root[data-theme="light"] .card {
   background: none;
   border: 0;
@@ -149,21 +148,7 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
   letter-spacing: -0.015em;
   text-transform: none;
 }
-.card-header h2::before, .hg-head h2::before, .slate-head h2::before {
-  counter-increment: edge-sec;
-  content: counter(edge-sec, decimal-leading-zero) "  \2014";
-  display: block;
-  width: auto;
-  height: auto;
-  margin-bottom: 14px;
-  background: none;
-  transform: none;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.16em;
-  color: var(--text-faint);
-}
+.card-header h2::before, .hg-head h2::before, .slate-head h2::before { content: none; }
 .card-header .subtitle, .hg-head p { color: var(--text-muted); }
 .section-label { font-weight: 500; font-stretch: 125%; font-size: 16px; letter-spacing: 0.06em; }
 

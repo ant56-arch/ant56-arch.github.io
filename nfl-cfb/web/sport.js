@@ -1,13 +1,13 @@
-// NFL Edge's own behavior: the week pickers, the Accuracy week filter and
+// NFL Edge's own behavior: the Teams week picker, the Accuracy week filter and
 // the Players tabs. Sortable tables and the charts are shared
 // (shared/sport-pages.js).
 
-// --- Shared week-picker: populates a <select> from {week_order, weeks} and
-// re-renders a content div on change. Used by both history.html (every
-// graded week, all seasons - defaults to the most recent) and teams.html
-// (the current season, past + upcoming - defaults to the current week,
-// picked via pickDefault since "most recent" there would land on the
-// season finale). ---
+// --- Week picker: populates a <select> from {week_order, weeks} and
+// re-renders a content div on change. Weeks that carry a "group" (the
+// season) are listed under it. Teams uses it for this season, past +
+// upcoming (defaulting to the current week via pickDefault, since "most
+// recent" would land on the season finale), plus earlier seasons' graded
+// weeks. ---
 function buildWeekPicker(data, selectId, contentId, renderWeek, pickDefault) {
   const picker = document.getElementById(selectId);
   const container = document.getElementById(contentId);
@@ -18,11 +18,19 @@ function buildWeekPicker(data, selectId, contentId, renderWeek, pickDefault) {
     container.innerHTML = week ? renderWeek(week) : "<p class='muted'>No data for this week.</p>";
   }
 
+  const groups = {};
   data.week_order.forEach(wk => {
     const opt = document.createElement("option");
     opt.value = wk;
     opt.textContent = data.weeks[wk].label;
-    picker.appendChild(opt);
+    const group = data.weeks[wk].group;
+    if (!group) { picker.appendChild(opt); return; }
+    if (!groups[group]) {
+      groups[group] = document.createElement("optgroup");
+      groups[group].label = group;
+      picker.appendChild(groups[group]);
+    }
+    groups[group].appendChild(opt);
   });
   picker.addEventListener("change", () => render(picker.value));
   if (data.week_order.length) {
@@ -31,27 +39,25 @@ function buildWeekPicker(data, selectId, contentId, renderWeek, pickDefault) {
   }
 }
 
-// --- Week archive picker (history.html) - all seasons, graded only ---
-function initHistoryPicker() {
-  if (typeof HISTORY_DATA === "undefined") return;
-  buildWeekPicker(HISTORY_DATA, "week-select", "week-content", (week) => {
-    let rows = "";
-    week.games.forEach(g => {
-      rows += `<tr>
-        <td>${g.away_team} @ ${g.home_team}<div class="faint" style="font-size:13px;">Final: ${g.away_score}-${g.home_score}</div></td>
-        <td class="num mono" data-label="Model Pick">${g.model_pick}</td>
-        <td class="num mono" data-label="Result">${g.model_correct ? "<span class='pill pill-positive'>HIT</span>" : "<span class='pill pill-danger'>MISS</span>"}</td>
-        <td class="num mono" data-label="Vegas Pick">${g.vegas_pick}</td>
-        <td class="num mono" data-label="Result">${g.vegas_correct ? "<span class='pill pill-positive'>HIT</span>" : "<span class='pill pill-danger'>MISS</span>"}</td>
-      </tr>`;
-    });
-    return `<table class="data responsive-stack">
-        <thead><tr><th>Matchup</th><th class="num">Model Pick</th><th class="num">Result</th><th class="num">Vegas Pick</th><th class="num">Result</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+// An earlier season's week (backfilled picks): our pick and Vegas's, with
+// the final score and whether our pick hit.
+function pastWeekTable(week) {
+  let rows = "";
+  week.games.forEach(g => {
+    const pill = g.model_correct == null ? "" : g.model_correct ? " <span class='pill pill-positive'>HIT</span>" : " <span class='pill pill-danger'>MISS</span>";
+    rows += `<tr>
+      <td>${g.away_team} @ ${g.home_team}</td>
+      <td class="num mono accent" data-label="Model Pick">${g.model_pick}</td>
+      <td class="num mono market-color" data-label="Vegas">${g.vegas_pick}</td>
+      <td class="num mono" data-label="Result"><span>${g.away_score}-${g.home_score}${pill}</span></td>
+    </tr>`;
   });
+  return `<table class="data responsive-stack">
+      <thead><tr><th>Matchup</th><th class="num">Model Pick</th><th class="num">Vegas</th><th class="num">Result</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="table-footnote muted">Picks from before this site went live, made the same way and graded against the final score.</div>`;
 }
-initHistoryPicker();
 
 // --- Accuracy tab week filter: one week of moneyline and TD picks at a
 // time (newest by default), or every week, with that week's record. ---
@@ -95,6 +101,7 @@ initAccuracyWeeks();
 function initTeamsPicker() {
   if (typeof TEAMS_DATA === "undefined") return;
   buildWeekPicker(TEAMS_DATA, "teams-week-select", "teams-week-content", (week) => {
+    if (week.past) return pastWeekTable(week);
     let rows = "";
     week.games.forEach(g => {
       const pick = `${g.favored_team} -${g.favored_by.toFixed(1)}`;
@@ -121,7 +128,7 @@ function initTeamsPicker() {
         <thead><tr><th>Matchup</th><th class="num">Model Pick</th><th class="num">Vegas</th><th class="num">Total</th><th class="num">Win%</th><th class="num">Moneyline</th><th class="num">Result</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div class="table-footnote muted">Result shows the final score once graded. Moneyline is our pick at the book's price, with our win chance vs the book's (vig removed); VALUE means an edge of 6 points or more.</div>`;
+      <div class="table-footnote muted">Result shows the final score once graded. Moneyline is our pick at Vegas's price, with our win chance next to Vegas's; VALUE means ours is at least 6% higher.</div>`;
   }, (data) => data.default_week || data.week_order[data.week_order.length - 1]);
 }
 initTeamsPicker();
