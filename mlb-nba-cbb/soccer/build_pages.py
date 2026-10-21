@@ -38,16 +38,13 @@ import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
+import chrome  # noqa: E402
 import moneyline  # noqa: E402
 
 OUT_DIR = os.path.join(ROOT, "dist", "soccer")
 
 HOME_URL = "https://ant56-arch.github.io/"
 MLB_EDGE = f"{HOME_URL}mlb"
-SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"),
-               ("MLB", f"{MLB_EDGE}/"), ("NHL", f"{HOME_URL}nhl/index.html"),
-               ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"), ("Soccer", None),
-               ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = "Picks for every Premier League, La Liga and Champions League match, draws included."
 TOP_N = 3
 COMPS = {"EPL": "Premier League", "LALIGA": "La Liga", "UCL": "Champions League"}
@@ -63,7 +60,6 @@ FAVICON = ('data:image/svg+xml,'
            '%3Cpath d=%22M16 11.5l4.3 3.1-1.6 5h-5.4l-1.6-5z%22 fill=%22%23e5793b%22/%3E'
            '%3C/svg%3E')
 
-BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>')
 
 
 def load_json(path, default):
@@ -124,12 +120,6 @@ def score_text(p):
 def page_shell(title, active, body_html, charts=False):
     tabs = [("index.html", "Home"), ("history.html", "History"), ("accuracy.html", "Accuracy"),
             ("model.html", "Model")]
-    nav = "".join(
-        f'<a href="{href}" class="active" aria-current="page">{label}</a>' if href == active
-        else f'<a href="{href}">{label}</a>' for href, label in tabs)
-    switcher = "".join(
-        f'<a href="#" class="sport-tab active" aria-current="page">{name}</a>' if url is None
-        else f'<a href="{url}" class="sport-tab">{name}</a>' for name, url in SPORT_LINKS)
     chart_js = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
     ver = asset_version()
     return f"""<!DOCTYPE html>
@@ -148,21 +138,7 @@ def page_shell(title, active, body_html, charts=False):
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="{HOME_URL}">{BRAND_MARK}<span class="brand-name">EDGE</span></a>
-    <nav class="sport-switcher" aria-label="Sport">{switcher}</nav>
-  </div>
-</header>
-<header class="masthead" data-sport="Soccer">
-  <div class="masthead-inner">
-    <h1 class="wordmark">SOCCER <span>Edge</span></h1>
-    <div class="tagline">{TAGLINE}</div>
-    <div class="updated-chip">Updated {NOW.strftime("%b %-d, %Y %-I:%M %p")} ET</div>
-  </div>
-</header>
-<nav class="tabs" aria-label="Sections"><div class="tabs-inner">{nav}</div></nav>
-<div class="wrap">
+{chrome.page_top("Soccer", title, tabs, active, NOW.strftime("%b %-d, %-I:%M %p") + " ET", TAGLINE)}
   <main id="main-content">
   {body_html}
   </main>

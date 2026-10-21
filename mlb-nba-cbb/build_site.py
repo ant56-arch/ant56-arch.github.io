@@ -44,6 +44,7 @@ import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
+import chrome  # noqa: E402
 import moneyline  # noqa: E402
 
 WEB_DIR = os.path.join(ROOT, "web")
@@ -52,10 +53,6 @@ ET = ZoneInfo("America/New_York")
 NOW = datetime.now(ET)
 
 HOME_URL = "https://ant56-arch.github.io/"
-SPORT_LINKS = [("All", HOME_URL), ("NFL", f"{HOME_URL}nfl/index.html"), ("NBA", f"{HOME_URL}nba/index.html"), ("MLB", None),
-               ("NHL", f"{HOME_URL}nhl/index.html"), ("CFB", f"{HOME_URL}cfb/index.html"), ("CBB", f"{HOME_URL}cbb/index.html"),
-               ("Soccer", f"{HOME_URL}soccer/index.html"),
-               ("Betting", f"{HOME_URL}bets.html"), ("Schedule", f"{HOME_URL}schedule.html")]
 TAGLINE = ("Who wins every MLB game and which hitters get a hit today, from models graded against every "
            "box score.")
 TEAMS_DIR = os.path.join(ROOT, "teams")
@@ -145,20 +142,12 @@ def is_model_pick(p):
 def graded(picks):
     return [p for p in picks if p.get("got_hit") is not None and not p.get("void")]
 
-# The Sports Edge brand mark in the top bar, same on every Edge site.
-BRAND_MARK = ('<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>')
 
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
     tabs = [("index.html", "Home"), ("games.html", "Games"), ("players.html", "Player Hits"),
             ("accuracy.html", "Accuracy"), ("model.html", "Model")]
-    nav = "".join(
-        f'<a href="{href}" class="active" aria-current="page">{label}</a>' if href == active
-        else f'<a href="{href}">{label}</a>' for href, label in tabs)
-    switcher = "".join(
-        f'<a href="#" class="sport-tab active" aria-current="page">{name}</a>' if url is None
-        else f'<a href="{url}" class="sport-tab">{name}</a>' for name, url in SPORT_LINKS)
     chart_js = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
     ver = asset_version()
     return f"""<!DOCTYPE html>
@@ -177,21 +166,7 @@ def page_shell(title, active, body_html, charts=False):
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="{HOME_URL}">{BRAND_MARK}<span class="brand-name">EDGE</span></a>
-    <nav class="sport-switcher" aria-label="Sport">{switcher}</nav>
-  </div>
-</header>
-<header class="masthead" data-sport="MLB">
-  <div class="masthead-inner">
-    <h1 class="wordmark">MLB <span>Edge</span></h1>
-    <div class="tagline">{TAGLINE}</div>
-    <div class="updated-chip">Updated {NOW.strftime("%b %-d, %Y %-I:%M %p")} ET</div>
-  </div>
-</header>
-<nav class="tabs" aria-label="Sections"><div class="tabs-inner">{nav}</div></nav>
-<div class="wrap">
+{chrome.page_top("MLB", title, tabs, active, NOW.strftime("%b %-d, %-I:%M %p") + " ET", TAGLINE)}
   <main id="main-content">
   {body_html}
   </main>

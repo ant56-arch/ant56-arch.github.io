@@ -51,6 +51,7 @@ import extras  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
+import chrome  # noqa: E402
 import moneyline  # noqa: E402
 from datetime import datetime, timedelta, timezone, time as dtime
 from zoneinfo import ZoneInfo
@@ -395,22 +396,8 @@ def page_shell(sport, title, active_tab, body_html):
         ("accuracy.html", "accuracy", "Accuracy"),
         ("model.html", "model", "Model"),
     ]
-    nav = "".join(
-        f'<a href="{href}" class="active" aria-current="page">{label}</a>' if tab == active_tab
-        else f'<a href="{href}">{label}</a>'
-        for href, tab, label in tabs
-    )
-
-    other_page = active_tab + ".html" if active_tab else "index.html"
-    # The other football sport's tab keeps you on the same page when it has one.
-    def same_page(slug):
-        missing = ((other_page in ("players.html", "td.html") and not SPORTS[slug]["player_props_csv"])
-                   or (other_page == "ratings.html" and not SPORTS[slug].get("ratings")))
-        return "../" + slug + "/" + ("index.html" if missing else other_page)
-    sport_switcher = sport_tabs(same_page, active=sport["wordmark"])
-
     now = datetime.now(timezone.utc)
-    generated = now.strftime("%b %d, %Y %H:%M UTC")
+    generated = now.astimezone(ZoneInfo("America/New_York")).strftime("%b %-d, %-I:%M %p") + " ET"
     ver = asset_version()
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -428,16 +415,7 @@ def page_shell(sport, title, active_tab, body_html):
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
-{top_bar(sport_switcher)}
-<header class="masthead" data-sport="{sport["wordmark"]}">
-  <div class="masthead-inner">
-    <h1 class="wordmark">{sport["wordmark"]} <span>Edge</span></h1>
-    <div class="tagline">{sport["tagline"]}</div>
-    <div class="updated-chip">Updated {generated}</div>
-  </div>
-</header>
-<nav class="tabs" aria-label="Sections"><div class="tabs-inner">{nav}</div></nav>
-<div class="wrap">
+{chrome.page_top(sport["wordmark"], title, [(h, l) for h, _, l in tabs], active_tab + ".html" if active_tab else None, generated, sport["tagline"])}
   <main id="main-content">
   {body_html}
   </main>

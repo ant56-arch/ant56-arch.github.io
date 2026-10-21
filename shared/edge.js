@@ -1070,6 +1070,29 @@ function initSportMenu() {
 }
 initSportMenu();
 
+// --- Sport pages in the home page's layout (shared/chrome.py) ---
+// The nav turns to paper once the stadium scrolls away, sits under the score
+// bars however tall they are (--tick-h, --nav-h).
+function initEdgeNav() {
+  const nav = document.querySelector("nav.edge-nav");
+  if (!nav) return;
+  const hero = document.querySelector(".edge-hero");
+  const solid = () => nav.classList.toggle("solid", !hero || scrollY > hero.offsetHeight - nav.offsetHeight - 30);
+  addEventListener("scroll", solid, { passive: true });
+  addEventListener("resize", solid);
+  solid();
+  const root = document.documentElement.style;
+  const tick = document.querySelector(".edge-tick");
+  const set = () => {
+    if (tick) root.setProperty("--tick-h", tick.offsetHeight + "px");
+    root.setProperty("--nav-h", nav.offsetHeight + "px");
+  };
+  const watch = new ResizeObserver(set);
+  [tick, nav].forEach(el => el && watch.observe(el));
+  set();
+}
+initEdgeNav();
+
 // --- Motion and record helpers (home page and sport pages) ---
 // Sliding tab highlight, rolling score digits, records that count up, and
 // the per-day results (summary.json "daily": [[date, wins, losses], ...])
