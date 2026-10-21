@@ -17,7 +17,8 @@ function edgeFetchSummaries() {
 // favorites, underdogs and value picks) and "last" (the latest day's
 // results). Units and money show only on the Betting tab: a unit is $10.
 const EDGE_STAKE = 10;
-const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#d8c49a", NBA: "#b39ddb", NHL: "#c9d6e3", CBB: "#8fd3c4", Soccer: "#9fd39a" };
+// Mid-tone line colors that read on both the cream and the dark background.
+const EDGE_LINE_COLORS = { MLB: "var(--ours)", NFL: "var(--vegas)", CFB: "#c0953a", NBA: "#8e6cc9", NHL: "#6f88a8", CBB: "#3a9e8c", Soccer: "#5aa856" };
 const EDGE_ET = { timeZone: edgeTz().timeZone };  // the time zone picked in settings (Eastern unless changed)
 
 function edgeUnits(units) {
@@ -81,7 +82,7 @@ function edgeValueRow(g) {
   tick.style.left = g.book + "%";
   track.append(fill, tick);
   const say = edgeNode("small");
-  say.append("We say ", edgeNode("b", "vb-ours", Math.round(g.prob) + "%"), ", the price says ",
+  say.append("We say ", edgeNode("b", "vb-ours", Math.round(g.prob) + "%"), ", Vegas says ",
              edgeNode("b", "vb-book", Math.round(g.book) + "%"));
   bar.append(track, say);
   const when = edgeNode("span", "vb-when");
@@ -94,6 +95,7 @@ function edgeValueRow(g) {
 function edgeSureCard(eyebrow, name, pct, sub, href) {
   const card = edgeNode("a", "bet-card");
   card.href = href;
+  card.dataset.pct = pct;
   const pick = edgeNode("div", "bet-pick");
   pick.append(edgeNode("b", null, name));
   const big = edgeNode("div", "bet-pct", String(Math.round(pct)));
@@ -132,10 +134,9 @@ async function initBestBets() {
                               top.url));
     }
   });
+  cards.sort((a, b) => b.dataset.pct - a.dataset.pct);  // surest first
   if (cards.length) sure.replaceChildren(...cards);
   else sure.replaceChildren(edgeNode("div", "empty-state", "No games coming up right now."));
-  const stamp = document.getElementById("bets-updated");
-  if (stamp) stamp.textContent = `${games.length} games still to play across every sport`;
 }
 initBestBets();
 
@@ -219,9 +220,8 @@ async function initDollars() {
              edgeNode("span", "mt-sub", sub));
     return t;
   };
+  // Just the all-sports total: each sport's own total is the table's first column.
   tiles.append(tile("All sports", total, `${edgeMoney(total)} at $${EDGE_STAKE} a pick, ${picks} picks`));
-  lines.forEach(l => tiles.append(tile(l.name, l.units.units,
-    `${edgeMoney(l.units.units)}, ${l.units.wins}-${l.units.losses} since ${edgeShortDay(l.units.since).replace(/^\w+, /, "")}`, l.href)));
 
   // Every sport's picks, and the same picks split by the kind of bet.
   const cell = (t, cls) => {
@@ -255,15 +255,19 @@ async function initDollars() {
 
   const missing = EDGE_SITES.filter(site => site.sport !== "MLB" && !lines.some(l => l.name === site.sport)).map(s => s.sport);
   const note = edgeNode("div", "table-footnote",
-    `One unit on the team we pick to win in every game with a price, favorite or underdog, at its moneyline right ` +
-    `before the game started; the chart counts a unit as $${EDGE_STAKE}. A winning favorite pays less than it risks ` +
-    `(1 unit at −150 wins 0.67) and a winning underdog pays more (1 unit at +130 wins 1.30). Value picks are the ones ` +
-    `where our chance beat the price's by 6 points or more. Return is units won per unit risked. Live picks only, ` +
-    `never a backtest, and a postponed game or a tie is no bet. MLB hitter picks have no betting price, so they ` +
-    `aren't in this.` +
-    (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
-      " join with their first graded pick." : ""));
-  box.querySelector(".card-body").replaceChildren(tiles, tableWrap, edgeMoneyChart(lines), note);
+    `A unit is $${EDGE_STAKE} on our pick at Vegas's price right before the game. Live picks only, never a backtest.`);
+  const how = edgeNode("details", "how-to");
+  how.append(edgeNode("summary", null, "How to read this"));
+  const howBody = edgeNode("div");
+  howBody.append(
+    edgeNode("p", null, "A winning favorite pays less than it risks (1 unit at −150 wins 0.67) and a winning underdog " +
+      "pays more (1 unit at +130 wins 1.30). Value picks are the ones where our win chance beat Vegas's by 6 points " +
+      "or more. Return is units won per unit risked. A postponed game or a tie is no bet."),
+    edgeNode("p", null, "MLB hitter picks have no betting price, so they aren't in this." +
+      (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
+        " join with their first graded pick." : "")));
+  how.append(howBody);
+  box.querySelector(".card-body").replaceChildren(tiles, tableWrap, edgeMoneyChart(lines), note, how);
   box.hidden = false;
 }
 initDollars();
