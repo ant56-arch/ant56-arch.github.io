@@ -66,6 +66,17 @@ function edgeResultPill(result, labels) {
   return null;
 }
 
+// Soccer abbreviations ESPN gets wrong or makes confusing (it calls Bayern
+// Munich "MUN"), by ESPN team id. Same table as shared/soccer_abbr.py.
+const EDGE_SOCCER_ABBR = {
+  360: "MUN", 382: "MCI", 132: "FCB", 124: "BVB", 134: "STU", 99: "MAL", 166: "LIL", 175: "LEN",
+  104: "ROM", 2572: "COM", 2980: "BOD", 437: "POR", 494: "SLA", 521: "SLO", 510: "VIK",
+};
+function edgeTeamAbbr(t) {
+  const logo = t.logo || ((t.logos || [])[0] || {}).href || "";
+  return (logo.includes("/soccer/") && EDGE_SOCCER_ABBR[t.id]) || t.abbreviation || "";
+}
+
 // ESPN scoreboard event -> the same shape games.py publishes.
 function edgeParseEspn(ev) {
   const comp = (ev.competitions || [])[0] || {};
@@ -83,7 +94,7 @@ function edgeParseEspn(ev) {
     const pts = ((c.leaders || []).find(l => l.name === "points") || {}).leaders;
     const top = pts && pts[0];
     const leader = top && top.athlete ? { name: top.athlete.shortName || top.athlete.displayName || "", pts: Number(top.value || top.displayValue) || 0 } : null;
-    return { leader, abbr: t.abbreviation || "", short: t.shortDisplayName || t.name || "", logo: t.logo || "",
+    return { leader, abbr: edgeTeamAbbr(t), short: t.shortDisplayName || t.name || "", logo: t.logo || "",
              rank: rank >= 1 && rank <= 25 ? rank : null, score: Number.isFinite(score) ? score : null,
              winner: !!c.winner, record: record ? record.summary : null,
              probable: probable ? probable.shortName : null, color: t.color ? "#" + t.color : "" };
@@ -746,9 +757,21 @@ function edgeFavKey(sport, abbr) {
   return EDGE_FAV_ALIAS[k] || k;
 }
 
+// Soccer favorites saved under ESPN's old abbreviations, moved once to ours
+// (old "MUN" was Bayern, so this can't be a plain alias).
+const EDGE_SOCCER_FAV_MOVES = { MAN: "MUN", MNC: "MCI", MUN: "FCB", DOR: "BVB", VFB: "STU", MCF: "MAL", LILL: "LIL",
+  RCL: "LEN", ROMA: "ROM", COMO: "COM", BODO: "BOD", FCP: "POR", SLP: "SLA", SLB: "SLO", VFK: "VIK" };
+function edgeMoveSoccerFavs(favs) {
+  if (edgeStore("edge-favs-soccer-v2")) return favs;
+  const moved = favs.map(k => k.startsWith("Soccer:") && EDGE_SOCCER_FAV_MOVES[k.slice(7)] ? "Soccer:" + EDGE_SOCCER_FAV_MOVES[k.slice(7)] : k);
+  if (favs.length) edgeStore(EDGE_FAV_KEY, moved);
+  edgeStore("edge-favs-soccer-v2", 1);
+  return moved;
+}
+
 function edgeFavs() {
   const favs = edgeStore(EDGE_FAV_KEY);
-  return new Set(Array.isArray(favs) ? favs.map(k => EDGE_FAV_ALIAS[k] || k) : []);
+  return new Set(edgeMoveSoccerFavs(Array.isArray(favs) ? favs : []).map(k => EDGE_FAV_ALIAS[k] || k));
 }
 
 function edgeIsFav(sport, ...abbrs) {
@@ -790,8 +813,9 @@ async function edgeLoadTeams(sport) {
         lists.forEach(data => {
           const teams = (((((data || {}).sports || [])[0] || {}).leagues || [])[0] || {}).teams || [];
           teams.forEach(({ team: t }) => {
-            if (!t || !t.abbreviation || seen.has(t.abbreviation)) return;
-            seen.set(t.abbreviation, { abbr: t.abbreviation, name: t.displayName || t.shortDisplayName || t.abbreviation,
+            const abbr = t && edgeTeamAbbr(t);
+            if (!abbr || seen.has(abbr)) return;
+            seen.set(abbr, { abbr, name: t.displayName || t.shortDisplayName || abbr,
                                        logo: ((t.logos || [])[0] || {}).href || "" });
           });
         });

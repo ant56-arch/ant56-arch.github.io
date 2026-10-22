@@ -25,6 +25,8 @@ from zoneinfo import ZoneInfo
 
 import requests
 
+import soccer_abbr
+
 ET = ZoneInfo("America/New_York")
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/"
 SPORTS = {
@@ -142,9 +144,14 @@ def load(sport):
         games = []
         for path, league in SPORTS[sport]["paths"].items():
             data = _get(f"{ESPN}{path}/scoreboard") or {}
-            for g in (parse(e) for e in data.get("events", [])):
+            for e in data.get("events", []):
+                g = parse(e)
                 if g:
                     g["league"] = league
+                    for c in (e.get("competitions") or [{}])[0].get("competitors", []):
+                        side = c.get("homeAway")
+                        if side in ("home", "away"):
+                            g[side]["abbr"] = soccer_abbr.fix((c.get("team") or {}).get("id"), g[side]["abbr"])
                     games.append(g)
         data = {}
     else:

@@ -19,6 +19,8 @@ from datetime import datetime, timedelta, timezone
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
+import soccer_abbr
+
 ET = ZoneInfo("America/New_York")
 SITE = "https://ant56-arch.github.io"
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/"
@@ -44,6 +46,12 @@ def when(s):
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
+def abbr(path, team):
+    """ESPN's abbreviation, as our pages show it."""
+    a = team.get("abbreviation", "")
+    return soccer_abbr.fix(team.get("id"), a) if path.startswith("soccer/") else a
+
+
 def espn_games(paths, weekly, today):
     games = []
     for path in paths:
@@ -53,7 +61,7 @@ def espn_games(paths, weekly, today):
                 continue
             comp = (ev.get("competitions") or [{}])[0]
             state = ((comp.get("status") or ev.get("status") or {}).get("type") or {}).get("state")
-            teams = {c.get("homeAway"): (c.get("team") or {}).get("abbreviation", "") for c in comp.get("competitors", [])}
+            teams = {c.get("homeAway"): abbr(path, c.get("team") or {}) for c in comp.get("competitors", [])}
             if state == "pre" and ev.get("date"):
                 games.append((when(ev["date"]), teams.get("away", ""), teams.get("home", "")))
     return games
