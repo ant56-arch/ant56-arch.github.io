@@ -262,7 +262,7 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 .edge-nav.solid .edge-cta { background: var(--forest); color: var(--forest-ink); }
 .edge-nav .ticker-settings { margin-left: 4px; }
 .edge-nav .ticker-gear { color: inherit; }
-.edge-nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--text); text-transform: none; letter-spacing: normal; font-family: var(--font); }
+.edge-nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); max-height: calc(100dvh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--text); text-transform: none; letter-spacing: normal; font-family: var(--font); }
 
 header.masthead.edge-hero {
   min-height: min(460px, 60vh); display: grid; align-content: end;
