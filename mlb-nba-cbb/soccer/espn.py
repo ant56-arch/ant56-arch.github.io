@@ -10,12 +10,17 @@ the goal times), and when neither is there the match has no usable result
 (reg_known False), so a pick on it is no decision rather than a guess.
 """
 
+import os
 import re
+import sys
 import time
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
+
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "shared"))
+from soccer_abbr import fix as fix_abbr  # noqa: E402
 
 API = "https://site.api.espn.com/apis/site/v2/sports"
 ET = ZoneInfo("America/New_York")
@@ -163,8 +168,8 @@ def parse_event(ev, comp_code):
         "date": day,
         "start": start.isoformat(),
         "season": season_of(day),
-        "home": ht.get("abbreviation") or ht.get("shortDisplayName", "")[:3].upper(),
-        "away": at.get("abbreviation") or at.get("shortDisplayName", "")[:3].upper(),
+        "home": fix_abbr(ht.get("id"), ht.get("abbreviation") or ht.get("shortDisplayName", "")[:3].upper()),
+        "away": fix_abbr(at.get("id"), at.get("abbreviation") or at.get("shortDisplayName", "")[:3].upper()),
         "home_name": ht.get("displayName", ""),
         "away_name": at.get("displayName", ""),
         "home_logo": ht.get("logo", ""),

@@ -12,6 +12,8 @@ import re
 import sys
 import urllib.request
 
+import soccer_abbr
+
 # Same lists as EDGE_TEAM_LISTS in shared/edge.js: (ESPN path, query).
 LISTS = {
     "NFL": [("football/nfl", "")],
@@ -65,6 +67,8 @@ def main():
             for path, query in lists:
                 for t in fetch(path, query):
                     abbr = t.get("abbreviation")
+                    if sport == "Soccer" and abbr:
+                        abbr = soccer_abbr.fix(t.get("id"), abbr)
                     if not abbr or abbr in seen:
                         continue
                     if sport == "CFB" and fbs and str(t.get("id")) not in fbs:

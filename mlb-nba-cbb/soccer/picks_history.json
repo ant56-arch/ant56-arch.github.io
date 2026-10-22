@@ -6,7 +6,7 @@
    "start": "2026-10-09T15:00:00-04:00",
    "comp": "LALIGA",
    "season": 2026,
-   "home": "MCF",
+   "home": "MAL",
    "away": "ESP",
    "home_name": "M\u00e1laga",
    "away_name": "Espanyol",
@@ -15,7 +15,7 @@
    "home_record": "0-3-4",
    "away_record": "2-1-4",
    "neutral": false,
-   "pick": "MCF",
+   "pick": "MAL",
    "pick_side": "home",
    "prob": 35.7,
    "probs": {
@@ -43,7 +43,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "MCF"
+    "team": "MAL"
    },
    "home_pts": 1,
    "away_pts": 1,
@@ -397,7 +397,7 @@
    "start": "2026-10-10T12:30:00-04:00",
    "comp": "EPL",
    "season": 2026,
-   "home": "MAN",
+   "home": "MUN",
    "away": "TOT",
    "home_name": "Manchester United",
    "away_name": "Tottenham Hotspur",
@@ -406,7 +406,7 @@
    "home_record": "1-2-2",
    "away_record": "0-2-3",
    "neutral": false,
-   "pick": "MAN",
+   "pick": "MUN",
    "pick_side": "home",
    "prob": 50.7,
    "probs": {
@@ -434,7 +434,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "MAN"
+    "team": "MUN"
    },
    "home_pts": 1,
    "away_pts": 1,
@@ -741,7 +741,7 @@
    "comp": "EPL",
    "season": 2026,
    "home": "LIV",
-   "away": "MNC",
+   "away": "MCI",
    "home_name": "Liverpool",
    "away_name": "Manchester City",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/364.png",
@@ -781,7 +781,7 @@
    },
    "home_pts": 0,
    "away_pts": 3,
-   "winner": "MNC"
+   "winner": "MCI"
   },
   {
    "date": "2026-10-11",
@@ -985,7 +985,7 @@
    "start": "2026-10-13T12:45:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "RCL",
+   "home": "LEN",
    "away": "SCP",
    "home_name": "Lens",
    "away_name": "Sporting CP",
@@ -994,7 +994,7 @@
    "home_record": "1-0-0",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "RCL",
+   "pick": "LEN",
    "pick_side": "home",
    "prob": 45.4,
    "probs": {
@@ -1022,7 +1022,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "RCL"
+    "team": "LEN"
    },
    "home_pts": 0,
    "away_pts": 2,
@@ -1035,7 +1035,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "SAB",
-   "away": "SLP",
+   "away": "SLA",
    "home_name": "Sabah FK",
    "away_name": "Slavia Prague",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/21922.png",
@@ -1133,7 +1133,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "VIK",
-   "away": "MUN",
+   "away": "FCB",
    "home_name": "Viking FK",
    "away_name": "Bayern Munich",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/510.png",
@@ -1141,7 +1141,7 @@
    "home_record": "0-0-1",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "MUN",
+   "pick": "FCB",
    "pick_side": "away",
    "prob": 80.6,
    "probs": {
@@ -1169,7 +1169,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "MUN"
+    "team": "FCB"
    },
    "home_pts": 3,
    "away_pts": 3,
@@ -1182,7 +1182,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "ATM",
-   "away": "MAN",
+   "away": "MUN",
    "home_name": "Atl\u00e9tico Madrid",
    "away_name": "Manchester United",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/1068.png",
@@ -1280,7 +1280,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "ARS",
-   "away": "LILL",
+   "away": "LIL",
    "home_name": "Arsenal",
    "away_name": "Lille",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
@@ -1476,7 +1476,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "FEY",
-   "away": "COMO",
+   "away": "COM",
    "home_name": "Feyenoord Rotterdam",
    "away_name": "Como",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/142.png",
@@ -1484,7 +1484,7 @@
    "home_record": "0-0-1",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "COMO",
+   "pick": "COM",
    "pick_side": "away",
    "prob": 39.6,
    "probs": {
@@ -1512,7 +1512,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "COMO"
+    "team": "COM"
    },
    "home_pts": 3,
    "away_pts": 2,
@@ -1524,8 +1524,8 @@
    "start": "2026-10-14T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "BODO",
-   "away": "DOR",
+   "home": "BOD",
+   "away": "BVB",
    "home_name": "Bodo/Glimt",
    "away_name": "Borussia Dortmund",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2980.png",
@@ -1533,7 +1533,7 @@
    "home_record": "0-0-1",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "DOR",
+   "pick": "BVB",
    "pick_side": "away",
    "prob": 43.4,
    "probs": {
@@ -1561,11 +1561,11 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "DOR"
+    "team": "BVB"
    },
    "home_pts": 1,
    "away_pts": 0,
-   "winner": "BODO"
+   "winner": "BOD"
   },
   {
    "date": "2026-10-14",
@@ -1573,8 +1573,8 @@
    "start": "2026-10-14T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "SLB",
-   "away": "VFB",
+   "home": "SLO",
+   "away": "STU",
    "home_name": "Slovan Bratislava",
    "away_name": "VfB Stuttgart",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/521.png",
@@ -1582,7 +1582,7 @@
    "home_record": "0-0-1",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "VFB",
+   "pick": "STU",
    "pick_side": "away",
    "prob": 65.0,
    "probs": {
@@ -1610,11 +1610,11 @@
     "book": "DraftKings",
     "won": true,
     "units": 0.385,
-    "team": "VFB"
+    "team": "STU"
    },
    "home_pts": 0,
    "away_pts": 3,
-   "winner": "VFB"
+   "winner": "STU"
   },
   {
    "date": "2026-10-14",
@@ -1671,7 +1671,7 @@
    "start": "2026-10-14T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "MNC",
+   "home": "MCI",
    "away": "PSG",
    "home_name": "Manchester City",
    "away_name": "Paris Saint-Germain",
@@ -1680,7 +1680,7 @@
    "home_record": "1-0-0",
    "away_record": "1-0-0",
    "neutral": false,
-   "pick": "MNC",
+   "pick": "MCI",
    "pick_side": "home",
    "prob": 49.7,
    "probs": {
@@ -1708,7 +1708,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "MNC"
+    "team": "MCI"
    },
    "home_pts": 2,
    "away_pts": 4,
@@ -1721,7 +1721,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "BET",
-   "away": "FCP",
+   "away": "POR",
    "home_name": "Real Betis",
    "away_name": "FC Porto",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/244.png",
@@ -1818,7 +1818,7 @@
    "start": "2026-10-14T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "ROMA",
+   "home": "ROM",
    "away": "RMA",
    "home_name": "AS Roma",
    "away_name": "Real Madrid",
@@ -2063,7 +2063,7 @@
    "start": "2026-10-17T10:00:00-04:00",
    "comp": "EPL",
    "season": 2026,
-   "home": "MNC",
+   "home": "MCI",
    "away": "IPS",
    "home_name": "Manchester City",
    "away_name": "Ipswich Town",
@@ -2072,7 +2072,7 @@
    "home_record": "6-0-0",
    "away_record": "3-0-3",
    "neutral": false,
-   "pick": "MNC",
+   "pick": "MCI",
    "pick_side": "home",
    "prob": 75.8,
    "probs": {
@@ -2100,11 +2100,11 @@
     "book": "DraftKings",
     "won": true,
     "units": 0.235,
-    "team": "MNC"
+    "team": "MCI"
    },
    "home_pts": 3,
    "away_pts": 2,
-   "winner": "MNC"
+   "winner": "MCI"
   },
   {
    "date": "2026-10-17",
@@ -2407,7 +2407,7 @@
    "comp": "EPL",
    "season": 2026,
    "home": "LEE",
-   "away": "MAN",
+   "away": "MUN",
    "home_name": "Leeds United",
    "away_name": "Manchester United",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/357.png",
@@ -2651,7 +2651,7 @@
    "start": "2026-10-18T12:30:00-04:00",
    "comp": "LALIGA",
    "season": 2026,
-   "home": "MCF",
+   "home": "MAL",
    "away": "RSO",
    "home_name": "M\u00e1laga",
    "away_name": "Real Sociedad",
@@ -2848,7 +2848,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "FEN",
-   "away": "SLP",
+   "away": "SLA",
    "home_name": "Fenerbahce",
    "away_name": "Slavia Prague",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/436.png",
@@ -2897,7 +2897,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "SAB",
-   "away": "DOR",
+   "away": "BVB",
    "home_name": "Sabah FK",
    "away_name": "Borussia Dortmund",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/21922.png",
@@ -2905,7 +2905,7 @@
    "home_record": "1-0-1",
    "away_record": "1-0-1",
    "neutral": false,
-   "pick": "DOR",
+   "pick": "BVB",
    "pick_side": "away",
    "prob": 65.1,
    "probs": {
@@ -2933,11 +2933,11 @@
     "book": "DraftKings",
     "won": true,
     "units": 0.294,
-    "team": "DOR"
+    "team": "BVB"
    },
    "home_pts": 1,
    "away_pts": 2,
-   "winner": "DOR"
+   "winner": "BVB"
   },
   {
    "date": "2026-10-20",
@@ -2945,7 +2945,7 @@
    "start": "2026-10-20T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "VFB",
+   "home": "STU",
    "away": "ATM",
    "home_name": "VfB Stuttgart",
    "away_name": "Atl\u00e9tico Madrid",
@@ -3043,7 +3043,7 @@
    "start": "2026-10-20T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "FCP",
+   "home": "POR",
    "away": "PSV",
    "home_name": "FC Porto",
    "away_name": "PSV Eindhoven",
@@ -3052,7 +3052,7 @@
    "home_record": "0-0-2",
    "away_record": "0-1-1",
    "neutral": false,
-   "pick": "FCP",
+   "pick": "POR",
    "pick_side": "home",
    "prob": 56.5,
    "probs": {
@@ -3080,7 +3080,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "FCP"
+    "team": "POR"
    },
    "home_pts": 0,
    "away_pts": 1,
@@ -3142,7 +3142,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "NAP",
-   "away": "BODO",
+   "away": "BOD",
    "home_name": "Napoli",
    "away_name": "Bodo/Glimt",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/114.png",
@@ -3190,7 +3190,7 @@
    "start": "2026-10-20T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "MNC",
+   "home": "MCI",
    "away": "AEK",
    "home_name": "Manchester City",
    "away_name": "AEK Athens",
@@ -3199,7 +3199,7 @@
    "home_record": "1-0-1",
    "away_record": "1-0-1",
    "neutral": false,
-   "pick": "MNC",
+   "pick": "MCI",
    "pick_side": "home",
    "prob": 94.5,
    "probs": {
@@ -3227,11 +3227,11 @@
     "book": "DraftKings",
     "won": true,
     "units": 0.154,
-    "team": "MNC"
+    "team": "MCI"
    },
    "home_pts": 5,
    "away_pts": 1,
-   "winner": "MNC"
+   "winner": "MCI"
   },
   {
    "date": "2026-10-20",
@@ -3239,8 +3239,8 @@
    "start": "2026-10-20T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "ROMA",
-   "away": "SLB",
+   "home": "ROM",
+   "away": "SLO",
    "home_name": "AS Roma",
    "away_name": "Slovan Bratislava",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/104.png",
@@ -3248,7 +3248,7 @@
    "home_record": "0-1-1",
    "away_record": "0-0-2",
    "neutral": false,
-   "pick": "ROMA",
+   "pick": "ROM",
    "pick_side": "home",
    "prob": 87.0,
    "probs": {
@@ -3276,11 +3276,11 @@
     "book": "DraftKings",
     "won": true,
     "units": 0.111,
-    "team": "ROMA"
+    "team": "ROM"
    },
    "home_pts": 4,
    "away_pts": 0,
-   "winner": "ROMA"
+   "winner": "ROM"
   },
   {
    "date": "2026-10-21",
@@ -3288,8 +3288,8 @@
    "start": "2026-10-21T12:45:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "COMO",
-   "away": "MAN",
+   "home": "COM",
+   "away": "MUN",
    "home_name": "Como",
    "away_name": "Manchester United",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2572.png",
@@ -3297,7 +3297,7 @@
    "home_record": "1-0-1",
    "away_record": "1-0-1",
    "neutral": false,
-   "pick": "MAN",
+   "pick": "MUN",
    "pick_side": "away",
    "prob": 42.1,
    "probs": {
@@ -3325,11 +3325,11 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "MAN"
+    "team": "MUN"
    },
    "home_pts": 4,
    "away_pts": 1,
-   "winner": "COMO"
+   "winner": "COM"
   },
   {
    "date": "2026-10-21",
@@ -3337,7 +3337,7 @@
    "start": "2026-10-21T12:45:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "LILL",
+   "home": "LIL",
    "away": "GAL",
    "home_name": "Lille",
    "away_name": "Galatasaray",
@@ -3346,7 +3346,7 @@
    "home_record": "0-0-2",
    "away_record": "0-0-2",
    "neutral": false,
-   "pick": "LILL",
+   "pick": "LIL",
    "pick_side": "home",
    "prob": 71.3,
    "probs": {
@@ -3374,7 +3374,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "LILL"
+    "team": "LIL"
    },
    "home_pts": 2,
    "away_pts": 4,
@@ -3435,7 +3435,7 @@
    "start": "2026-10-21T15:00:00-04:00",
    "comp": "UCL",
    "season": 2026,
-   "home": "MUN",
+   "home": "FCB",
    "away": "ARS",
    "home_name": "Bayern Munich",
    "away_name": "Arsenal",
@@ -3534,7 +3534,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "BRU",
-   "away": "RCL",
+   "away": "LEN",
    "home_name": "Club Brugge",
    "away_name": "Lens",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/570.png",
@@ -3542,7 +3542,7 @@
    "home_record": "1-0-1",
    "away_record": "1-0-1",
    "neutral": false,
-   "pick": "RCL",
+   "pick": "LEN",
    "pick_side": "away",
    "prob": 40.1,
    "probs": {
@@ -3570,7 +3570,7 @@
     "book": "DraftKings",
     "won": false,
     "units": -1.0,
-    "team": "RCL"
+    "team": "LEN"
    },
    "home_pts": 3,
    "away_pts": 0,
@@ -3730,7 +3730,7 @@
    "comp": "UCL",
    "season": 2026,
    "home": "AVL",
-   "away": "VFK",
+   "away": "VIK",
    "home_name": "Aston Villa",
    "away_name": "Viking FK",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/362.png",
@@ -3825,7 +3825,7 @@
    "comp": "LALIGA",
    "season": 2026,
    "home": "ALA",
-   "away": "MCF",
+   "away": "MAL",
    "home_name": "Alav\u00e9s",
    "away_name": "M\u00e1laga",
    "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/96.png",
