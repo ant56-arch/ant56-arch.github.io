@@ -8,11 +8,13 @@ name: Model Room
 on:
   schedule:
     - cron: "30 16 * * *"   # daily, after the morning picks runs
-  # Right after each overnight scoring run of the daily workflow, so last
-  # night's games are in by morning (Anthony, 2026-10-22). The job skips the
-  # daily workflow's other runs (see the first step).
+    - cron: "15 12 * * *"   # 8:15 AM ET (7:15 in winter): backup so the night is in before 9 AM
+  # Right after each overnight scoring run (MLB/NBA/NHL/CBB/soccer in the
+  # daily workflow, NFL/CFB in the picks workflow), so last night's games are
+  # in by morning (Anthony, 2026-10-22: before 9 AM ET). The job skips their
+  # daytime runs (see the first step).
   workflow_run:
-    workflows: ["MLB, NBA and CBB Daily"]
+    workflows: ["MLB, NBA and CBB Daily", "NFL and CFB Picks"]
     types: [completed]
   push:
     branches: [main]
@@ -38,11 +40,11 @@ jobs:
         env:
           STARTED: ${{ github.event.workflow_run.run_started_at }}
         run: |
-          # Runs that start 2-9 AM ET (06:00-13:59 UTC) score last night's games.
+          # Runs that start 10 PM-9 AM ET (02:00-13:59 UTC) score last night's games.
           go=true
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             h=$(date -u -d "$STARTED" +%H)
-            if [ "$h" -lt 6 ] || [ "$h" -ge 14 ]; then go=false; fi
+            if [ "$h" -lt 2 ] || [ "$h" -ge 14 ]; then go=false; fi
           fi
           echo "go=$go" >> "$GITHUB_OUTPUT"
           echo "Build: $go (daily run started $STARTED)"
