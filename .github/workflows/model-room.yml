@@ -8,6 +8,12 @@ name: Model Room
 on:
   schedule:
     - cron: "30 16 * * *"   # daily, after the morning picks runs
+  # Right after each overnight scoring run of the daily workflow, so last
+  # night's games are in by morning (Anthony, 2026-10-22). The job skips the
+  # daily workflow's other runs (see the first step).
+  workflow_run:
+    workflows: ["MLB, NBA and CBB Daily"]
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -25,16 +31,35 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Only after an overnight scoring run
+        id: gate
+        env:
+          STARTED: ${{ github.event.workflow_run.run_started_at }}
+        run: |
+          # Runs that start 2-9 AM ET (06:00-13:59 UTC) score last night's games.
+          go=true
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            h=$(date -u -d "$STARTED" +%H)
+            if [ "$h" -lt 6 ] || [ "$h" -ge 14 ]; then go=false; fi
+          fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+          echo "Build: $go (daily run started $STARTED)"
+
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'true'
 
       - name: Build the Model Room
+        if: steps.gate.outputs.go == 'true'
         run: python3 model_room/build_model_room.py . dist/model-room.html
 
       - name: Lock it behind the password
+        if: steps.gate.outputs.go == 'true'
         env:
           MODEL_ROOM_PASSWORD: ${{ secrets.MODEL_ROOM_PASSWORD }}
         run: node model_room/lock_page.mjs dist/model-room.html dist/model-room
 
       - name: Publish
+        if: steps.gate.outputs.go == 'true'
         run: ./publish_site.sh dist/model-room:model-room
