@@ -296,7 +296,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 }
 .nav .ticker-settings { margin-left: 4px; }
 .nav .ticker-gear { color: inherit; }
-.nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--ink); }
+.nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); max-height: calc(100dvh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--ink); }
 @media (max-width: 860px) { .nav .ticker-settings { margin-left: 0; } }
 /* Ticker settings: a gear at the right of the top bar. */
 .ticker-settings { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-left: -12px; }
@@ -383,7 +383,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 }
 .crawl-rank { color: var(--text-faint); font-size: 11px; }
 .crawl-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--ours); font-size: 13px; font-weight: 600; }
-.ticker-panel { max-height: calc(100vh - 90px); overflow-y: auto; overscroll-behavior: contain; }
+.ticker-panel { max-height: calc(100vh - 90px); max-height: calc(100dvh - 90px); overflow-y: auto; overscroll-behavior: contain; }
 .ticker-choice {
   display: flex;
   align-items: center;
