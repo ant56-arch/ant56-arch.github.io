@@ -513,15 +513,17 @@ def last_results(history, team_history):
 def build_index(history, slate, team_history, espn_games=()):
     body = duo_band(history, team_history)
     more = '<a class="more-link" href="{}">{}</a>'.format
-    today = NOW.date().isoformat()
-    todays = sorted((p for p in team_history.get("picks", []) if p["date"] == today), key=lambda p: -p["prob"])
+    # Today's game picks, or on a day off the latest day's (as the hitters do).
+    team_picks = team_history.get("picks", [])
+    day = max((p["date"] for p in team_picks), default=None)
+    todays = sorted((p for p in team_picks if p["date"] == day), key=lambda p: -p["prob"])
     if todays:
         board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays[:3]],
                                   top_n=0)
-        n = len(todays)
+        n, when = len(todays), "Today's" if day == NOW.date().isoformat() else "Latest"
         body += extras.board_section(
-            f"Today's surest games: {day_label(today)}", BOARD_NOTE,
-            board + more("games.html", f"All {n} of today's games" if n > 3 else "Every game and past results"))
+            f"{when} surest games: {day_label(day)}", BOARD_NOTE,
+            board + more("games.html", f"All {n} of {when.lower()} games" if n > 3 else "Every game and past results"))
     latest, day_picks = latest_hitters(history)
     if no_games_today(slate):
         body += extras.board_section("Today", "", f'<div class="empty-state">{no_games_note(team_history)}</div>')

@@ -1620,11 +1620,13 @@ function render(sums) {
   SITES.forEach(site => {
     const s = by[site.lg], src = site.lg === "MLB" ? s && s.games : s;
     const live = s && (s.slate || []).some(g => !g.final);
-    const recd = s && s.record && wl(s.record.value);
+    // MLB leads with its game picks; its hitter record rides underneath.
+    const recd = src && src.record && wl(src.record.value);
     let tag = recd ? (live ? "In season" : (site.lg === "MLB" ? "Postseason" : "Between games")) : (site.lg === "CBB" && month < 11 && month > 4 ? "Offseason" : "Preseason");
     if (site.lg === "MLB" && month >= 10 && recd) tag = "Postseason";
-    const sub = !recd ? null : site.lg === "MLB" ? "hitters who got a hit" : `picks to win since ${(s.record.since || "").replace(/, \d{4}$/, "")}`;
-    leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? s.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" });
+    let sub = !recd ? null : `picks to win since ${(src.record.since || "").replace(/, \d{4}$/, "")}`;
+    if (site.lg === "MLB" && recd && s.record) sub += ` · hitters ${s.record.value}`;
+    leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" });
   });
   $("leagueGrid").innerHTML = leagues.map(l => `
     <a class="league${l.feat ? " feat" : ""}" href="${l.href}">
