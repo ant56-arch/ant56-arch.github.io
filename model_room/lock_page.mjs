@@ -53,6 +53,7 @@ const html = `<!doctype html>
 body{background:var(--bg);color:var(--text);font-family:var(--font);margin:0;min-height:100vh}
 .top{background:var(--forest);color:var(--forest-ink);padding:10px 16px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
 .top a{color:inherit;text-decoration:none}
+.top a.home{border:1px solid currentColor;border-radius:999px;padding:3px 10px;margin-right:12px;white-space:nowrap}
 .top b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em}
 main{max-width:380px;margin:12vh auto 0;padding:0 16px}
 h1{font-family:var(--serif);font-weight:400;font-size:2.6rem;line-height:1;margin:0 0 8px}
@@ -69,7 +70,7 @@ button[disabled]{opacity:.6;cursor:default}
 <script>try{var t=(JSON.parse(localStorage.getItem("edge-settings")||"null")||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
-<div class="top"><a href="/"><b>EDGE</b></a> &nbsp;·&nbsp; Model Room</div>
+<div class="top"><a class="home" href="/">&larr; Home</a><a href="/"><b>EDGE</b></a> &nbsp;·&nbsp; Model Room</div>
 <main>
 <h1>Model <i>room</i></h1>
 <p id="lede">Owner only. Enter the password to see inside every model.</p>

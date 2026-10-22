@@ -1883,6 +1883,7 @@ CSS = r"""
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;margin:0}
 .top{background:var(--forest);color:var(--forest-ink);padding-inline:16px;padding-block:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
 .top b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em}
+.top a.home{color:inherit;text-decoration:none;border:1px solid currentColor;border-radius:999px;padding:3px 10px;margin-right:12px;white-space:nowrap}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;gap:28px;min-width:0}
 h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.02;margin:0;text-wrap:balance}
 h1 i{color:var(--ours)}
@@ -2257,7 +2258,7 @@ def main():
            '<link rel="preconnect" href="https://fonts.googleapis.com">',
            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">',
            '<style>' + CSS + '</style>',
-           f'<div class="top"><b>EDGE</b> &nbsp;·&nbsp; Model Room &nbsp;·&nbsp; updated {esc(nice_date(updated, year=True))}</div>',
+           f'<div class="top"><a class="home" href="/">&larr; Home</a><b>EDGE</b> &nbsp;·&nbsp; Model Room &nbsp;·&nbsp; updated {esc(nice_date(updated, year=True))}</div>',
            '<main class="wrap">',
            '<header><div class="eyebrow">Inside every model</div><h1>Model <i>room</i></h1>'
            '<p class="lede">How every model picks, how it has done, and the versions trying to replace it.</p></header>',
