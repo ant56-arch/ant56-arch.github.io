@@ -8,13 +8,13 @@
     "roi": 0.1009
   },
   "top10": {
-    "scored": 13,
-    "graded": 22,
-    "predicted": 0.627
+    "scored": 14,
+    "graded": 23,
+    "predicted": 0.624
   },
   "vs_book": {
-    "n": 758,
-    "our_brier": 0.1588,
-    "book_brier": 0.1557
+    "n": 776,
+    "our_brier": 0.1594,
+    "book_brier": 0.1564
   }
 }
