@@ -57,10 +57,13 @@ defaults:
   run:
     working-directory: mlb-nba-cbb
 
+# Every job is pinned to ubuntu-24.04 rather than ubuntu-latest, so GitHub's
+# move of ubuntu-latest to Ubuntu 26.04 (Oct 19 - Nov 19, 2026) can't change
+# the live runs underneath us. The weekly Python shadow test tries 26.04.
 jobs:
   # A backup run goes ahead only if no run has succeeded yet in its window.
   guard:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       go: ${{ steps.check.outputs.go }}
     steps:
@@ -88,7 +91,7 @@ jobs:
   build:
     needs: guard
     if: needs.guard.outputs.go == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 

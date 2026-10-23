@@ -10,7 +10,8 @@ deviations - worse than roughly 1 run in 40 of plain bad luck - is an alarm.
 An alarm does two things:
   - The retrain scripts ask early_retrain() and, when it says so, retrain now
     instead of waiting for their weekly turn (the usual promote-only-if-better
-    checks still decide what goes live). At most once every EARLY_GAP_DAYS.
+    checks still decide what goes live). At most once every EARLY_GAP_DAYS, and
+    only when picks have been graded since the last retrain.
   - model_watch.json records when each alarm started and cleared, and a daily
     routine tells Anthony in the project thread.
 
@@ -151,6 +152,11 @@ def early_retrain(key, today=None):
     today = today or date.today()
     last = s["last_retrain"]
     if last and date.fromisoformat(last) > today - timedelta(days=EARLY_GAP_DAYS):
+        return None
+    # Only once there are picks the last retrain hadn't seen. A slump at the end
+    # of a season stays on the books all offseason, and retraining on the same
+    # games every few days learns nothing.
+    if last and s["through"] and s["through"] < last:
         return None
     return s
 

@@ -59,9 +59,12 @@ defaults:
   run:
     working-directory: nfl-cfb
 
+# Every job is pinned to ubuntu-24.04 rather than ubuntu-latest, so GitHub's
+# move of ubuntu-latest to Ubuntu 26.04 (Oct 19 - Nov 19, 2026) can't change
+# the live runs underneath us. The weekly Python shadow test tries 26.04.
 jobs:
   generate-and-publish-picks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 

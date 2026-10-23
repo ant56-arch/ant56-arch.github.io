@@ -56,8 +56,10 @@ def save(path, data, **kw):
 
 
 def in_season(day):
-    """October through June. July-September never has regular-season or playoff games."""
-    return date.fromisoformat(day).month not in (7, 8, 9)
+    """September through June. The 2026-27 season opened Sept 29, so September
+    counts (its preseason games are skipped by espn.py); July and August never
+    have regular-season or playoff games."""
+    return date.fromisoformat(day).month not in (7, 8)
 
 
 # ── 1. sync ──────────────────────────────────────────────────────────────────

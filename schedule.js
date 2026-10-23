@@ -13,7 +13,7 @@ const SCHED_SPORTS = [
   { key: "mlb", sport: "MLB", pickLabel: "Top hitter",
     empty: "No MLB games on today's schedule. The next slate shows up here the morning of." },
   { key: "nhl", sport: "NHL", pickLabel: "Our pick",
-    empty: "No NHL games on the schedule right now. The season runs from early October to June." },
+    empty: "No NHL games on the schedule right now. The season runs from late September to June." },
   { key: "cfb", sport: "CFB", pickLabel: "Our pick", empty: "No Top 25 games on this week's schedule yet.",
     note: "Games with a Top 25 team (AP poll). Our pick shows for games between teams we cover." },
   { key: "soccer", sport: "Soccer", pickLabel: "Our pick",

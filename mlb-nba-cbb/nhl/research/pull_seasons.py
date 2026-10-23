@@ -25,7 +25,7 @@ def default_seasons():
 
 
 def season_days(end_year):
-    d, last = date(end_year - 1, 10, 1), date(end_year, 6, 30)
+    d, last = date(end_year - 1, 9, 1), date(end_year, 6, 30)  # 2026-27 opened Sept 29
     while d <= last:
         yield d.isoformat()
         d += timedelta(days=1)
