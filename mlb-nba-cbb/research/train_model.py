@@ -357,7 +357,9 @@ def main():
     data = Data(rows)
     latest = str(data.dates[-1])
     print(f"{len(rows)} rows, {data.dates[0]} to {latest}, seasons {sorted(set(data.seasons.tolist()))}")
-    if live_through and latest <= live_through and not force and not slump:
+    # A cold stretch doesn't skip this: the training rows are regular-season
+    # games only, so a postseason slump brings nothing new to learn from.
+    if live_through and latest <= live_through and not force:
         print(f"No games since the live model's last training day ({live_through}); nothing to learn from.")
         return
 

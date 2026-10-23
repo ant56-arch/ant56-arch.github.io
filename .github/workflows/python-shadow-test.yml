@@ -5,6 +5,10 @@
 # nothing, and spends no Odds API credits. A red run means NEW broke a step
 # that works on OLD; a warning means some output differs.
 # NEW stays 3.12 while numpy 1.26.4 (mlb-nba-cbb/research) has no 3.13 wheels.
+# It runs on Ubuntu 26.04, the image GitHub moves ubuntu-latest to between
+# Oct 19 and Nov 19, 2026, while the live workflows stay pinned to
+# ubuntu-24.04. A green run here means both Pythons also work on the new
+# image, so the 2027 switch can move the runner and Python together.
 
 name: Python shadow test
 
@@ -31,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         group: [mlb-nba-cbb, nfl-cfb]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4

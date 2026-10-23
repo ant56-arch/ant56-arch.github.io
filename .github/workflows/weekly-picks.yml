@@ -42,10 +42,12 @@ on:
     - cron: "15 23 * * 0,1,4"
     - cron: "15 23 * * 2,3"
     - cron: "15 23 * * 5"
-    # 12:35 AM ET Monday, Tuesday and Friday: results of the Sunday, Monday
-    # and Thursday night games, so they reach the home page's Last night strip
-    # overnight instead of at the next noon run. No odds; CFB uses its cache.
-    - cron: "35 4 * * 1,2,5"
+    # 1:35 AM ET Monday, Tuesday and Friday (12:35 AM in winter, EST): results
+    # of the Sunday, Monday and Thursday night games, so they reach the home
+    # page's Last night strip overnight instead of at the next noon run. Set
+    # for EST so it still lands after those games end once clocks fall back
+    # (Anthony, 2026-10-23). No odds; CFB uses its cache.
+    - cron: "35 5 * * 1,2,5"
 
 permissions:
   contents: write
@@ -59,9 +61,12 @@ defaults:
   run:
     working-directory: nfl-cfb
 
+# Every job is pinned to ubuntu-24.04 rather than ubuntu-latest, so GitHub's
+# move of ubuntu-latest to Ubuntu 26.04 (Oct 19 - Nov 19, 2026) can't change
+# the live runs underneath us. The weekly Python shadow test tries 26.04.
 jobs:
   generate-and-publish-picks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
