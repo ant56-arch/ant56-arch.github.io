@@ -184,7 +184,13 @@ a.money-tile:hover { border-color: var(--rule-strong); }
   background: var(--surface-2);
   border-right: 1px solid var(--rule-strong);
   grid-column: 1;
+  min-width: 0;
+  line-height: 1.15;
+  overflow-wrap: break-word;
 }
+/* A network with games stacked in lanes (a Champions League night all on
+   Paramount+) keeps its name at the top, beside the first game. */
+.guide-row:not(.guide-head) .guide-net { align-items: flex-start; padding-top: 16px; }
 .guide-corner { font-size: 13px; font-style: normal; color: var(--text-faint); }
 .guide-tick { display: flex; align-items: center; padding-left: 8px; font-size: 12px; font-weight: 700; color: var(--text-muted);
   border-left: 1px solid var(--rule); white-space: nowrap; overflow: visible; min-width: 0; grid-row: 1; }
@@ -229,8 +235,9 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 }
 @media (max-width: 700px) {
   .sched-toolbar { justify-content: space-between; }
-  .guide-card { --guide-net-w: 76px; --guide-slot-w: 44px; }
-  .guide-net { padding: 0 8px; font-size: 14px; }
+  .guide-card { --guide-net-w: 96px; --guide-slot-w: 44px; }
+  .guide-net { padding: 0 8px; font-size: 11px; letter-spacing: 0; }
+  .guide-row:not(.guide-head) .guide-net { padding-top: 14px; }
   .view-toggle button { padding: 0 14px; font-size: 15px; }
 }
 
