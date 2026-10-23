@@ -178,8 +178,17 @@ def start_et(g):
 def write_json(path, sport, slate, updated):
     """games.json for the scoreboard strip, which keeps CFB to games with a Top 25 team."""
     games = [g for g in slate["games"] if is_top25(g)] if sport == "cfb" else slate["games"]
+    if "paths" in SPORTS[sport]:
+        # A competition's scoreboard holds its last matchday until the next
+        # one (Wednesday's Champions League finals were still there on
+        # Friday), so the Schedule and ticker leave out finals from before today.
+        today = datetime.now(ET).date()
+        games = [g for g in games if not (g["state"] == "post" and g["start"] and start_et(g).date() < today)]
+        label = start_et(games[0]).strftime("%a, %b %-d") if games else ""
+    else:
+        label = slate["label"]
     with open(path, "w") as f:
-        json.dump({"sport": sport.upper(), "label": slate["label"], "updated": updated,
+        json.dump({"sport": sport.upper(), "label": label, "updated": updated,
                    "espn": espn_url(sport), "top25_only": sport == "cfb", "games": games}, f, indent=1)
 
 
