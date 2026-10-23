@@ -51,10 +51,11 @@ const html = `<!doctype html>
 :root[data-theme="dark"]{color-scheme:dark;--bg:#141815;--surface:#1a1f1b;--rule:#2e342f;--text:#ece7dc;--muted:#ada79a;--ours:#d98b5f;--miss:#e58c78;--forest:#22402f;--forest-ink:#ece7dc}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--font);margin:0;min-height:100vh}
-.top{background:var(--forest);color:var(--forest-ink);padding:10px 16px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-.top a{color:inherit;text-decoration:none}
-.top a.home{border:1px solid currentColor;border-radius:999px;padding:3px 10px;margin-right:12px;white-space:nowrap}
-.top b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em}
+.top{background:var(--forest);color:var(--forest-ink);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.top .brand{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;white-space:nowrap}
+.top .brand b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em}
+.top a.home{display:inline-flex;align-items:center;gap:6px;color:var(--forest);background:var(--forest-ink);text-decoration:none;font-family:var(--font);font-weight:700;font-size:14px;border-radius:999px;padding:7px 14px 7px 10px;min-height:36px;box-sizing:border-box}
+.top a.home svg{width:16px;height:16px}
 main{max-width:380px;margin:12vh auto 0;padding:0 16px}
 h1{font-family:var(--serif);font-weight:400;font-size:2.6rem;line-height:1;margin:0 0 8px}
 h1 i{color:var(--ours)}
@@ -70,7 +71,7 @@ button[disabled]{opacity:.6;cursor:default}
 <script>try{var t=(JSON.parse(localStorage.getItem("edge-settings")||"null")||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
-<div class="top"><a class="home" href="/">&larr; Home</a><a href="/"><b>EDGE</b></a> &nbsp;·&nbsp; Model Room</div>
+<div class="top"><a class="home" href="/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Home</a><span class="brand"><b>EDGE</b> &nbsp;·&nbsp; Model Room</span></div>
 <main>
 <h1>Model <i>room</i></h1>
 <p id="lede">Owner only. Enter the password to see inside every model.</p>
