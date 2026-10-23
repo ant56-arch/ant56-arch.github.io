@@ -1881,9 +1881,13 @@ CSS = r"""
   --ours:#d98b5f;--vegas:#9db8cf;--hit:#8cc59c;--miss:#e58c78;--warn:#d9b85f;--forest:#22402f;--forest-ink:#ece7dc;--actual:#ece7dc}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;margin:0}
-.top{background:var(--forest);color:var(--forest-ink);padding-inline:16px;padding-block:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-.top b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em}
-.top a.home{color:inherit;text-decoration:none;border:1px solid currentColor;border-radius:999px;padding:3px 10px;margin-right:12px;white-space:nowrap}
+.top{background:var(--forest);color:var(--forest-ink);padding-inline:16px;padding-block:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.top .brand{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;white-space:nowrap}
+.top .brand b{font-family:var(--font);font-stretch:125%;font-weight:800;letter-spacing:.06em;opacity:1}
+.top a.home{display:inline-flex;align-items:center;gap:6px;color:var(--forest);background:var(--forest-ink);text-decoration:none;font-family:var(--font);font-weight:700;font-size:14px;border-radius:999px;padding:7px 14px 7px 10px;min-height:36px;box-sizing:border-box}
+.top a.home svg{width:16px;height:16px}
+.top a.home:hover{opacity:.9}
+.updated{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:10px 0 0}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;gap:28px;min-width:0}
 h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.02;margin:0;text-wrap:balance}
 h1 i{color:var(--ours)}
@@ -1912,6 +1916,21 @@ h1 i{color:var(--ours)}
 .more summary{cursor:pointer;font-weight:600;color:var(--ours);padding:4px 0}
 .more[open] summary{margin-bottom:10px}
 .board td.n{font-family:var(--mono);white-space:nowrap}
+.sb-key{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin:2px 0 0}
+.sb-key span{display:inline-flex;align-items:center;gap:6px}
+.sb-key i{width:10px;height:10px;border-radius:2px;display:inline-block;background:currentColor}
+.sb{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.sb li{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:10px 14px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.sb .who{min-width:0}
+.sb .lg{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+.sb .nm{font-weight:700;font-size:1rem}
+.sb .num{font-family:var(--mono);font-size:1.7rem;font-weight:500;line-height:1;text-align:right}
+.sb .say{font-size:.84rem;color:var(--muted)}
+.sb-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:0 15px;margin-bottom:-4px}
+.sb .meter{grid-column:1/-1;position:relative;height:8px;border-radius:4px;background:var(--surface-2);margin-top:6px}
+.sb .meter i{position:absolute;top:0;bottom:0;border-radius:5px;background:currentColor}
+.sb .meter b{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--text);opacity:.55}
+.sb .ends{grid-column:1/-1;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 .bar{height:8px;border-radius:4px;background:var(--surface-2);position:relative;min-width:80px}
 .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:currentColor}
 .bar b{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--faint)}
@@ -2106,24 +2125,45 @@ def goals_board(sports):
     return "".join(o)
 
 
+HOME_ICON = ('<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" '
+             'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+TOP_BAR = (f'<div class="top"><a class="home" href="/">{HOME_ICON}Home</a>'
+           '<span class="brand"><b>EDGE</b> &nbsp;·&nbsp; Model Room</span></div>')
+
+
 def scoreboard(sports):
-    """Every model's Edge score on one board, best first."""
+    """Every model's Edge score on one board, best first: a card per model
+    with a meter centred on 50 (as accurate as Vegas)."""
     rows = [(m.get("score"), lab, m["name"]) for _, lab, models in sports for m in models]
     scored = sorted((r for r in rows if r[0] is not None), key=lambda r: -r[0])
     if not scored:
         return ""
     o = ['<section class="sub" aria-labelledby="h-board"><h3 id="h-board">Edge scores, every league</h3>',
-         '<p class="note">How sharp each model\'s chances are next to Vegas (or the average hitter) on the same live games, '
-         'judged the way forecasters judge the market: by the accuracy score, which punishes a confident miss more than a timid one. '
-         f'50 = as accurate as Vegas. Each 1% more accurate adds {SKILL_POINTS}, but only the part bigger than luck counts, '
-         f'so a hot streak can\'t inflate it. Needs {GRADE_MIN_N}+ live picks.</p>',
-         '<div class="tablewrap"><table class="board"><thead><tr><th>League</th><th>Model</th><th>Score</th><th class="barcol" style="width:40%"><span class="sr">Bar</span></th></tr></thead><tbody>']
+         '<p class="note">Are our win chances sharper than Vegas\'s on the same games? <b>50 means as accurate as Vegas.</b> '
+         'Above 50, we\'re sharper; below 50, Vegas is.</p>',
+         '<p class="sb-key"><span class="g-good"><i></i>Sharper than Vegas</span><span class="g-mixed"><i></i>About even</span>'
+         '<span class="g-bad"><i></i>Behind Vegas</span></p>',
+         '<div class="sb-scale" aria-hidden="true"><span>0</span><span>Vegas = 50</span><span>100</span></div><ul class="sb">']
     for sc, lab, name in scored:
-        cls = "g-good" if sc >= 60 else "g-bad" if sc < 45 else "g-mixed"
-        o.append(f'<tr><td>{esc(lab)}</td><td>{esc(name)}</td><td class="n">{sc}</td>'
-                 f'<td class="barcol"><div class="bar {cls}"><i style="width:{sc}%"></i><b></b></div></td></tr>')
+        bench = "the average hitter" if "hitter" in name.lower() else "Vegas"
+        if sc >= 55:
+            cls, say = "g-good", f"Sharper than {bench}"
+        elif sc <= 45:
+            cls, say = "g-bad", f"Behind {bench}"
+        else:
+            cls, say = "g-mixed", f"About as sharp as {bench}"
+        lo, hi = sorted((50, max(0, min(100, sc))))
+        o.append(f'<li><div class="who"><div class="nm"><span class="lg">{esc(lab)}</span> {esc(name)}</div>'
+                 f'<div class="say">{esc(say)}</div></div>'
+                 f'<div class="num {cls}">{sc}</div>'
+                 f'<div class="meter {cls}" aria-hidden="true"><i style="left:{lo}%;width:{max(hi - lo, 1)}%"></i><b></b></div></li>')
+    o.append('</ul>')
+    o.append('<details class="more"><summary>How the score works</summary><p class="note">'
+             'It compares our win chances with Vegas\'s (or, for hitters, the average hitter\'s) on the same live games, using the '
+             'accuracy score forecasters use, which punishes a confident miss more than a timid one. '
+             f'Each 1% more accurate than Vegas adds {SKILL_POINTS} points. Only the part bigger than luck counts, so a hot streak '
+             f'can\'t inflate it. A model needs {GRADE_MIN_N}+ live picks to get a score.</p></details>')
     rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
-    o.append('</tbody></table></div>')
     if rest:
         o.append(f'<p class="note">No score yet: {esc(", ".join(rest))}.</p>')
     o.append('</section>')
@@ -2258,10 +2298,11 @@ def main():
            '<link rel="preconnect" href="https://fonts.googleapis.com">',
            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">',
            '<style>' + CSS + '</style>',
-           f'<div class="top"><a class="home" href="/">&larr; Home</a><b>EDGE</b> &nbsp;·&nbsp; Model Room &nbsp;·&nbsp; updated {esc(nice_date(updated, year=True))}</div>',
+           TOP_BAR,
            '<main class="wrap">',
            '<header><div class="eyebrow">Inside every model</div><h1>Model <i>room</i></h1>'
-           '<p class="lede">How every model picks, how it has done, and the versions trying to replace it.</p></header>',
+           '<p class="lede">How every model picks, how it has done, and the versions trying to replace it.</p>'
+           f'<p class="updated">Updated {esc(nice_date(updated, year=True))}</p></header>',
            ]
     out.append(scoreboard(sports))
     out.append(goals_board(sports))
