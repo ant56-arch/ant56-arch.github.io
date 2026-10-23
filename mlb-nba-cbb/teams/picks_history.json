@@ -5891,6 +5891,59 @@
    "home_runs": 7,
    "away_runs": 3,
    "winner": "TB"
+  },
+  {
+   "date": "2026-10-23",
+   "game_id": "849805",
+   "start": "2026-10-23T20:00:00-04:00",
+   "type": "postseason",
+   "round": "World Series",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "TB",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 158,
+   "away_id": 139,
+   "home_record": "103-59",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 694819,
+    "name": "Jacob Misiorowski",
+    "era": 1.87,
+    "ip": 183.0
+   },
+   "away_sp": {
+    "id": 607259,
+    "name": "Nick Martinez",
+    "era": 3.1,
+    "ip": 189.0
+   },
+   "pick": "MIL",
+   "prob": 63.8,
+   "home_prob": 63.8,
+   "factors": {
+    "home_field": 0.146,
+    "elo": 0.212,
+    "starters": 0.21
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-23T08:34:11Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": -198,
+    "prob": 63.8,
+    "book_prob": 63.5,
+    "edge": 0.3,
+    "value": false,
+    "home_ml": -198,
+    "away_ml": 162,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }

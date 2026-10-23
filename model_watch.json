@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-23T00:47:18Z",
+ "updated": "2026-10-23T08:35:00Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -32,12 +32,12 @@
   },
   "nba": {
    "label": "NBA",
-   "picks": 14,
-   "won": 9,
-   "expected": 8.7,
-   "z": 0.19,
+   "picks": 16,
+   "won": 11,
+   "expected": 9.9,
+   "z": 0.56,
    "from": "2026-10-20",
-   "through": "2026-10-21",
+   "through": "2026-10-22",
    "alarm": false,
    "last_retrain": "2026-10-19",
    "alarm_since": null,
@@ -47,11 +47,11 @@
   "nhl": {
    "label": "NHL",
    "picks": 50,
-   "won": 33,
-   "expected": 29.1,
-   "z": 1.11,
-   "from": "2026-10-13",
-   "through": "2026-10-21",
+   "won": 30,
+   "expected": 29.3,
+   "z": 0.2,
+   "from": "2026-10-15",
+   "through": "2026-10-22",
    "alarm": false,
    "last_retrain": "2026-10-18",
    "alarm_since": null,
