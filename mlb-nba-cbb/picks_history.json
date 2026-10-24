@@ -18422,9 +18422,9 @@
       "reason": "Batting 1st \u00b7 Faces Nick Martinez (3.10 ERA, 1.09 WHIP)",
       "hit_streak": 5,
       "model": "2026-10-22T00:47:38+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -18470,9 +18470,9 @@
       "reason": "Batting 5th \u00b7 Faces Nick Martinez (3.10 ERA, 1.09 WHIP)",
       "hit_streak": 6,
       "model": "2026-10-22T00:47:38+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 2,
       "void": false
     },
     {
@@ -18915,6 +18915,10 @@
     },
     "2026-10-19": {
       "hitters": 19,
+      "with_hit": 10
+    },
+    "2026-10-23": {
+      "hitters": 20,
       "with_hit": 10
     }
   }
