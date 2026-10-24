@@ -5928,7 +5928,7 @@
     "starters": 0.21
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-23T22:59:00Z",
    "ml": {
     "team": "MIL",
@@ -5940,6 +5940,62 @@
     "value": false,
     "home_ml": -193,
     "away_ml": 158,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.518
+   },
+   "home_runs": 3,
+   "away_runs": 2,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-24",
+   "game_id": "849802",
+   "start": "2026-10-24T20:00:00-04:00",
+   "type": "postseason",
+   "round": "World Series",
+   "doubleheader": 0,
+   "home": "MIL",
+   "away": "TB",
+   "home_name": "Milwaukee Brewers",
+   "away_name": "Tampa Bay Rays",
+   "home_id": 158,
+   "away_id": 139,
+   "home_record": "103-59",
+   "away_record": "98-64",
+   "home_sp": {
+    "id": 701656,
+    "name": "Logan Henderson",
+    "era": 2.52,
+    "ip": 107.3
+   },
+   "away_sp": {
+    "id": 656876,
+    "name": "Drew Rasmussen",
+    "era": 2.52,
+    "ip": 193.0
+   },
+   "pick": "MIL",
+   "prob": 57.7,
+   "home_prob": 57.7,
+   "factors": {
+    "home_field": 0.146,
+    "elo": 0.22,
+    "starters": -0.057
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-24T08:09:06Z",
+   "ml": {
+    "team": "MIL",
+    "side": "home",
+    "price": -127,
+    "prob": 57.7,
+    "book_prob": 53.5,
+    "edge": 4.2,
+    "value": false,
+    "home_ml": -127,
+    "away_ml": 106,
     "book": "DraftKings",
     "won": null,
     "units": null
