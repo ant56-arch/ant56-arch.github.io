@@ -446,6 +446,90 @@ def settings_lines(recipe, live, keys):
     return '<span class="set">' + ("<br>".join(lines) if lines else "Same as live") + "</span>"
 
 
+# How a setting reads in a sentence: (when the version's value is higher, lower).
+DIFF_WORDS = {
+    "elo_k": ("lets one result move a team's rating more", "lets one result move a team's rating less"),
+    "elo_carry": ("keeps more of last season's rating", "keeps less of last season's rating"),
+    "carry": ("keeps more of last season's rating", "keeps less of last season's rating"),
+    "years": ("learns from more past seasons", "learns from fewer past seasons"),
+    "seasons": ("learns from more past seasons", "learns from fewer past seasons"),
+    "half_life": ("lets old games count for longer", "forgets old games faster"),
+    "team_half_life": ("lets old games count for longer in team form", "forgets old games faster in team form"),
+    "rating_half_life": ("lets old games count for longer in its ratings", "forgets old games faster in its ratings"),
+    "reg": ("pulls clubs harder toward their league's average", "pulls clubs less toward their league's average"),
+    "xg": ("leans more on shots on target", "leans less on shots on target"),
+    "home_reg": ("treats every league's home edge more alike", "lets each league keep its own home edge"),
+    "sp_shrink": ("trusts a starter's own numbers less", "trusts a starter's own numbers more"),
+    "l2": ("holds its weights back harder", "holds its weights back less"),
+    "stretch": ("sharpens its chances more", "sharpens its chances less"),
+    "promoted": ("starts newly promoted clubs further below average", "starts newly promoted clubs closer to average"),
+    "draw": ("gives draws a bigger nudge", "gives draws a smaller nudge"),
+}
+ON_WORDS = {"calib": "tunes its win chances to how often favorites really win",
+            "elo_only": "uses only the team rating and home edge",
+            "rest": "adds a penalty for short rest",
+            "stretch": "sharpens its chances toward the likeliest result",
+            "promoted": "starts newly promoted clubs below average",
+            "draw": "gives draws a nudge up"}
+OFF_WORDS = {"calib": "skips the win-chance tuning live uses", "elo_only": "uses every input",
+             "rest": "has no short-rest penalty", "stretch": "skips the sharpening live uses",
+             "promoted": "starts promoted clubs at the average", "draw": "gives draws no nudge"}
+
+
+def _num(v):
+    if v == "all" or v is None:
+        return float("inf")
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _and_list(items):
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def _extra_phrase(x):
+    w = EXTRA_WORDS.get(x, x)
+    if w.lower().startswith("elo"):
+        return "a team-strength rating built from past results"
+    if w[:1].isupper() and not w.split()[0] in ("Pythagorean", "Massey"):
+        w = w[0].lower() + w[1:]
+    return w
+
+
+def difference_line(recipe, live):
+    """One plain sentence on what this version does differently from live."""
+    if live is None:
+        return "The version making the picks now."
+    parts = []
+    lx, rx = list(live.get("extras") or []), list(recipe.get("extras") or [])
+    add = [_extra_phrase(x) for x in rx if x not in lx]
+    drop = [_extra_phrase(x) for x in lx if x not in rx]
+    if add:
+        parts.append("adds " + _and_list(add))
+    if drop:
+        parts.append("leaves out " + _and_list(drop))
+    for k in list(recipe) + [k for k in live if k not in recipe]:
+        if k == "extras" or k in ("league",):
+            continue
+        a, b = recipe.get(k), live.get(k)
+        if recipe_cell(k, a) == recipe_cell(k, b) or (not a and not b):
+            continue
+        if k == "park":
+            parts.append("learns ballpark effects from games" if a == "learned" else "uses a fixed ballpark table")
+        elif k in ON_WORDS and (not a or not b):
+            parts.append(ON_WORDS[k] if a else OFF_WORDS[k])
+        elif k in DIFF_WORDS and _num(a) is not None and _num(b) is not None:
+            parts.append(DIFF_WORDS[k][0 if _num(a) > _num(b) else 1])
+        else:
+            parts.append(f"changes {SETTING_WORDS.get(k, (k,))[0].lower()}")
+    if not parts:
+        return "Same as the live version."
+    txt = ", ".join(parts[:-1]) + (" and " if len(parts) > 1 else "") + parts[-1]
+    return "Compared with live, it " + txt + "."
+
+
 def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout="",
                   live_score=None, margin=None, mid=None, runs=None):
     """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)].
@@ -504,12 +588,13 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
             tags += ' <span class="tag new">new</span>'
         cells = [f"<b>#{n}</b>{tags}"]
         cells.append(score_chip(edge[i]) if edge[i] is not None else ('<span class="set">Not tested yet</span>' if c is None else ""))
-        cells.append(settings_lines(r, None if i == live_idx else live_r, all_keys))
+        cells.append(f'<span class="diff">{esc(difference_line(r, None if i == live_idx else live_r))}</span>'
+                     + settings_lines(r, None if i == live_idx else live_r, all_keys))
         for mk, _, fmt, _ in metrics:
             v = (c or {}).get(mk)
             cells.append(S(fmt(v)) if v is not None else "")
         rows.append({"live": i == live_idx, "best": i == best_i and best_i != live_idx, "cells": cells})
-    head = ["Version", "Edge score", "Settings"] + [m[1] for m in metrics]
+    head = ["Version", "Edge score", "What it does differently"] + [m[1] for m in metrics]
     show_keys = [k for k in all_keys if len({recipe_cell(k, r.get(k)) for _, r, _ in shown}) > 1] or all_keys
     helps = [f"<b>{esc(SETTING_WORDS.get(k, (k,))[0])}</b>: {esc(SETTING_HELP.get(k, k))}." for k in show_keys]
     # Callout: did it switch, and why
@@ -1916,6 +2001,7 @@ h1 i{color:var(--ours)}
 .more summary{cursor:pointer;font-weight:600;color:var(--ours);padding:4px 0}
 .more[open] summary{margin-bottom:10px}
 .board td.n{font-family:var(--mono);white-space:nowrap}
+.diff{display:block;font-size:.9rem;margin-bottom:4px;color:var(--text);min-width:16ch}
 .sb-key{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin:2px 0 0}
 .sb-key span{display:inline-flex;align-items:center;gap:6px}
 .sb-key i{width:10px;height:10px;border-radius:2px;display:inline-block;background:currentColor}
