@@ -1,0 +1,500 @@
+{
+ "updated": "2026-10-24T01:35:26.613310+00:00",
+ "heading": "Week 7",
+ "picks": [
+  {
+   "label": "NYG @ HOU",
+   "sub": "71% to win",
+   "value": "HOU -7.4",
+   "result": null
+  },
+  {
+   "label": "TB @ CAR",
+   "sub": "71% to win",
+   "value": "CAR -7.3",
+   "result": null
+  },
+  {
+   "label": "IND @ MIN",
+   "sub": "67% to win",
+   "value": "MIN -5.8",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "47-31",
+  "label": "our picks to win",
+  "sub": "60%",
+  "since": "Sep 17, 2026"
+ },
+ "empty": "No games available yet.",
+ "retrained": "2026-10-20T15:03:22.146142+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "47-31",
+  "sub": "60.3%",
+  "season": "2026"
+ },
+ "daily": [
+  [
+   "2026-09-17",
+   1,
+   0
+  ],
+  [
+   "2026-09-20",
+   7,
+   7
+  ],
+  [
+   "2026-09-21",
+   1,
+   0
+  ],
+  [
+   "2026-09-24",
+   1,
+   0
+  ],
+  [
+   "2026-09-27",
+   8,
+   6
+  ],
+  [
+   "2026-09-28",
+   1,
+   0
+  ],
+  [
+   "2026-10-01",
+   1,
+   0
+  ],
+  [
+   "2026-10-04",
+   11,
+   3
+  ],
+  [
+   "2026-10-05",
+   0,
+   1
+  ],
+  [
+   "2026-10-08",
+   0,
+   1
+  ],
+  [
+   "2026-10-11",
+   9,
+   4
+  ],
+  [
+   "2026-10-12",
+   0,
+   1
+  ],
+  [
+   "2026-10-15",
+   0,
+   1
+  ],
+  [
+   "2026-10-18",
+   5,
+   7
+  ],
+  [
+   "2026-10-19",
+   1,
+   0
+  ],
+  [
+   "2026-10-22",
+   1,
+   0
+  ]
+ ],
+ "ml_streak": {
+  "kind": "W",
+  "n": 1,
+  "unit": "week"
+ },
+ "moneyline_record": {
+  "value": "38-23-1",
+  "label": "2026 moneyline",
+  "sub": "61 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "NFL",
+   "id": "2026-7-ne-chi",
+   "url": "/nfl/game-2026-7-ne-chi.html",
+   "start": "2026-10-22T20:15:00-04:00",
+   "date": "2026-10-22",
+   "away": "NE",
+   "home": "CHI",
+   "at": "@",
+   "pick": "CHI",
+   "other": "NE",
+   "prob": 50.5,
+   "price": -155,
+   "book": 58.3,
+   "value": false,
+   "final": true,
+   "score": [
+    24,
+    30
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-pit-no",
+   "url": "/nfl/game-2026-7-pit-no.html",
+   "start": "2026-10-25T09:30:00-04:00",
+   "date": "2026-10-25",
+   "away": "PIT",
+   "home": "NO",
+   "at": "@",
+   "pick": "PIT",
+   "other": "NO",
+   "prob": 58.0,
+   "price": -166,
+   "book": 60.0,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-nyg-hou",
+   "url": "/nfl/game-2026-7-nyg-hou.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "NYG",
+   "home": "HOU",
+   "at": "@",
+   "pick": "HOU",
+   "other": "NYG",
+   "prob": 71.3,
+   "price": -520,
+   "book": 80.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-ind-min",
+   "url": "/nfl/game-2026-7-ind-min.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "IND",
+   "home": "MIN",
+   "at": "@",
+   "pick": "MIN",
+   "other": "IND",
+   "prob": 67.2,
+   "price": -290,
+   "book": 71.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-mia-nyj",
+   "url": "/nfl/game-2026-7-mia-nyj.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "MIA",
+   "home": "NYJ",
+   "at": "@",
+   "pick": "NYJ",
+   "other": "MIA",
+   "prob": 64.2,
+   "price": -225,
+   "book": 66.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-tb-car",
+   "url": "/nfl/game-2026-7-tb-car.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "TB",
+   "home": "CAR",
+   "at": "@",
+   "pick": "CAR",
+   "other": "TB",
+   "prob": 71.1,
+   "price": -155,
+   "book": 58.3,
+   "value": true,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-sf-atl",
+   "url": "/nfl/game-2026-7-sf-atl.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "SF",
+   "home": "ATL",
+   "at": "@",
+   "pick": "SF",
+   "other": "ATL",
+   "prob": 64.3,
+   "price": -148,
+   "book": 57.2,
+   "value": true,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-cle-ten",
+   "url": "/nfl/game-2026-7-cle-ten.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "CLE",
+   "home": "TEN",
+   "at": "@",
+   "pick": "CLE",
+   "other": "TEN",
+   "prob": 58.3,
+   "price": -130,
+   "book": 54.3,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-cin-bal",
+   "url": "/nfl/game-2026-7-cin-bal.html",
+   "start": "2026-10-25T13:00:00-04:00",
+   "date": "2026-10-25",
+   "away": "CIN",
+   "home": "BAL",
+   "at": "@",
+   "pick": "BAL",
+   "other": "CIN",
+   "prob": 50.0,
+   "price": -115,
+   "book": 51.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-den-ari",
+   "url": "/nfl/game-2026-7-den-ari.html",
+   "start": "2026-10-25T16:05:00-04:00",
+   "date": "2026-10-25",
+   "away": "DEN",
+   "home": "ARI",
+   "at": "@",
+   "pick": "DEN",
+   "other": "ARI",
+   "prob": 56.5,
+   "price": -238,
+   "book": 67.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-la-lv",
+   "url": "/nfl/game-2026-7-la-lv.html",
+   "start": "2026-10-25T16:25:00-04:00",
+   "date": "2026-10-25",
+   "away": "LA",
+   "home": "LV",
+   "at": "@",
+   "pick": "LA",
+   "other": "LV",
+   "prob": 58.3,
+   "price": -180,
+   "book": 61.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-gb-det",
+   "url": "/nfl/game-2026-7-gb-det.html",
+   "start": "2026-10-25T16:25:00-04:00",
+   "date": "2026-10-25",
+   "away": "GB",
+   "home": "DET",
+   "at": "@",
+   "pick": "DET",
+   "other": "GB",
+   "prob": 59.5,
+   "price": -175,
+   "book": 60.9,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-kc-sea",
+   "url": "/nfl/game-2026-7-kc-sea.html",
+   "start": "2026-10-25T20:20:00-04:00",
+   "date": "2026-10-25",
+   "away": "KC",
+   "home": "SEA",
+   "at": "@",
+   "pick": "KC",
+   "other": "SEA",
+   "prob": 51.5,
+   "price": 120,
+   "book": 43.6,
+   "value": true,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NFL",
+   "id": "2026-7-dal-phi",
+   "url": "/nfl/game-2026-7-dal-phi.html",
+   "start": "2026-10-26T20:15:00-04:00",
+   "date": "2026-10-26",
+   "away": "DAL",
+   "home": "PHI",
+   "at": "@",
+   "pick": "DAL",
+   "other": "PHI",
+   "prob": 51.9,
+   "price": -218,
+   "book": 65.7,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  }
+ ],
+ "units": {
+  "picks": 61,
+  "wins": 38,
+  "losses": 23,
+  "units": 0.23,
+  "roi": 0.0038,
+  "since": "2026-09-24",
+  "series": [
+   [
+    "2026-09-24",
+    2.0
+   ],
+   [
+    "2026-09-27",
+    -0.06
+   ],
+   [
+    "2026-09-28",
+    1.48
+   ],
+   [
+    "2026-10-01",
+    2.72
+   ],
+   [
+    "2026-10-04",
+    5.84
+   ],
+   [
+    "2026-10-05",
+    4.84
+   ],
+   [
+    "2026-10-08",
+    3.84
+   ],
+   [
+    "2026-10-11",
+    5.91
+   ],
+   [
+    "2026-10-12",
+    4.91
+   ],
+   [
+    "2026-10-15",
+    3.91
+   ],
+   [
+    "2026-10-18",
+    -0.67
+   ],
+   [
+    "2026-10-19",
+    -0.41
+   ],
+   [
+    "2026-10-22",
+    0.23
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 53,
+    "wins": 32,
+    "losses": 21,
+    "units": -6.29,
+    "roi": -0.1186
+   },
+   "underdogs": {
+    "picks": 8,
+    "wins": 6,
+    "losses": 2,
+    "units": 6.52,
+    "roi": 0.815
+   },
+   "value": {
+    "picks": 18,
+    "wins": 10,
+    "losses": 8,
+    "units": 1.6,
+    "roi": 0.0887
+   }
+  }
+ },
+ "last": {
+  "date": "2026-10-22",
+  "games": [
+   {
+    "pick": "CHI",
+    "other": "NE",
+    "hit": true,
+    "text": "CHI 30-24",
+    "units": 0.65,
+    "url": "/nfl/game-2026-7-ne-chi.html"
+   }
+  ],
+  "hits": []
+ }
+}

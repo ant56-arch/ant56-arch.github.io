@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuracy | NHL Edge</title>
+<meta name="description" content="Who wins every NHL game tonight and how likely it is, from a model graded against every final score.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M8 23V9h3.4v5.4h9.2V9H24v14h-3.4v-5.6h-9.2V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=883e1492b7">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div id="tick" class="edge-tick"><span class="topbar" hidden></span></div>
+<nav class="nav edge-nav" aria-label="Leagues">
+  <a class="edge-brand" href="/" aria-label="Sports Edge home"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>EDGE</a>
+  <ul class="edge-tabs"><li><a href="/">All</a></li><li><a href="/?l=nfl">NFL</a></li><li><a href="/?l=cfb">CFB</a></li><li><a href="/?l=mlb">MLB</a></li><li><a href="/?l=nhl" aria-current=page>NHL</a></li><li><a href="/?l=nba">NBA</a></li><li><a href="/?l=cbb">CBB</a></li><li><a href="/?l=soccer">Soccer</a></li></ul>
+  <a class="edge-cta" href="/?l=nhl#slate">Today's picks</a>
+</nav>
+<header class="masthead edge-hero" data-sport="NHL">
+  <div class="edge-hero-row">
+    <div class="edge-eyebrow">Updated Oct 24, 6:45 AM ET</div>
+    <h1><span class="ln"><span>NHL</span></span><span class="ln"><span>Accuracy.</span></span></h1>
+  </div>
+  <div class="edge-hero-bar">
+    <a class="edge-scroll" href="#main-content"><i aria-hidden="true">&darr;</i>Scroll to explore</a>
+    <span>Who wins every NHL game tonight and how likely it is, from a model graded against every final score.</span>
+    <span>Est. 2026</span>
+  </div>
+</header>
+<div class="wrap edge-sheet">
+  <nav class="edge-jump" aria-label="NHL pages"><a href="/?l=nhl#slate">Today's games</a><a href="index.html">Game board</a><a href="history.html">History</a><a href="accuracy.html" class="go" aria-current="page">Accuracy</a><a href="model.html">Model</a></nav>
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>Record</h2><div class="subtitle">2026-27 live picks, graded against the final score</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">99-60</div><div class="stat-label">This season</div><div class="stat-sub">62.3% right; model said 56.9%</div></div><div class="stat"><div class="stat-value">28-19</div><div class="stat-label">Last 7 days</div><div class="stat-sub">59.6% right; model said 58.6%</div></div><div class="stat"><div class="stat-value">11-5</div><div class="stat-label">Picks at 65%+</div><div class="stat-sub">68.8% right; model said 67.3%</div></div><div class="stat"><div class="stat-value">99-60</div><div class="stat-label">Moneyline</div><div class="stat-sub">+5.82 units, +3.7% ROI</div></div></div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Accuracy Over Time</h2><div class="subtitle">159 graded picks: how often they won vs. what the model expected</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="acc-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-weekly","title":"Win Rate by Week","labels":["Wk of Sep 28","Wk of Oct 5","Wk of Oct 12","Wk of Oct 19"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.548,0.681,0.64,0.581],"color":"#e5793b"},{"label":"What the model expected","data":[0.552,0.564,0.575,0.581],"color":"#a8a7a1","dash":[4,4]}]},{"id":"acc-cumulative","title":"Win Rate, Season to Date","labels":["Wk of Sep 28","Wk of Oct 5","Wk of Oct 12","Wk of Oct 19"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.548,0.628,0.633,0.623],"color":"#e5793b"},{"label":"What the model expected","data":[0.552,0.56,0.566,0.569],"color":"#a8a7a1","dash":[4,4]}]}]);</script></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Calibration</h2><div class="subtitle">Picks grouped by the win chance the model gave them</div></div>
+    <div class="card-body"><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-60%</td>
+      <td data-label="Picks" class="num">117</td>
+      <td data-label="Model said" class="num">54.4%</td>
+      <td data-label="Actually won" class="num accent">59.0%</td></tr><tr><td class="row-label">60%-70%</td>
+      <td data-label="Picks" class="num">39</td>
+      <td data-label="Model said" class="num">63.1%</td>
+      <td data-label="Actually won" class="num accent">69.2%</td></tr><tr><td class="row-label">70%-80%</td>
+      <td data-label="Picks" class="num">3</td>
+      <td data-label="Model said" class="num">72.0%</td>
+      <td data-label="Actually won" class="num accent">100.0%</td></tr></tbody></table><div class="table-footnote">If the model is honest, each row's two percentages should be close. Small rows swing a lot.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Backtest</h2><div class="subtitle">Every regular-season game of 2025-26, picked by a model that never saw that season</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">706-606</div><div class="stat-label">2025-26 backtest</div><div class="stat-sub">53.8% of every game</div></div><div class="stat"><div class="stat-value">57.4%</div><div class="stat-label">Top 3 picks each day</div><div class="stat-sub">278-206</div></div><div class="stat"><div class="stat-value">68.2%</div><div class="stat-label">Picks at 65%+</div><div class="stat-sub">75-35</div></div></div><div class="chart-card" data-state="loading"><canvas id="acc-bt-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-bt-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-bt-weekly","title":"Win Rate by Month","labels":["Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.5,0.502,0.513,0.558,0.676,0.525,0.608],"color":"#e5793b"},{"label":"What the model expected","data":[0.586,0.589,0.588,0.586,0.603,0.602,0.614],"color":"#a8a7a1","dash":[4,4]}]},{"id":"acc-bt-cumulative","title":"Win Rate, Season to Date","labels":["Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.5,0.501,0.506,0.52,0.532,0.531,0.538],"color":"#e5793b"},{"label":"What the model expected","data":[0.586,0.588,0.588,0.587,0.589,0.591,0.593],"color":"#a8a7a1","dash":[4,4]}]}]);</script><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-60%</td>
+      <td data-label="Picks" class="num">785</td>
+      <td data-label="Model said" class="num">54.7%</td>
+      <td data-label="Actually won" class="num accent">50.6%</td></tr><tr><td class="row-label">60%-70%</td>
+      <td data-label="Picks" class="num">417</td>
+      <td data-label="Model said" class="num">64.1%</td>
+      <td data-label="Actually won" class="num accent">56.1%</td></tr><tr><td class="row-label">70%-80%</td>
+      <td data-label="Picks" class="num">105</td>
+      <td data-label="Model said" class="num">73.7%</td>
+      <td data-label="Actually won" class="num accent">68.6%</td></tr><tr><td class="row-label">80% and up</td>
+      <td data-label="Picks" class="num">5</td>
+      <td data-label="Model said" class="num">83.3%</td>
+      <td data-label="Actually won" class="num accent">60.0%</td></tr></tbody></table><div class="table-footnote">Fit on 2023-24 through the season before 2025-26, then tested on all 1312 regular-season games of 2025-26. It picked 53.8% of them right (it expected 59.3%), and its projected margins were off by 2.1 goals on average. In the playoffs it went 49-33.</div></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Scores and Vegas odds via ESPN. For entertainment only, not betting advice. Gambling problem? Call
+      1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <span>&copy; 2026 NHL Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=883e1492b7"></script>
+<script src="nba.js?v=883e1492b7"></script>
+</body>
+</html>

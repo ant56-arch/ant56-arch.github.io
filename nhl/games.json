@@ -1,0 +1,93 @@
+{
+ "sport": "NHL",
+ "label": "Fri, Oct 23",
+ "updated": "2026-10-24T06:45:21.272992-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401892564",
+   "start": "2026-10-24T00:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "NHL Net, CHSN",
+   "venue": "United Center",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "MTL",
+    "name": "Montreal Canadiens",
+    "short": "Canadiens",
+    "location": "Montreal",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png",
+    "color": "c41230",
+    "alt": "013a81",
+    "rank": null,
+    "score": 4,
+    "record": null,
+    "probable": "J. Fowler",
+    "winner": true
+   },
+   "home": {
+    "abbr": "CHI",
+    "name": "Chicago Blackhawks",
+    "short": "Blackhawks",
+    "location": "Chicago",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/chi.png",
+    "color": "e31937",
+    "alt": "000000",
+    "rank": null,
+    "score": 1,
+    "record": null,
+    "probable": "S. Knight",
+    "winner": false
+   },
+   "pick": {
+    "text": "MTL 60%",
+    "result": true
+   }
+  },
+  {
+   "id": "401892565",
+   "start": "2026-10-24T01:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN+, The Spot - MTN",
+   "venue": "Ball Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TB",
+    "name": "Tampa Bay Lightning",
+    "short": "Lightning",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/tb.png",
+    "color": "003e7e",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 3,
+    "record": null,
+    "probable": "A. Vasilevskiy",
+    "winner": false
+   },
+   "home": {
+    "abbr": "COL",
+    "name": "Colorado Avalanche",
+    "short": "Avalanche",
+    "location": "Colorado",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/col.png",
+    "color": "860038",
+    "alt": "005ea3",
+    "rank": null,
+    "score": 6,
+    "record": null,
+    "probable": "M. Blackwood",
+    "winner": true
+   },
+   "pick": {
+    "text": "COL 53%",
+    "result": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "updated": "2026-10-24T06:45:20.952251-04:00",
+ "heading": null,
+ "picks": [],
+ "record": null,
+ "empty": "No college basketball picks yet. They start on opening night in early November.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-10-17T15:00:23+00:00",
+ "model_url": "model.html",
+ "slate": [],
+ "units": null,
+ "last": null
+}
