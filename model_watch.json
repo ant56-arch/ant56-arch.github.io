@@ -1,15 +1,15 @@
 {
- "updated": "2026-10-25T08:26:54Z",
+ "updated": "2026-10-25T11:10:57Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
    "label": "MLB hitters",
    "picks": 70,
-   "won": 41,
+   "won": 42,
    "expected": 50.0,
-   "z": -2.38,
+   "z": -2.12,
    "from": "2026-09-29",
-   "through": "2026-10-23",
+   "through": "2026-10-24",
    "alarm": true,
    "last_retrain": "2026-10-22",
    "alarm_since": "2026-10-04",
