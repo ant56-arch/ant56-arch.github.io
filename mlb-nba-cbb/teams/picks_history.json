@@ -5984,7 +5984,7 @@
     "starters": -0.057
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-24T22:21:16Z",
    "ml": {
     "team": "MIL",
@@ -5997,9 +5997,12 @@
     "home_ml": -121,
     "away_ml": 100,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.826
+   },
+   "home_runs": 5,
+   "away_runs": 4,
+   "winner": "MIL"
   }
  ]
 }
