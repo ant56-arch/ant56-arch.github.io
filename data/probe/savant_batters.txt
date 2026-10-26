@@ -1,0 +1,7 @@
+OK 200 bytes=37940 lines=537
+﻿"last_name, first_name","player_id","year","xba","xslg","xwoba","exit_velocity_avg","barrel_batted_rate","hard_hit_percent","k_percent"
+"Vivas, Jorbit",678391,2025,".249",".331",".308","85.9",4.7,37.2,19.7
+"Moncada, Yoán",660162,2025,".218",".422",".325","89.8",14.3,43.4,26
+"Riley, Austin",663586,2025,".246",".472",".330","92.3",15.2,50.2,28.6
+"Beavers, Dylan",687637,2025,".213",".408",".344","88.8",9.3,28,26.3
+"Matos, Luis",682641,2025,".219",".368",".274","88",7.5,37.7,14.7

@@ -1,0 +1,7 @@
+OK 200 bytes=2401290 lines=26614
+game_id,pfr_game_id,season,game_type,week,player,pfr_player_id,position,team,opponent,offense_snaps,offense_pct,defense_snaps,defense_pct,st_snaps,st_pct
+2025_01_ARI_NO,202509070nor,2025,REG,1,Kelvin Banks,BankKe01,T,NO,ARI,75,1,0,0,5,0.19
+2025_01_ARI_NO,202509070nor,2025,REG,1,Cesar Ruiz,RuizCe00,C,NO,ARI,75,1,0,0,5,0.19
+2025_01_ARI_NO,202509070nor,2025,REG,1,Dillon Radunz,RaduDi00,OL,NO,ARI,75,1,0,0,5,0.19
+2025_01_ARI_NO,202509070nor,2025,REG,1,Erik McCoy,McCoEr01,C,NO,ARI,75,1,0,0,2,0.07
+2025_01_ARI_NO,202509070nor,2025,REG,1,Spencer Rattler,RattSp00,QB,NO,ARI,75,1,0,0,0,0
