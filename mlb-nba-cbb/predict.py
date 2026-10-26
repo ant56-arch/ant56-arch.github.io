@@ -181,9 +181,10 @@ def build_reason(p):
         "platoon": f"Platoon edge ({p['bats']}HB vs. {p['opp_hand']}HP)",
         "home_away": "Playing at home",
         "park_factor": f"Hitter-friendly park ({p['venue']})",
+        "contact_quality": "Strong contact quality (Baseball Savant)",
     }
     top = [g for g, v in sorted(p["factors"].items(), key=lambda kv: -kv[1]) if v > 0][:2]
-    return " · ".join(phrases[g] for g in top) or "Solid across the board"
+    return " · ".join(phrases.get(g, g) for g in top) or "Solid across the board"
 
 
 def score_slate(games):
@@ -250,6 +251,7 @@ def score_slate(games):
         raw = F.batter_features(hits, ab, n_games, int(rec.get("hits", 0)), int(rec.get("atBats", 0)), prior)
         raw.update(F.pitcher_features(era, whip, k9, ip))
         raw.update(F.matchup_features(side == "home", bats, opp_hand, g["venue"], MODEL.get("park_factors")))
+        raw.update(F.statcast_features(pid, pitcher_id, SEASON))
         prob, factors = predict(raw)
 
         rec_ab = int(rec.get("atBats", 0))

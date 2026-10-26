@@ -336,7 +336,12 @@ SETTING_WORDS = {
 }
 EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "Shot share", "goalies": "Goalies",
                "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating",
-               "home": "This season's home field", "travel": "Time zones crossed"}
+               "home": "This season's home field", "travel": "Time zones crossed",
+               "xg": "Expected goals (MoneyPuck)", "weather": "Weather (Open-Meteo)",
+               "statcast": "Contact quality (Baseball Savant)", "clubelo": "ClubElo rating"}
+# Free outside sources a version reads (Anthony, 2026-10-26: label them in the
+# Model Room). Shown as a tag on each version that uses one.
+DATA_SOURCES = {"xg": "MoneyPuck", "weather": "Open-Meteo", "statcast": "Baseball Savant", "clubelo": "ClubElo"}
 SETTING_HELP = {
     "team_half_life": "how fast it forgets old games when it sizes up a team's form",
     "rating_half_life": "how fast the power ratings forget old games",
@@ -353,7 +358,9 @@ SETTING_HELP = {
     "xg": "how much of the rating comes from shots on target instead of goals",
     "home_reg": "how hard each league's home edge is pulled toward the overall one",
     "extras": ("inputs added on top: rest and travel, players out, shot share, goalies, a Massey rating (scoring margin adjusted "
-               "for opponents), a Pythagorean record (the win rate points scored and allowed point to) or a FiveThirtyEight-style Elo rating"),
+               "for opponents), a Pythagorean record (the win rate points scored and allowed point to), a FiveThirtyEight-style Elo rating, "
+               "or data from free outside sources: expected goals from MoneyPuck (how good each shot was, not just whether it went in), "
+               "weather from Open-Meteo, contact quality from Baseball Savant, or ClubElo's club ratings"),
     "elo_only": "whether it uses every input or only the Elo rating and home edge, the classic FiveThirtyEight way",
     "rest": "whether a club that played 3 or fewer days earlier gets a fitted penalty",
     "promoted": "where a club new to its league starts, instead of the league average",
@@ -586,6 +593,8 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
             tags += ' <span class="tag">' + ("switched in" if run.get("switched_recipe") else "live") + "</span>"
         if is_new:
             tags += ' <span class="tag new">new</span>'
+        for src in dict.fromkeys(DATA_SOURCES[x] for x in (r.get("extras") or []) if x in DATA_SOURCES):
+            tags += f' <span class="tag src">{esc(src)} data</span>'
         cells = [f"<b>#{n}</b>{tags}"]
         cells.append(score_chip(edge[i]) if edge[i] is not None else ('<span class="set">Not tested yet</span>' if c is None else ""))
         cells.append(f'<span class="diff">{esc(difference_line(r, None if i == live_idx else live_r))}</span>'
@@ -1447,11 +1456,13 @@ def build_cfb_ratings():
 # ═════════════════════════════════════════════════════════════════════════════
 FACTOR_WORDS = {"season_avg": "Season batting average", "recent_form": "Recent form", "playing_time": "At-bats per game",
                 "pitcher_matchup": "Opposing starter", "platoon": "Platoon edge (lefty vs righty)", "park_factor": "Ballpark",
-                "home_away": "Home or away"}
+                "home_away": "Home or away", "contact_quality": "Contact quality (Baseball Savant)"}
 FEATURE_WORDS = {"season_avg": ("Season batting average", "factor: season_avg"), "recent_form_avg": ("Recent form", ""), "ab_per_game": ("At-bats per game", ""),
                  "is_home": ("Playing at home", ""), "platoon": ("Platoon edge", ""), "park_factor": ("Ballpark", ""),
                  "opp_pitcher_era": ("Opposing starter's ERA", ""), "opp_pitcher_whip": ("Opposing starter's walks + hits per inning", ""),
-                 "opp_pitcher_k9": ("Opposing starter's strikeouts per 9", "")}
+                 "opp_pitcher_k9": ("Opposing starter's strikeouts per 9", ""),
+                 "batter_xba": ("Expected batting average (Baseball Savant)", ""), "batter_k": ("Strikeout rate (Baseball Savant)", ""),
+                 "opp_pitcher_xba": ("Starter's expected average allowed (Baseball Savant)", "")}
 
 
 def build_hitters():
@@ -2106,6 +2117,7 @@ table.tryouts td:first-child{white-space:nowrap}
 .set{display:block;font-size:.8rem;line-height:1.35;color:var(--muted);font-weight:400;min-width:150px}
 .set b{color:var(--text);font-weight:600}
 .tag.new{color:var(--ours)}
+.tag.src{color:var(--muted);text-transform:none;letter-spacing:0;font-size:11px}
 @media (max-width:640px){
  table.tryouts thead{display:none}
  table.tryouts,table.tryouts tbody{display:block}

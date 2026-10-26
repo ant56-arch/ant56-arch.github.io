@@ -710,15 +710,37 @@
      "goalies"
     ],
     "calib": true
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "extras": [
+     "xg",
+     "shots",
+     "goalies"
+    ]
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "elo_only": true,
+    "extras": [
+     "xg",
+     "shots",
+     "goalies"
+    ],
+    "calib": true
    }
   ],
   "current": [
    20,
    19,
-   10,
+   28,
    26,
    27,
-   21,
+   29,
    22,
    23,
    24,

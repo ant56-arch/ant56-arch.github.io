@@ -20,6 +20,9 @@ Two optional features need box scores, and only recipes that list them in
                most, pulled toward average with 500 shots), weighted by his
                share of the team's last 10 starts. No starter has to be known
                before the game, so picks and training see the same thing.
+One more needs MoneyPuck's expected goals (xg.py), recipe extra "xg":
+  xg_share   - share of expected goals over the last 20 games, minus 50%,
+               pulled toward 50% with 5 games of an even split
 Two more optional features follow published rating methods (game_methods.py):
   massey     - Massey / Simple Rating System goal margin, opponent-adjusted
   pyth       - Pythagorean expectation from goals for and against (log-odds)
@@ -50,7 +53,7 @@ RECENT_SHRINK = 5
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_ice", "elo", "net", "recent", "rest", "b2b_home", "b2b_away"]
-EXTRAS = {"shots": ["shot_share"], "goalies": ["goalie"], "massey": ["massey"], "pyth": ["pyth"]}
+EXTRAS = {"xg": ["xg_share"], "shots": ["shot_share"], "goalies": ["goalie"], "massey": ["massey"], "pyth": ["pyth"]}
 PYTH_EXPONENT = 2.0    # hockey's usual Pythagorean exponent
 SHOT_GAMES = 20
 SHOT_SHRINK = 5        # games of an even shot split mixed in
@@ -71,6 +74,7 @@ class League:
         self.margins = defaultdict(list)  # team -> this season's goal margins
         self.last_date = {}
         self.shots = defaultdict(list)    # team -> [(for, against)] over recent games with box scores
+        self.xg = defaultdict(list)       # team -> [(xG for, xG against)] over recent games
         self.goalie = defaultdict(lambda: [0.0, 0.0])  # goalie id -> [shots against, saves], decayed
         self.starts = defaultdict(list)   # team -> recent starting goalie ids
         self.lg = [0.0, 0.0]              # league shots against, saves (decayed)
@@ -110,6 +114,12 @@ class League:
         even = 30.0 * SHOT_SHRINK
         return (f + even) / (f + a + 2 * even) - 0.5
 
+    def xg_share(self, team):
+        last = self.xg[team][-SHOT_GAMES:]
+        f, a = sum(x[0] for x in last), sum(x[1] for x in last)
+        even = 2.8 * SHOT_SHRINK
+        return (f + even) / (f + a + 2 * even) - 0.5
+
     def goalie_quality(self, team):
         starts = self.starts[team][-START_GAMES:]
         if not starts:
@@ -136,6 +146,7 @@ class League:
             "b2b_home": 1.0 if h_rest == 0 else 0.0,
             "b2b_away": 1.0 if a_rest == 0 else 0.0,
             "shot_share": self.shot_share(h) - self.shot_share(a),
+            "xg_share": self.xg_share(h) - self.xg_share(a),
             "goalie": self.goalie_quality(h) - self.goalie_quality(a),
             "massey": self.methods.massey(h) - self.methods.massey(a),
             "pyth": self.methods.pyth(h) - self.methods.pyth(a),
@@ -147,6 +158,11 @@ class League:
         h, a = g["home"], g["away"]
         if not box or h not in box or a not in box:
             return
+        if box[h].get("xg"):
+            self.xg[h].append(tuple(box[h]["xg"]))
+            self.xg[a].append(tuple(box[a]["xg"]))
+            for t in (h, a):
+                del self.xg[t][:-SHOT_GAMES]
         hs, as_ = box[h].get("sog"), box[a].get("sog")
         if hs is not None and as_ is not None:
             self.shots[h].append((hs, as_))

@@ -129,6 +129,7 @@ def load_rating_features(half_life, kinds=()):
                   if "injuries" in kinds else None)
         history = game_context.full_history(schedules, os.path.join(RAW_DIR, "context")) if "elo" in kinds else None
         feats = feats.merge(game_context.context_features(schedules, kinds, inputs, history), on=game_context.KEY, how="left")
+        feats = game_context.add_weather_terms(feats)
     return feats.set_index(["season", "week", "home_team", "away_team"])
 
 def load_vegas_odds():

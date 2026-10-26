@@ -218,6 +218,8 @@ def make_features(games, suffix="_asof"):
     for col in team_ratings.FEATURES:
         feats[col] = games[col] if col in games.columns else np.nan
     # Context inputs only exist on a recipe's dataset when the recipe uses them.
+    if "wind10" in games.columns:
+        feats["wind_shrink"] = games["wind10"].fillna(0) * feats["points_rating_diff"]
     for col in EXTRA_FEATURES:
         if col in games.columns:
             feats[col] = games[col]

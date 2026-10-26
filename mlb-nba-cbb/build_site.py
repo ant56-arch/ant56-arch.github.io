@@ -1055,6 +1055,9 @@ FACTOR_LABELS = {
     "opp_pitcher_era": ("Opposing starter's ERA", ""),
     "opp_pitcher_whip": ("Opposing starter's WHIP", "walks + hits per inning"),
     "opp_pitcher_k9": ("Opposing starter's strikeouts", "per nine innings"),
+    "batter_xba": ("Expected batting average (Baseball Savant)", "what his contact should hit, last season"),
+    "batter_k": ("Strikeout rate (Baseball Savant)", "last season"),
+    "opp_pitcher_xba": ("Starter's expected average allowed (Baseball Savant)", "last season"),
 }
 
 

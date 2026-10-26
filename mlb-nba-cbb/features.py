@@ -30,6 +30,18 @@ CANDIDATE_FEATURES = [
     "opp_pitcher_k9",
 ]
 
+# Inputs only the recipes that list them in "extras" use (research/train_model.py).
+#   statcast - Baseball Savant's expected batting average (xBA: what a hitter's
+#              contact should have produced, from exit speed and launch angle)
+#              and strikeout rate for the hitter, and xBA allowed for the
+#              opposing starter, all from the season before, so nothing a
+#              game couldn't know in advance. statcast/*.csv, from Baseball
+#              Savant's leaderboards (free).
+EXTRA_FEATURES = {"statcast": ["batter_xba", "batter_k", "opp_pitcher_xba"]}
+ALL_FEATURES = CANDIDATE_FEATURES + [c for cols in EXTRA_FEATURES.values() for c in cols]
+STATCAST_PRIOR_PA = 200
+LEAGUE_K = 0.225
+
 FACTOR_GROUPS = {
     "season_avg": ["season_avg"],
     "recent_form": ["recent_form_avg"],
@@ -38,6 +50,7 @@ FACTOR_GROUPS = {
     "platoon": ["platoon"],
     "park_factor": ["park_factor"],
     "home_away": ["is_home"],
+    "contact_quality": ["batter_xba", "batter_k", "opp_pitcher_xba"],
 }
 
 PARK_FACTORS = {
@@ -97,3 +110,44 @@ def matchup_features(is_home, batter_hand, pitcher_hand, venue, park_factors=Non
         "platoon": 1.0 if platoon else 0.0,
         "park_factor": (park_factors or PARK_FACTORS).get(venue, 1.0),
     }
+
+
+_statcast = {}
+
+
+def _load_statcast():
+    import csv
+    import os
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "statcast")
+    for kind in ("batter", "pitcher"):
+        table = {}
+        try:
+            with open(os.path.join(here, f"{kind}s.csv")) as f:
+                for r in csv.DictReader(f):
+                    table[(int(r["player_id"]), int(r["year"]))] = r
+        except FileNotFoundError:
+            pass
+        _statcast[kind] = table
+
+
+def statcast_features(player_id, pitcher_id, season):
+    """Last season's Baseball Savant numbers, pulled toward league average by
+    STATCAST_PRIOR_PA plate appearances. Unknown players get league average."""
+    if not _statcast:
+        _load_statcast()
+
+    def row(kind, pid):
+        try:
+            return _statcast[kind].get((int(pid), int(season) - 1))
+        except (TypeError, ValueError):
+            return None
+
+    def val(r, col, league, scale=1.0):
+        if not r or r.get(col) in (None, "") or not r.get("pa"):
+            return league
+        pa = float(r["pa"])
+        return shrink(float(r[col]) * scale * pa, pa, league, STATCAST_PRIOR_PA)
+
+    b, p = row("batter", player_id), row("pitcher", pitcher_id)
+    return {"batter_xba": val(b, "est_ba", LEAGUE_AVG), "batter_k": val(b, "k_percent", LEAGUE_K, 0.01),
+            "opp_pitcher_xba": val(p, "est_ba", LEAGUE_AVG)}
