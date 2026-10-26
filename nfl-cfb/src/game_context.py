@@ -50,6 +50,7 @@ FEATURES = {
     "elo": ["elo_diff"],
     "pyth": ["pyth_diff"],
     "home": ["home_season"],
+    "weather": ["wind_shrink", "cold_visitor"],
 }
 ELO_K, ELO_HOME, ELO_CARRY = 20.0, 48.0, 2 / 3
 PYTH_EXP, PYTH_PRIOR = 2.37, 2.0
@@ -166,6 +167,42 @@ def home_features(schedules):
     return pd.DataFrame(out, columns=KEY + ["home_season"])
 
 
+def weather_features(schedules, today=None):
+    """wind10 and cold_visitor for every game (weather.py says what they
+    mean). Past games read the Open-Meteo archive file; games in the next
+    8 days read Open-Meteo's forecast; domes, closed roofs, neutral sites and
+    anything else count as calm and 70F."""
+    import weather
+    from datetime import date, timedelta
+    hist = weather.load_history()
+    today = today or date.today().isoformat()
+    soon = (date.fromisoformat(today) + timedelta(days=8)).isoformat()
+    out = []
+    for r in schedules.itertuples(index=False):
+        w = weather.CALM
+        roof = getattr(r, "roof", None)
+        if roof not in ("dome", "closed"):
+            gid, day = getattr(r, "game_id", None), str(getattr(r, "gameday", ""))[:10]
+            if gid in hist:
+                w = hist[gid]
+            elif pd.notna(getattr(r, "temp", None)) and pd.notna(getattr(r, "wind", None)):
+                w = {"temp_f": float(r.temp), "wind_mph": float(r.wind)}
+            elif today <= day <= soon and pd.isna(getattr(r, "home_score", None)):
+                spot = weather.stadium_for(r.home_team, int(r.season), getattr(r, "location", ""))
+                hour = str(getattr(r, "gametime", "") or "13:00")[:2]
+                w = (weather.forecast(spot[0], spot[1], day, hour) if spot else None) or weather.CALM
+        cold = max(0.0, 40.0 - w["temp_f"]) / 10 if r.away_team in weather.ROOF_OR_WARM else 0.0
+        out.append((r.season, r.week, r.home_team, r.away_team, w["wind_mph"] / 10, cold))
+    return pd.DataFrame(out, columns=KEY + ["wind10", "cold_visitor"])
+
+
+def add_weather_terms(df):
+    """wind_shrink = wind10 x points-rating gap, once both are on df."""
+    if "wind10" in df.columns and "points_rating_diff" in df.columns:
+        df["wind_shrink"] = df["wind10"].fillna(0) * df["points_rating_diff"]
+    return df
+
+
 def full_history(schedules, cache_dir=None):
     """Every NFL game nflverse has, for the Elo walk. Falls back to the
     schedules given if the download fails."""
@@ -273,6 +310,8 @@ def context_features(schedules, kinds, injury_inputs=None, history=None):
         out = out.merge(home_features(schedules).drop_duplicates(KEY), on=KEY, how="left")
     if "rest" in kinds:
         out = out.merge(rest_features(schedules), on=KEY, how="left")
+    if "weather" in kinds:
+        out = out.merge(weather_features(schedules).drop_duplicates(KEY), on=KEY, how="left")
     if "injuries" in kinds:
         injuries, snaps, players = injury_inputs
         if injuries.empty or snaps.empty:

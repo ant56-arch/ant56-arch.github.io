@@ -26,6 +26,7 @@ import espn  # noqa: E402
 import model as M  # noqa: E402
 import moneyline  # noqa: E402
 import store  # noqa: E402
+import xg  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -190,6 +191,12 @@ def main():
 
     if not in_season(TODAY):
         store.roll_up_days()  # the season is over: its day files become one season file
+    if in_season(TODAY):  # the xG tryouts (and live, if one wins) need last night's games
+        try:
+            xg.refresh()
+        except Exception as e:  # noqa: BLE001 - keep the last good file
+            print(f"  MoneyPuck xG refresh failed: {e}")
+    xg.merge_into_box(games, box)
     league = M.League((weights or {}).get("league"))
     for g in games:
         if g["date"] < TODAY:

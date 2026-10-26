@@ -62,9 +62,13 @@ TOP_N = 10
 DEFAULT_RECIPE = {"seasons": 1, "l2": 0.001, "park": "table"}  # how the model was built before recipes existed
 # 10 versions: every mix of 1-3 seasons, two regularization strengths and fixed or
 # learned park factors, minus the two that score worst (1 season with the fixed table).
-RECIPES = [{"seasons": s, "l2": l2, "park": park}
-           for s in (1, 2, 3) for l2 in (0.001, 0.01) for park in ("table", "learned")
-           if not (s == 1 and park == "table")]
+# 2026-10-26 (Anthony: use the best free data): the two 2-season fixed-table
+# versions, last at the October retrain, made way for two that add Baseball
+# Savant contact quality (features.EXTRA_FEATURES["statcast"]).
+RECIPES = ([{"seasons": s, "l2": l2, "park": park}
+            for s in (1, 2, 3) for l2 in (0.001, 0.01) for park in ("table", "learned")
+            if not (s == 1 and park == "table") and not (s == 2 and park == "table")]
+           + [{"seasons": 3, "l2": l2, "park": "learned", "extras": ["statcast"]} for l2 in (0.01, 0.001)])
 PARK_COL = F.CANDIDATE_FEATURES.index("park_factor")
 
 
@@ -109,6 +113,7 @@ def build_rows(raw_rows):
                                             r.get("opp_pitcher_hand"), r.get("venue")))
             feats.update(F.pitcher_features(r.get("opp_pitcher_era"), r.get("opp_pitcher_whip"),
                                             r.get("opp_pitcher_k9"), r.get("opp_pitcher_ip")))
+            feats.update(F.statcast_features(pid, r.get("opp_pitcher_id"), season))
             if all(feats.get(f) is not None for f in F.CANDIDATE_FEATURES):
                 rows.append({"date": r["date"], "season": season, "venue": r.get("venue") or "",
                              "got_hit": 1.0 if r["got_hit"] else 0.0, **feats})
@@ -131,7 +136,7 @@ class Data:
         self.dates = np.array([r["date"] for r in rows])
         self.seasons = np.array([r["season"] for r in rows])
         self.y = np.array([r["got_hit"] for r in rows])
-        self.X = np.array([[r[f] for f in F.CANDIDATE_FEATURES] for r in rows])
+        self.X = np.array([[r[f] for f in F.ALL_FEATURES] for r in rows])
         self.venue_names, self.venue_idx = np.unique([r["venue"] for r in rows], return_inverse=True)
 
     def matrix(self, park_factors, mask=None):
@@ -192,13 +197,14 @@ def train(recipe, data, mask):
         return None
     parks = learned_park_factors(data, mask) if recipe["park"] == "learned" else None
     X = data.matrix(parks or F.PARK_FACTORS, mask)
-    keep = X.std(axis=0) > 1e-9
+    allowed = set(F.CANDIDATE_FEATURES) | {c for k in recipe.get("extras", []) for c in F.EXTRA_FEATURES[k]}
+    keep = (X.std(axis=0) > 1e-9) & np.array([f in allowed for f in F.ALL_FEATURES])
     X = X[:, keep]
     means, stds = X.mean(axis=0), X.std(axis=0)
     w, b = fit((X - means) / stds, data.y[mask], recipe["l2"])
     dates = data.dates[mask]
     return {
-        "features": [f for f, k in zip(F.CANDIDATE_FEATURES, keep) if k],
+        "features": [f for f, k in zip(F.ALL_FEATURES, keep) if k],
         "means": means.tolist(),
         "stds": stds.tolist(),
         "weights": w.tolist(),
@@ -212,7 +218,7 @@ def train(recipe, data, mask):
 
 def predict(model, data, mask):
     X = data.matrix(model.get("park_factors") or F.PARK_FACTORS, mask)
-    cols = [F.CANDIDATE_FEATURES.index(f) for f in model["features"]]
+    cols = [F.ALL_FEATURES.index(f) for f in model["features"]]
     z = ((X[:, cols] - np.array(model["means"])) / np.array(model["stds"])) @ np.array(model["weights"])
     return sigmoid(z + model["bias"])
 
@@ -276,7 +282,8 @@ def short(ev):
 
 
 def recipe_name(r):
-    return f"{r['seasons']} year{'s' if r['seasons'] > 1 else ''}, L2 {r['l2']}, {r['park']} parks"
+    extras = "".join(f" + {k}" for k in r.get("extras", []))
+    return f"{r['seasons']} year{'s' if r['seasons'] > 1 else ''}, L2 {r['l2']}, {r['park']} parks{extras}"
 
 
 def live_record(days=7):

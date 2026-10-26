@@ -123,6 +123,23 @@
      "injuries",
      "home"
     ]
+   },
+   {
+    "team_half_life": 4,
+    "rating_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "weather"
+    ]
+   },
+   {
+    "team_half_life": 4,
+    "rating_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "injuries",
+     "weather"
+    ]
    }
   ],
   "current": [
@@ -130,12 +147,12 @@
    8,
    13,
    14,
-   15,
    16,
    17,
-   18,
    19,
-   20
+   20,
+   21,
+   22
   ]
  },
  "cfb-games": {
@@ -235,19 +252,35 @@
     "seasons": 3,
     "l2": 0.01,
     "park": "learned"
+   },
+   {
+    "seasons": 3,
+    "l2": 0.01,
+    "park": "learned",
+    "extras": [
+     "statcast"
+    ]
+   },
+   {
+    "seasons": 3,
+    "l2": 0.001,
+    "park": "learned",
+    "extras": [
+     "statcast"
+    ]
    }
   ],
   "current": [
    2,
    4,
-   5,
    6,
-   7,
    8,
    9,
    10,
    11,
-   12
+   12,
+   13,
+   14
   ]
  },
  "mlb-games": {
@@ -710,15 +743,37 @@
      "goalies"
     ],
     "calib": true
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "extras": [
+     "xg",
+     "shots",
+     "goalies"
+    ]
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "elo_only": true,
+    "extras": [
+     "xg",
+     "shots",
+     "goalies"
+    ],
+    "calib": true
    }
   ],
   "current": [
    20,
    19,
-   10,
+   28,
    26,
    27,
-   21,
+   29,
    22,
    23,
    24,

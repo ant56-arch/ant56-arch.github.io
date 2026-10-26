@@ -39,6 +39,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 import model as M  # noqa: E402
 import store  # noqa: E402
+import xg  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
 import model_watch  # noqa: E402  (the repo root's cold-stretch check)
 
@@ -66,13 +67,16 @@ DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3}
 # best plain-Elo settings, and tryouts built on published methods - plain
 # FiveThirtyEight-style Elo, Massey / SRS ratings and Pythagorean expectation.
 _L = {"elo_k": 8, "elo_carry": 0.7, "years": 3}
+# 2026-10-26 (Anthony: use the best free data): the plain version and plain
+# Elo-only, last on the holdout, made way for two with MoneyPuck expected
+# goals (xg.py): one on the live version, one on the full model.
 RECIPES = [
     {**_L, "extras": ["shots", "goalies"]},
     {**_L, "extras": ["shots"]},
-    _L,
+    {**_L, "extras": ["xg", "shots", "goalies"]},
     {**_L, "extras": ["shots", "goalies"], "calib": True},
     {**_L, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
-    {**_L, "elo_only": True},
+    {**_L, "elo_only": True, "extras": ["xg", "shots", "goalies"], "calib": True},
     {**_L, "elo_only": True, "extras": ["shots", "goalies"]},
     {**_L, "extras": ["shots", "goalies", "massey"]},
     {**_L, "extras": ["shots", "goalies", "pyth"]},
@@ -99,6 +103,7 @@ def build_rows(params=None):
     if key in _walks:
         return _walks[key]
     games, box = store.load_all()
+    xg.merge_into_box(games, box)
     league = M.League(params)
     rows = []
     for g in games:
