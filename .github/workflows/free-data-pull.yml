@@ -1,0 +1,53 @@
+name: Free Data Pull (research)
+
+# Downloads research data from free sources that the Claude sandbox can't
+# reach (MoneyPuck, NHL API, Baseball Savant, Open-Meteo, ClubElo) and stores
+# it on the research-data branch. Research only; picks don't depend on it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Script in tools/free_data to run (without .py)"
+        required: false
+        default: probe
+  push:
+    branches: [claude/free-data-tryouts]
+    paths: ['tools/free_data/**', '.github/workflows/free-data-pull.yml']
+
+concurrency:
+  group: free-data-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pandas==2.2.3 numpy
+      - name: Run
+        env:
+          STEP: ${{ inputs.step || '' }}
+        run: |
+          STEP="${STEP:-$(cat tools/free_data/STEP 2>/dev/null || echo probe)}"
+          for s in $STEP; do python tools/free_data/$s.py; done
+      - name: Store on research-data branch
+        run: |
+          git config user.name "Research Bot"
+          git config user.email "actions@github.com"
+          cp -r out /tmp/out
+          git fetch origin research-data && git checkout research-data || git checkout --orphan research-data
+          git rm -rq --cached . 2>/dev/null || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name data -exec rm -rf {} +
+          mkdir -p data && cp -r /tmp/out/* data/
+          git add data
+          git diff --staged --quiet && exit 0
+          git commit -m "Research data: $(date -u +%F' '%H:%M)"
+          git push origin research-data
