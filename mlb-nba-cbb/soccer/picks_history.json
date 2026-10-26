@@ -4290,7 +4290,7 @@
     "away": 0.71
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "home",
@@ -4303,10 +4303,13 @@
     "draw_ml": 295,
     "away_ml": 500,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.571,
     "team": "ATH"
-   }
+   },
+   "home_pts": 4,
+   "away_pts": 0,
+   "winner": "ATH"
   },
   {
    "date": "2026-10-25",
@@ -4336,7 +4339,7 @@
     "away": 1.28
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "home",
@@ -4349,10 +4352,13 @@
     "draw_ml": 280,
     "away_ml": 220,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 1.15,
     "team": "LIV"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 0,
+   "winner": "LIV"
   },
   {
    "date": "2026-10-25",
@@ -4382,7 +4388,7 @@
     "away": 1.26
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "home",
@@ -4395,10 +4401,13 @@
     "draw_ml": 310,
     "away_ml": -155,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "HUL"
-   }
+   },
+   "home_pts": 1,
+   "away_pts": 1,
+   "winner": "Draw"
   },
   {
    "date": "2026-10-25",
@@ -4428,7 +4437,7 @@
     "away": 1.36
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "home",
@@ -4441,10 +4450,13 @@
     "draw_ml": 245,
     "away_ml": 195,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "MUN"
-   }
+   },
+   "home_pts": 0,
+   "away_pts": 3,
+   "winner": "BOU"
   },
   {
    "date": "2026-10-25",
@@ -4474,7 +4486,7 @@
     "away": 1.49
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "away",
@@ -4487,10 +4499,13 @@
     "draw_ml": 265,
     "away_ml": 140,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 1.4,
     "team": "NEW"
-   }
+   },
+   "home_pts": 0,
+   "away_pts": 2,
+   "winner": "NEW"
   },
   {
    "date": "2026-10-25",
@@ -4520,7 +4535,7 @@
     "away": 1.31
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-25T11:10:56Z",
    "ml": {
     "side": "home",
@@ -4533,10 +4548,13 @@
     "draw_ml": 245,
     "away_ml": 125,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "CEL"
-   }
+   },
+   "home_pts": 0,
+   "away_pts": 0,
+   "winner": "Draw"
   },
   {
    "date": "2026-10-25",
@@ -4566,7 +4584,7 @@
     "away": 1.15
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-25T16:07:52Z",
    "ml": {
     "side": "home",
@@ -4579,10 +4597,13 @@
     "draw_ml": 210,
     "away_ml": 175,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "SUN"
-   }
+   },
+   "home_pts": 0,
+   "away_pts": 0,
+   "winner": "Draw"
   },
   {
    "date": "2026-10-25",
@@ -4612,7 +4633,7 @@
     "away": 1.21
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-25T16:07:52Z",
    "ml": {
     "side": "home",
@@ -4625,10 +4646,13 @@
     "draw_ml": 360,
     "away_ml": 425,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.571,
     "team": "RSO"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 1,
+   "winner": "RSO"
   },
   {
    "date": "2026-10-25",
@@ -4658,7 +4682,7 @@
     "away": 1.63
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-25T18:14:04Z",
    "ml": {
     "side": "home",
@@ -4671,10 +4695,13 @@
     "draw_ml": 500,
     "away_ml": 300,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": false,
+    "units": -1.0,
     "team": "BAR"
-   }
+   },
+   "home_pts": 1,
+   "away_pts": 2,
+   "winner": "RMA"
   },
   {
    "date": "2026-10-26",
@@ -4693,29 +4720,29 @@
    "neutral": false,
    "pick": "SEV",
    "pick_side": "home",
-   "prob": 46.3,
+   "prob": 46.4,
    "probs": {
-    "home": 46.3,
+    "home": 46.4,
     "draw": 25.8,
-    "away": 27.9
+    "away": 27.8
    },
    "xg": {
-    "home": 1.45,
+    "home": 1.46,
     "away": 1.13
    },
    "model": "2026-10-19T20:55:01+00:00",
    "correct": null,
-   "set_at": "2026-10-26T00:31:46Z",
+   "set_at": "2026-10-26T08:57:21Z",
    "ml": {
     "side": "home",
     "price": -110,
-    "prob": 46.3,
-    "book_prob": 49.8,
-    "edge": -3.5,
+    "prob": 46.4,
+    "book_prob": 50.3,
+    "edge": -3.9,
     "value": false,
     "home_ml": -110,
-    "draw_ml": 245,
-    "away_ml": 320,
+    "draw_ml": 250,
+    "away_ml": 330,
     "book": "DraftKings",
     "won": null,
     "units": null,

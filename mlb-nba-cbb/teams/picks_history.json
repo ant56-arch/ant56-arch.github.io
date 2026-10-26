@@ -6003,6 +6003,59 @@
    "home_runs": 5,
    "away_runs": 4,
    "winner": "MIL"
+  },
+  {
+   "date": "2026-10-26",
+   "game_id": "849804",
+   "start": "2026-10-26T20:00:00-04:00",
+   "type": "postseason",
+   "round": "World Series",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "MIL",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 139,
+   "away_id": 158,
+   "home_record": "98-64",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 642547,
+    "name": "Freddy Peralta",
+    "era": 4.14,
+    "ip": 185.0
+   },
+   "away_sp": {
+    "id": 688107,
+    "name": "Robert Gasser",
+    "era": 3.74,
+    "ip": 113.0
+   },
+   "pick": "MIL",
+   "prob": 51.3,
+   "home_prob": 48.7,
+   "factors": {
+    "home_field": 0.146,
+    "elo": -0.228,
+    "starters": 0.031
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-26T08:56:39Z",
+   "ml": {
+    "team": "MIL",
+    "side": "away",
+    "price": -101,
+    "prob": 51.3,
+    "book_prob": 47.9,
+    "edge": 3.4,
+    "value": false,
+    "home_ml": -120,
+    "away_ml": -101,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
   }
  ]
 }
