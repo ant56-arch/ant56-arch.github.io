@@ -6,12 +6,12 @@
   "goalie"
  ],
  "coef": {
-  "home_ice": 0.2348,
-  "elo": 0.6043,
-  "shot_share": 6.8022,
-  "goalie": -0.0324
+  "home_ice": 0.2358,
+  "elo": 0.6078,
+  "shot_share": 6.7637,
+  "goalie": -0.0333
  },
- "sigma": 2.25,
+ "sigma": 2.24,
  "league": {
   "elo_k": 8,
   "elo_carry": 0.7
@@ -27,10 +27,10 @@
   ],
   "calib": true
  },
- "training_games": 4011,
+ "training_games": 4030,
  "training_dates": [
   "2023-12-01",
-  "2026-10-22"
+  "2026-10-25"
  ],
  "trained_on": "2023-24 to 2026-27",
  "backtest_season": "2025-26",
@@ -202,23 +202,23 @@
   "elo_only_log_loss": 0.6893,
   "home_team_accuracy": 0.5221
  },
- "trained_at": "2026-10-23T15:26:35+00:00",
- "trained_through": "2026-10-22",
+ "trained_at": "2026-10-26T17:14:44+00:00",
+ "trained_through": "2026-10-25",
  "recent_holdout": {
-  "from": "2026-04-16",
+  "from": "2026-04-22",
   "games": 250,
-  "correct": 147,
-  "accuracy": 0.588,
-  "predicted_accuracy": 0.5919,
-  "log_loss": 0.6626,
-  "brier": 0.2352,
-  "margin_mae": 2.1,
-  "home_win_rate": 0.556,
+  "correct": 146,
+  "accuracy": 0.584,
+  "predicted_accuracy": 0.5903,
+  "log_loss": 0.6645,
+  "brier": 0.236,
+  "margin_mae": 2.14,
+  "home_win_rate": 0.548,
   "top3": {
-   "days": 69,
-   "picks": 149,
-   "correct": 93,
-   "accuracy": 0.6242
+   "days": 67,
+   "picks": 141,
+   "correct": 88,
+   "accuracy": 0.6241
   }
  }
 }

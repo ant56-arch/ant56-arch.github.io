@@ -8,12 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: "Script in tools/free_data to run (without .py)"
+        description: "Script(s) in tools/free_data to run, without .py (pull, weather, clubelo, probe)"
         required: false
-        default: probe
-  push:
-    branches: [claude/free-data-tryouts]
-    paths: ['tools/free_data/**', '.github/workflows/free-data-pull.yml']
+        default: pull
 
 concurrency:
   group: free-data-pull
