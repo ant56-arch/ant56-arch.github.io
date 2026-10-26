@@ -1,5 +1,5 @@
-"""Kickoff weather for every outdoor NFL game since 2013 from Open-Meteo's
-historical archive (free, no key). Writes out/weather/nfl_weather.csv:
+"""Kickoff weather for outdoor NFL games since 2013 that nflverse's schedule
+has no temp/wind for, from Open-Meteo's historical archive (free, no key). Writes out/weather/nfl_weather.csv:
 game_id, temp_f, wind_mph, precip_mm (the kickoff hour at the home stadium)."""
 import csv, io, json, os, sys, time, urllib.request
 from collections import defaultdict
@@ -12,12 +12,12 @@ GAMES = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.cs
 
 
 def get(url):
-    for i in range(5):
+    for i in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
                 return r.read()
         except Exception as e:
-            print("retry", e); time.sleep(10 * (i + 1))
+            print("retry", e); time.sleep(5 * (i + 1))
     raise RuntimeError(url)
 
 
@@ -27,6 +27,8 @@ def main():
     for g in games:
         if int(g["season"]) < 2013 or g["roof"] not in ("outdoors", "open", "") or not g["home_score"]:
             continue
+        if g["temp"] and g["wind"]:
+            continue
         spot = stadium_for(g["home_team"], int(g["season"]), g["location"])
         if spot:
             todo[(spot, g["season"])].append(g)
@@ -34,13 +36,17 @@ def main():
     with open("out/weather/nfl_weather.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["game_id", "temp_f", "wind_mph", "precip_mm"])
-        for ((lat, lon), season), gs in sorted(todo.items()):
+        for n, (((lat, lon), season), gs) in enumerate(sorted(todo.items())):
+            print(n, len(todo), season, len(gs), flush=True)
             days = sorted(g["gameday"] for g in gs)
             url = ("https://archive-api.open-meteo.com/v1/archive?"
                    f"latitude={lat}&longitude={lon}&start_date={days[0]}&end_date={days[-1]}"
                    "&hourly=temperature_2m,wind_speed_10m,precipitation&wind_speed_unit=mph"
                    "&temperature_unit=fahrenheit&timezone=America%2FNew_York")
-            h = json.loads(get(url))["hourly"]
+            try:
+                h = json.loads(get(url))["hourly"]
+            except Exception as e:
+                print("skip", e, flush=True); continue
             at = {t: i for i, t in enumerate(h["time"])}
             for g in gs:
                 hour = (g["gametime"] or "13:00")[:2]
