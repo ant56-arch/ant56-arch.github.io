@@ -18618,9 +18618,9 @@
       "reason": "Batting 1st \u00b7 Strong contact quality (Baseball Savant)",
       "hit_streak": 1,
       "model": "2026-10-26T17:14:14+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": true,
+      "hits": 2,
+      "at_bats": 4,
       "void": false
     },
     {
@@ -18670,9 +18670,9 @@
       "reason": "Strong contact quality (Baseball Savant) \u00b7 Batting 3rd",
       "hit_streak": 0,
       "model": "2026-10-26T17:14:14+00:00",
-      "got_hit": null,
-      "hits": null,
-      "at_bats": null,
+      "got_hit": false,
+      "hits": 0,
+      "at_bats": 3,
       "void": false
     },
     {
@@ -19132,6 +19132,10 @@
     "2026-10-24": {
       "hitters": 20,
       "with_hit": 14
+    },
+    "2026-10-26": {
+      "hitters": 24,
+      "with_hit": 10
     }
   }
 }
