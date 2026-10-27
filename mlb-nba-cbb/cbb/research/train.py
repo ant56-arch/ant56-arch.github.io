@@ -72,13 +72,16 @@ RECIPES = [
     _L,
     _BEST,
     {"half_life": None, "carry": 0.4, "years": 2},
-    {"half_life": 60, "carry": 0.4, "years": 3},
-    {"half_life": 60, "carry": 0.6, "years": 2},
     {"half_life": None, "carry": 0.6, "years": 3},
     {**_L, "extras": ["pyth"]},
     {**_BEST, "extras": ["pyth"]},
     {**_L, "calib": True},
     {**_BEST, "calib": True},
+    # 2026-10-27 (Anthony: keep each version learning from this season): the
+    # two half-life 60 versions last on the holdout made way for two whose fit
+    # counts each older season half as much (season_decay).
+    {**_L, "season_decay": 0.5},
+    {**_BEST, "season_decay": 0.5},
 ]
 
 
