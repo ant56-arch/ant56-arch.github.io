@@ -67,6 +67,7 @@ label.rem{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:1
 button{font:inherit;font-weight:700;font-stretch:112%;padding:10px 14px;border:0;border-radius:999px;background:var(--text);color:var(--bg);cursor:pointer}
 button[disabled]{opacity:.6;cursor:default}
 .err{color:var(--miss);font-size:14px;min-height:1.2em;margin:0}
+html.opening main{visibility:hidden}
 </style>
 <script>try{var t=(JSON.parse(localStorage.getItem("edge-settings")||"null")||{}).theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
@@ -102,7 +103,14 @@ async function open(raw) {
   return new TextDecoder().decode(plain);
 }
 
+// On a refresh with a saved key the page can decrypt before this document
+// has finished loading; writing it then would add the Model Room under the
+// password screen instead of replacing it. So wait until loading is done.
 function show(page) {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => show(page), { once: true });
+    return;
+  }
   const lock = '<button onclick="localStorage.removeItem(\\'' + KEY_STORE + '\\');location.reload()" style="position:fixed;right:12px;bottom:12px;z-index:9;font:600 13px/1 Archivo,Arial,sans-serif;padding:8px 12px;border-radius:999px;border:1px solid var(--rule);background:var(--surface);color:var(--text);cursor:pointer">Lock</button>';
   const theme = document.documentElement.dataset.theme;
   document.open();
@@ -118,7 +126,12 @@ if (!LOCKED) {
   form.hidden = true;
 } else {
   const saved = stored();
-  if (saved) open(b64(saved)).then(show).catch(() => store());
+  if (saved) {
+    // Opening with the remembered key: keep the password box out of sight
+    // so it doesn't flash before the page appears.
+    document.documentElement.classList.add("opening");
+    open(b64(saved)).then(show).catch(() => { store(); document.documentElement.classList.remove("opening"); });
+  }
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     err.textContent = "";
