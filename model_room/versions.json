@@ -570,6 +570,20 @@
     "extras": [
      "massey"
     ]
+   },
+   {
+    "elo_k": 3,
+    "elo_carry": 0.67,
+    "sp_shrink": 60,
+    "years": 2,
+    "season_decay": 0.5
+   },
+   {
+    "elo_k": 2,
+    "elo_carry": 0.5,
+    "sp_shrink": 80,
+    "years": 3,
+    "season_decay": 0.5
    }
   ],
   "current": [
@@ -579,10 +593,10 @@
    37,
    38,
    39,
-   40,
    41,
-   42,
-   43
+   43,
+   44,
+   45
   ]
  },
  "nhl": {
