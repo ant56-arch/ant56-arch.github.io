@@ -1,0 +1,10 @@
+FAIL http://api.clubelo.com/2026-10-01 [Mozilla/5.] <HTTPError 502: 'Bad Gateway'>
+FAIL http://api.clubelo.com/2026-10-01 [curl/8.5.0] <HTTPError 502: 'Bad Gateway'>
+FAIL https://api.clubelo.com/2026-10-01 [Mozilla/5.] URLError(TimeoutError('timed out'))
+FAIL https://api.clubelo.com/2026-10-01 [curl/8.5.0] URLError(TimeoutError('timed out'))
+FAIL http://api.clubelo.com/ManCity [Mozilla/5.] <HTTPError 502: 'Bad Gateway'>
+FAIL http://api.clubelo.com/ManCity [curl/8.5.0] <HTTPError 502: 'Bad Gateway'>
+FAIL https://clubelo.com/ManCity [Mozilla/5.] <HTTPError 403: 'Forbidden'>
+FAIL https://clubelo.com/ManCity [curl/8.5.0] <HTTPError 403: 'Forbidden'>
+FAIL http://clubelo.com/ [Mozilla/5.] <HTTPError 403: 'Forbidden'>
+FAIL http://clubelo.com/ [curl/8.5.0] <HTTPError 403: 'Forbidden'>
