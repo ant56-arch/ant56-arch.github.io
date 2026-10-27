@@ -106,12 +106,21 @@ def recipe_extras(r):
 
 def recipe_name(r):
     extras = "".join(f" + {kind}" for kind in recipe_extras(r))
+    if r.get("season_decay"):
+        extras += f", older seasons x{r['season_decay']}"
     return f"ratings half-life {rating_half_life(r)} weeks, {r['seasons']} seasons{extras}"
 
 def window(recipe, dataset):
-    if recipe["seasons"] == "all" or dataset.empty:
-        return dataset
-    return dataset[dataset["season"] > dataset["season"].max() - recipe["seasons"]]
+    if recipe["seasons"] != "all" and not dataset.empty:
+        dataset = dataset[dataset["season"] > dataset["season"].max() - recipe["seasons"]]
+    # season_decay (Anthony, 2026-10-26: keep learning from this season): each
+    # older season counts this much as much as the one after it when the
+    # weights are fit, so 0.5 makes this season count double last season.
+    decay = recipe.get("season_decay")
+    if decay and not dataset.empty:
+        dataset = dataset.copy()
+        dataset["_fit_weight"] = decay ** (dataset["season"].max() - dataset["season"])
+    return dataset
 
 OFF_METRICS = ["epa_per_play", "third_down_rate", "redzone_td_rate", "explosive_rate", "sack_rate"]
 DEF_METRICS = ["def_epa_per_play_allowed"]
@@ -250,10 +259,16 @@ def fit_margin_and_total(feats, games):
     # site, so its weight is home field.
     cols = spread_columns(feats)
     X_margin = feats[cols].values
-    beta_margin, resid_margin = fit_ols(X_margin, games["actual_margin"].values)
-
     X_total = np.column_stack([feats["combined_exp_eff"], ones])
-    beta_total, resid_total = fit_ols(X_total, games["actual_total"].values)
+    if "_fit_weight" in games.columns:  # season_decay: weighted least squares
+        sw = np.sqrt(games["_fit_weight"].values)
+        bm, _ = fit_ols(X_margin * sw[:, None], games["actual_margin"].values * sw)
+        bt, _ = fit_ols(X_total * sw[:, None], games["actual_total"].values * sw)
+        beta_margin, resid_margin = bm, games["actual_margin"].values - X_margin @ bm
+        beta_total, resid_total = bt, games["actual_total"].values - X_total @ bt
+    else:
+        beta_margin, resid_margin = fit_ols(X_margin, games["actual_margin"].values)
+        beta_total, resid_total = fit_ols(X_total, games["actual_total"].values)
 
     coefs = {
         "points_rating_weight": float(beta_margin[0]),

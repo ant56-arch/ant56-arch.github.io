@@ -134,11 +134,19 @@ def calibrated_sigma(pred, won):
     return best[1]
 
 
-def fit(rows, features=None, calib=False):
+def fit(rows, features=None, calib=False, season_decay=None):
+    """season_decay (Anthony, 2026-10-26: keep learning from this season):
+    each older season counts this much as much as the one after it, so 0.5
+    makes this season count double last season."""
     features = features or M.FEATURES
     X = np.array([[r["f"][k] for k in features] for r in rows])
     y = np.array([r["margin"] for r in rows], dtype=float)
-    coef, *_ = np.linalg.lstsq(X, y, rcond=None)
+    if season_decay:
+        latest = max(r["game"]["season"] for r in rows)
+        sw = np.sqrt(np.array([season_decay ** (latest - r["game"]["season"]) for r in rows]))
+        coef, *_ = np.linalg.lstsq(X * sw[:, None], y * sw, rcond=None)
+    else:
+        coef, *_ = np.linalg.lstsq(X, y, rcond=None)
     sigma = float(np.std(y - X @ coef))
     if calib:
         sigma = calibrated_sigma(X @ coef, y > 0)
@@ -220,7 +228,7 @@ def train_recipe(recipe, before_idx=None):
     train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
     if len(train) < MIN_TRAIN_GAMES:
         return None
-    w = fit(train, recipe_features(recipe), recipe.get("calib", False))
+    w = fit(train, recipe_features(recipe), recipe.get("calib", False), recipe.get("season_decay"))
     w["league"] = league_params(recipe)
     w["recipe"] = recipe
     w["training_games"] = len(train)
@@ -241,7 +249,7 @@ def season_backtest(recipe):
     first = max(seasons[0], test_season - recipe["years"])
     train = [r for r in rows if r["usable"] and first <= r["game"]["season"] < test_season]
     test = [r for r in rows if r["game"]["season"] == test_season]
-    w = fit(train, recipe_features(recipe), recipe.get("calib", False))
+    w = fit(train, recipe_features(recipe), recipe.get("calib", False), recipe.get("season_decay"))
     w["league"] = league_params(recipe)
     test_regular = [r for r in test if r["game"]["type"] == "regular"]
     postseason = [r for r in test if r["game"]["type"] != "regular"]
@@ -303,6 +311,7 @@ def recipe_name(r):
     hl = f"half-life {r['half_life']} days" if r["half_life"] else "no recency weighting"
     extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
     extras += " + calib" if r.get("calib") else ""
+    extras += f", older seasons x{r['season_decay']}" if r.get("season_decay") else ""
     return f"{hl}, carry {r['carry']}, {r['years']} years{extras}"
 
 

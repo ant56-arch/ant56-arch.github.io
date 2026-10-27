@@ -268,19 +268,37 @@
     "extras": [
      "statcast"
     ]
+   },
+   {
+    "seasons": 3,
+    "l2": 0.01,
+    "park": "learned",
+    "extras": [
+     "statcast"
+    ],
+    "season_decay": 0.5
+   },
+   {
+    "seasons": 3,
+    "l2": 0.01,
+    "park": "learned",
+    "extras": [
+     "statcast"
+    ],
+    "season_decay": 0.25
    }
   ],
   "current": [
-   2,
    4,
    6,
    8,
-   9,
-   10,
    11,
+   10,
    12,
    13,
-   14
+   14,
+   15,
+   16
   ]
  },
  "mlb-games": {
@@ -765,6 +783,31 @@
      "goalies"
     ],
     "calib": true
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "elo_only": true,
+    "extras": [
+     "shots",
+     "goalies"
+    ],
+    "calib": true,
+    "season_decay": 0.5
+   },
+   {
+    "elo_k": 8,
+    "elo_carry": 0.7,
+    "years": 3,
+    "elo_only": true,
+    "extras": [
+     "xg",
+     "shots",
+     "goalies"
+    ],
+    "calib": true,
+    "season_decay": 0.5
    }
   ],
   "current": [
@@ -775,9 +818,9 @@
    27,
    29,
    22,
-   23,
    24,
-   25
+   30,
+   31
   ]
  },
  "nba": {
@@ -925,19 +968,35 @@
     "extras": [
      "travel"
     ]
+   },
+   {
+    "elo_k": 15,
+    "elo_carry": 0.6,
+    "years": 2,
+    "calib": true,
+    "season_decay": 0.5
+   },
+   {
+    "elo_k": 10,
+    "elo_carry": 0.6,
+    "years": 2,
+    "extras": [
+     "massey"
+    ],
+    "season_decay": 0.5
    }
   ],
   "current": [
    1,
-   2,
    3,
    19,
    20,
    22,
-   23,
    24,
    25,
-   26
+   26,
+   27,
+   28
   ]
  },
  "cbb": {

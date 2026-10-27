@@ -65,10 +65,22 @@ DEFAULT_RECIPE = {"seasons": 1, "l2": 0.001, "park": "table"}  # how the model w
 # 2026-10-26 (Anthony: use the best free data): the two 2-season fixed-table
 # versions, last at the October retrain, made way for two that add Baseball
 # Savant contact quality (features.EXTRA_FEATURES["statcast"]).
-RECIPES = ([{"seasons": s, "l2": l2, "park": park}
-            for s in (1, 2, 3) for l2 in (0.001, 0.01) for park in ("table", "learned")
-            if not (s == 1 and park == "table") and not (s == 2 and park == "table")]
-           + [{"seasons": 3, "l2": l2, "park": "learned", "extras": ["statcast"]} for l2 in (0.01, 0.001)])
+RECIPES = [
+    {"seasons": 1, "l2": 0.01, "park": "learned"},
+    {"seasons": 2, "l2": 0.001, "park": "learned"},
+    {"seasons": 2, "l2": 0.01, "park": "learned"},
+    {"seasons": 3, "l2": 0.01, "park": "table"},
+    {"seasons": 3, "l2": 0.001, "park": "learned"},
+    {"seasons": 3, "l2": 0.01, "park": "learned"},
+    {"seasons": 3, "l2": 0.01, "park": "learned", "extras": ["statcast"]},
+    {"seasons": 3, "l2": 0.001, "park": "learned", "extras": ["statcast"]},
+    # 2026-10-27 (Anthony: keep each version learning from this season): the
+    # 1-season L2 0.001 and 3-season L2 0.001 fixed-table versions, tied for
+    # last, made way for two whose fit counts each older season half or a
+    # quarter as much (season_decay).
+    {"seasons": 3, "l2": 0.01, "park": "learned", "extras": ["statcast"], "season_decay": 0.5},
+    {"seasons": 3, "l2": 0.01, "park": "learned", "extras": ["statcast"], "season_decay": 0.25},
+]
 PARK_COL = F.CANDIDATE_FEATURES.index("park_factor")
 
 
@@ -151,9 +163,11 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 
-def fit(X, y, l2):
-    """L2-regularized logistic regression by Newton's method."""
+def fit(X, y, l2, sw=None):
+    """L2-regularized logistic regression by Newton's method. sw: optional
+    weight per row (season_decay), scaled to average 1."""
     n, d = X.shape
+    sw = np.ones(n) if sw is None else sw * n / sw.sum()
     Xb = np.hstack([X, np.ones((n, 1))])
     w = np.zeros(d + 1)
     w[-1] = math.log(y.mean() / (1 - y.mean()))
@@ -161,8 +175,8 @@ def fit(X, y, l2):
     reg[-1] = 0.0
     for _ in range(50):
         p = sigmoid(Xb @ w)
-        grad = Xb.T @ (p - y) / n + reg * w
-        hess = (Xb.T * (p * (1 - p))) @ Xb / n + np.diag(reg)
+        grad = Xb.T @ (sw * (p - y)) / n + reg * w
+        hess = (Xb.T * (sw * p * (1 - p))) @ Xb / n + np.diag(reg)
         step = np.linalg.solve(hess, grad)
         w -= step
         if np.abs(step).max() < 1e-9:
@@ -201,7 +215,13 @@ def train(recipe, data, mask):
     keep = (X.std(axis=0) > 1e-9) & np.array([f in allowed for f in F.ALL_FEATURES])
     X = X[:, keep]
     means, stds = X.mean(axis=0), X.std(axis=0)
-    w, b = fit((X - means) / stds, data.y[mask], recipe["l2"])
+    # season_decay (Anthony, 2026-10-26: keep learning from this season): each
+    # older season counts this much as much as the one after it.
+    sw = None
+    if recipe.get("season_decay"):
+        seasons = data.seasons[mask]
+        sw = recipe["season_decay"] ** (seasons.max() - seasons).astype(float)
+    w, b = fit((X - means) / stds, data.y[mask], recipe["l2"], sw)
     dates = data.dates[mask]
     return {
         "features": [f for f, k in zip(F.ALL_FEATURES, keep) if k],
@@ -283,6 +303,7 @@ def short(ev):
 
 def recipe_name(r):
     extras = "".join(f" + {k}" for k in r.get("extras", []))
+    extras += f", older seasons x{r['season_decay']}" if r.get("season_decay") else ""
     return f"{r['seasons']} year{'s' if r['seasons'] > 1 else ''}, L2 {r['l2']}, {r['park']} parks{extras}"
 
 
