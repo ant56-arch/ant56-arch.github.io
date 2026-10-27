@@ -156,23 +156,7 @@ def grade_chip(name):
     return f'<span class="grade {cls}">{esc(name)}</span>'
 
 
-SCORE_PULL = 100  # picks of "no edge" mixed into every Edge score, so a short hot streak can't max it out
-
-
-def edge_score(model_pct, base_pct, n):
-    """One 1-100 score for every model in every league: 50 means it picks winners
-    exactly as often as its baseline (the Vegas favorite, or the home team / the
-    average hitter where there are no odds) on the same games. Each point of
-    pick rate above the baseline adds 10, each point below takes 10 away, after
-    pulling small samples toward 50: the gap counts n / (n + SCORE_PULL) of its
-    size. None under GRADE_MIN_N picks."""
-    if n < GRADE_MIN_N:
-        return None
-    gap = (model_pct - base_pct) * 100 * n / (n + SCORE_PULL)
-    return max(1, min(100, round(50 + 10 * gap)))
-
-
-SKILL_POINTS = 10  # Edge score points per 1% of accuracy-score skill over the benchmark
+SKILL_POINTS = 5   # Edge score points per 1% of accuracy-score skill over the benchmark, the same in every sport
 LUCK_Z = 1.28      # only the part of the lead (or deficit) bigger than luck at 80% confidence counts
 
 
@@ -233,16 +217,16 @@ def honest_grade(m):
 def score_chip(score):
     if score is None:
         return ""
-    cls = "g-good" if score >= 60 else "g-bad" if score < 45 else "g-mixed"
+    cls = "g-good" if score >= 55 else "g-bad" if score <= 45 else "g-mixed"
     return f'<span class="score {cls}" title="Edge score: 50 matches the baseline">{score}<small>/100</small></span>'
 
 
 def grade_from(model_pct, base_pct, n, m=None):
     """Simple rule: at least GRADE_MIN_N live picks, then 2+ points better than
     the baseline is Working, 3+ points worse is Falling short, else Mixed. With
-    m, also sets the model's Edge score from the same numbers."""
+    m, also records the pick rates. The Edge score itself only ever comes
+    from skill_score, so every sport is scored the same way."""
     if m is not None:
-        m["score"] = edge_score(model_pct, base_pct, n)
         m["win"] = (model_pct, base_pct, n)
     if n < GRADE_MIN_N:
         return "Not graded"
@@ -1524,11 +1508,6 @@ def build_hitters():
     if voids >= MIN_N:
         bad.append(f"{voids} picks were voided because the player didn't bat (benched, scratched or postponed). They aren't counted either way.")
     d = pct_of(W, n) - (bl_rate or 0)
-    # Two halves, as Anthony suggested: beating the average hitter, and getting
-    # a hit as often as the model said it would (picks since the trained model).
-    vs_avg = edge_score(pct_of(W, n), bl_rate or 0, n)
-    vs_own = edge_score(pct_of(eW, len(era)), mean([p["confidence"] / 100 for p in era]), len(era)) if era else None
-    m["score"] = vs_avg if vs_own is None or vs_avg is None else round((vs_avg + vs_own) / 2)
     day_rate = {d_: b["with_hit"] / b["hitters"] for d_, b in base.items() if b and b.get("hitters")}
     skill_score([(p["confidence"] / 100, day_rate.get(p["date"]), int(p["got_hit"])) for p in era], m)
     m["grade"] = "Not graded" if n < GRADE_MIN_N else ("Working" if d >= 0.05 else "Mixed" if d >= 0 else "Falling short")
@@ -2265,7 +2244,7 @@ def scoreboard(sports):
     o.append('<details class="more"><summary>How the score works</summary><p class="note">'
              'It compares our win chances with Vegas\'s (or, for hitters, the average hitter\'s) on the same live games, using the '
              'accuracy score forecasters use, which punishes a confident miss more than a timid one. '
-             f'Each 1% more accurate than Vegas adds {SKILL_POINTS} points. Only the part bigger than luck counts, so a hot streak '
+             f'Every league uses this same rule: each 1% more accurate adds {SKILL_POINTS} points, each 1% less takes {SKILL_POINTS} away, and 55+ is sharper, 45 or less is behind. Only the part bigger than luck counts, so a hot streak '
              f'can\'t inflate it. A model needs {GRADE_MIN_N}+ live picks to get a score.</p></details>')
     rest = [name if name.startswith(lab) else f"{lab} {name}" for sc, lab, name in rows if sc is None]
     if rest:
