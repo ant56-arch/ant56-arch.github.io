@@ -74,10 +74,13 @@ RECIPES = [
     {"elo_k": 2, "elo_carry": 0.5, "sp_shrink": 60, "years": 3},
     _SLOW,
     {**_SLOW, "elo_carry": 0.67},
-    {**_L, "elo_only": True},
     {**_L, "extras": ["massey"]},
-    {**_L, "extras": ["pyth"]},
     {**_SLOW, "extras": ["massey"]},
+    # 2026-10-27 (Anthony: keep each version learning from this season): Elo
+    # only and Pythagorean, last on the holdout, made way for two whose fit
+    # counts each older season half as much (season_decay).
+    {**_L, "season_decay": 0.5},
+    {**_SLOW, "season_decay": 0.5},
 ]
 
 
@@ -114,18 +117,25 @@ def build_rows(params=None):
     return rows
 
 
-def fit(rows, features=None):
-    """Ridge-penalized logistic regression by Newton's method."""
+def fit(rows, features=None, season_decay=None):
+    """Ridge-penalized logistic regression by Newton's method. season_decay
+    (Anthony, 2026-10-26: keep learning from this season): each older season
+    counts this much as much as the one after it."""
     features = features or M.FEATURES
     X = np.array([[r["f"][k] for k in features] for r in rows])
     y = np.array([r["home_won"] for r in rows], dtype=float)
+    sw = np.ones(len(rows))
+    if season_decay:
+        latest = max(r["game"]["season"] for r in rows)
+        sw = np.array([season_decay ** (latest - r["game"]["season"]) for r in rows])
+        sw *= len(rows) / sw.sum()
     pen = np.full(X.shape[1], L2)
     pen[features.index("home_field")] = 0.0
     w = np.zeros(X.shape[1])
     for _ in range(50):
         p = 1 / (1 + np.exp(-(X @ w)))
-        grad = X.T @ (p - y) + pen * w
-        hess = (X * (p * (1 - p))[:, None]).T @ X + np.diag(pen)
+        grad = X.T @ (sw * (p - y)) + pen * w
+        hess = (X * (sw * p * (1 - p))[:, None]).T @ X + np.diag(pen)
         step = np.linalg.solve(hess, grad)
         w -= step
         if np.max(np.abs(step)) < 1e-8:
@@ -203,7 +213,7 @@ def train_recipe(recipe, before_idx=None):
     train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
     if len(train) < MIN_TRAIN_GAMES:
         return None
-    w = fit(train, recipe_features(recipe))
+    w = fit(train, recipe_features(recipe), recipe.get("season_decay"))
     w["league"] = league_params(recipe)
     w["recipe"] = recipe
     w["training_games"] = len(train)
@@ -227,7 +237,7 @@ def season_backtest(recipe):
     test = [r for r in rows if r["game"]["season"] == test_season]
     if len(train) < MIN_TRAIN_GAMES:
         return {}
-    w = fit(train, recipe_features(recipe))
+    w = fit(train, recipe_features(recipe), recipe.get("season_decay"))
     test_regular = [r for r in test if r["game"]["type"] == "regular"]
     post = [r for r in test if r["game"]["type"] != "regular"]
     bt = evaluate(w, test_regular)
@@ -287,6 +297,7 @@ def summary(lines):
 
 def recipe_name(r):
     extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
+    extras += f", older seasons x{r['season_decay']}" if r.get("season_decay") else ""
     return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, SP shrink {r['sp_shrink']}, {r['years']} years{extras}"
 
 

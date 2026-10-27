@@ -332,6 +332,7 @@ SETTING_WORDS = {
     "promoted": ("New-club start", lambda v: f"{float(v):g} below average" if v else "Off"),
     "draw": ("Extra draw chance", lambda v: f"+{float(v) * 100:.0f}%" if v else "Off"),
     "calib": ("Win chances", lambda v: "Tuned to real win rates" if v else "Standard"),
+    "season_decay": ("Older seasons", lambda v: f"Count x{float(v):g} per year back" if v else "Count the same"),
     "stretch": ("Win chances", lambda v: f"Sharpened x{float(v):g}" if v else "Standard"),
 }
 EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "Shot share", "goalies": "Goalies",
@@ -362,6 +363,8 @@ SETTING_HELP = {
                "or data from free outside sources: expected goals from MoneyPuck (how good each shot was, not just whether it went in), "
                "weather from Open-Meteo, contact quality from Baseball Savant, or ClubElo's club ratings"),
     "elo_only": "whether it uses every input or only the Elo rating and home edge, the classic FiveThirtyEight way",
+    "season_decay": ("when it relearns its weights each week, how much each older season counts next to the one after it "
+                     "(x0.5: this season counts double last season)"),
     "rest": "whether a club that played 3 or fewer days earlier gets a fitted penalty",
     "promoted": "where a club new to its league starts, instead of the league average",
     "draw": "a nudge up to the draw chance",
@@ -523,7 +526,10 @@ def difference_line(recipe, live):
         a, b = recipe.get(k), live.get(k)
         if recipe_cell(k, a) == recipe_cell(k, b) or (not a and not b):
             continue
-        if k == "park":
+        if k == "season_decay":
+            parts.append(f"counts this season more (each older season x{float(a):g})" if a
+                         else "counts every season the same")
+        elif k == "park":
             parts.append("learns ballpark effects from games" if a == "learned" else "uses a fixed ballpark table")
         elif k in ON_WORDS and (not a or not b):
             parts.append(ON_WORDS[k] if a else OFF_WORDS[k])
