@@ -4731,7 +4731,7 @@
     "away": 1.13
    },
    "model": "2026-10-19T20:55:01+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-26T18:40:37Z",
    "ml": {
     "side": "home",
@@ -4744,10 +4744,13 @@
     "draw_ml": 250,
     "away_ml": 380,
     "book": "DraftKings",
-    "won": null,
-    "units": null,
+    "won": true,
+    "units": 0.8,
     "team": "SEV"
-   }
+   },
+   "home_pts": 2,
+   "away_pts": 0,
+   "winner": "SEV"
   }
  ]
 }

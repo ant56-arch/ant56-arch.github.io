@@ -6040,7 +6040,7 @@
     "starters": 0.031
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-26T20:20:31Z",
    "ml": {
     "team": "MIL",
@@ -6052,6 +6052,62 @@
     "value": false,
     "home_ml": -119,
     "away_ml": -101,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.99
+   },
+   "home_runs": 1,
+   "away_runs": 10,
+   "winner": "MIL"
+  },
+  {
+   "date": "2026-10-27",
+   "game_id": "849803",
+   "start": "2026-10-27T20:00:00-04:00",
+   "type": "postseason",
+   "round": "World Series",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "MIL",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 139,
+   "away_id": 158,
+   "home_record": "98-64",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": 643377,
+    "name": "Griffin Jax",
+    "era": 3.27,
+    "ip": 107.3
+   },
+   "away_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "pick": "TB",
+   "prob": 50.6,
+   "home_prob": 50.6,
+   "factors": {
+    "home_field": 0.146,
+    "elo": -0.259,
+    "starters": 0.137
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-27T09:01:28Z",
+   "ml": {
+    "team": "TB",
+    "side": "home",
+    "price": 117,
+    "prob": 50.6,
+    "book_prob": 44.1,
+    "edge": 6.5,
+    "value": true,
+    "home_ml": 117,
+    "away_ml": -141,
     "book": "DraftKings",
     "won": null,
     "units": null
