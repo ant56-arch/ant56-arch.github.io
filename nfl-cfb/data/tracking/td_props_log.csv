@@ -1306,6 +1306,6 @@ season,week,player_id,player_name,pos,team,opponent,kickoff,our_prob,top10,event
 2026,8,00-0037248,J.Cook,RB,BUF,BAL,2026-11-01T18:00:00Z,0.567,True,,,,,,,,False,,,
 2026,8,00-0036223,J.Taylor,RB,IND,JAX,2026-11-01T18:00:00Z,0.555,True,,,,,,,,False,,,
 2026,8,00-0036963,A.St. Brown,WR,DET,MIN,2026-11-01T18:00:00Z,0.515,True,,,,,,,,False,,,
-2026,8,00-0037840,K.Williams,RB,LA,LAC,2026-11-01T21:05:00Z,0.537,True,,,,,,,,False,,,
+2026,8,00-0037840,K.Williams,RB,LA,LAC,2026-11-01T21:05:00Z,0.542,True,,,,,,,,False,,,
 2026,8,00-0038134,K.Walker,RB,KC,DEN,2026-11-01T21:25:00Z,0.581,True,,,,,,,,False,,,
 2026,8,00-0036275,D.Swift,RB,CHI,SEA,2026-11-03T01:15:00Z,0.501,True,,,,,,,,False,,,
