@@ -6082,32 +6082,32 @@
     "ip": 107.3
    },
    "away_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 669160,
+    "name": "Dustin May",
+    "era": 4.72,
+    "ip": 148.7
    },
-   "pick": "TB",
-   "prob": 50.6,
-   "home_prob": 50.6,
+   "pick": "MIL",
+   "prob": 50.1,
+   "home_prob": 49.9,
    "factors": {
     "home_field": 0.146,
     "elo": -0.259,
-    "starters": 0.137
+    "starters": 0.108
    },
    "model": "2026-10-17T14:57:08+00:00",
    "correct": null,
-   "set_at": "2026-10-27T19:53:35Z",
+   "set_at": "2026-10-27T23:39:39Z",
    "ml": {
-    "team": "TB",
-    "side": "home",
-    "price": 102,
-    "prob": 50.6,
-    "book_prob": 47.4,
-    "edge": 3.2,
+    "team": "MIL",
+    "side": "away",
+    "price": -118,
+    "prob": 50.1,
+    "book_prob": 52.7,
+    "edge": -2.6,
     "value": false,
-    "home_ml": 102,
-    "away_ml": -122,
+    "home_ml": 106,
+    "away_ml": -118,
     "book": "DraftKings",
     "won": null,
     "units": null

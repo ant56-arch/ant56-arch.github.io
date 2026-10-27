@@ -2320,18 +2320,18 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-27T19:53:31Z",
+   "set_at": "2026-10-27T23:39:32Z",
    "ml": {
     "team": "BOS",
     "side": "home",
-    "price": -625,
+    "price": -750,
     "prob": 80.5,
-    "book_prob": 82.7,
-    "edge": -2.2,
+    "book_prob": 84.7,
+    "edge": -4.2,
     "value": false,
-    "home_ml": -625,
-    "away_ml": 455,
-    "book": "DraftKings",
+    "home_ml": -750,
+    "away_ml": 525,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -2349,14 +2349,15 @@
    "away_record": "3-0",
    "neutral": false,
    "pick": "NY",
-   "prob": 51.9,
-   "home_prob": 51.9,
-   "margin": 0.6,
+   "prob": 54.1,
+   "home_prob": 54.1,
+   "margin": 1.3,
    "home_out": [
     "Jose Alvarado"
    ],
    "away_out": [
-    "Jalen Duren"
+    "Jalen Duren",
+    "Isaiah Joe"
    ],
    "rest": {
     "home": 1,
@@ -2364,18 +2365,18 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-27T19:53:31Z",
+   "set_at": "2026-10-27T23:39:32Z",
    "ml": {
     "team": "NY",
     "side": "home",
-    "price": -170,
-    "prob": 51.9,
-    "book_prob": 60.4,
-    "edge": -8.5,
+    "price": -175,
+    "prob": 54.1,
+    "book_prob": 60.9,
+    "edge": -6.8,
     "value": false,
-    "home_ml": -170,
-    "away_ml": 142,
-    "book": "DraftKings",
+    "home_ml": -175,
+    "away_ml": 145,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -2406,7 +2407,7 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-27T19:53:31Z",
+   "set_at": "2026-10-27T23:39:32Z",
    "ml": {
     "team": "SA",
     "side": "home",
@@ -2417,7 +2418,7 @@
     "value": false,
     "home_ml": -1800,
     "away_ml": 1000,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -2446,18 +2447,18 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-27T19:53:31Z",
+   "set_at": "2026-10-27T23:39:32Z",
    "ml": {
     "team": "LAL",
     "side": "home",
-    "price": -125,
+    "price": -120,
     "prob": 58.1,
-    "book_prob": 53.2,
-    "edge": 4.9,
+    "book_prob": 52.2,
+    "edge": 5.9,
     "value": false,
-    "home_ml": -125,
-    "away_ml": 105,
-    "book": "DraftKings",
+    "home_ml": -120,
+    "away_ml": 100,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
