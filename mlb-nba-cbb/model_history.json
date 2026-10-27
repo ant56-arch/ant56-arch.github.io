@@ -1854,6 +1854,203 @@
     "batter_k": -0.0211,
     "opp_pitcher_xba": 0.0366
    }
+  },
+  {
+   "run_at": "2026-10-27T00:19:46+00:00",
+   "data_through": "2026-09-27",
+   "holdout": {
+    "from": "2026-08-24",
+    "rows": 8044,
+    "baseline_log_loss": 0.67824
+   },
+   "live_model": {
+    "trained_at": "2026-10-26T17:14:14+00:00",
+    "recipe": {
+     "seasons": 3,
+     "l2": 0.01,
+     "park": "learned",
+     "extras": [
+      "statcast"
+     ]
+    },
+    "holdout": {
+     "log_loss": 0.66678,
+     "auc": 0.587,
+     "top10_hit_rate": 0.7143
+    }
+   },
+   "current_recipe": {
+    "log_loss": 0.66699,
+    "auc": 0.5862,
+    "top10_hit_rate": 0.7114
+   },
+   "best_recipe": {
+    "recipe": {
+     "seasons": 3,
+     "l2": 0.01,
+     "park": "learned",
+     "extras": [
+      "statcast"
+     ]
+    },
+    "log_loss": 0.66699,
+    "auc": 0.5862,
+    "top10_hit_rate": 0.7114
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "seasons": 1,
+      "l2": 0.01,
+      "park": "learned"
+     },
+     "log_loss": 0.66789,
+     "auc": 0.5821,
+     "top10_hit_rate": 0.7286
+    },
+    {
+     "recipe": {
+      "seasons": 2,
+      "l2": 0.001,
+      "park": "learned"
+     },
+     "log_loss": 0.66776,
+     "auc": 0.5828,
+     "top10_hit_rate": 0.7257
+    },
+    {
+     "recipe": {
+      "seasons": 2,
+      "l2": 0.01,
+      "park": "learned"
+     },
+     "log_loss": 0.66769,
+     "auc": 0.5829,
+     "top10_hit_rate": 0.72
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.01,
+      "park": "table"
+     },
+     "log_loss": 0.66788,
+     "auc": 0.5822,
+     "top10_hit_rate": 0.7114
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.001,
+      "park": "learned"
+     },
+     "log_loss": 0.6676,
+     "auc": 0.5834,
+     "top10_hit_rate": 0.72
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.01,
+      "park": "learned"
+     },
+     "log_loss": 0.66756,
+     "auc": 0.5835,
+     "top10_hit_rate": 0.7171
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.01,
+      "park": "learned",
+      "extras": [
+       "statcast"
+      ]
+     },
+     "log_loss": 0.66699,
+     "auc": 0.5862,
+     "top10_hit_rate": 0.7114
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.001,
+      "park": "learned",
+      "extras": [
+       "statcast"
+      ]
+     },
+     "log_loss": 0.66704,
+     "auc": 0.586,
+     "top10_hit_rate": 0.7114
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.01,
+      "park": "learned",
+      "extras": [
+       "statcast"
+      ],
+      "season_decay": 0.5
+     },
+     "log_loss": 0.66711,
+     "auc": 0.5858,
+     "top10_hit_rate": 0.7114
+    },
+    {
+     "recipe": {
+      "seasons": 3,
+      "l2": 0.01,
+      "park": "learned",
+      "extras": [
+       "statcast"
+      ],
+      "season_decay": 0.25
+     },
+     "log_loss": 0.66724,
+     "auc": 0.5853,
+     "top10_hit_rate": 0.7057
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "trigger": "manual",
+   "live_picks_last_7_days": {
+    "days": 7,
+    "picks": 4,
+    "hit_rate": 0.75,
+    "predicted": 0.6737
+   },
+   "weights_before": {
+    "season_avg": 0.0255,
+    "recent_form_avg": 0.0382,
+    "ab_per_game": 0.1775,
+    "is_home": -0.0133,
+    "platoon": 0.0738,
+    "park_factor": 0.0724,
+    "opp_pitcher_era": 0.0194,
+    "opp_pitcher_whip": 0.0065,
+    "opp_pitcher_k9": -0.0489,
+    "batter_xba": 0.064,
+    "batter_k": -0.0211,
+    "opp_pitcher_xba": 0.0366
+   },
+   "weights_after": {
+    "season_avg": 0.0255,
+    "recent_form_avg": 0.0382,
+    "ab_per_game": 0.1775,
+    "is_home": -0.0133,
+    "platoon": 0.0738,
+    "park_factor": 0.0724,
+    "opp_pitcher_era": 0.0194,
+    "opp_pitcher_whip": 0.0065,
+    "opp_pitcher_k9": -0.0489,
+    "batter_xba": 0.064,
+    "batter_k": -0.0211,
+    "opp_pitcher_xba": 0.0366
+   }
   }
  ]
 }
