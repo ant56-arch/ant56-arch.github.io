@@ -6132,10 +6132,10 @@
    "home_record": "98-64",
    "away_record": "103-59",
    "home_sp": {
-    "id": null,
-    "name": "TBD",
-    "era": null,
-    "ip": 0
+    "id": 656876,
+    "name": "Drew Rasmussen",
+    "era": 2.61,
+    "ip": 196.7
    },
    "away_sp": {
     "id": 694819,
@@ -6144,26 +6144,26 @@
     "ip": 188.0
    },
    "pick": "MIL",
-   "prob": 60.6,
-   "home_prob": 39.4,
+   "prob": 54.2,
+   "home_prob": 45.8,
    "factors": {
     "home_field": 0.146,
     "elo": -0.248,
-    "starters": -0.33
+    "starters": -0.068
    },
    "model": "2026-10-17T14:57:08+00:00",
    "correct": null,
-   "set_at": "2026-10-28T18:19:35Z",
+   "set_at": "2026-10-28T20:07:05Z",
    "ml": {
     "team": "MIL",
     "side": "away",
-    "price": -162,
-    "prob": 60.6,
-    "book_prob": 59.1,
-    "edge": 1.5,
+    "price": -149,
+    "prob": 54.2,
+    "book_prob": 57.2,
+    "edge": -3.0,
     "value": false,
-    "home_ml": 134,
-    "away_ml": -162,
+    "home_ml": 123,
+    "away_ml": -149,
     "book": "DraftKings",
     "won": null,
     "units": null
