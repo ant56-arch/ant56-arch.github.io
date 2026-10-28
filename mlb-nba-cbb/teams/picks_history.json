@@ -6096,7 +6096,7 @@
     "starters": 0.108
    },
    "model": "2026-10-17T14:57:08+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-27T23:39:39Z",
    "ml": {
     "team": "MIL",
@@ -6108,6 +6108,62 @@
     "value": false,
     "home_ml": 106,
     "away_ml": -118,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_runs": 4,
+   "away_runs": 3,
+   "winner": "TB"
+  },
+  {
+   "date": "2026-10-28",
+   "game_id": "849799",
+   "start": "2026-10-28T20:00:00-04:00",
+   "type": "postseason",
+   "round": "World Series",
+   "doubleheader": 0,
+   "home": "TB",
+   "away": "MIL",
+   "home_name": "Tampa Bay Rays",
+   "away_name": "Milwaukee Brewers",
+   "home_id": 139,
+   "away_id": 158,
+   "home_record": "98-64",
+   "away_record": "103-59",
+   "home_sp": {
+    "id": null,
+    "name": "TBD",
+    "era": null,
+    "ip": 0
+   },
+   "away_sp": {
+    "id": 694819,
+    "name": "Jacob Misiorowski",
+    "era": 1.87,
+    "ip": 188.0
+   },
+   "pick": "MIL",
+   "prob": 60.6,
+   "home_prob": 39.4,
+   "factors": {
+    "home_field": 0.146,
+    "elo": -0.248,
+    "starters": -0.33
+   },
+   "model": "2026-10-17T14:57:08+00:00",
+   "correct": null,
+   "set_at": "2026-10-28T09:40:59Z",
+   "ml": {
+    "team": "MIL",
+    "side": "away",
+    "price": -148,
+    "prob": 60.6,
+    "book_prob": 57.1,
+    "edge": 3.5,
+    "value": false,
+    "home_ml": 123,
+    "away_ml": -148,
     "book": "DraftKings",
     "won": null,
     "units": null

@@ -1,32 +1,32 @@
 {
- "as_of": "2026-10-27",
+ "as_of": "2026-10-28",
  "leagues": {
-  "B1": -0.43,
-  "D1": 0.06,
-  "E0": 0.756,
+  "B1": -0.432,
+  "D1": 0.065,
+  "E0": 0.757,
   "F1": 0.159,
-  "I1": -0.038,
-  "N1": -0.812,
-  "P1": -0.63,
-  "SC0": -0.899,
-  "SP1": 0.215,
-  "T1": -0.951,
-  "OTHER": -0.428
+  "I1": -0.039,
+  "N1": -0.813,
+  "P1": -0.632,
+  "SC0": -0.898,
+  "SP1": 0.216,
+  "T1": -0.95,
+  "OTHER": -0.429
  },
- "home": 0.2089,
+ "home": 0.2082,
  "rho": -0.04,
  "home_edges": {
-  "B1": 0.347,
-  "D1": 0.357,
+  "B1": 0.345,
+  "D1": 0.353,
   "E0": 0.265,
-  "F1": 0.298,
+  "F1": 0.296,
   "I1": 0.219,
-  "N1": 0.281,
-  "P1": 0.271,
+  "N1": 0.279,
+  "P1": 0.269,
   "SC0": 0.341,
-  "SP1": 0.41,
-  "T1": 0.383,
-  "OTHER": 0.497
+  "SP1": 0.411,
+  "T1": 0.381,
+  "OTHER": 0.496
  },
  "recipe": {
   "half_life": 550,
@@ -40,22 +40,22 @@
   {
    "team": "bayern munich",
    "league": "D1",
-   "strength": 1.865
+   "strength": 1.858
   },
   {
    "team": "barcelona",
    "league": "SP1",
-   "strength": 1.773
+   "strength": 1.777
   },
   {
    "team": "arsenal",
    "league": "E0",
-   "strength": 1.726
+   "strength": 1.719
   },
   {
    "team": "paris sg",
    "league": "F1",
-   "strength": 1.678
+   "strength": 1.679
   },
   {
    "team": "man city",
@@ -63,14 +63,14 @@
    "strength": 1.666
   },
   {
-   "team": "madrid",
-   "league": "SP1",
-   "strength": 1.5
-  },
-  {
    "team": "liverpool",
    "league": "E0",
-   "strength": 1.499
+   "strength": 1.498
+  },
+  {
+   "team": "madrid",
+   "league": "SP1",
+   "strength": 1.496
   },
   {
    "team": "brighton",
@@ -80,27 +80,27 @@
   {
    "team": "chelsea",
    "league": "E0",
-   "strength": 1.163
+   "strength": 1.172
   },
   {
    "team": "aston villa",
    "league": "E0",
-   "strength": 1.087
+   "strength": 1.086
   },
   {
    "team": "newcastle",
    "league": "E0",
-   "strength": 1.084
+   "strength": 1.085
   },
   {
    "team": "inter",
    "league": "I1",
-   "strength": 1.079
+   "strength": 1.078
   },
   {
    "team": "bournemouth",
    "league": "E0",
-   "strength": 1.056
+   "strength": 1.057
   },
   {
    "team": "man united",
@@ -110,12 +110,12 @@
   {
    "team": "atletico madrid",
    "league": "SP1",
-   "strength": 1.022
+   "strength": 1.021
   },
   {
    "team": "brentford",
    "league": "E0",
-   "strength": 0.979
+   "strength": 0.972
   },
   {
    "team": "tottenham",
@@ -125,12 +125,12 @@
   {
    "team": "leeds",
    "league": "E0",
-   "strength": 0.803
+   "strength": 0.802
   },
   {
    "team": "dortmund",
    "league": "D1",
-   "strength": 0.792
+   "strength": 0.795
   },
   {
    "team": "nottingham forest",
@@ -145,17 +145,17 @@
   {
    "team": "sporting",
    "league": "P1",
-   "strength": 0.773
+   "strength": 0.77
   },
   {
    "team": "marseille",
    "league": "F1",
-   "strength": 0.721
+   "strength": 0.722
   },
   {
    "team": "leverkusen",
    "league": "D1",
-   "strength": 0.717
+   "strength": 0.72
   },
   {
    "team": "hull",
@@ -180,17 +180,17 @@
   {
    "team": "como",
    "league": "I1",
-   "strength": 0.644
+   "strength": 0.643
   },
   {
    "team": "roma",
    "league": "I1",
-   "strength": 0.623
+   "strength": 0.622
   },
   {
    "team": "benfica",
    "league": "P1",
-   "strength": 0.619
+   "strength": 0.621
   },
   {
    "team": "juventus",
@@ -205,15 +205,15 @@
   {
    "team": "betis",
    "league": "SP1",
-   "strength": 0.603
-  },
-  {
-   "team": "lens",
-   "league": "F1",
-   "strength": 0.597
+   "strength": 0.602
   },
   {
    "team": "monaco",
+   "league": "F1",
+   "strength": 0.588
+  },
+  {
+   "team": "lens",
    "league": "F1",
    "strength": 0.588
   },
@@ -223,19 +223,19 @@
    "strength": 0.583
   },
   {
-   "team": "sunderland",
-   "league": "E0",
-   "strength": 0.56
-  },
-  {
    "team": "stuttgart",
    "league": "D1",
-   "strength": 0.56
+   "strength": 0.566
+  },
+  {
+   "team": "sunderland",
+   "league": "E0",
+   "strength": 0.559
   },
   {
    "team": "psv eindhoven",
    "league": "N1",
-   "strength": 0.55
+   "strength": 0.548
   },
   {
    "team": "west ham",
@@ -245,17 +245,12 @@
   {
    "team": "rb leipzig",
    "league": "D1",
-   "strength": 0.522
+   "strength": 0.51
   },
   {
    "team": "union st gilloise",
    "league": "B1",
-   "strength": 0.508
-  },
-  {
-   "team": "atalanta",
-   "league": "I1",
-   "strength": 0.495
+   "strength": 0.507
   },
   {
    "team": "rennes",
@@ -263,14 +258,19 @@
    "strength": 0.495
   },
   {
+   "team": "atalanta",
+   "league": "I1",
+   "strength": 0.494
+  },
+  {
    "team": "milan",
    "league": "I1",
-   "strength": 0.466
+   "strength": 0.465
   },
   {
    "team": "club brugge",
    "league": "B1",
-   "strength": 0.465
+   "strength": 0.464
   },
   {
    "team": "napoli",
@@ -278,14 +278,14 @@
    "strength": 0.452
   },
   {
-   "team": "porto",
-   "league": "P1",
-   "strength": 0.436
-  },
-  {
    "team": "athletic",
    "league": "SP1",
    "strength": 0.435
+  },
+  {
+   "team": "porto",
+   "league": "P1",
+   "strength": 0.433
   },
   {
    "team": "coventry",
@@ -295,7 +295,7 @@
   {
    "team": "celta vigo",
    "league": "SP1",
-   "strength": 0.401
+   "strength": 0.4
   },
   {
    "team": "strasbourg",
@@ -315,7 +315,7 @@
   {
    "team": "wolverhampton",
    "league": "E0",
-   "strength": 0.346
+   "strength": 0.342
   },
   {
    "team": "toulouse",
@@ -325,7 +325,7 @@
   {
    "team": "bodo glimt",
    "league": "OTHER",
-   "strength": 0.3
+   "strength": 0.298
   },
   {
    "team": "lazio",
@@ -370,12 +370,7 @@
   {
    "team": "bologna",
    "league": "I1",
-   "strength": 0.197
-  },
-  {
-   "team": "sevilla",
-   "league": "SP1",
-   "strength": 0.191
+   "strength": 0.198
   },
   {
    "team": "nice",
@@ -383,9 +378,9 @@
    "strength": 0.188
   },
   {
-   "team": "hoffenheim",
-   "league": "D1",
-   "strength": 0.183
+   "team": "sevilla",
+   "league": "SP1",
+   "strength": 0.188
   },
   {
    "team": "brest",
@@ -393,19 +388,24 @@
    "strength": 0.183
   },
   {
+   "team": "hoffenheim",
+   "league": "D1",
+   "strength": 0.183
+  },
+  {
    "team": "feyenoord",
    "league": "N1",
-   "strength": 0.176
+   "strength": 0.175
   },
   {
    "team": "celtic",
    "league": "SC0",
-   "strength": 0.171
+   "strength": 0.17
   },
   {
    "team": "mainz",
    "league": "D1",
-   "strength": 0.165
+   "strength": 0.168
   },
   {
    "team": "levante",
@@ -423,9 +423,19 @@
    "strength": 0.147
   },
   {
+   "team": "lorient",
+   "league": "F1",
+   "strength": 0.142
+  },
+  {
    "team": "deportivo",
    "league": "SP1",
    "strength": 0.141
+  },
+  {
+   "team": "freiburg",
+   "league": "D1",
+   "strength": 0.14
   },
   {
    "team": "osasuna",
@@ -433,19 +443,9 @@
    "strength": 0.14
   },
   {
-   "team": "freiburg",
-   "league": "D1",
-   "strength": 0.137
-  },
-  {
-   "team": "lorient",
-   "league": "F1",
-   "strength": 0.136
-  },
-  {
    "team": "eintracht frankfurt",
    "league": "D1",
-   "strength": 0.128
+   "strength": 0.131
   },
   {
    "team": "valencia",
@@ -460,7 +460,7 @@
   {
    "team": "elversberg",
    "league": "D1",
-   "strength": 0.061
+   "strength": 0.063
   },
   {
    "team": "auxerre",
@@ -475,7 +475,7 @@
   {
    "team": "le mans",
    "league": "F1",
-   "strength": 0.035
+   "strength": 0.034
   },
   {
    "team": "getafe",
@@ -483,24 +483,24 @@
    "strength": 0.024
   },
   {
-   "team": "fiorentina",
-   "league": "I1",
-   "strength": -0.001
-  },
-  {
    "team": "rangers",
    "league": "SC0",
    "strength": -0.001
   },
   {
+   "team": "fiorentina",
+   "league": "I1",
+   "strength": -0.001
+  },
+  {
    "team": "gent",
    "league": "B1",
-   "strength": -0.01
+   "strength": -0.011
   },
   {
    "team": "frosinone",
    "league": "I1",
-   "strength": -0.011
+   "strength": -0.012
   },
   {
    "team": "werder bremen",
@@ -510,17 +510,17 @@
   {
    "team": "augsburg",
    "league": "D1",
-   "strength": -0.034
+   "strength": -0.033
   },
   {
    "team": "fenerbahce",
    "league": "T1",
-   "strength": -0.043
+   "strength": -0.041
   },
   {
    "team": "genk",
    "league": "B1",
-   "strength": -0.045
+   "strength": -0.047
   },
   {
    "team": "braga",
@@ -528,24 +528,24 @@
    "strength": -0.077
   },
   {
-   "team": "anderlecht",
-   "league": "B1",
-   "strength": -0.08
-  },
-  {
    "team": "shakhtar donetsk",
    "league": "OTHER",
-   "strength": -0.081
+   "strength": -0.082
+  },
+  {
+   "team": "anderlecht",
+   "league": "B1",
+   "strength": -0.089
   },
   {
    "team": "paderborn",
    "league": "D1",
-   "strength": -0.11
+   "strength": -0.106
   },
   {
    "team": "schalke",
    "league": "D1",
-   "strength": -0.11
+   "strength": -0.106
   },
   {
    "team": "le havre",
@@ -560,77 +560,77 @@
   {
    "team": "wolfsburg",
    "league": "D1",
-   "strength": -0.126
-  },
-  {
-   "team": "monchengladbach",
-   "league": "D1",
-   "strength": -0.134
-  },
-  {
-   "team": "olympiacos",
-   "league": "OTHER",
-   "strength": -0.142
-  },
-  {
-   "team": "torino",
-   "league": "I1",
-   "strength": -0.147
-  },
-  {
-   "team": "twente",
-   "league": "N1",
-   "strength": -0.151
-  },
-  {
-   "team": "ajax",
-   "league": "N1",
-   "strength": -0.151
+   "strength": -0.123
   },
   {
    "team": "koln",
    "league": "D1",
-   "strength": -0.155
+   "strength": -0.131
+  },
+  {
+   "team": "monchengladbach",
+   "league": "D1",
+   "strength": -0.133
+  },
+  {
+   "team": "olympiacos",
+   "league": "OTHER",
+   "strength": -0.143
+  },
+  {
+   "team": "torino",
+   "league": "I1",
+   "strength": -0.148
+  },
+  {
+   "team": "twente",
+   "league": "N1",
+   "strength": -0.152
+  },
+  {
+   "team": "ajax",
+   "league": "N1",
+   "strength": -0.152
   },
   {
    "team": "nantes",
    "league": "F1",
-   "strength": -0.173
+   "strength": -0.163
   },
   {
    "team": "pafos",
    "league": "OTHER",
-   "strength": -0.183
-  },
-  {
-   "team": "genoa",
-   "league": "I1",
    "strength": -0.184
   },
   {
    "team": "hamburg",
    "league": "D1",
-   "strength": -0.187
+   "strength": -0.184
+  },
+  {
+   "team": "genoa",
+   "league": "I1",
+   "strength": -0.185
   },
   {
    "team": "udinese",
    "league": "I1",
-   "strength": -0.193
-  },
-  {
-   "team": "viking",
-   "league": "OTHER",
-   "strength": -0.217
+   "strength": -0.194
   },
   {
    "team": "union berlin",
    "league": "D1",
-   "strength": -0.217
+   "strength": -0.211
+  },
+  {
+   "team": "viking",
+   "league": "OTHER",
+   "strength": -0.218
   },
   {
    "team": "sassuolo",
    "league": "I1",
-   "strength": -0.218
+   "strength": -0.22
   },
   {
    "team": "malaga",
@@ -645,7 +645,7 @@
   {
    "team": "cagliari",
    "league": "I1",
-   "strength": -0.262
+   "strength": -0.263
   },
   {
    "team": "oviedo",
@@ -655,12 +655,17 @@
   {
    "team": "az alkmaar",
    "league": "N1",
-   "strength": -0.28
+   "strength": -0.281
   },
   {
    "team": "antwerp",
    "league": "B1",
-   "strength": -0.287
+   "strength": -0.288
+  },
+  {
+   "team": "charleroi",
+   "league": "B1",
+   "strength": -0.298
   },
   {
    "team": "angers",
@@ -668,19 +673,14 @@
    "strength": -0.302
   },
   {
-   "team": "charleroi",
-   "league": "B1",
-   "strength": -0.304
-  },
-  {
    "team": "heidenheim",
    "league": "D1",
-   "strength": -0.311
+   "strength": -0.307
   },
   {
    "team": "westerlo",
    "league": "B1",
-   "strength": -0.314
+   "strength": -0.315
   },
   {
    "team": "troyes",
@@ -690,17 +690,12 @@
   {
    "team": "lask linz",
    "league": "OTHER",
-   "strength": -0.331
+   "strength": -0.332
   },
   {
    "team": "st pauli",
    "league": "D1",
-   "strength": -0.341
-  },
-  {
-   "team": "famalicao",
-   "league": "P1",
-   "strength": -0.348
+   "strength": -0.339
   },
   {
    "team": "parma",
@@ -708,34 +703,39 @@
    "strength": -0.35
   },
   {
+   "team": "famalicao",
+   "league": "P1",
+   "strength": -0.351
+  },
+  {
    "team": "st truiden",
    "league": "B1",
-   "strength": -0.354
+   "strength": -0.356
   },
   {
    "team": "lommel",
    "league": "B1",
-   "strength": -0.366
-  },
-  {
-   "team": "santa clara",
-   "league": "P1",
-   "strength": -0.398
+   "strength": -0.367
   },
   {
    "team": "mechelen",
    "league": "B1",
-   "strength": -0.398
+   "strength": -0.393
+  },
+  {
+   "team": "santa clara",
+   "league": "P1",
+   "strength": -0.4
   },
   {
    "team": "besiktas",
    "league": "T1",
-   "strength": -0.407
+   "strength": -0.405
   },
   {
    "team": "academico viseu",
    "league": "P1",
-   "strength": -0.423
+   "strength": -0.426
   },
   {
    "team": "cremonese",
@@ -743,14 +743,14 @@
    "strength": -0.446
   },
   {
-   "team": "nijmegen",
-   "league": "N1",
+   "team": "trabzonspor",
+   "league": "T1",
    "strength": -0.447
   },
   {
-   "team": "trabzonspor",
-   "league": "T1",
-   "strength": -0.449
+   "team": "nijmegen",
+   "league": "N1",
+   "strength": -0.448
   },
   {
    "team": "sabah",
@@ -760,7 +760,7 @@
   {
    "team": "metz",
    "league": "F1",
-   "strength": -0.46
+   "strength": -0.459
   },
   {
    "team": "lecce",
@@ -768,39 +768,39 @@
    "strength": -0.466
   },
   {
-   "team": "guimaraes",
-   "league": "P1",
-   "strength": -0.471
-  },
-  {
    "team": "hearts",
    "league": "SC0",
    "strength": -0.478
   },
   {
+   "team": "guimaraes",
+   "league": "P1",
+   "strength": -0.484
+  },
+  {
    "team": "gil vicente",
    "league": "P1",
-   "strength": -0.488
+   "strength": -0.489
   },
   {
    "team": "amedspor",
    "league": "T1",
-   "strength": -0.492
+   "strength": -0.49
   },
   {
    "team": "verona",
    "league": "I1",
-   "strength": -0.496
+   "strength": -0.497
   },
   {
    "team": "waregem",
    "league": "B1",
-   "strength": -0.508
+   "strength": -0.51
   },
   {
    "team": "venezia",
    "league": "I1",
-   "strength": -0.52
+   "strength": -0.521
   },
   {
    "team": "monza",
@@ -810,7 +810,7 @@
   {
    "team": "standard",
    "league": "B1",
-   "strength": -0.527
+   "strength": -0.528
   },
   {
    "team": "qarabag",
@@ -820,82 +820,82 @@
   {
    "team": "utrecht",
    "league": "N1",
-   "strength": -0.555
+   "strength": -0.556
   },
   {
    "team": "aek athens",
    "league": "OTHER",
-   "strength": -0.563
-  },
-  {
-   "team": "cercle brugge",
-   "league": "B1",
-   "strength": -0.574
+   "strength": -0.564
   },
   {
    "team": "oud heverlee leuven",
    "league": "B1",
-   "strength": -0.575
+   "strength": -0.565
+  },
+  {
+   "team": "cercle brugge",
+   "league": "B1",
+   "strength": -0.582
   },
   {
    "team": "slavia prague",
    "league": "OTHER",
-   "strength": -0.592
+   "strength": -0.593
   },
   {
    "team": "groningen",
    "league": "N1",
-   "strength": -0.605
+   "strength": -0.606
   },
   {
    "team": "raal la louviere",
    "league": "B1",
-   "strength": -0.625
+   "strength": -0.626
   },
   {
    "team": "buyuksehyr",
    "league": "T1",
-   "strength": -0.63
+   "strength": -0.628
   },
   {
    "team": "goztep",
    "league": "T1",
-   "strength": -0.639
+   "strength": -0.638
   },
   {
    "team": "arouca",
    "league": "P1",
-   "strength": -0.662
+   "strength": -0.666
   },
   {
    "team": "kairat almaty",
    "league": "OTHER",
-   "strength": -0.665
+   "strength": -0.667
   },
   {
    "team": "heerenveen",
    "league": "N1",
-   "strength": -0.683
+   "strength": -0.689
   },
   {
    "team": "go ahead eagles",
    "league": "N1",
-   "strength": -0.719
+   "strength": -0.721
   },
   {
    "team": "pisa",
    "league": "I1",
-   "strength": -0.74
-  },
-  {
-   "team": "alverca",
-   "league": "P1",
-   "strength": -0.746
+   "strength": -0.741
   },
   {
    "team": "kocaelispor",
    "league": "T1",
-   "strength": -0.751
+   "strength": -0.749
+  },
+  {
+   "team": "alverca",
+   "league": "P1",
+   "strength": -0.749
   },
   {
    "team": "estoril",
@@ -905,122 +905,122 @@
   {
    "team": "beveren",
    "league": "B1",
-   "strength": -0.764
+   "strength": -0.766
   },
   {
    "team": "moreirense",
    "league": "P1",
-   "strength": -0.765
+   "strength": -0.769
   },
   {
    "team": "corum",
    "league": "T1",
-   "strength": -0.814
+   "strength": -0.812
   },
   {
    "team": "dender",
    "league": "B1",
-   "strength": -0.816
+   "strength": -0.818
   },
   {
    "team": "nacional",
    "league": "P1",
-   "strength": -0.839
+   "strength": -0.843
   },
   {
    "team": "alanyaspor",
    "league": "T1",
-   "strength": -0.867
+   "strength": -0.861
   },
   {
    "team": "hibernian",
    "league": "SC0",
-   "strength": -0.88
+   "strength": -0.888
   },
   {
    "team": "falkirk",
    "league": "SC0",
-   "strength": -0.903
+   "strength": -0.902
   },
   {
    "team": "sparta rotterdam",
    "league": "N1",
-   "strength": -0.918
+   "strength": -0.923
   },
   {
    "team": "samsunspor",
    "league": "T1",
-   "strength": -0.926
+   "strength": -0.924
   },
   {
    "team": "konyaspor",
    "league": "T1",
-   "strength": -0.944
+   "strength": -0.933
   },
   {
    "team": "for sittard",
    "league": "N1",
-   "strength": -0.945
-  },
-  {
-   "team": "kasimpasa",
-   "league": "T1",
-   "strength": -0.963
+   "strength": -0.949
   },
   {
    "team": "motherwell",
    "league": "SC0",
-   "strength": -0.968
+   "strength": -0.957
+  },
+  {
+   "team": "kasimpasa",
+   "league": "T1",
+   "strength": -0.962
   },
   {
    "team": "estrela",
    "league": "P1",
-   "strength": -0.968
+   "strength": -0.972
   },
   {
    "team": "erzurumspor",
    "league": "T1",
-   "strength": -0.974
+   "strength": -0.972
   },
   {
    "team": "excelsior",
    "league": "N1",
-   "strength": -0.987
+   "strength": -0.988
   },
   {
    "team": "telstar",
    "league": "N1",
-   "strength": -0.987
+   "strength": -0.988
   },
   {
    "team": "cambuur",
    "league": "N1",
-   "strength": -0.998
+   "strength": -0.999
   },
   {
    "team": "casa pia",
    "league": "P1",
-   "strength": -1.004
-  },
-  {
-   "team": "dundee",
-   "league": "SC0",
-   "strength": -1.026
+   "strength": -1.014
   },
   {
    "team": "tondela",
    "league": "P1",
-   "strength": -1.03
+   "strength": -1.033
+  },
+  {
+   "team": "dundee",
+   "league": "SC0",
+   "strength": -1.038
   },
   {
    "team": "rio ave",
    "league": "P1",
-   "strength": -1.04
+   "strength": -1.044
   },
   {
    "team": "rizespor",
    "league": "T1",
-   "strength": -1.062
+   "strength": -1.063
   },
   {
    "team": "aberdeen",
@@ -1040,87 +1040,87 @@
   {
    "team": "kortrijk",
    "league": "B1",
-   "strength": -1.087
+   "strength": -1.089
   },
   {
    "team": "maritimo",
    "league": "P1",
-   "strength": -1.131
+   "strength": -1.135
   },
   {
    "team": "gaziantep",
    "league": "T1",
-   "strength": -1.151
+   "strength": -1.15
   },
   {
    "team": "den haag",
    "league": "N1",
-   "strength": -1.153
+   "strength": -1.155
   },
   {
    "team": "genclerbirligi",
    "league": "T1",
-   "strength": -1.179
+   "strength": -1.177
   },
   {
    "team": "zwolle",
    "league": "N1",
-   "strength": -1.191
+   "strength": -1.192
   },
   {
    "team": "karagumruk",
    "league": "T1",
-   "strength": -1.214
-  },
-  {
-   "team": "st mirren",
-   "league": "SC0",
-   "strength": -1.238
+   "strength": -1.212
   },
   {
    "team": "eyupspor",
    "league": "T1",
-   "strength": -1.251
+   "strength": -1.249
   },
   {
-   "team": "volendam",
-   "league": "N1",
-   "strength": -1.289
-  },
-  {
-   "team": "antalyaspor",
-   "league": "T1",
-   "strength": -1.292
+   "team": "st mirren",
+   "league": "SC0",
+   "strength": -1.252
   },
   {
    "team": "st johnstone",
    "league": "SC0",
-   "strength": -1.314
+   "strength": -1.287
   },
   {
-   "team": "avs",
-   "league": "P1",
-   "strength": -1.344
+   "team": "volendam",
+   "league": "N1",
+   "strength": -1.29
   },
   {
-   "team": "kayserispor",
+   "team": "antalyaspor",
    "league": "T1",
-   "strength": -1.363
+   "strength": -1.29
   },
   {
    "team": "livingston",
    "league": "SC0",
-   "strength": -1.364
+   "strength": -1.345
+  },
+  {
+   "team": "avs",
+   "league": "P1",
+   "strength": -1.348
+  },
+  {
+   "team": "kayserispor",
+   "league": "T1",
+   "strength": -1.361
   },
   {
    "team": "kilmarnock",
    "league": "SC0",
-   "strength": -1.429
+   "strength": -1.428
   },
   {
    "team": "heracles",
    "league": "N1",
-   "strength": -1.539
+   "strength": -1.533
   },
   {
    "team": "willem ii",
