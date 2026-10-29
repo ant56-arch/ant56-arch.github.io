@@ -905,7 +905,10 @@ function homeTeam(g) {
 
 // ---------- Nav turns solid over the paper sheet ----------
 const nav = $("nav");
-const onScroll = () => nav.classList.toggle("solid", scrollY > innerHeight * 0.6);
+const sheet = document.querySelector(".sheet");
+// Solid as soon as the paper sheet reaches the nav's bottom edge, so the
+// buttons never float see-through over the page below the hero.
+const onScroll = () => nav.classList.toggle("solid", sheet.getBoundingClientRect().top <= nav.getBoundingClientRect().bottom);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 // ---------- Hero: a ballpark under lights, drawn on canvas ----------
