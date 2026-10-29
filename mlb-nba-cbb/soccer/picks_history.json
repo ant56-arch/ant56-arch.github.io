@@ -4751,6 +4751,52 @@
    "home_pts": 2,
    "away_pts": 0,
    "winner": "SEV"
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401882817",
+   "start": "2026-10-30T16:00:00-04:00",
+   "comp": "LALIGA",
+   "season": 2026,
+   "home": "VIL",
+   "away": "ESP",
+   "home_name": "Villarreal",
+   "away_name": "Espanyol",
+   "home_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/102.png",
+   "away_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/88.png",
+   "home_record": "3-3-4",
+   "away_record": "2-2-6",
+   "neutral": false,
+   "pick": "VIL",
+   "pick_side": "home",
+   "prob": 64.7,
+   "probs": {
+    "home": 64.7,
+    "draw": 19.6,
+    "away": 15.7
+   },
+   "xg": {
+    "home": 2.0,
+    "away": 1.02
+   },
+   "model": "2026-10-19T20:55:01+00:00",
+   "correct": null,
+   "set_at": "2026-10-29T10:00:38Z",
+   "ml": {
+    "side": "home",
+    "price": -240,
+    "prob": 64.7,
+    "book_prob": 67.3,
+    "edge": -2.6,
+    "value": false,
+    "home_ml": -240,
+    "draw_ml": 400,
+    "away_ml": 600,
+    "book": "DraftKings",
+    "won": null,
+    "units": null,
+    "team": "VIL"
+   }
   }
  ]
 }
