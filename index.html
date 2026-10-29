@@ -120,6 +120,8 @@ h2 em { font-size: 1.06em; }
 .streak { font-family: var(--f-mono); font-size: 11px; padding: 2px 7px; border-radius: 99px; border: 1px solid currentColor; opacity: .9; }
 .board-foot { opacity: .7; font-size: 12.5px; }
 .stats { display: grid; gap: 0; }
+.record-grid.solo { grid-template-columns: minmax(0, 1fr); }
+.record-grid.solo .board { max-width: 760px; }
 .stat { padding: 20px 0; border-top: 1px solid var(--rule); display: grid; gap: 4px; }
 .stat:last-child { border-bottom: 1px solid var(--rule); }
 .stat b { font-weight: 400; font-variation-settings: "wdth" 125; font-size: clamp(36px, 4vw, 54px); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
@@ -1469,6 +1471,8 @@ function streakLabel(st) {
 // A league tab's record section: all-time and season rows, its own stats.
 function leagueTop(s, today) {
   const info = LEAGUE[LG];
+  $("stats").hidden = false;
+  $("stats").closest(".record-grid").classList.remove("solo");
   $("boardYear").textContent = `${LG} picks to win`;
   document.querySelector(".board th").textContent = "Span";
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
@@ -1548,18 +1552,20 @@ function render(sums) {
     board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
                  streak: streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
   });
-  $("boardRows").innerHTML = board.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td><span class="streak">${b.streak}</span></td></tr>`).join("");
+  // MLB hitters sit under the game picks: top hitters who got a hit (no streak).
+  const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
+  const rows = board.slice();
+  if (hits && hits[0] + hits[1]) rows.push({ lg: "MLB hitters", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: "" });
+  $("boardRows").innerHTML = rows.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td>${b.streak ? `<span class="streak">${b.streak}</span>` : ""}</td></tr>`).join("");
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
   $("boardYear").textContent = "Picks to win · " + today.slice(0, 4);
 
   const W = board.reduce((a, b) => a + b.w, 0), L = board.reduce((a, b) => a + b.l, 0), N = W + L;
   $("heroTally").textContent = `${N} games graded · ${N ? (W / N * 100).toFixed(1) : "0"}% right`;
 
-  // Beside the table, only what it doesn't already show: the MLB hitter rate.
-  const stats = [];
-  const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
-  if (hits) stats.push([`${Math.round(hits[0] / (hits[0] + hits[1]) * 100)}%`, "MLB top hitters who got a hit"]);
-  $("stats").innerHTML = stats.map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("");
+  // Everything is in the table now, so the side column stays empty.
+  $("stats").hidden = true;
+  $("stats").closest(".record-grid").classList.add("solo");
   }
 
   // Slate: today, and the next day with games.
