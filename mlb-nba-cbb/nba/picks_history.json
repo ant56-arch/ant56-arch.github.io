@@ -3050,29 +3050,31 @@
    "away_record": "3-1",
    "neutral": false,
    "pick": "ATL",
-   "prob": 57.0,
-   "home_prob": 57.0,
-   "margin": 2.3,
+   "prob": 60.2,
+   "home_prob": 60.2,
+   "margin": 3.4,
    "home_out": [],
-   "away_out": [],
+   "away_out": [
+    "Meleek Thomas"
+   ],
    "rest": {
     "home": 0,
     "away": 0
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-29T20:05:34Z",
+   "set_at": "2026-10-29T23:52:08Z",
    "ml": {
     "team": "ATL",
     "side": "home",
-    "price": -112,
-    "prob": 57.0,
-    "book_prob": 50.4,
-    "edge": 6.6,
+    "price": -118,
+    "prob": 60.2,
+    "book_prob": 51.7,
+    "edge": 8.5,
     "value": true,
-    "home_ml": -112,
-    "away_ml": -108,
-    "book": "Draft Kings",
+    "home_ml": -118,
+    "away_ml": -102,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -3090,11 +3092,13 @@
    "away_record": "0-4",
    "neutral": false,
    "pick": "NO",
-   "prob": 61.9,
-   "home_prob": 61.9,
-   "margin": 3.9,
+   "prob": 51.7,
+   "home_prob": 51.7,
+   "margin": 0.6,
    "home_out": [
-    "Yves Missi"
+    "Dejounte Murray",
+    "Yves Missi",
+    "Jordan Poole"
    ],
    "away_out": [
     "Keegan Murray"
@@ -3105,18 +3109,18 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-29T20:05:34Z",
+   "set_at": "2026-10-29T23:52:08Z",
    "ml": {
     "team": "NO",
     "side": "home",
     "price": -238,
-    "prob": 61.9,
+    "prob": 51.7,
     "book_prob": 67.5,
-    "edge": -5.6,
+    "edge": -15.8,
     "value": false,
     "home_ml": -238,
     "away_ml": 195,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -3145,18 +3149,18 @@
    },
    "model": "2026-10-27T09:01:27+00:00",
    "correct": null,
-   "set_at": "2026-10-29T20:05:34Z",
+   "set_at": "2026-10-29T23:52:08Z",
    "ml": {
     "team": "POR",
     "side": "home",
-    "price": -258,
+    "price": -290,
     "prob": 71.5,
-    "book_prob": 69.1,
-    "edge": 2.4,
+    "book_prob": 71.4,
+    "edge": 0.1,
     "value": false,
-    "home_ml": -258,
-    "away_ml": 210,
-    "book": "Draft Kings",
+    "home_ml": -290,
+    "away_ml": 235,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
