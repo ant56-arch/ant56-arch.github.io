@@ -3062,7 +3062,7 @@
     "away": 0
    },
    "model": "2026-10-27T09:01:27+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T23:52:08Z",
    "ml": {
     "team": "ATL",
@@ -3075,9 +3075,12 @@
     "home_ml": -118,
     "away_ml": -102,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.847
+   },
+   "home_pts": 114,
+   "away_pts": 111,
+   "winner": "ATL"
   },
   {
    "date": "2026-10-29",
@@ -3108,7 +3111,7 @@
     "away": 1
    },
    "model": "2026-10-27T09:01:27+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T23:52:08Z",
    "ml": {
     "team": "NO",
@@ -3121,9 +3124,12 @@
     "home_ml": -238,
     "away_ml": 195,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.42
+   },
+   "home_pts": 132,
+   "away_pts": 120,
+   "winner": "NO"
   },
   {
    "date": "2026-10-29",
@@ -3150,7 +3156,7 @@
     "away": 2
    },
    "model": "2026-10-27T09:01:27+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-30T02:03:40Z",
    "ml": {
     "team": "POR",
@@ -3163,6 +3169,434 @@
     "home_ml": -285,
     "away_ml": 230,
     "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 103,
+   "away_pts": 124,
+   "winner": "MEM"
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909277",
+   "start": "2026-10-30T19:00:00-04:00",
+   "type": "regular",
+   "home": "WSH",
+   "away": "CHA",
+   "home_name": "Washington Wizards",
+   "away_name": "Charlotte Hornets",
+   "home_record": "2-3",
+   "away_record": "3-2",
+   "neutral": false,
+   "pick": "CHA",
+   "prob": 56.1,
+   "home_prob": 43.9,
+   "margin": 2.0,
+   "home_out": [
+    "Justin Champagnie"
+   ],
+   "away_out": [],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "CHA",
+    "side": "away",
+    "price": -105,
+    "prob": 56.1,
+    "book_prob": 48.9,
+    "edge": 7.2,
+    "value": true,
+    "home_ml": -115,
+    "away_ml": -105,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909278",
+   "start": "2026-10-30T19:30:00-04:00",
+   "type": "regular",
+   "home": "BOS",
+   "away": "CHI",
+   "home_name": "Boston Celtics",
+   "away_name": "Chicago Bulls",
+   "home_record": "3-1",
+   "away_record": "1-4",
+   "neutral": false,
+   "pick": "BOS",
+   "prob": 85.6,
+   "home_prob": 85.6,
+   "margin": 13.8,
+   "home_out": [],
+   "away_out": [],
+   "rest": {
+    "home": 2,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "BOS",
+    "side": "home",
+    "price": -900,
+    "prob": 85.6,
+    "book_prob": 86.3,
+    "edge": -0.7,
+    "value": false,
+    "home_ml": -900,
+    "away_ml": 600,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909279",
+   "start": "2026-10-30T19:30:00-04:00",
+   "type": "regular",
+   "home": "BKN",
+   "away": "DET",
+   "home_name": "Brooklyn Nets",
+   "away_name": "Detroit Pistons",
+   "home_record": "0-4",
+   "away_record": "4-1",
+   "neutral": false,
+   "pick": "DET",
+   "prob": 70.1,
+   "home_prob": 29.9,
+   "margin": 6.9,
+   "home_out": [
+    "Egor Demin"
+   ],
+   "away_out": [
+    "Jalen Duren"
+   ],
+   "rest": {
+    "home": 2,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "DET",
+    "side": "away",
+    "price": -298,
+    "prob": 70.1,
+    "book_prob": 71.8,
+    "edge": -1.7,
+    "value": false,
+    "home_ml": 240,
+    "away_ml": -298,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909280",
+   "start": "2026-10-30T19:30:00-04:00",
+   "type": "regular",
+   "home": "PHI",
+   "away": "NY",
+   "home_name": "Philadelphia 76ers",
+   "away_name": "New York Knicks",
+   "home_record": "4-1",
+   "away_record": "2-3",
+   "neutral": false,
+   "pick": "PHI",
+   "prob": 53.8,
+   "home_prob": 53.8,
+   "margin": 1.2,
+   "home_out": [],
+   "away_out": [
+    "Jose Alvarado"
+   ],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "PHI",
+    "side": "home",
+    "price": 102,
+    "prob": 53.8,
+    "book_prob": 47.4,
+    "edge": 6.4,
+    "value": true,
+    "home_ml": 102,
+    "away_ml": -122,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909281",
+   "start": "2026-10-30T19:30:00-04:00",
+   "type": "regular",
+   "home": "TOR",
+   "away": "ORL",
+   "home_name": "Toronto Raptors",
+   "away_name": "Orlando Magic",
+   "home_record": "3-1",
+   "away_record": "1-3",
+   "neutral": false,
+   "pick": "TOR",
+   "prob": 78.3,
+   "home_prob": 78.3,
+   "margin": 10.2,
+   "home_out": [
+    "Kawhi Leonard"
+   ],
+   "away_out": [
+    "Paolo Banchero",
+    "Jalen Suggs"
+   ],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "TOR",
+    "side": "home",
+    "price": -218,
+    "prob": 78.3,
+    "book_prob": 65.7,
+    "edge": 12.6,
+    "value": true,
+    "home_ml": -218,
+    "away_ml": 180,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909282",
+   "start": "2026-10-30T20:00:00-04:00",
+   "type": "regular",
+   "home": "MIA",
+   "away": "IND",
+   "home_name": "Miami Heat",
+   "away_name": "Indiana Pacers",
+   "home_record": "1-4",
+   "away_record": "2-3",
+   "neutral": false,
+   "pick": "MIA",
+   "prob": 71.2,
+   "home_prob": 71.2,
+   "margin": 7.3,
+   "home_out": [],
+   "away_out": [
+    "Tyrese Haliburton",
+    "Ivica Zubac",
+    "Ben Sheppard"
+   ],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "MIA",
+    "side": "home",
+    "price": -305,
+    "prob": 71.2,
+    "book_prob": 72.2,
+    "edge": -1.0,
+    "value": false,
+    "home_ml": -305,
+    "away_ml": 245,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909283",
+   "start": "2026-10-30T20:00:00-04:00",
+   "type": "regular",
+   "home": "DAL",
+   "away": "HOU",
+   "home_name": "Dallas Mavericks",
+   "away_name": "Houston Rockets",
+   "home_record": "3-2",
+   "away_record": "5-0",
+   "neutral": false,
+   "pick": "HOU",
+   "prob": 54.2,
+   "home_prob": 45.8,
+   "margin": 1.4,
+   "home_out": [],
+   "away_out": [
+    "Reed Sheppard",
+    "Steven Adams",
+    "Marcus Smart"
+   ],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "HOU",
+    "side": "away",
+    "price": -218,
+    "prob": 54.2,
+    "book_prob": 65.7,
+    "edge": -11.5,
+    "value": false,
+    "home_ml": 180,
+    "away_ml": -218,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909284",
+   "start": "2026-10-30T20:00:00-04:00",
+   "type": "regular",
+   "home": "MIN",
+   "away": "LAC",
+   "home_name": "Minnesota Timberwolves",
+   "away_name": "LA Clippers",
+   "home_record": "3-2",
+   "away_record": "1-3",
+   "neutral": false,
+   "pick": "MIN",
+   "prob": 65.2,
+   "home_prob": 65.2,
+   "margin": 5.1,
+   "home_out": [
+    "Anthony Edwards"
+   ],
+   "away_out": [],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "MIN",
+    "side": "home",
+    "price": -278,
+    "prob": 65.2,
+    "book_prob": 70.5,
+    "edge": -5.3,
+    "value": false,
+    "home_ml": -278,
+    "away_ml": 225,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909285",
+   "start": "2026-10-30T22:00:00-04:00",
+   "type": "regular",
+   "home": "GS",
+   "away": "LAL",
+   "home_name": "Golden State Warriors",
+   "away_name": "Los Angeles Lakers",
+   "home_record": "2-3",
+   "away_record": "4-1",
+   "neutral": false,
+   "pick": "LAL",
+   "prob": 55.6,
+   "home_prob": 44.4,
+   "margin": 1.8,
+   "home_out": [],
+   "away_out": [],
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "LAL",
+    "side": "away",
+    "price": -130,
+    "prob": 55.6,
+    "book_prob": 54.3,
+    "edge": 1.3,
+    "value": false,
+    "home_ml": 110,
+    "away_ml": -130,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401909286",
+   "start": "2026-10-30T22:00:00-04:00",
+   "type": "regular",
+   "home": "PHX",
+   "away": "DEN",
+   "home_name": "Phoenix Suns",
+   "away_name": "Denver Nuggets",
+   "home_record": "1-2",
+   "away_record": "2-2",
+   "neutral": false,
+   "pick": "PHX",
+   "prob": 54.4,
+   "home_prob": 54.4,
+   "margin": 1.5,
+   "home_out": [],
+   "away_out": [
+    "Cameron Johnson"
+   ],
+   "rest": {
+    "home": 3,
+    "away": 1
+   },
+   "model": "2026-10-27T09:01:27+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:02:06Z",
+   "ml": {
+    "team": "PHX",
+    "side": "home",
+    "price": 142,
+    "prob": 54.4,
+    "book_prob": 39.6,
+    "edge": 14.8,
+    "value": true,
+    "home_ml": 142,
+    "away_ml": -170,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }

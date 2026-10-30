@@ -8044,7 +8044,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T20:08:17Z",
    "ml": {
     "team": "TB",
@@ -8057,9 +8057,12 @@
     "home_ml": -218,
     "away_ml": 180,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.459
+   },
+   "home_pts": 6,
+   "away_pts": 4,
+   "winner": "TB"
   },
   {
    "date": "2026-10-29",
@@ -8083,7 +8086,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T20:08:17Z",
    "ml": {
     "team": "UTA",
@@ -8096,9 +8099,12 @@
     "home_ml": 110,
     "away_ml": -130,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.769
+   },
+   "home_pts": 3,
+   "away_pts": 4,
+   "winner": "UTA"
   },
   {
    "date": "2026-10-29",
@@ -8122,7 +8128,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T20:08:17Z",
    "ml": {
     "team": "CAR",
@@ -8135,9 +8141,12 @@
     "home_ml": -258,
     "away_ml": 210,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.388
+   },
+   "home_pts": 3,
+   "away_pts": 2,
+   "winner": "CAR"
   },
   {
    "date": "2026-10-29",
@@ -8161,7 +8170,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-29T20:08:17Z",
    "ml": {
     "team": "DET",
@@ -8174,9 +8183,12 @@
     "home_ml": -162,
     "away_ml": 136,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.617
+   },
+   "home_pts": 4,
+   "away_pts": 1,
+   "winner": "DET"
   },
   {
    "date": "2026-10-29",
@@ -8200,7 +8212,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-30T00:02:32Z",
    "ml": {
     "team": "STL",
@@ -8213,9 +8225,12 @@
     "home_ml": -115,
     "away_ml": -105,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.87
+   },
+   "home_pts": 4,
+   "away_pts": 1,
+   "winner": "STL"
   },
   {
    "date": "2026-10-29",
@@ -8239,7 +8254,7 @@
     "away": 0
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-30T00:02:32Z",
    "ml": {
     "team": "WSH",
@@ -8252,9 +8267,12 @@
     "home_ml": -105,
     "away_ml": -115,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.87
+   },
+   "home_pts": 3,
+   "away_pts": 4,
+   "winner": "WSH"
   },
   {
    "date": "2026-10-29",
@@ -8278,7 +8296,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-30T00:02:32Z",
    "ml": {
     "team": "DAL",
@@ -8291,9 +8309,12 @@
     "home_ml": -175,
     "away_ml": 145,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 2,
+   "away_pts": 5,
+   "winner": "MTL"
   },
   {
    "date": "2026-10-29",
@@ -8317,7 +8338,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-30T00:02:32Z",
    "ml": {
     "team": "MIN",
@@ -8330,9 +8351,12 @@
     "home_ml": -192,
     "away_ml": 160,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 3,
+   "away_pts": 4,
+   "winner": "NYI"
   },
   {
    "date": "2026-10-29",
@@ -8356,7 +8380,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-30T02:04:54Z",
    "ml": {
     "team": "BUF",
@@ -8369,9 +8393,12 @@
     "home_ml": 136,
     "away_ml": -162,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.617
+   },
+   "home_pts": 6,
+   "away_pts": 7,
+   "winner": "BUF"
   },
   {
    "date": "2026-10-29",
@@ -8395,7 +8422,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-10-30T02:04:54Z",
    "ml": {
     "team": "OTT",
@@ -8408,9 +8435,12 @@
     "home_ml": 102,
     "away_ml": -122,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 6,
+   "away_pts": 5,
+   "winner": "LA"
   },
   {
    "date": "2026-10-29",
@@ -8434,7 +8464,7 @@
     "away": 1
    },
    "model": "2026-10-26T17:14:44+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-10-30T02:04:54Z",
    "ml": {
     "team": "SJ",
@@ -8447,6 +8477,126 @@
     "home_ml": -175,
     "away_ml": 145,
     "book": "DraftKings",
+    "won": true,
+    "units": 0.571
+   },
+   "home_pts": 3,
+   "away_pts": 2,
+   "winner": "SJ"
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401892611",
+   "start": "2026-10-30T18:00:00-04:00",
+   "type": "regular",
+   "home": "VGK",
+   "away": "NJ",
+   "home_name": "Vegas Golden Knights",
+   "away_name": "New Jersey Devils",
+   "home_record": "9-5",
+   "away_record": "8-5",
+   "neutral": false,
+   "pick": "VGK",
+   "prob": 52.5,
+   "home_prob": 52.5,
+   "model_home_prob": 56.6,
+   "margin": 0.37,
+   "rest": {
+    "home": 2,
+    "away": 1
+   },
+   "model": "2026-10-26T17:14:44+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:05:31Z",
+   "ml": {
+    "team": "VGK",
+    "side": "home",
+    "price": -115,
+    "prob": 52.5,
+    "book_prob": 51.1,
+    "edge": 1.4,
+    "value": false,
+    "home_ml": -115,
+    "away_ml": -105,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401892612",
+   "start": "2026-10-30T19:00:00-04:00",
+   "type": "regular",
+   "home": "FLA",
+   "away": "WPG",
+   "home_name": "Florida Panthers",
+   "away_name": "Winnipeg Jets",
+   "home_record": "7-6",
+   "away_record": "4-9",
+   "neutral": false,
+   "pick": "FLA",
+   "prob": 65.2,
+   "home_prob": 65.2,
+   "model_home_prob": 61.6,
+   "margin": 0.66,
+   "rest": {
+    "home": 2,
+    "away": 0
+   },
+   "model": "2026-10-26T17:14:44+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:05:31Z",
+   "ml": {
+    "team": "FLA",
+    "side": "home",
+    "price": -225,
+    "prob": 65.2,
+    "book_prob": 66.4,
+    "edge": -1.2,
+    "value": false,
+    "home_ml": -225,
+    "away_ml": 185,
+    "book": "Draft Kings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "game_id": "401892613",
+   "start": "2026-10-30T20:00:00-04:00",
+   "type": "regular",
+   "home": "CGY",
+   "away": "SEA",
+   "home_name": "Calgary Flames",
+   "away_name": "Seattle Kraken",
+   "home_record": "5-7",
+   "away_record": "8-5",
+   "neutral": false,
+   "pick": "SEA",
+   "prob": 50.1,
+   "home_prob": 49.9,
+   "model_home_prob": 53.0,
+   "margin": 0.17,
+   "rest": {
+    "home": 1,
+    "away": 1
+   },
+   "model": "2026-10-26T17:14:44+00:00",
+   "correct": null,
+   "set_at": "2026-10-30T10:05:31Z",
+   "ml": {
+    "team": "SEA",
+    "side": "away",
+    "price": -115,
+    "prob": 50.1,
+    "book_prob": 51.1,
+    "edge": -1.0,
+    "value": false,
+    "home_ml": -105,
+    "away_ml": -115,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
