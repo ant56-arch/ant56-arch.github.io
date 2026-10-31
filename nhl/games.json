@@ -1,0 +1,429 @@
+{
+ "sport": "NHL",
+ "label": "Sat, Oct 31",
+ "updated": "2026-10-31T13:15:12.951408-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401892614",
+   "start": "2026-10-31T17:00Z",
+   "state": "in",
+   "detail": "14:31 - 1st",
+   "tv": "ESPN+, CHSN",
+   "venue": "TD Garden",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CHI",
+    "name": "Chicago Blackhawks",
+    "short": "Blackhawks",
+    "location": "Chicago",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/chi.png",
+    "color": "e31937",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "4-9-0",
+    "probable": "A. Soderblom",
+    "winner": false
+   },
+   "home": {
+    "abbr": "BOS",
+    "name": "Boston Bruins",
+    "short": "Bruins",
+    "location": "Boston",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/bos.png",
+    "color": "231f20",
+    "alt": "fdb71a",
+    "rank": null,
+    "score": 0,
+    "record": "9-4-1",
+    "probable": "M. DiPietro",
+    "winner": false
+   },
+   "pick": {
+    "text": "BOS 67%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892615",
+   "start": "2026-10-31T17:00Z",
+   "state": "in",
+   "detail": "15:41 - 1st",
+   "tv": "ESPN+, Blues App",
+   "venue": "Little Caesars Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "STL",
+    "name": "St. Louis Blues",
+    "short": "Blues",
+    "location": "St. Louis",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/stl.png",
+    "color": "0070b9",
+    "alt": "fdb71a",
+    "rank": null,
+    "score": 1,
+    "record": "6-6-1",
+    "probable": "J. Hofer",
+    "winner": false
+   },
+   "home": {
+    "abbr": "DET",
+    "name": "Detroit Red Wings",
+    "short": "Red Wings",
+    "location": "Detroit",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/det.png",
+    "color": "e30526",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "6-4-3",
+    "probable": "J. Gibson",
+    "winner": false
+   },
+   "pick": {
+    "text": "DET 50%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892616",
+   "start": "2026-10-31T18:00Z",
+   "state": "pre",
+   "detail": "10/31 - 2:00 PM EDT",
+   "tv": "ESPN+, Scripps Sports",
+   "venue": "Bridgestone Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TB",
+    "name": "Tampa Bay Lightning",
+    "short": "Lightning",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/tb.png",
+    "color": "003e7e",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "8-3-1",
+    "probable": "A. Vasilevskiy",
+    "winner": false
+   },
+   "home": {
+    "abbr": "NSH",
+    "name": "Nashville Predators",
+    "short": "Predators",
+    "location": "Nashville",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/nsh.png",
+    "color": "fdba31",
+    "alt": "002d62",
+    "rank": null,
+    "score": 0,
+    "record": "4-4-5",
+    "probable": "J. Saros",
+    "winner": false
+   },
+   "pick": {
+    "text": "TB 61%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892617",
+   "start": "2026-10-31T18:00Z",
+   "state": "pre",
+   "detail": "10/31 - 2:00 PM EDT",
+   "tv": "ESPN+, MSGSN",
+   "venue": "UBS Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "EDM",
+    "name": "Edmonton Oilers",
+    "short": "Oilers",
+    "location": "Edmonton",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/edm.png",
+    "color": "00205b",
+    "alt": "ff4c00",
+    "rank": null,
+    "score": 0,
+    "record": "9-2-2",
+    "probable": "T. Jarry",
+    "winner": false
+   },
+   "home": {
+    "abbr": "NYI",
+    "name": "New York Islanders",
+    "short": "Islanders",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/nyi.png",
+    "color": "00529b",
+    "alt": "f47d31",
+    "rank": null,
+    "score": 0,
+    "record": "7-4-2",
+    "probable": "I. Sorokin",
+    "winner": false
+   },
+   "pick": {
+    "text": "EDM 50%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892618",
+   "start": "2026-10-31T20:00Z",
+   "state": "pre",
+   "detail": "10/31 - 4:00 PM EDT",
+   "tv": "ESPN+, MSGB",
+   "venue": "crypto.com Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BUF",
+    "name": "Buffalo Sabres",
+    "short": "Sabres",
+    "location": "Buffalo",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/buf.png",
+    "color": "00468b",
+    "alt": "fdb71a",
+    "rank": null,
+    "score": 0,
+    "record": "6-4-3",
+    "probable": "C. Ellis",
+    "winner": false
+   },
+   "home": {
+    "abbr": "LA",
+    "name": "Los Angeles Kings",
+    "short": "Kings",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/la.png",
+    "color": "121212",
+    "alt": "a2aaad",
+    "rank": null,
+    "score": 0,
+    "record": "4-6-2",
+    "probable": "D. Kuemper",
+    "winner": false
+   },
+   "pick": {
+    "text": "BUF 54%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892619",
+   "start": "2026-10-31T20:00Z",
+   "state": "pre",
+   "detail": "10/31 - 4:00 PM EDT",
+   "tv": "ESPN+, NBC Sports BA",
+   "venue": "SAP Center at San Jose",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "OTT",
+    "name": "Ottawa Senators",
+    "short": "Senators",
+    "location": "Ottawa",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/ott.png",
+    "color": "dd1a32",
+    "alt": "b79257",
+    "rank": null,
+    "score": 0,
+    "record": "8-5-1",
+    "probable": "S. Ersson",
+    "winner": false
+   },
+   "home": {
+    "abbr": "SJ",
+    "name": "San Jose Sharks",
+    "short": "Sharks",
+    "location": "San Jose",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/sj.png",
+    "color": "00788a",
+    "alt": "070707",
+    "rank": null,
+    "score": 0,
+    "record": "7-6-1",
+    "probable": "Y. Askarov",
+    "winner": false
+   },
+   "pick": {
+    "text": "OTT 58%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892620",
+   "start": "2026-10-31T23:00Z",
+   "state": "pre",
+   "detail": "10/31 - 7:00 PM EDT",
+   "tv": "ESPN+",
+   "venue": "Bell Centre",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "PIT",
+    "name": "Pittsburgh Penguins",
+    "short": "Penguins",
+    "location": "Pittsburgh",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/pit.png",
+    "color": "000000",
+    "alt": "fdb71a",
+    "rank": null,
+    "score": 0,
+    "record": "5-6-2",
+    "probable": "S. Murashov",
+    "winner": false
+   },
+   "home": {
+    "abbr": "MTL",
+    "name": "Montreal Canadiens",
+    "short": "Canadiens",
+    "location": "Montreal",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png",
+    "color": "c41230",
+    "alt": "013a81",
+    "rank": null,
+    "score": 0,
+    "record": "8-3-2",
+    "probable": "J. Fowler",
+    "winner": false
+   },
+   "pick": {
+    "text": "MTL 53%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892621",
+   "start": "2026-10-31T23:00Z",
+   "state": "pre",
+   "detail": "10/31 - 7:00 PM EDT",
+   "tv": "ESPN+",
+   "venue": "Rogers Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TOR",
+    "name": "Toronto Maple Leafs",
+    "short": "Maple Leafs",
+    "location": "Toronto",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/tor.png",
+    "color": "003e7e",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "7-6-2",
+    "probable": "A. Stolarz",
+    "winner": false
+   },
+   "home": {
+    "abbr": "VAN",
+    "name": "Vancouver Canucks",
+    "short": "Canucks",
+    "location": "Vancouver",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/van.png",
+    "color": "003e7e",
+    "alt": "008752",
+    "rank": null,
+    "score": 0,
+    "record": "3-11-1",
+    "probable": "K. Lankinen",
+    "winner": false
+   },
+   "pick": {
+    "text": "TOR 62%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892622",
+   "start": "2026-11-01T00:00Z",
+   "state": "pre",
+   "detail": "10/31 - 8:00 PM EDT",
+   "tv": "ESPN+, CBJNHL",
+   "venue": "American Airlines Center",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CBJ",
+    "name": "Columbus Blue Jackets",
+    "short": "Blue Jackets",
+    "location": "Columbus",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/cbj.png",
+    "color": "002d62",
+    "alt": "e31937",
+    "rank": null,
+    "score": 0,
+    "record": "5-6-0",
+    "probable": "J. Greaves",
+    "winner": false
+   },
+   "home": {
+    "abbr": "DAL",
+    "name": "Dallas Stars",
+    "short": "Stars",
+    "location": "Dallas",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/dal.png",
+    "color": "20864c",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "7-5-1",
+    "probable": "J. Oettinger",
+    "winner": false
+   },
+   "pick": {
+    "text": "DAL 63%",
+    "result": null
+   }
+  },
+  {
+   "id": "401892623",
+   "start": "2026-11-01T02:00Z",
+   "state": "pre",
+   "detail": "10/31 - 10:00 PM EDT",
+   "tv": "ESPN+, Altitude Sports",
+   "venue": "Ball Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CGY",
+    "name": "Calgary Flames",
+    "short": "Flames",
+    "location": "Calgary",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/cgy.png",
+    "color": "dd1a32",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "6-7-0",
+    "probable": "A. Sergeev",
+    "winner": false
+   },
+   "home": {
+    "abbr": "COL",
+    "name": "Colorado Avalanche",
+    "short": "Avalanche",
+    "location": "Colorado",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/col.png",
+    "color": "860038",
+    "alt": "005ea3",
+    "rank": null,
+    "score": 0,
+    "record": "7-5-1",
+    "probable": "M. Blackwood",
+    "winner": false
+   },
+   "pick": {
+    "text": "COL 76%",
+    "result": null
+   }
+  }
+ ]
+}

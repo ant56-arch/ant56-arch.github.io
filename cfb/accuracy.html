@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuracy | CFB Edge</title>
+<meta name="description" content="Model-driven college football spreads and totals for the Power conferences, validated against the closing Vegas line every week.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M9 23V9h3.4l6.6 9.3V9H22v14h-3.4L12 13.6V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=eed231d89b">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div id="tick" class="edge-tick"><span class="topbar" hidden></span></div>
+<nav class="nav edge-nav" aria-label="Leagues">
+  <a class="edge-brand" href="/" aria-label="Sports Edge home"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>EDGE</a>
+  <ul class="edge-tabs"><li><a href="/">All</a></li><li><a href="/?l=nfl">NFL</a></li><li><a href="/?l=cfb" aria-current=page>CFB</a></li><li><a href="/?l=mlb">MLB</a></li><li><a href="/?l=nhl">NHL</a></li><li><a href="/?l=nba">NBA</a></li><li><a href="/?l=cbb">CBB</a></li><li><a href="/?l=soccer">Soccer</a></li></ul>
+  <a class="edge-cta" href="/?l=cfb#slate">Today's picks</a>
+</nav>
+<header class="masthead edge-hero" data-sport="CFB">
+  <div class="edge-hero-row">
+    <div class="edge-eyebrow">Updated Oct 30, 10:21 PM ET</div>
+    <h1><span class="ln"><span>CFB</span></span><span class="ln"><span>Accuracy.</span></span></h1>
+  </div>
+  <div class="edge-hero-bar">
+    <a class="edge-scroll" href="#main-content"><i aria-hidden="true">&darr;</i>Scroll to explore</a>
+    <span>Picks for every Power-conference college football game, graded every week.</span>
+    <span>Est. 2026</span>
+  </div>
+</header>
+<div class="wrap edge-sheet">
+  <nav class="edge-jump" aria-label="CFB pages"><a href="/?l=cfb#slate">Today's games</a><a href="index.html">Game board</a><a href="teams.html">Teams</a><a href="ratings.html">Ratings</a><a href="accuracy.html" class="go" aria-current="page">Accuracy</a><a href="model.html">Model</a></nav>
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><h2>Record</h2><div class="subtitle">2026 live picks, graded against the final score</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">80-54</div><div class="stat-label">This season</div><div class="stat-sub">59.7% right; model said 67.9%</div></div><div class="stat"><div class="stat-value">13-14</div><div class="stat-label">Last 7 days</div><div class="stat-sub">48.1% right; model said 69.3%</div></div><div class="stat"><div class="stat-value">38-16</div><div class="stat-label">Picks at 70%+</div><div class="stat-sub">70.4% right; model said 78.9%</div></div></div><div class="section-label">Moneyline, 2026</div><div class="statline"><div class="stat"><div class="stat-value">76-56</div><div class="stat-label">2026 moneyline</div><div class="stat-sub">132 picks graded</div></div><div class="stat"><div class="stat-value">14-17</div><div class="stat-label">Value picks</div><div class="stat-sub">our chance 6%+ higher than Vegas's</div></div></div><div class="table-footnote">Our moneyline pick in every game with a book moneyline, at the price locked at kickoff. Ties count as no decision. This season's live picks only. What betting them would have made is on the <a href="https://ant56-arch.github.io/bets.html">Betting tab</a>.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Accuracy Over Time</h2><div class="subtitle">134 graded picks: how often they won vs. what the model expected</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="acc-weekly"></canvas></div><div class="chart-card" data-state="loading"><canvas id="acc-cumulative"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"acc-weekly","title":"Win Rate by Week","labels":["Week 4","Week 5","Week 6","Week 7","Week 8"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.56,0.75,0.577,0.607,0.481],"color":"#e5793b"},{"label":"What the model expected","data":[0.66,0.68,0.655,0.702,0.693],"color":"#a8a7a1","dash":[4,4]},{"label":"Vegas favorites","data":[0.68,0.679,0.538,0.607,0.519],"color":"#8db4d8"}]},{"id":"acc-cumulative","title":"Win Rate, Season to Date","labels":["Week 4","Week 5","Week 6","Week 7","Week 8"],"fmt":"pct","series":[{"label":"Our picks, win rate","data":[0.56,0.66,0.633,0.626,0.597],"color":"#e5793b"},{"label":"What the model expected","data":[0.66,0.671,0.666,0.675,0.679],"color":"#a8a7a1","dash":[4,4]},{"label":"Vegas favorites","data":[0.68,0.679,0.633,0.626,0.604],"color":"#8db4d8"}]}]);</script></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Calibration</h2><div class="subtitle">Picks grouped by the win chance the model gave them</div></div>
+    <div class="card-body"><table class="data record-table responsive-stack">
+      <thead><tr><th>Win chance</th><th class="num">Picks</th><th class="num">Model said</th>
+      <th class="num">Actually won</th></tr></thead>
+      <tbody><tr><td class="row-label">50%-60%</td>
+      <td data-label="Picks" class="num">34</td>
+      <td data-label="Model said" class="num">55.1%</td>
+      <td data-label="Actually won" class="num accent">55.9%</td></tr><tr><td class="row-label">60%-70%</td>
+      <td data-label="Picks" class="num">46</td>
+      <td data-label="Model said" class="num">64.3%</td>
+      <td data-label="Actually won" class="num accent">50.0%</td></tr><tr><td class="row-label">70%-80%</td>
+      <td data-label="Picks" class="num">34</td>
+      <td data-label="Model said" class="num">74.6%</td>
+      <td data-label="Actually won" class="num accent">64.7%</td></tr><tr><td class="row-label">80% and up</td>
+      <td data-label="Picks" class="num">20</td>
+      <td data-label="Model said" class="num">86.1%</td>
+      <td data-label="Actually won" class="num accent">80.0%</td></tr></tbody></table><div class="table-footnote">If the model is honest, each row's two percentages should be close. Small rows swing a lot.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Backtest</h2><div class="subtitle">Seasons 2025, 2026, held out while the model was fit</div></div>
+    <div class="card-body"><div class="statline"><div class="stat"><div class="stat-value">598</div><div class="stat-label">Games tested</div><div class="stat-sub">never seen in training</div></div><div class="stat"><div class="stat-value">12.3</div><div class="stat-label">Points off the final margin</div><div class="stat-sub">Vegas 11.3; lower is better</div></div><div class="stat"><div class="stat-value">0.217</div><div class="stat-label">Win-chance score</div><div class="stat-sub">Vegas 0.200; lower is better</div></div></div><div class="table-footnote">How far our lines were from the final margin, and how close our win chances came to what happened (0 would be perfect), on games the model wasn't fit on. The picks you see blend in Vegas's line where that helped on these games.</div></div>
+  </section><section class="card">
+    <div class="card-header"><h2>Against Vegas</h2><div class="subtitle">2026: how far off our lines and win chances were, next to Vegas's</div></div>
+    <div class="card-body"><div class="chart-card" data-state="loading"><canvas id="vs-spread"></canvas></div><div class="chart-card" data-state="loading"><canvas id="vs-brier"></canvas></div><script>(window.EDGE_CHARTS = window.EDGE_CHARTS || []).push(...[{"id":"vs-spread","title":"Points Off the Final Margin by Week (lower is better)","labels":["Week 4","Week 5","Week 6","Week 7","Week 8"],"fmt":"pm1","series":[{"label":"Our model","data":[14.57,15.36,13.88,12.36,11.82],"color":"#e5793b"},{"label":"Vegas","data":[12.42,13.27,12.75,10.96,11.31],"color":"#8db4d8"}]},{"id":"vs-brier","title":"Win-Chance Score by Week (lower is better)","labels":["Week 4","Week 5","Week 6","Week 7","Week 8"],"fmt":"num3","series":[{"label":"Our model","data":[0.259,0.196,0.2397,0.2658,0.2535],"color":"#e5793b"},{"label":"Vegas","data":[0.2051,0.1581,0.2714,0.2512,0.2555],"color":"#8db4d8"}]}]);</script></div>
+  </section><div class="acc-weeks"><label for="acc-week-select">Show picks from</label> <select id="acc-week-select" class="week-picker"></select><div id="acc-week-summary" class="muted"></div></div><section class="card">
+    <div class="card-header"><h2>Moneyline Picks</h2><div class="subtitle">2026 moneyline picks and the price each one locked at</div></div>
+    <div class="card-body"><table class="data responsive-stack">
+      <thead><tr><th>Game</th><th class="num">Pick</th></tr></thead>
+      <tbody><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">TA&M @ ALA, final 20-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ALA to win -575</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $575 to win $100</span><span class="ml-sub">We give ALA 83%, Vegas 82%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">ISU @ ARIZ, final 3-39</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ARIZ to win -310</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $310 to win $100</span><span class="ml-sub">We give ARIZ 70%, Vegas 73%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">KSU @ ASU, final 17-28</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">KSU to win -130</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $130 to win $100</span><span class="ml-sub">We give KSU 56%, Vegas 54%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">LSU @ AUB, final 38-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LSU to win -285</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $285 to win $100</span><span class="ml-sub">We give LSU 61%, Vegas 71%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">TTU @ CIN, final 24-37</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TTU to win -455</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $455 to win $100</span><span class="ml-sub">We give TTU 72%, Vegas 79%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">VT @ CLEM, final 20-16</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">CLEM to win -142</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $142 to win $100</span><span class="ml-sub">We give CLEM 55%, Vegas 56%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">BC @ GT, final 49-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">GT to win -238</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $238 to win $100</span><span class="ml-sub">We give GT 68%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">ORE @ ILL, final 10-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ORE to win -395</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $395 to win $100</span><span class="ml-sub">We give ORE 80%, Vegas 77%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">BAY @ KU, final 24-25</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">KU to win -102</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $102 to win $100</span><span class="ml-sub">We give KU 56%, Vegas 48%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">VAN @ UK, final 17-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UK to win -440</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $440 to win $100</span><span class="ml-sub">We give UK 80%, Vegas 78%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">PITT @ MIA, final 23-52</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIA to win -1650</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $1,650 to win $100</span><span class="ml-sub">We give MIA 89%, Vegas 91%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">IU @ MICH, final 13-6</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">IU to win -290</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $290 to win $100</span><span class="ml-sub">We give IU 68%, Vegas 71%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">IOWA @ MINN, final 10-13</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">IOWA to win -285</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $285 to win $100</span><span class="ml-sub">We give IOWA 66%, Vegas 71%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">OU @ MSST, final 23-15</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MSST to win +142</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $142</span><span class="ml-sub">We give MSST 52%, Vegas 40%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">SYR @ UNC, final 31-30</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UNC to win -345</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $345 to win $100</span><span class="ml-sub">We give UNC 68%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">RUTG @ NU, final 14-42</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NU to win -750</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $750 to win $100</span><span class="ml-sub">We give NU 83%, Vegas 85%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">COLO @ OKST, final 24-57</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OKST to win -550</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $550 to win $100</span><span class="ml-sub">We give OKST 78%, Vegas 81%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">CAL @ SMU, final 20-59</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">SMU to win -1100</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $1,100 to win $100</span><span class="ml-sub">We give SMU 81%, Vegas 88%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">TENN @ SC, final 24-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TENN to win +114</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $114</span><span class="ml-sub">We give TENN 56%, Vegas 45%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">WVU @ TCU, final 24-20</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TCU to win -395</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $395 to win $100</span><span class="ml-sub">We give TCU 78%, Vegas 77%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">MISS @ TEX, final 27-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TEX to win -162</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $162 to win $100</span><span class="ml-sub">We give TEX 67%, Vegas 59%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">BYU @ UCF, final 31-39</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BYU to win -290</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $290 to win $100</span><span class="ml-sub">We give BYU 63%, Vegas 71%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">MSU @ UCLA, final 10-28</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UCLA to win -700</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $700 to win $100</span><span class="ml-sub">We give UCLA 87%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="W" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">HOU @ UTAH, final 13-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UTAH to win -250</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $250 to win $100</span><span class="ml-sub">We give UTAH 68%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">USC @ WIS, final 7-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">USC to win -148</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $148 to win $100</span><span class="ml-sub">We give USC 52%, Vegas 57%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">NCSU @ STAN, final 28-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NCSU to win -305</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $305 to win $100</span><span class="ml-sub">We give NCSU 73%, Vegas 72%</span></span></td>
+        </tr><tr data-week="Week 8" data-res="L" data-kind="ml">
+          <td>Week 8<div class="faint" style="font-size:13px;">DUKE @ UVA, final 19-16</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UVA to win -135</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $135 to win $100</span><span class="ml-sub">We give UVA 60%, Vegas 55%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">ND @ BYU, final 24-28</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ND to win -395</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $395 to win $100</span><span class="ml-sub">We give ND 72%, Vegas 77%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">TCU @ BAY, final 17-6</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BAY to win -218</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $218 to win $100</span><span class="ml-sub">We give BAY 65%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">PITT @ BC, final 21-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PITT to win -238</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $238 to win $100</span><span class="ml-sub">We give PITT 78%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">WAKE @ CAL, final 41-7</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WAKE to win -375</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $375 to win $100</span><span class="ml-sub">We give WAKE 72%, Vegas 76%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">UTAH @ COLO, final 27-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UTAH to win -750</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $750 to win $100</span><span class="ml-sub">We give UTAH 84%, Vegas 85%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">UNC @ DUKE, final 24-20</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">DUKE to win -155</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $155 to win $100</span><span class="ml-sub">We give DUKE 64%, Vegas 58%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">AUB @ UGA, final 27-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UGA to win -1350</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $1,350 to win $100</span><span class="ml-sub">We give UGA 89%, Vegas 89%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">OKST @ HOU, final 32-35</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">HOU to win -192</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $192 to win $100</span><span class="ml-sub">We give HOU 76%, Vegas 63%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">OSU @ IU, final 19-15</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OSU to win -162</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $162 to win $100</span><span class="ml-sub">We give OSU 54%, Vegas 59%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">KU @ KSU, final 24-35</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">KSU to win -175</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $175 to win $100</span><span class="ml-sub">We give KSU 62%, Vegas 61%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">MSST @ LSU, final 0-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LSU to win -700</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $700 to win $100</span><span class="ml-sub">We give LSU 76%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">RUTG @ MD, final 37-30</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MD to win -205</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $205 to win $100</span><span class="ml-sub">We give MD 70%, Vegas 64%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">FSU @ MIA, final 35-43</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIA to win -1800</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $1,800 to win $100</span><span class="ml-sub">We give MIA 92%, Vegas 91%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">PSU @ MICH, final 18-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MICH to win -230</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $230 to win $100</span><span class="ml-sub">We give MICH 60%, Vegas 67%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">NU @ MSU, final 24-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NU to win -298</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $298 to win $100</span><span class="ml-sub">We give NU 62%, Vegas 72%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">UK @ OU, final 21-13</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OU to win -250</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $250 to win $100</span><span class="ml-sub">We give OU 74%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">MIZ @ MISS, final 3-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MISS to win -225</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $225 to win $100</span><span class="ml-sub">We give MISS 59%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">NEB @ ORE, final 14-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ORE to win -258</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $258 to win $100</span><span class="ml-sub">We give ORE 80%, Vegas 69%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">UVA @ SMU, final 13-23</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">SMU to win -340</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $340 to win $100</span><span class="ml-sub">We give SMU 61%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">LOU @ SYR, final 34-26</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LOU to win -650</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $650 to win $100</span><span class="ml-sub">We give LOU 58%, Vegas 83%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">ALA @ TENN, final 10-26</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ALA to win -340</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $340 to win $100</span><span class="ml-sub">We give ALA 70%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">FLA @ TEX, final 27-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TEX to win -440</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $440 to win $100</span><span class="ml-sub">We give TEX 79%, Vegas 78%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">ASU @ TTU, final 25-53</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TTU to win -700</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $700 to win $100</span><span class="ml-sub">We give TTU 85%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">WIS @ UCLA, final 7-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UCLA to win -142</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $142 to win $100</span><span class="ml-sub">We give UCLA 73%, Vegas 56%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">ARK @ VAN, final 31-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">VAN to win -238</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $238 to win $100</span><span class="ml-sub">We give VAN 66%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">GT @ VT, final 24-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">VT to win -360</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $360 to win $100</span><span class="ml-sub">We give VT 78%, Vegas 75%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="W" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">CIN @ WVU, final 42-45</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WVU to win -122</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $122 to win $100</span><span class="ml-sub">We give WVU 54%, Vegas 53%</span></span></td>
+        </tr><tr data-week="Week 7" data-res="L" data-kind="ml">
+          <td>Week 7<div class="faint" style="font-size:13px;">WASH @ PUR, final 38-26</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PUR to win -162</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $162 to win $100</span><span class="ml-sub">We give PUR 54%, Vegas 59%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">UGA @ ALA, final 20-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ALA to win -122</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $122 to win $100</span><span class="ml-sub">We give ALA 53%, Vegas 53%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">TENN @ ARK, final 24-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TENN to win -550</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $550 to win $100</span><span class="ml-sub">We give TENN 77%, Vegas 81%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">VT @ CAL, final 20-25</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">VT to win -355</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $355 to win $100</span><span class="ml-sub">We give VT 57%, Vegas 75%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">SC @ FLA, final 38-19</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">FLA to win -550</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $550 to win $100</span><span class="ml-sub">We give FLA 66%, Vegas 81%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">DUKE @ GT, final 25-28</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">DUKE to win -270</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $270 to win $100</span><span class="ml-sub">We give DUKE 65%, Vegas 70%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">HOU @ KSU, final 35-16</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">KSU to win -142</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $142 to win $100</span><span class="ml-sub">We give KSU 58%, Vegas 56%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">LSU @ UK, final 34-35</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LSU to win -345</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $345 to win $100</span><span class="ml-sub">We give LSU 64%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">ILL @ MSU, final 38-37</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ILL to win -142</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $142 to win $100</span><span class="ml-sub">We give ILL 63%, Vegas 56%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">TA&M @ MIZ, final 6-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIZ to win -180</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $180 to win $100</span><span class="ml-sub">We give MIZ 61%, Vegas 62%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">WAKE @ NCSU, final 38-14</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WAKE to win -175</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $175 to win $100</span><span class="ml-sub">We give WAKE 60%, Vegas 61%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">IU @ NEB, final 20-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">IU to win -305</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $305 to win $100</span><span class="ml-sub">We give IU 71%, Vegas 72%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">TEX @ OU, final 24-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OU to win +260</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $260</span><span class="ml-sub">We give OU 52%, Vegas 27%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">UCF @ OKST, final 28-42</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OKST to win -360</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $360 to win $100</span><span class="ml-sub">We give OKST 55%, Vegas 75%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">UCLA @ ORE, final 17-15</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ORE to win -455</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $455 to win $100</span><span class="ml-sub">We give ORE 74%, Vegas 79%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">USC @ PSU, final 31-23</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PSU to win -122</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $122 to win $100</span><span class="ml-sub">We give PSU 59%, Vegas 53%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">UNC @ PITT, final 21-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PITT to win -185</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $185 to win $100</span><span class="ml-sub">We give PITT 73%, Vegas 62%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">MINN @ PUR, final 13-41</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MINN to win -135</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $135 to win $100</span><span class="ml-sub">We give MINN 65%, Vegas 55%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">KU @ UTAH, final 24-41</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UTAH to win -700</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $700 to win $100</span><span class="ml-sub">We give UTAH 65%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">MISS @ VAN, final 52-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MISS to win -360</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $360 to win $100</span><span class="ml-sub">We give MISS 52%, Vegas 75%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">SYR @ UVA, final 25-28</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UVA to win -345</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $345 to win $100</span><span class="ml-sub">We give UVA 77%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">ARIZ @ WVU, final 52-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ARIZ to win -166</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $166 to win $100</span><span class="ml-sub">We give ARIZ 74%, Vegas 60%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">ISU @ BYU, final 10-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BYU to win -410</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $410 to win $100</span><span class="ml-sub">We give BYU 66%, Vegas 77%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="W" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">FSU @ LOU, final 20-44</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LOU to win -185</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $185 to win $100</span><span class="ml-sub">We give LOU 55%, Vegas 62%</span></span></td>
+        </tr><tr data-week="Week 6" data-res="L" data-kind="ml">
+          <td>Week 6<div class="faint" style="font-size:13px;">IOWA @ WASH, final 41-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WASH to win -166</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $166 to win $100</span><span class="ml-sub">We give WASH 57%, Vegas 60%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">CIN @ ARIZ, final 7-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ARIZ to win -250</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $250 to win $100</span><span class="ml-sub">We give ARIZ 64%, Vegas 68%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">BAY @ ASU, final 55-19</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BAY to win +154</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $154</span><span class="ml-sub">We give BAY 57%, Vegas 38%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">MIA @ CLEM, final 41-13</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIA to win -750</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $750 to win $100</span><span class="ml-sub">We give MIA 71%, Vegas 85%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">TTU @ COLO, final 29-7</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TTU to win -535</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $535 to win $100</span><span class="ml-sub">We give TTU 84%, Vegas 81%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">UVA @ FSU, final 7-38</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UVA to win -122</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $122 to win $100</span><span class="ml-sub">We give UVA 69%, Vegas 53%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">VAN @ UGA, final 14-38</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UGA to win -3200</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $3,200 to win $100</span><span class="ml-sub">We give UGA 73%, Vegas 94%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">UCF @ HOU, final 17-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">HOU to win -425</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $425 to win $100</span><span class="ml-sub">We give HOU 70%, Vegas 78%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">PUR @ ILL, final 24-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ILL to win -375</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $375 to win $100</span><span class="ml-sub">We give ILL 79%, Vegas 76%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">OSU @ IOWA, final 31-14</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OSU to win -625</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $625 to win $100</span><span class="ml-sub">We give OSU 61%, Vegas 83%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">WVU @ ISU, final 42-45</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ISU to win -155</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $155 to win $100</span><span class="ml-sub">We give ISU 72%, Vegas 58%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">MICH @ MINN, final 14-20</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MICH to win -225</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $225 to win $100</span><span class="ml-sub">We give MICH 60%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">ALA @ MSST, final 56-23</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ALA to win -218</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $218 to win $100</span><span class="ml-sub">We give ALA 65%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">FLA @ MIZ, final 17-45</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIZ to win +180</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $180</span><span class="ml-sub">We give MIZ 52%, Vegas 34%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">LOU @ NCSU, final 28-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LOU to win -166</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $166 to win $100</span><span class="ml-sub">We give LOU 57%, Vegas 60%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">MD @ NEB, final 23-48</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NEB to win -700</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $700 to win $100</span><span class="ml-sub">We give NEB 72%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">ND @ UNC, final 37-26</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ND to win -1650</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $1,650 to win $100</span><span class="ml-sub">We give ND 83%, Vegas 91%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">IU @ RUTG, final 47-15</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">IU to win -2400</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $2,400 to win $100</span><span class="ml-sub">We give IU 87%, Vegas 93%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">BC @ SMU, final 16-25</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">SMU to win -1800</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $1,800 to win $100</span><span class="ml-sub">We give SMU 80%, Vegas 91%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">UK @ SC, final 35-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UK to win +120</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $120</span><span class="ml-sub">We give UK 57%, Vegas 44%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">BYU @ TCU, final 17-10</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BYU to win -230</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $230 to win $100</span><span class="ml-sub">We give BYU 54%, Vegas 67%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">AUB @ TENN, final 14-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TENN to win -270</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $270 to win $100</span><span class="ml-sub">We give TENN 62%, Vegas 70%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">ARK @ TA&M, final 7-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TA&M to win -625</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $625 to win $100</span><span class="ml-sub">We give TA&amp;M 65%, Vegas 83%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">SYR @ CONN, final 42-41</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">CONN to win +215</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $215</span><span class="ml-sub">We give CONN 80%, Vegas 30%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">WASH @ USC, final 21-25</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WASH to win +285</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $285</span><span class="ml-sub">We give WASH 61%, Vegas 25%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">STAN @ WAKE, final 3-57</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WAKE to win -625</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $625 to win $100</span><span class="ml-sub">We give WAKE 76%, Vegas 83%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">MSU @ WIS, final 3-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WIS to win -380</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $380 to win $100</span><span class="ml-sub">We give WIS 66%, Vegas 76%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="L" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">PSU @ NU, final 13-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PSU to win -135</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $135 to win $100</span><span class="ml-sub">We give PSU 63%, Vegas 55%</span></span></td>
+        </tr><tr data-week="Week 5" data-res="W" data-kind="ml">
+          <td>Week 5<div class="faint" style="font-size:13px;">PITT @ VT, final 35-33</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PITT to win +105</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $105</span><span class="ml-sub">We give PITT 65%, Vegas 47%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">SC @ ALA, final 18-49</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ALA to win -520</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $520 to win $100</span><span class="ml-sub">We give ALA 70%, Vegas 80%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">VAN @ AUB, final 15-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">VAN to win +310</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $310</span><span class="ml-sub">We give VAN 54%, Vegas 23%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">COLO @ BAY, final 13-23</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">BAY to win -380</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $380 to win $100</span><span class="ml-sub">We give BAY 70%, Vegas 76%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">VT @ BC, final 21-14</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">VT to win -675</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $675 to win $100</span><span class="ml-sub">We give VT 61%, Vegas 84%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">KSU @ CIN, final 26-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">KSU to win -225</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $225 to win $100</span><span class="ml-sub">We give KSU 59%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">MISS @ FLA, final 28-52</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">FLA to win -170</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $170 to win $100</span><span class="ml-sub">We give FLA 51%, Vegas 60%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">OU @ UGA, final 13-41</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UGA to win -550</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $550 to win $100</span><span class="ml-sub">We give UGA 74%, Vegas 81%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">UTAH @ ISU, final 31-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">UTAH to win -325</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $325 to win $100</span><span class="ml-sub">We give UTAH 52%, Vegas 73%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">TA&M @ LSU, final 6-35</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LSU to win -345</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $345 to win $100</span><span class="ml-sub">We give LSU 57%, Vegas 74%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">WAKE @ LOU, final 30-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">LOU to win -500</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $500 to win $100</span><span class="ml-sub">We give LOU 68%, Vegas 80%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">UCLA @ MD, final 54-3</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MD to win +120</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $120</span><span class="ml-sub">We give MD 61%, Vegas 44%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">IOWA @ MICH, final 20-19</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">IOWA to win +180</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">$100 wins $180</span><span class="ml-sub">We give IOWA 57%, Vegas 34%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">NEB @ MSU, final 31-13</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NEB to win -225</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $225 to win $100</span><span class="ml-sub">We give NEB 63%, Vegas 66%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">MIZ @ MSST, final 24-31</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">MIZ to win +180</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $180</span><span class="ml-sub">We give MIZ 53%, Vegas 34%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">ILL @ OSU, final 19-42</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">OSU to win -4000</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $4,000 to win $100</span><span class="ml-sub">We give OSU 82%, Vegas 94%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">WIS @ PSU, final 24-20</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">PSU to win -380</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $380 to win $100</span><span class="ml-sub">We give PSU 81%, Vegas 76%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">ND @ PUR, final 49-10</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ND to win -4500</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $4,500 to win $100</span><span class="ml-sub">We give ND 93%, Vegas 95%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">GT @ STAN, final 27-34</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">GT to win -155</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $155 to win $100</span><span class="ml-sub">We give GT 68%, Vegas 58%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">TEX @ TENN, final 20-17</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TENN to win +170</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $170</span><span class="ml-sub">We give TENN 66%, Vegas 36%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">TCU @ UCF, final 13-21</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">TCU to win -162</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $162 to win $100</span><span class="ml-sub">We give TCU 64%, Vegas 59%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="W" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">ORE @ USC, final 41-27</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">ORE to win -180</span> <span class="pill pill-positive">W</span></span><span class="ml-sub">Bet $180 to win $100</span><span class="ml-sub">We give ORE 66%, Vegas 62%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">MINN @ WASH, final 27-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WASH to win -455</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $455 to win $100</span><span class="ml-sub">We give WASH 78%, Vegas 79%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">OKST @ WVU, final 41-24</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">WVU to win -125</span> <span class="pill pill-positive">VALUE</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">Bet $125 to win $100</span><span class="ml-sub">We give WVU 62%, Vegas 53%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">CLEM @ CAL, final 24-10</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">CAL to win +100</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $100</span><span class="ml-sub">We give CAL 50%, Vegas 48%</span></span></td>
+        </tr><tr data-week="Week 4" data-res="L" data-kind="ml">
+          <td>Week 4<div class="faint" style="font-size:13px;">NU @ IU, final 23-29</div></td>
+          <td data-label="Pick" class="num ml-cell"><span class="ml-pick"><span class="ml-line"><span class="accent">NU to win +1000</span> <span class="pill pill-danger">L</span></span><span class="ml-sub">$100 wins $1,000</span><span class="ml-sub">We give NU 11%, Vegas 9%</span></span></td>
+        </tr></tbody>
+    </table></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Stats from CollegeFootballData.com. Vegas lines via the-odds-api.com. Covers SEC, Big Ten, Big 12, ACC and independents. For entertainment only, not betting advice. Gambling problem?
+      Call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <span>&copy; 2026 CFB Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=eed231d89b"></script>
+</body>
+</html>

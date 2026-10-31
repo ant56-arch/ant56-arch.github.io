@@ -1,0 +1,51 @@
+{
+ "sport": "MLB",
+ "label": "Wed, Oct 28",
+ "updated": "2026-10-31T13:15:11.988461-04:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401908046",
+   "start": "2026-10-29T00:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "Fox",
+   "venue": "Tropicana Field",
+   "neutral": false,
+   "series": "World Series \u00b7 Game 5 \u00b7 MIL wins series 4-1",
+   "away": {
+    "abbr": "MIL",
+    "name": "Milwaukee Brewers",
+    "short": "Brewers",
+    "location": "Milwaukee",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/mil.png",
+    "color": "13294b",
+    "alt": "ffc72c",
+    "rank": null,
+    "score": 4,
+    "record": "103-59",
+    "probable": "J. Misiorowski",
+    "winner": true
+   },
+   "home": {
+    "abbr": "TB",
+    "name": "Tampa Bay Rays",
+    "short": "Rays",
+    "location": "Tampa Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png",
+    "color": "092c5c",
+    "alt": "8fbce6",
+    "rank": null,
+    "score": 1,
+    "record": "98-64",
+    "probable": "D. Rasmussen",
+    "winner": false
+   },
+   "pick": {
+    "text": "MIL 54%",
+    "result": true
+   }
+  }
+ ]
+}
