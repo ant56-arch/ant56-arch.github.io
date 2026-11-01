@@ -599,9 +599,10 @@ function glRender(card, data, sport) {
       const cls = [i === 0 && j === 0 && live ? "is-cur" : "", p.scoringPlay ? "is-score" : ""].filter(Boolean).join(" ");
       return `<li${cls ? ` class="${cls}"` : ""}><span class="gl-when">${edgeEsc(when)}</span><span class="gl-text">${edgeEsc(String(p.text || "").trim())}</span></li>`;
     }).join("");
-    return `<details class="gl-drive${d.isScore ? " is-score" : ""}"${i === 0 && live ? " open" : ""}><summary>` +
+    const open = card.glOpen && d.id in card.glOpen ? card.glOpen[d.id] : i === 0 && live;
+    return `<details class="gl-drive${d.isScore ? " is-score" : ""}" data-drive="${edgeEsc(String(d.id))}"${open ? " open" : ""}><summary>` +
       `<span class="gl-sw" style="background:${colorOf[String(dt.id)] || colorOf[dt.abbreviation] || "var(--text-faint)"}"></span>` +
-      `<b>${edgeEsc(dt.abbreviation || "")}</b><span class="gl-res">${edgeEsc(result)}</span></summary><ol>${rows}</ol></details>`;
+      `<b>${edgeEsc(dt.abbreviation || "")}</b><span class="gl-res">${edgeEsc(result)}</span><i class="gl-chev" aria-hidden="true"></i></summary><ol>${rows}</ol></details>`;
   }).join("");
 
   const at = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" });
@@ -660,6 +661,12 @@ function glPlayers(data, sport) {
 async function initLiveGame() {
   const card = document.querySelector(".gl[data-path]");
   if (!card) return;
+  // Keep the drives a reader opened or closed open or closed when the card refreshes.
+  card.glOpen = {};
+  card.addEventListener("click", e => {
+    const sum = e.target.closest(".gl-drive > summary");
+    if (sum) card.glOpen[sum.parentElement.dataset.drive] = !sum.parentElement.open;
+  });
   const site = gcLiveSite();
   if (!site) return;
   let id = null;
