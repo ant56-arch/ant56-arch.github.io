@@ -19,7 +19,9 @@ and, for the game cards on each sport's Home tab (all optional): tv and venue
 Game pages also show "range" when given (Anthony, 2026-11-01: more detail
 when you click a game, the card stays the same): {"margin": home margin we
 post, "sd": the model's usual miss on it, "step": points per bar, "total",
-"total_sd"}, drawn as how often each final margin comes up.
+"total_sd"}, drawn as how often each final margin comes up, and "moves"
+(shared/pick_moves.py: each change to the pick before the game) as "How the
+pick moved".
 Soccer adds (also optional): "chance" on away/home (that team's own chance to
 win, since a draw takes the rest), pick_name / pick_label / pick_sub for a pick
 that isn't a team ("Draw"), and group (data-group on the card, for filters).
@@ -196,6 +198,60 @@ def players_html(g):
                   'the middle game. Measured from how far real yards landed from our projections over the last two seasons.</div>')
 
 
+def moves_html(g):
+    """How the pick moved: one row each time our pick, our chance or the Vegas
+    line changed before the game (shared/pick_moves.py), oldest first, with a
+    tag where the pick switched teams. g["moves"]: [{"t": UTC ISO, "pick",
+    "prob", "ours" (text or None), "vegas" (text or None)}]."""
+    moves = g.get("moves") or []
+    if not moves:
+        return ""
+    try:  # game week: the 6 days before game day, plus game day
+        week_from = datetime.combine(date.fromisoformat(str(g.get("date"))[:10]) - timedelta(days=6),
+                                     datetime.min.time(), ET)
+    except ValueError:
+        week_from = None
+    has_ours = any(m.get("ours") for m in moves)
+    rows, prev, split = [], None, 0
+    for m in moves:
+        try:
+            t = datetime.fromisoformat(m["t"].replace("Z", "+00:00")).astimezone(ET)
+            when = f"{t:%a, %b} {t.day}<small>{t:%-I:%M %p} ET</small>"
+        except (ValueError, AttributeError):
+            t, when = None, ""
+        if week_from and t and t < week_from:
+            split = len(rows)  # the last row before game week still shows, as where the week started
+        flip = ' <span class="pill pill-primary">SWITCHED</span>' if prev and prev != m["pick"] else ""
+        cls = ' class="is-flip"' if flip else ""
+        vegas = escape(m.get("vegas") or "") or '<span class="faint">None yet</span>'
+        rows.append(f'<tr{cls}><td class="pm-when">{when}</td>'
+                    f'<td><b>{escape(str(m["pick"]))} {m["prob"]:.0f}%</b>{flip}</td>'
+                    + (f'<td>{escape(m.get("ours") or "")}</td>' if has_ours else "") +
+                    f'<td>{vegas}</td></tr>')
+        prev = m["pick"]
+    head = f'<tr><th>When</th><th>Our pick</th>{"<th>Our line</th>" if has_ours else ""}<th>Vegas</th></tr>'
+    if not week_from:
+        split = max(len(rows) - 8, 0)
+    shown, older = rows[split:], rows[:split]
+    more = (f'<details class="pm-older"><summary>{len(older)} earlier update{"s" if len(older) != 1 else ""}, before game week</summary>'
+            f'<div class="table-wrap"><table class="pm-table">{head}{"".join(older)}</table></div></details>' if older else "")
+    flips = sum(1 for r in rows if "is-flip" in r)
+    if flips:
+        lead = f"Our pick switched teams {flips} time{'s' if flips != 1 else ''} before the game."
+        week_flips = sum(1 for r in shown[1:] if "is-flip" in r)
+        if older:
+            lead += f" {week_flips or 'None'} of those came in game week."
+    elif len(rows) == 1:
+        lead = "Our pick hasn't moved since it went up."
+    else:
+        lead = f"Same team all along; our chance or the line moved {len(rows) - 1} time{'s' if len(rows) != 2 else ''}."
+    locked = "The last row is the pick that locked at the start and gets graded." if g.get("final") or g.get("started") \
+        else "The last row is the pick right now. It locks when the game starts."
+    return (f'<p class="mr-note">{escape(lead)}</p>{more}<div class="table-wrap"><table class="pm-table">{head}'
+            f'{"".join(shown)}</table></div><div class="table-footnote">A new row each time our pick, our chance '
+            f'(to the whole percent) or the Vegas line changed. Times are Eastern. {locked}</div>')
+
+
 # ESPN's path for the football sports whose game pages get the live view.
 LIVE_PATHS = {"NFL": "football/nfl", "CFB": "football/college-football"}
 
@@ -258,6 +314,9 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
     plays = players_html(g)
     if plays:
         panels += _card("Players to watch", plays, "Likely yards for each team's key players")
+    moves = moves_html(g)
+    if moves:
+        panels += _card("How the pick moved", moves, "Every change to our pick and the Vegas line before the game")
     body = hero + live_html(g) + f'<div class="gh-grid">{panels}</div>'
     if g.get("hitters"):
         rows = "".join(f'<li><span class="hw-name"><b>{escape(n)}</b><small>{escape(t)}</small></span>'

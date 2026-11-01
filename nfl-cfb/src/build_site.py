@@ -1883,13 +1883,46 @@ def card_lines(g):
 
 def season_games(sport, games, log, comparison, props=None):
     weeks = assemble_season_weeks(sport, games, log, comparison, display_season(sport, games, log))
-    out = [nf_game(sport, g) for wk in sorted(weeks.values(), key=lambda w: w["week"]) for g in wk["games"]]
+    raw = [g for wk in sorted(weeks.values(), key=lambda w: w["week"]) for g in wk["games"]]
+    out = [nf_game(sport, g) for g in raw]
+    moves = load_pick_moves(sport)
+    for g, ng in zip(raw, out):
+        ng["moves"] = game_moves(sport, g, moves.get(g["id"]))
     if props is not None and not props.empty:
         ranges = load_coefficients({"coefficients_json": "fitted_props_coefficients.json"}).get("ranges") or {}
         for ng in out:
             if not ng["final"]:
                 ng["players"] = game_players(ng, props, ranges)
     return out
+
+
+# How the pick moved (Anthony, 2026-11-01): shared/pick_moves.py keeps a row
+# each time a game's pick, chance or Vegas line changed before kickoff.
+def load_pick_moves(sport):
+    path = os.path.join(TRACKING_DIR, sport["predictions_log_csv"].replace("predictions_log.csv", "pick_moves.json"))
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def game_moves(sport, g, entry):
+    """A game's saved pick moves as text for extras.moves_html: the pick as
+    its short name, our line and Vegas's as "NYJ -1.5"."""
+    if not entry:
+        return []
+    names = {g["home_team"]: g["home_label"], g["away_team"]: g["away_label"]}
+
+    def line(home_by):
+        if home_by is None:
+            return None
+        if abs(home_by) < 0.05:
+            return "PK"
+        team = g["home_label"] if home_by > 0 else g["away_label"]
+        return f"{team} {extras.MINUS}{abs(home_by):.1f}"
+    return [{"t": m["t"], "pick": names.get(m["pick"], team_short(sport, m["pick"])), "prob": m["prob"],
+             "ours": line(m.get("ours")), "vegas": line(m.get("vegas"))} for m in entry.get("moves", [])]
 
 
 # Player ranges on game pages (Anthony, 2026-11-01): each projection's likely
