@@ -2175,3 +2175,4 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .pm-table .pill { margin-left: 4px; font-size: 0.625rem; vertical-align: 1px; }
 .pm-older { margin: 4px 0 10px; }
 .pm-older summary { cursor: pointer; color: var(--text-muted); font-size: 0.8125rem; padding: 4px 0; }
+.gl-dot-team { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }

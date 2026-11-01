@@ -28,6 +28,7 @@ ant56-arch.github.io by .github/workflows/daily.yml (see publish_site.sh).
 
 import hashlib
 import json
+from statistics import NormalDist
 import math
 import os
 import shutil
@@ -923,7 +924,7 @@ def mlb_game(p, hitters=()):
                "units": ml.get("units"), "won": ml.get("won")} if ml else None,
         "why": why,
         "facts": [sp_fact(p["away"], p.get("away_sp")), sp_fact(p["home"], p.get("home_sp"))],
-        "hitters": hw, "note": lock_note(p),
+        "hitters": hw, "note": lock_note(p), "range": game_range("MLB", p),
     }
 
 
@@ -988,7 +989,49 @@ def bb_game(p, sport, slug, logo_url, facts, name=None):
         "ml": {"price": ml["price"], "book": ml["book_prob"], "value": ml.get("value"),
                "units": ml.get("units"), "won": ml.get("won")} if ml else None,
         "why": [], "facts": facts(p), "hitters": [], "note": lock_note(p),
+        "espn_id": gid, "range": game_range(sport, p),
     }
+
+
+# How it could end and the live win chance (Anthony, 2026-11-01: what NFL and
+# CFB game pages have, for every sport). Basketball: a bell curve around our
+# margin with the model's usual miss (sigma in model_weights.json). Hockey and
+# baseball: each team's goals or runs as a random count around rates that give
+# our posted chance, at a typical total.
+TYPICAL_TOTAL = {"NHL": (6.1, "goals"), "MLB": (8.8, "runs")}
+SIGMA_DIR = {"NBA": "nba", "CBB": "cbb"}
+_sigma = {}
+
+
+def model_sigma(sport):
+    if sport not in _sigma:
+        try:
+            with open(os.path.join(ROOT, SIGMA_DIR[sport], "model_weights.json")) as f:
+                _sigma[sport] = float(json.load(f).get("sigma") or 0) or None
+        except (OSError, ValueError, KeyError):
+            _sigma[sport] = None
+    return _sigma[sport]
+
+
+def game_range(sport, p):
+    hp = p.get("home_prob")
+    if hp is None:
+        hp = p["prob"] if p["pick"] == p["home"] else 100 - p["prob"]
+    if sport in TYPICAL_TOTAL:
+        total, unit = TYPICAL_TOTAL[sport]
+        hr, ar = extras.split_rates(min(max(hp / 100, 0.02), 0.98), total)
+        return {"kind": "goals", "home_rate": hr, "away_rate": ar, "unit": unit, "ties": "extra"}
+    sd = model_sigma(sport)
+    if not sd:
+        return None
+    margin = p.get("margin")
+    if isinstance(margin, (int, float)):
+        home_margin = margin if p["pick"] == p["home"] else -margin
+    else:
+        home_margin = sd * NormalDist().inv_cdf(min(max(hp / 100, 0.01), 0.99))
+    proj = p.get("proj") or {}
+    total = (proj["home"] + proj["away"]) if proj.get("home") and proj.get("away") else None
+    return {"margin": home_margin, "sd": sd, "step": 5, "total": total, "total_sd": sd * 1.1 if total else None}
 
 
 def bb_game_pages(games, shell):

@@ -40,6 +40,7 @@ import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import chrome  # noqa: E402
 import moneyline  # noqa: E402
+from espn import COMPS as ESPN_COMPS  # noqa: E402
 
 OUT_DIR = os.path.join(ROOT, "dist", "soccer")
 
@@ -213,6 +214,9 @@ def soccer_game(p):
         "ml": {"price": ml["price"], "book": ml["book_prob"], "value": ml.get("value"),
                "units": ml.get("units"), "won": ml.get("won")} if ml else None,
         "why": [], "facts": facts(p), "hitters": [], "note": lock_note(p),
+        "espn_id": gid, "espn_path": (ESPN_COMPS.get(p["comp"]) or {}).get("path"),
+        "range": {"kind": "goals", "home_rate": (p.get("xg") or {}).get("home"), "away_rate": (p.get("xg") or {}).get("away"),
+                  "unit": "goals", "ties": "draw"} if (p.get("xg") or {}).get("home") else None,
     }
 
 

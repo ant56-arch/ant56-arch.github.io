@@ -19,7 +19,9 @@ and, for the game cards on each sport's Home tab (all optional): tv and venue
 Game pages also show "range" when given (Anthony, 2026-11-01: more detail
 when you click a game, the card stays the same): {"margin": home margin we
 post, "sd": the model's usual miss on it, "step": points per bar, "total",
-"total_sd"}, drawn as how often each final margin comes up, and "moves"
+"total_sd"}, drawn as how often each final margin comes up (NHL, MLB and
+soccer instead give {"kind": "goals", "home_rate", "away_rate", "unit",
+"ties": "extra"|"draw"}), espn_id / espn_path for the Live card, and "moves"
 (shared/pick_moves.py: each change to the pick before the game) as "How the
 pick moved".
 Soccer adds (also optional): "chance" on away/home (that team's own chance to
@@ -136,6 +138,8 @@ def range_html(g):
     the model's usual miss (a bell curve around the line), plus the likely
     total. Once final, the bar the real margin landed in is marked."""
     rg = g.get("range")
+    if rg and rg.get("kind") == "goals":
+        return goals_range_html(g)
     if not rg or not rg.get("sd"):
         return ""
     a, h, mu, sd, step = g["away"]["abbr"], g["home"]["abbr"], rg["margin"], rg["sd"], rg.get("step", 7)
@@ -172,6 +176,97 @@ def range_html(g):
             + '<div class="table-footnote">From our line and how far real results usually land from it '
               f'(about {sd:.0f} points either way, 2 games in 3).</div>')
 
+
+
+# ── Low-scoring sports (NHL, MLB, soccer): each team's goals or runs as a
+# Poisson count, from rates that give our posted chance. ──────────────────────
+def _pois(lam, n=21):
+    out, p = [], math.exp(-lam)
+    for k in range(n):
+        out.append(p)
+        p *= lam / (k + 1)
+    return out
+
+
+def score_grid(hr, ar, n=21):
+    """{(home, away): chance} for every score up to n-1 each."""
+    ph, pa = _pois(hr, n), _pois(ar, n)
+    return {(i, j): ph[i] * pa[j] for i in range(n) for j in range(n)}
+
+
+def split_rates(p_home, total):
+    """Home and away scoring rates adding to `total` whose chance of a home
+    win (a tie after regulation split evenly: overtime, extra innings) is
+    p_home (0-1)."""
+    lo, hi = 0.02, 0.98
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        grid = score_grid(total * mid, total * (1 - mid))
+        win = sum(v for (i, j), v in grid.items() if i > j) + 0.5 * sum(v for (i, j), v in grid.items() if i == j)
+        lo, hi = (mid, hi) if win < p_home else (lo, mid)
+    share = (lo + hi) / 2
+    return round(total * share, 3), round(total * (1 - share), 3)
+
+
+def goals_range_html(g):
+    """How it could end for NHL, MLB and soccer: how often each final margin
+    comes up (a draw for soccer; NHL and MLB ties go to overtime or extra
+    innings, decided by one), the likeliest exact scores, and the total."""
+    rg = g["range"]
+    a, h, unit = g["away"]["abbr"], g["home"]["abbr"], rg.get("unit", "goals")
+    grid = score_grid(rg["home_rate"], rg["away_rate"])
+    draw = rg.get("ties") == "draw"
+    by = {}
+    for (i, j), v in grid.items():
+        by[i - j] = by.get(i - j, 0) + v
+    tie = by.pop(0, 0)
+    if not draw:  # overtime or extra innings: decided by one, about evenly
+        by[1] = by.get(1, 0) + tie / 2
+        by[-1] = by.get(-1, 0) + tie / 2
+    sh = lambda lo, hi: sum(v for m, v in by.items() if lo <= m <= hi)
+    cells = [(f"{a} 3+", sh(-99, -3), -3), (f"{a} 2", sh(-2, -2), -2), (f"{a} 1", sh(-1, -1), -1)]
+    if draw:
+        cells.append(("Draw", tie, 0))
+    cells += [(f"{h} 1", sh(1, 1), 1), (f"{h} 2", sh(2, 2), 2), (f"{h} 3+", sh(3, 99), 3)]
+    real = None
+    if g.get("final") and g["away"].get("score") is not None and g["home"].get("score") is not None:
+        m = g["home"]["score"] - g["away"]["score"]
+        real = max(-3, min(3, m))
+    top = max(v for _, v, _ in cells) or 1
+    pick_home = g["pick"] == h
+    bars = ""
+    for label, share, m in cells:
+        side = ("is-pick" if g["pick"] == "Draw" else "is-other") if m == 0 else \
+            ("is-pick" if (m > 0) == pick_home and g["pick"] != "Draw" else "is-other")
+        mark = " is-real" if m == real else ""
+        bars += (f'<li class="mr-col {side}{mark}"><span class="mr-pct">{share:.0%}</span>'
+                 f'<span class="mr-bar" style="height:{max(share / top, 0.04) * 100:.0f}%"></span>'
+                 f'<span class="mr-lab">{escape(label)}</span></li>')
+    scores = sorted(((k, v) for k, v in grid.items() if draw or k[0] != k[1]), key=lambda kv: -kv[1])[:3]
+    word = lambda i, j: (f"{h} {i}-{j}" if i > j else f"{a} {j}-{i}" if j > i else f"{i}-{j}")
+    one = sh(-1, 1) + (tie if draw else 0)
+    lines = [f"Likeliest final scores{'' if draw else ' in regulation' if unit == 'goals' else ' in 9 innings'}: " + ", ".join(f"{word(i, j)} ({v:.0%})" for (i, j), v in scores) + ".",
+             f"Decided by 1 {unit[:-1]} or {'a draw' if draw else 'in overtime' if unit == 'goals' else 'in extra innings'}: "
+             f"{one:.0%}. {h} wins by 3+: {cells[-1][1]:.0%}. {a} wins by 3+: {cells[0][1]:.0%}."]
+    tot = _pois(rg["home_rate"] + rg["away_rate"], 41)
+    run, lo, hi = 0.0, None, None
+    for k, v in enumerate(tot):
+        run += v
+        if lo is None and run >= 0.1:
+            lo = k
+        if hi is None and run >= 0.9:
+            hi = k
+    if lo is not None and hi is not None:
+        lines.append(f"Total {unit}: {lo} to {hi} in 8 of 10 games like this "
+                     f"(we expect {rg['home_rate'] + rg['away_rate']:.1f}).")
+    if real is not None:
+        lab = next(lbl for lbl, _, m in cells if m == real) if any(m == real for _, _, m in cells) else ""
+        lines.append(f"Final landed in the marked bar: {lab}.")
+    src = ("our expected goals for each club" if draw else
+           f"our chance to win and a typical {rg['home_rate'] + rg['away_rate']:.1f} total {unit}")
+    return (f'<ol class="margin-range" aria-label="How often each final margin comes up">{bars}</ol>'
+            + "".join(f'<p class="mr-note">{escape(x)}</p>' for x in lines)
+            + f'<div class="table-footnote">Each team\'s {unit} as a random count around {src}.</div>')
 
 def players_html(g):
     """Likely yards for each team's key players: the bar spans 8 games in 10,
@@ -252,25 +347,40 @@ def moves_html(g):
             f'(to the whole percent) or the Vegas line changed. Times are Eastern. {locked}</div>')
 
 
-# ESPN's path for the football sports whose game pages get the live view.
-LIVE_PATHS = {"NFL": "football/nfl", "CFB": "football/college-football"}
+# ESPN's path for each sport's game pages that get the live view (soccer
+# passes its competition's own as g["espn_path"]), and how the live win
+# chance works: football and basketball as a bell curve around our line,
+# hockey, baseball and soccer as goals or runs still to come.
+LIVE_PATHS = {"NFL": "football/nfl", "CFB": "football/college-football", "NBA": "basketball/nba",
+              "CBB": "basketball/mens-college-basketball", "NHL": "hockey/nhl", "MLB": "baseball/mlb"}
+LIVE_KIND = {"NFL": "football", "CFB": "football", "NBA": "basketball", "CBB": "basketball", "NHL": "hockey",
+             "MLB": "baseball", "Soccer": "soccer"}
 
 
 def live_html(g):
-    """The Live card on a football game page: empty here, filled in the
-    browser from ESPN's play-by-play once the game starts (initLiveGame in
-    sport-pages.js): the score and down, the ball on a field, our win chance
-    re-run after every play from our line, each key player's yards so far,
-    and every drive."""
-    path, rg = LIVE_PATHS.get(g.get("sport")), g.get("range")
-    if not path or not rg or not rg.get("sd") or not g.get("start"):
+    """The Live card on a game page: empty here, filled in the browser from
+    ESPN's play-by-play once the game starts (initLiveGame in
+    sport-pages.js): the score and clock, our win chance re-run after every
+    play from our pregame numbers, and every play (football adds the ball
+    on a field, each key player's yards so far, and drives)."""
+    path, rg, kind = g.get("espn_path") or LIVE_PATHS.get(g.get("sport")), g.get("range"), LIVE_KIND.get(g.get("sport"))
+    if not path or not rg or not kind or not g.get("start"):
         return ""
-    return (f'<section class="card gl" hidden data-path="{path}" data-start="{escape(str(g["start"]))}" '
-            f'data-day="{escape(str(g.get("date") or "")[:10])}" data-away="{escape(g["away"]["abbr"])}" '
-            f'data-home="{escape(g["home"]["abbr"])}" data-pick="{escape(g["pick"])}" '
-            f'data-margin="{rg["margin"]:.2f}" data-sd="{rg["sd"]:.2f}">'
-            '<div class="card-header"><h2>Live</h2><div class="subtitle">Every play from ESPN as it happens, '
-            'with our win chance re-run after each one</div></div><div class="card-body gl-body"></div></section>')
+    if rg.get("kind") == "goals":
+        model = (f'data-hr="{rg["home_rate"]:.3f}" data-ar="{rg["away_rate"]:.3f}" '
+                 f'data-ties="{escape(rg.get("ties") or "extra")}"')
+    elif rg.get("sd"):
+        model = f'data-margin="{rg["margin"]:.2f}" data-sd="{rg["sd"]:.2f}"'
+    else:
+        return ""
+    event = f' data-event="{escape(str(g["espn_id"]))}"' if g.get("espn_id") else ""
+    sub = "Every play from ESPN as it happens, with our win chance re-run after each one"
+    return (f'<section class="card gl" hidden data-kind="{kind}" data-path="{path}"{event} '
+            f'data-start="{escape(str(g["start"]))}" data-day="{escape(str(g.get("date") or "")[:10])}" '
+            f'data-away="{escape(g["away"]["abbr"])}" data-home="{escape(g["home"]["abbr"])}" '
+            f'data-pick="{escape(g["pick"])}" {model}>'
+            f'<div class="card-header"><h2>Live</h2><div class="subtitle">{sub}</div></div>'
+            '<div class="card-body gl-body"></div></section>')
 
 
 def ml_fact(g):

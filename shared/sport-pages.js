@@ -660,6 +660,215 @@ function glPlayers(data, sport) {
   });
 }
 
+// --- Live view for basketball, hockey, baseball and soccer (extras.live_html
+// with data-kind) ---
+// The same card as football without the field: the score and clock, our win
+// chance re-run along the game from the real score and the time left, and
+// every play grouped by period. Basketball plays the rest of the game out as
+// a bell curve around our margin (data-margin, data-sd); hockey, baseball and
+// soccer as each team's goals or runs still to come (data-hr, data-ar), with
+// a tie going to overtime or extra innings (data-ties="extra") or a draw.
+const GL_KINDS = {
+  "basketball/nba": { len: 2880, per: 720, n: 4, lab: q => `Q${q}`, name: q => q > 4 ? `OT${q > 5 ? q - 4 : ""}` : `Quarter ${q}` },
+  "basketball/mens-college-basketball": { len: 2400, per: 1200, n: 2, lab: q => `H${q}`, name: q => q > 2 ? `OT${q > 3 ? q - 2 : ""}` : `${q === 1 ? "1st" : "2nd"} half` },
+  "hockey/nhl": { len: 3600, per: 1200, n: 3, lab: q => `P${q}`, name: q => q > 4 ? "Shootout" : q > 3 ? "Overtime" : `Period ${q}` },
+  "baseball/mlb": { len: 54, per: 6, n: 9, lab: q => String(q), name: q => `Inning ${q}` },
+  soccer: { len: 5400, per: 2700, n: 2, lab: q => `H${q}`, name: q => q > 2 ? "Extra time" : `${q === 1 ? "1st" : "2nd"} half` },
+};
+
+function glNormal(z) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+
+function glPois(lam, n) {
+  const out = [];
+  let p = Math.exp(-lam);
+  for (let k = 0; k < n; k++) { out.push(p); p *= lam / (k + 1); }
+  return out;
+}
+
+// [home win, draw, away win] from here: our home lead now and the share f of
+// the game still to play.
+function glOutcome(ds, lead, f) {
+  if (ds.sd) {
+    const mean = lead + Number(ds.margin) * f, spread = Number(ds.sd) * Math.sqrt(f);
+    const h = spread < 0.3 ? (lead > 0 ? 1 : lead < 0 ? 0 : 0.5) : glNormal(mean / spread);
+    return [h, 0, 1 - h];
+  }
+  const ph = glPois(Number(ds.hr) * f, 16), pa = glPois(Number(ds.ar) * f, 16);
+  let h = 0, d = 0, a = 0;
+  ph.forEach((x, i) => pa.forEach((y, j) => { const m = lead + i - j; if (m > 0) h += x * y; else if (m < 0) a += x * y; else d += x * y; }));
+  if (ds.ties !== "draw") { h += d / 2; a += d / 2; d = 0; }
+  const tot = h + d + a || 1;
+  return [h / tot, d / tot, a / tot];
+}
+
+function glSecs(clock) {
+  const s = String(clock || "0");
+  if (!s.includes(":")) return Number.parseFloat(s) || 0;
+  const [m, x] = s.split(":").map(Number);
+  return (m || 0) * 60 + (x || 0);
+}
+
+// Every scoring moment and play as {t (game time used), hs, as (our home and
+// away score after it), per, when, text, score, team}.
+function glEvents(data, ds, cfg, flip) {
+  const ours = (h, a) => flip ? [a, h] : [h, a];
+  const out = [];
+  if (ds.kind === "soccer") {
+    let h = 0, a = 0;
+    const homeId = String(((((data.header || {}).competitions || [])[0] || {}).competitors || []).find(c => c.homeAway === "home")?.team?.id || "");
+    (data.keyEvents || []).forEach(e => {
+      const type = (e.type || {}).type || "";
+      if (["start-delay", "end-delay"].includes(type)) return;
+      const per = (e.period || {}).number || 1;
+      const t = Math.min(Number((e.clock || {}).value) || 0, per > 2 ? cfg.len : per * cfg.per);
+      if (e.scoringPlay) { if (String((e.team || {}).id) === homeId) h++; else a++; }
+      const [hs, as] = ours(h, a);
+      out.push({ t, hs, as, per, when: (e.clock || {}).displayValue || "", text: e.text || (e.type || {}).text || "",
+                 score: !!e.scoringPlay, team: (e.team || {}).id });
+    });
+    return out;
+  }
+  (data.plays || []).forEach(p => {
+    const per = (p.period || {}).number || 1;
+    let t, when;
+    if (ds.kind === "baseball") {
+      if (p.summaryType !== "N" && !p.scoringPlay) return;
+      const half = (per - 1) * 2 + ((p.period || {}).type === "Bottom" ? 1 : 0);
+      t = Math.min(half * 3 + (p.outs || 0), cfg.len + 3);
+      when = `${(p.period || {}).type === "Bottom" ? "Bot" : "Top"} ${per}`;
+    } else {
+      if (ds.kind === "hockey" && !p.scoringPlay && !/Goal|Penalty|Period|Shootout/i.test((p.type || {}).text || "")) return;
+      const left = glSecs((p.clock || {}).displayValue);
+      t = per > cfg.n ? cfg.len + 1 : (per - 1) * cfg.per + (cfg.per - left);
+      when = `${cfg.lab(per)} ${(p.clock || {}).displayValue || ""}`;
+    }
+    const [hs, as] = ours(p.homeScore || 0, p.awayScore || 0);
+    out.push({ t, hs, as, per, when, text: String(p.text || "").trim(), score: !!p.scoringPlay, team: (p.team || {}).id });
+  });
+  return out.filter(e => e.text);
+}
+
+function glRenderOther(card, data, sport) {
+  const ds = card.dataset, cfg = GL_KINDS[ds.kind === "soccer" ? "soccer" : ds.path];
+  const comp = ((data.header || {}).competitions || [])[0] || {};
+  const status = (comp.status || {}).type || {};
+  if (!cfg || !status.state || status.state === "pre") return false;
+  const sides = {};
+  (comp.competitors || []).forEach(c => { sides[c.homeAway] = c; });
+  if (!sides.home || !sides.away) return false;
+  const abbr = c => edgeTeamAbbr(c.team || {});
+  const flip = edgeFavKey(sport, ds.away) === edgeFavKey(sport, abbr(sides.home));
+  const away = flip ? sides.home : sides.away, home = flip ? sides.away : sides.home;
+  const live = status.state === "in", post = status.state === "post";
+  const events = glEvents(data, ds, cfg, flip);
+  const sa = Number(away.score) || 0, sh = Number(home.score) || 0;
+
+  // Game time now: the latest event's, or the clock in the header.
+  const st = comp.status || {};
+  let now = events.length ? events[events.length - 1].t : 0;
+  if (ds.kind !== "baseball" && ds.kind !== "soccer" && st.period) {
+    now = st.period > cfg.n ? cfg.len + 1 : (st.period - 1) * cfg.per + (cfg.per - glSecs(st.displayClock));
+  } else if (ds.kind === "soccer" && st.clock != null) {
+    now = Math.max(now, Math.min(Number(st.clock) || 0, cfg.len));
+  }
+  if (post) now = Math.max(now, cfg.len);
+
+  // Our pick's chance along the game: on a grid of game time, from the score
+  // at that moment.
+  const pickDraw = ds.pick === "Draw";
+  const pickHome = !pickDraw && edgeFavKey(sport, ds.pick) === edgeFavKey(sport, ds.home);
+  const toPick = o => pickDraw ? o[1] : pickHome ? o[0] : o[2];
+  // Share of the game left; past regulation, about an overtime period or an extra inning.
+  const frac = t => t < cfg.len ? (cfg.len - t) / cfg.len : ({ soccer: 0, baseball: 3 / 54 }[ds.kind] ?? 300 / cfg.len);
+  const scoreAt = t => { let h = 0, a = 0; events.forEach(e => { if (e.t <= t) { h = e.hs; a = e.as; } }); return [h, a]; };
+  const steps = 160, span = Math.max(cfg.len, now);
+  const times = [];
+  for (let i = 0; i <= steps; i++) { const t = now * i / steps; times.push(t); }
+  events.forEach(e => { if (e.score && e.t <= now) times.push(e.t, e.t + 1e-6); });
+  times.sort((x, y) => x - y);
+  const series = times.map(t => {
+    const [h, a] = t >= now - 1e-9 && t > 0 ? [sh, sa] : scoreAt(t);
+    if (post && t >= now - 1e-9) return toPick(sh > sa ? [1, 0, 0] : sh < sa ? [0, 0, 1] : ds.ties === "draw" ? [0, 1, 0] : [0.5, 0, 0.5]);
+    return toPick(glOutcome(ds, h - a, frac(t)));
+  });
+  const chanceNow = series[series.length - 1];
+
+  const color = c => /^[0-9a-f]{6}$/i.test((c.team || {}).color || "") ? "#" + c.team.color : "var(--text-faint)";
+  const team = (c, side) => `<div class="gl-team gl-${side}" style="--tc:${color(c)}"><b>${edgeEsc(abbr(c))}</b>` +
+    `<span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
+  const clock = post ? "Final" : (status.shortDetail || status.detail || "Live");
+  const last = live && events.length ? events[events.length - 1].text : "";
+
+  // Chart over game time with the periods marked.
+  const W = 600, H = 160;
+  const xy = (v, t) => [(t / span * W).toFixed(1), (H - v * H).toFixed(1)];
+  const pts = series.map((v, i) => xy(v, times[i]).join(",")).join(" ");
+  const [ex, ey] = xy(chanceNow, times[times.length - 1]);
+  const marks = [], labs = [];
+  for (let q = 1; q <= cfg.n; q++) {
+    if (q < cfg.n || span > cfg.len) marks.push(`<line x1="${q * cfg.per / span * W}" x2="${q * cfg.per / span * W}" y1="0" y2="${H}" class="q"/>`);
+    labs.push(`<span style="left:${(q - 0.5) * cfg.per / span * 100}%">${edgeEsc(cfg.lab(q))}</span>`);
+  }
+  const pickName = pickDraw ? "Draw" : pickHome ? abbr(home) : abbr(away);
+  const up = pickDraw ? "Draw" : `${pickName} wins`, down = pickDraw ? "No draw" : `${pickHome ? abbr(away) : abbr(home)} wins`;
+  const chart = `<div class="gl-plot"><span class="gl-up">${edgeEsc(up)} &uarr;</span><span class="gl-down">${edgeEsc(down)} &darr;</span>` +
+    `<div class="gl-svg"><svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${marks.join("")}` +
+    `<line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" class="mid"></line><polyline points="${pts}"></polyline></svg>` +
+    `<i class="gl-dot" style="left:${ex / W * 100}%;top:${ey / H * 100}%"></i></div>` +
+    `<div class="gl-qs">${labs.join("")}</div></div>`;
+  const start = { basketball: "tip-off", hockey: "puck drop", baseball: "first pitch", soccer: "kickoff" }[ds.kind] || "the start";
+  const word = post ? { basketball: "at the final buzzer", hockey: "at the final horn", baseball: "after the last out" }[ds.kind] ||
+    "at the final whistle" : "from right here";
+  const chanceHtml = `<div class="gl-chance"><span class="gl-eyebrow">Our ${pickDraw ? "draw" : "win"} chance</span>` +
+    `<div class="gl-now"><b>${Math.round(chanceNow * 100)}<small>%</small></b><span>${edgeEsc(pickName)}</span></div>` +
+    `<p class="gl-sub">${word}. ${Math.round(series[0] * 100)}% at ${start}.</p>${chart}</div>`;
+
+  // Plays by period, latest first; the period in progress open.
+  const colorOf = {};
+  [away, home].forEach(c => { colorOf[String(c.team.id)] = color(c); });
+  const pers = [...new Set(events.map(e => String(e.per)))];
+  const lastPer = pers[pers.length - 1];
+  const perHtml = pers.slice().reverse().map((per, i) => {
+    const list = events.filter(e => String(e.per) === per);
+    const pts = list.filter(e => e.score).length;
+    const rows = list.slice().reverse().map((e, j) => {
+      const cls = [i === 0 && j === 0 && live ? "is-cur" : "", e.score ? "is-score" : ""].filter(Boolean).join(" ");
+      return `<li${cls ? ` class="${cls}"` : ""}><span class="gl-when">${edgeEsc(e.when)}</span>` +
+        `<span class="gl-text">${e.team && colorOf[String(e.team)] ? `<i class="gl-dot-team" style="background:${colorOf[String(e.team)]}"></i>` : ""}${edgeEsc(e.text)}</span></li>`;
+    }).join("");
+    const end = list[list.length - 1];
+    const res = `${edgeEsc(abbr(away))} ${end.as}, ${edgeEsc(abbr(home))} ${end.hs}` + (pts ? ` · ${pts} scoring play${pts === 1 ? "" : "s"}` : "");
+    const key = "p" + per;
+    const open = card.glOpen && key in card.glOpen ? card.glOpen[key] : per === lastPer && live;
+    return `<details class="gl-drive${pts ? " is-score" : ""}" data-drive="${key}"${open ? " open" : ""}><summary>` +
+      `<b>${edgeEsc(cfg.name(Number(per)))}</b><span class="gl-res">${res}</span><i class="gl-chev" aria-hidden="true"></i></summary><ol>${rows}</ol></details>`;
+  }).join("");
+  const feedName = ds.kind === "soccer" ? "Match events" : ds.kind === "baseball" ? "Inning by inning" : ds.kind === "hockey" ? "Goals and penalties" : "Play by play";
+
+  const at = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" });
+  card.querySelector(".gl-body").innerHTML =
+    `<div class="gl-panel"><div class="gl-board${live ? " is-live" : ""}">${team(away, "away")}${team(home, "home")}</div>` +
+    `<div class="gl-sit"><span class="gl-clock">${edgeEsc(clock)}</span></div>` +
+    (last ? `<p class="gl-last">${edgeEsc(last)}</p>` : "") +
+    (live ? `<p class="gl-upd">Updated ${at}. ESPN's feed runs about 10 to 30 seconds behind TV.</p>` : "") + `</div>` +
+    `<div class="gl-panel">${chanceHtml}</div>` +
+    (perHtml ? `<details class="gl-panel gl-plays" data-drive="all"${card.glOpen && card.glOpen.all ? " open" : ""}>` +
+      `<summary><span class="gl-eyebrow">${feedName}</span><span class="gl-count">${events.length} event${events.length === 1 ? "" : "s"}</span>` +
+      `<i class="gl-chev" aria-hidden="true"></i></summary><div class="gl-drives">${perHtml}</div></details>` : "") +
+    `<p class="table-footnote">Our ${pickDraw ? "draw" : "win"} chance plays the rest of the game out from the real score and time left ` +
+    `using our pregame numbers. Plays and scores from ESPN.</p>`;
+  const h2 = card.querySelector(".card-header h2"), sub = card.querySelector(".card-header .subtitle");
+  if (h2) h2.textContent = live ? "Live" : "How it played out";
+  if (sub && !live) sub.textContent = "Every play from ESPN, with our win chance along the way";
+  card.hidden = false;
+  return live;
+}
+
 async function initLiveGame() {
   const card = document.querySelector(".gl[data-path]");
   if (!card) return;
@@ -674,6 +883,7 @@ async function initLiveGame() {
   let id = null;
   const tick = async () => {
     if (Date.now() < new Date(card.dataset.start).getTime() - 5 * 60000) return 60000;
+    if (!id) id = card.dataset.event || null;
     if (!id) {
       const e = gcLiveMatch(card, await gcLiveEvents(site, [card.dataset.day].filter(Boolean)), site.sport);
       if (!e) return 120000;
@@ -683,7 +893,8 @@ async function initLiveGame() {
     if (!data) return 60000;
     const state = ((((data.header || {}).competitions || [])[0] || {}).status || {}).type || {};
     if (!state.state || state.state === "pre") return 60000;
-    return glRender(card, data, site.sport) ? 30000 : null;
+    const kind = card.dataset.kind || "football";
+    return (kind === "football" ? glRender(card, data, site.sport) : glRenderOther(card, data, site.sport)) ? 30000 : null;
   };
   const loop = async () => { const wait = await tick(); if (wait) setTimeout(loop, wait); };
   loop();
