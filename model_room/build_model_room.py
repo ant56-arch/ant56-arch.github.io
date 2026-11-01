@@ -323,7 +323,8 @@ EXTRA_WORDS = {"rest": "Rest and travel", "injuries": "Players out", "shots": "S
                "massey": "Massey rating", "pyth": "Pythagorean record", "elo": "Elo rating",
                "home": "This season's home field", "travel": "Time zones crossed",
                "xg": "Expected goals (MoneyPuck)", "weather": "Weather (Open-Meteo)",
-               "statcast": "Contact quality (Baseball Savant)", "clubelo": "ClubElo rating"}
+               "statcast": "Contact quality (Baseball Savant)", "clubelo": "ClubElo rating",
+               "power": "Our power ratings", "bye": "Rest and bye weeks"}
 # Free outside sources a version reads (Anthony, 2026-10-26: label them in the
 # Model Room). Shown as a tag on each version that uses one.
 DATA_SOURCES = {"xg": "MoneyPuck", "weather": "Open-Meteo", "statcast": "Baseball Savant", "clubelo": "ClubElo"}
@@ -344,6 +345,7 @@ SETTING_HELP = {
     "home_reg": "how hard each league's home edge is pulled toward the overall one",
     "extras": ("inputs added on top: rest and travel, players out, shot share, goalies, a Massey rating (scoring margin adjusted "
                "for opponents), a Pythagorean record (the win rate points scored and allowed point to), a FiveThirtyEight-style Elo rating, "
+               "our own power ratings, days of rest including bye weeks, "
                "or data from free outside sources: expected goals from MoneyPuck (how good each shot was, not just whether it went in), "
                "weather from Open-Meteo, contact quality from Baseball Savant, or ClubElo's club ratings"),
     "elo_only": "whether it uses every input or only the Elo rating and home edge, the classic FiveThirtyEight way",

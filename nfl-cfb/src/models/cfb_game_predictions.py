@@ -100,7 +100,54 @@ def get_vegas_line(vegas_odds, home_team, away_team):
         "home_win_prob": row.get("vegas_home_win_prob"),
     }
 
-def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True):
+def load_context(upcoming):
+    """The live recipe's extra inputs (power ratings, rest/bye, Elo,
+    Pythagorean; see cfb_context.py) for each upcoming game id, from this
+    season's CFBD game list (already cached by the fetch step). None when the
+    recipe has none or CFBD can't be read, so those inputs count as 0."""
+    if not os.path.exists(COEFFICIENTS_PATH) or upcoming.empty or "id" not in upcoming.columns:
+        return None
+    with open(COEFFICIENTS_PATH) as f:
+        fitted = json.load(f)
+    kinds = fitted.get("context_inputs") or []
+    if not kinds:
+        return None
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    import cfb_context
+    import cfb_ratings
+    season = int(upcoming["season"].max())
+    out = upcoming[["id"]].drop_duplicates("id")
+    try:
+        games = cfb_ratings.season_games(season)
+        for kind in kinds:
+            if kind == "bye":
+                part = cfb_context.rest_features(games)
+            elif kind == "pyth":
+                part = cfb_context.pyth_features(games)
+            elif kind == "elo":
+                fbs = set(cfb_ratings.fbs_teams(season)["team"])
+                part = cfb_context.elo_walk(games, fbs, start=fitted.get("elo_start"))[0]
+            elif kind == "power":
+                part = cfb_context.power_live(upcoming)
+            else:
+                continue
+            out = out.merge(part.drop_duplicates("id"), on="id", how="left")
+    except Exception as e:  # noqa: BLE001 - the picks still go out on the efficiency model
+        print(f"  WARNING: couldn't build the extra inputs {kinds} ({e}) - they count as 0 this run.")
+        return None
+    print(f"  Extra inputs: {', '.join(kinds)}")
+    return out.set_index("id").fillna(0.0)
+
+def context_points(game_id, context, coefs):
+    """Points the recipe's extra inputs add to the home side's margin."""
+    if context is None or game_id not in context.index:
+        return 0.0
+    row = context.loc[game_id]
+    return float(sum(row[c] * coefs[f"{c}_weight"] for c in context.columns if f"{c}_weight" in coefs))
+
+def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True,
+                 extra_points=0.0):
     if home_team not in team_stats.index or away_team not in team_stats.index:
         return None
 
@@ -114,7 +161,7 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
     base_spread = ppa_diff * coefs["ppa_diff_coef"]
     adjustment = secondary_adjustment(home_row, away_row, coefs, use_current_form)
 
-    model_spread = base_spread + adjustment + coefs["home_field_advantage"]
+    model_spread = base_spread + adjustment + coefs["home_field_advantage"] + extra_points
     model_home_win_prob = norm.cdf(model_spread / coefs["margin_std_dev"])
 
     combined_expected_eff = home_expected_eff + away_expected_eff
@@ -201,13 +248,15 @@ def predict_all_upcoming(use_current_form=True):
         return pd.DataFrame(), holdout
     if ratings is not None:
         print("  No advanced stats this run (CFBD out) - using the power ratings for the model numbers.")
+    context = load_context(upcoming) if ratings is None else None
 
     predictions = []
     for _, game in upcoming.iterrows():
         if ratings is not None:
             pred = predict_game_from_ratings(game, ratings, coefs, blend_weights, vegas_odds)
         else:
-            pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds, use_current_form)
+            pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds,
+                                use_current_form, context_points(game.get("id"), context, coefs))
         if pred:
             pred["season"] = game["season"]
             pred["week"] = game["week"]

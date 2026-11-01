@@ -180,6 +180,35 @@
    {
     "team_half_life": 8,
     "seasons": 3
+   },
+   {
+    "team_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "power"
+    ]
+   },
+   {
+    "team_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "power",
+     "bye"
+    ]
+   },
+   {
+    "team_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "elo"
+    ]
+   },
+   {
+    "team_half_life": 4,
+    "seasons": "all",
+    "extras": [
+     "pyth"
+    ]
    }
   ],
   "current": [
@@ -188,7 +217,11 @@
    3,
    4,
    5,
-   6
+   6,
+   7,
+   8,
+   9,
+   10
   ]
  },
  "mlb-hitters": {
