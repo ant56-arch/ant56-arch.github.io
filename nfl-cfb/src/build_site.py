@@ -1881,9 +1881,72 @@ def card_lines(g):
     return lines
 
 
-def season_games(sport, games, log, comparison):
+def season_games(sport, games, log, comparison, props=None):
     weeks = assemble_season_weeks(sport, games, log, comparison, display_season(sport, games, log))
-    return [nf_game(sport, g) for wk in sorted(weeks.values(), key=lambda w: w["week"]) for g in wk["games"]]
+    out = [nf_game(sport, g) for wk in sorted(weeks.values(), key=lambda w: w["week"]) for g in wk["games"]]
+    if props is not None and not props.empty:
+        ranges = load_coefficients({"coefficients_json": "fitted_props_coefficients.json"}).get("ranges") or {}
+        for ng in out:
+            if not ng["final"]:
+                ng["players"] = game_players(ng, props, ranges)
+    return out
+
+
+# Player ranges on game pages (Anthony, 2026-11-01): each projection's likely
+# span, from how far real yards landed from our projections on held-out games
+# (fit_props_model.projection_ranges), scaled to the player's projection.
+PLAYER_STATS = [("passing", "proj_pass_yards", "Passing yards", 1, 300),
+                ("rushing", "proj_rush_yards", "Rushing yards", 1, 100),
+                ("receiving", "proj_rec_yards", "Receiving yards", 2, 100)]
+
+
+def player_range(proj, measured):
+    """(10th, 50th, 90th percentile, percentile list) of real yards for a
+    projection, from the measured group it falls in, scaled to it."""
+    groups = (measured or {}).get("groups") or []
+    if not groups or pd.isna(proj) or proj <= 0:
+        return None
+    g = next((g for g in groups if g["lo"] <= proj <= g["hi"]), groups[0] if proj < groups[0]["lo"] else groups[-1])
+    scale = proj / g["mean_proj"] if g["mean_proj"] else 1.0
+    pcts = [max(v * scale, 0.0) for v in g["pcts"]]
+    at = {p: v for p, v in zip(measured["percentiles"], pcts)}
+    return at[10], at[50], at[90], list(zip(measured["percentiles"], pcts))
+
+
+def chance_at_least(threshold, pct_values):
+    """Share of games at or above threshold, read off the percentile list."""
+    below = [p for p, v in pct_values if v < threshold]
+    above = [p for p, v in pct_values if v >= threshold]
+    if not above:
+        return 0.0 if pct_values[-1][1] < threshold else 0.05
+    if not below:
+        return 0.95
+    p_lo, v_lo = max((p, v) for p, v in pct_values if v < threshold)
+    p_hi, v_hi = min((p, v) for p, v in pct_values if v >= threshold)
+    frac = (threshold - v_lo) / (v_hi - v_lo) if v_hi > v_lo else 0
+    return 1 - (p_lo + frac * (p_hi - p_lo)) / 100
+
+
+def game_players(ng, props, ranges):
+    """Each team's quarterback, top runner and top two receivers, with the
+    likely range of their yards and the chance of a big game."""
+    teams = {ng["away"]["abbr"], ng["home"]["abbr"]}
+    mine = props[props["team"].isin(teams) & props["opponent"].isin(teams)]
+    rows = []
+    for kind, col, label, per_team, big in PLAYER_STATS:
+        if col not in mine.columns:
+            continue
+        for team in (ng["away"]["abbr"], ng["home"]["abbr"]):
+            top = mine[mine["team"] == team].dropna(subset=[col]).sort_values(col, ascending=False).head(per_team)
+            for _, p in top.iterrows():
+                rg = player_range(float(p[col]), ranges.get(kind))
+                if not rg:
+                    continue
+                lo, mid, hi, pcts = rg
+                rows.append({"name": p["player_name"], "team": team, "stat": label, "proj": float(p[col]),
+                             "lo": lo, "mid": mid, "hi": hi, "big": big, "big_chance": chance_at_least(big, pcts),
+                             "status": p.get("injury_status") if isinstance(p.get("injury_status"), str) else ""})
+    return rows
 
 
 def ml_units(sport, log):
@@ -2009,7 +2072,7 @@ def build_sport_pages(sport):
     if sport["player_props_csv"]:
         pages["players.html"] = build_players_page(sport, props)
         pages["td.html"] = build_td_page(sport, props)
-    pages.update(build_game_pages(sport, season_games(sport, games, log, comparison)))
+    pages.update(build_game_pages(sport, season_games(sport, games, log, comparison, props)))
 
     out_dir = os.path.join(DIST_DIR, sport["slug"])
     os.makedirs(out_dir, exist_ok=True)
