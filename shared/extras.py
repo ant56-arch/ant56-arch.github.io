@@ -184,7 +184,8 @@ def players_html(g):
         items = ""
         for p in group:
             tag = f' <span class="pill pill-primary">{escape(p["status"].upper())}</span>' if p.get("status") else ""
-            items += (f'<li><span class="pr-name"><b>{escape(p["name"])}</b>{tag}<small>{escape(p["team"])} · '
+            items += (f'<li data-name="{escape(p["name"])}" data-team="{escape(p["team"])}" data-stat="{escape(stat)}" data-top="{top:.1f}">'
+                      f'<span class="pr-name"><b>{escape(p["name"])}</b>{tag}<small>{escape(p["team"])} · '
                       f'projected {p["proj"]:.0f}</small></span>'
                       f'<span class="pr-track" aria-hidden="true"><span class="pr-span" style="left:{p["lo"] / top * 100:.1f}%;'
                       f'width:{max(p["hi"] - p["lo"], 1) / top * 100:.1f}%"></span>'
@@ -193,6 +194,27 @@ def players_html(g):
         out += f'<h3 class="pr-head">{escape(stat)}</h3><ul class="pr-list">{items}</ul>'
     return out + ('<div class="table-footnote">The bar covers 8 games in 10 for a projection like this one, and the tick is '
                   'the middle game. Measured from how far real yards landed from our projections over the last two seasons.</div>')
+
+
+# ESPN's path for the football sports whose game pages get the live view.
+LIVE_PATHS = {"NFL": "football/nfl", "CFB": "football/college-football"}
+
+
+def live_html(g):
+    """The Live card on a football game page: empty here, filled in the
+    browser from ESPN's play-by-play once the game starts (initLiveGame in
+    sport-pages.js): the score and down, the ball on a field, our win chance
+    re-run after every play from our line, each key player's yards so far,
+    and every drive."""
+    path, rg = LIVE_PATHS.get(g.get("sport")), g.get("range")
+    if not path or not rg or not rg.get("sd") or not g.get("start"):
+        return ""
+    return (f'<section class="card gl" hidden data-path="{path}" data-start="{escape(str(g["start"]))}" '
+            f'data-day="{escape(str(g.get("date") or "")[:10])}" data-away="{escape(g["away"]["abbr"])}" '
+            f'data-home="{escape(g["home"]["abbr"])}" data-pick="{escape(g["pick"])}" '
+            f'data-margin="{rg["margin"]:.2f}" data-sd="{rg["sd"]:.2f}">'
+            '<div class="card-header"><h2>Live</h2><div class="subtitle">Every play from ESPN as it happens, '
+            'with our win chance re-run after each one</div></div><div class="card-body gl-body"></div></section>')
 
 
 def ml_fact(g):
@@ -236,7 +258,7 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
     plays = players_html(g)
     if plays:
         panels += _card("Players to watch", plays, "Likely yards for each team's key players")
-    body = hero + f'<div class="gh-grid">{panels}</div>'
+    body = hero + live_html(g) + f'<div class="gh-grid">{panels}</div>'
     if g.get("hitters"):
         rows = "".join(f'<li><span class="hw-name"><b>{escape(n)}</b><small>{escape(t)}</small></span>'
                        f'<span class="hw-pct">{c:.0f}%</span><span class="hw-res">{r}</span></li>'

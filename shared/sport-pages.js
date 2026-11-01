@@ -437,3 +437,214 @@ document.querySelectorAll("[data-show-all]").forEach(btn => {
     btn.remove();
   });
 });
+
+
+// --- Live game view on football game pages (extras.live_html) ---
+// Once the game starts, the Live card fills in from ESPN's play-by-play: the
+// score and down, the ball on a field, our win chance re-run after every play
+// from our pregame line, and every drive. The Players to watch bars get a dot
+// for each player's yards so far. Refreshes every 30 seconds while live.
+const GL_LEN = 3600;  // regulation seconds
+
+// Seconds left in regulation after a play ("mm:ss" in period p), 0 in overtime.
+function glLeft(period, clock) {
+  const [m, s] = String(clock || "0:00").split(":").map(Number);
+  const secs = (m || 0) * 60 + (s || 0);
+  return period > 4 ? 0 : Math.max(0, (4 - period) * 900 + secs);
+}
+
+// Home team's win chance: the rest of the game as our line scaled to the time
+// left (the same bell curve as How it could end), plus about what the drive
+// in progress is worth from where the ball is.
+function glHomeWin(margin, left, homeBall, toGo, mu, sd, ot) {
+  let mean = margin;
+  if (homeBall != null && toGo != null) {
+    const ep = Math.max(-1, Math.min(6, 6 - 0.07 * toGo));
+    mean += homeBall ? ep : -ep;
+  }
+  const f = ot ? 0.08 : left / GL_LEN;
+  mean += mu * f;
+  const spread = sd * Math.sqrt(f);
+  if (spread < 0.3) return margin > 0 ? 1 : margin < 0 ? 0 : 0.5;
+  const z = mean / spread;
+  // Normal CDF (Abramowitz-Stegun).
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+
+function glShort(name) {
+  return String(name || "").toLowerCase().replace(/\b(jr|sr|ii|iii|iv)\.?$/, "").replace(/[^a-z]/g, "");
+}
+
+// Our "J.Brissett" / "Mi.Wilson" against ESPN's first and last name.
+function glSamePlayer(ours, a) {
+  const [first, ...rest] = String(ours).split(".");
+  const last = rest.join(".") || first;
+  if (glShort(last) !== glShort(a.lastName || (a.displayName || "").split(" ").slice(-1)[0])) return false;
+  return !rest.length || String(a.firstName || a.displayName || "").toLowerCase().startsWith(first.toLowerCase());
+}
+
+function glRender(card, data, sport) {
+  const ds = card.dataset;
+  const comp = ((data.header || {}).competitions || [])[0] || {};
+  const status = (comp.status || {}).type || {};
+  if (!status.state || status.state === "pre") return false;
+  const sides = {};
+  (comp.competitors || []).forEach(c => { sides[c.homeAway] = c; });
+  if (!sides.home || !sides.away) return false;
+  const flip = edgeFavKey(sport, ds.away) === edgeFavKey(sport, edgeTeamAbbr(sides.home.team || {}));
+  const away = flip ? sides.home : sides.away, home = flip ? sides.away : sides.home;
+  const homeId = String(home.team.id), mu = Number(ds.margin), sd = Number(ds.sd);
+  const abbr = c => edgeTeamAbbr(c.team || {});
+  const pickHome = edgeFavKey(sport, ds.pick) === edgeFavKey(sport, ds.home);
+  const live = status.state === "in";
+
+  // Every play in order, with the drive it belongs to.
+  const drives = [...(((data.drives || {}).previous) || [])];
+  const cur = (data.drives || {}).current;
+  if (cur && cur.plays && cur.plays.length && !drives.some(d => d.id === cur.id)) drives.push(cur);
+  const plays = [];
+  drives.forEach(d => (d.plays || []).forEach(p => plays.push(p)));
+  const last = plays[plays.length - 1];
+
+  // Win chance after each play, ours for the pick.
+  const chance = p => {
+    const per = (p.period || {}).number || 1;
+    const end = p.end || {};
+    const ball = end.team && end.team.id ? String(end.team.id) === homeId : null;
+    const h = glHomeWin((p.homeScore || 0) - (p.awayScore || 0), glLeft(per, (p.clock || {}).displayValue), ball,
+                        end.yardsToEndzone != null && end.down ? end.yardsToEndzone : null, mu, sd, per > 4);
+    return flip ? 1 - h : h;
+  };
+  const kick = glHomeWin(0, GL_LEN, null, null, mu, sd, false);
+  const toPick = h => pickHome ? h : 1 - h;
+  const series = [toPick(kick)].concat(plays.map(p => toPick(chance(p))));
+  const sa = Number(away.score) || 0, sh = Number(home.score) || 0;
+  let now;
+  if (status.state === "post") now = toPick(sh > sa ? 1 : sh < sa ? 0 : 0.5);
+  else now = series[series.length - 1];
+
+  // Board: score, clock, down and distance.
+  const poss = last && last.end && last.end.team ? String(last.end.team.id) : String((comp.situation || {}).possession || "");
+  const team = (c, side) => `<div class="gl-team gl-${side}${String(c.team.id) === poss && live ? " has-ball" : ""}">` +
+    `${c.team.logo || ((c.team.logos || [])[0] || {}).href ? `<img src="${edgeEsc(c.team.logo || c.team.logos[0].href)}" alt="" onerror="this.remove()">` : ""}` +
+    `<b>${edgeEsc(abbr(c))}</b><span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
+  const clock = status.state === "post" ? "Final" : (status.shortDetail || status.detail || "Live");
+  const down = live && last && last.end && last.end.downDistanceText ? last.end.downDistanceText : "";
+  const lastText = live && last ? String(last.text || "").trim() : "";
+
+  // The ball on the field: the away team's end zone on the left.
+  let field = "";
+  if (live && last && last.end && last.end.team && last.end.yardsToEndzone != null) {
+    const offHome = String(last.end.team.id) === homeId;
+    const x = offHome ? last.end.yardsToEndzone : 100 - last.end.yardsToEndzone;
+    const gain = last.end.distance || 0;
+    const fd = Math.max(0, Math.min(100, offHome ? x - gain : x + gain));
+    const lines = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(y => `<i style="left:${y}%"><em>${50 - Math.abs(50 - y)}</em></i>`).join("");
+    field = `<div class="gl-field" aria-label="${edgeEsc(down || "Ball position")}">` +
+      `<span class="gl-ez gl-ez-away">${edgeEsc(abbr(away))}</span><div class="gl-turf">${lines}` +
+      (last.end.down ? `<span class="gl-fd" style="left:${fd}%"></span>` : "") +
+      `<span class="gl-ball${offHome ? " to-left" : ""}" style="left:${x}%"></span></div>` +
+      `<span class="gl-ez gl-ez-home">${edgeEsc(abbr(home))}</span></div>`;
+  }
+
+  // Win chance line over the plays.
+  const W = 300, H = 70;
+  const pts = series.map((v, i) => `${(i / Math.max(series.length - 1, 1) * W).toFixed(1)},${(H - v * H).toFixed(1)}`).join(" ");
+  const pick = pickHome ? abbr(home) : abbr(away);
+  const chart = `<svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">` +
+    `<line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}"></line><polyline points="${pts}"></polyline></svg>`;
+  const word = status.state === "post" ? "Final" : "Now";
+  const chanceHtml = `<div class="gl-chance"><div class="gl-now"><span class="gl-eyebrow">Our win chance for ${edgeEsc(pick)}</span>` +
+    `<b>${Math.round(now * 100)}<small>%</small></b><span class="gl-sub">${word} · ${Math.round(series[0] * 100)}% at kickoff</span></div>${chart}</div>`;
+
+  // Drives, latest first; the one in progress open.
+  const driveHtml = drives.slice().reverse().map((d, i) => {
+    const t = d.team || {};
+    const result = d.displayResult || (live && cur && d.id === cur.id ? "Driving" : "");
+    const rows = (d.plays || []).slice().reverse().map(p => {
+      const st = p.start || {};
+      const dd = st.down ? (st.shortDownDistanceText || `${st.down} & ${st.distance}`) + (st.possessionText ? ` at ${st.possessionText}` : "") : "";
+      return `<li class="${p.scoringPlay ? "is-score" : ""}"><span class="gl-when">Q${(p.period || {}).number || ""} ${edgeEsc((p.clock || {}).displayValue || "")}` +
+        `${dd ? `<small>${edgeEsc(dd)}</small>` : ""}</span><span>${edgeEsc(String(p.text || "").trim())}</span></li>`;
+    }).join("");
+    return `<details class="gl-drive${d.isScore ? " is-score" : ""}"${i === 0 && live ? " open" : ""}><summary>` +
+      `<b>${edgeEsc(t.abbreviation || "")}</b><span class="gl-res">${edgeEsc(result)}</span>` +
+      `<small>${edgeEsc(d.description || "")}</small></summary><ol>${rows}</ol></details>`;
+  }).join("");
+
+  card.querySelector(".gl-body").innerHTML =
+    `<div class="gl-board${live ? " is-live" : ""}">${team(away, "away")}<div class="gl-clock">${edgeEsc(clock)}` +
+    `${down ? `<small>${edgeEsc(down)}</small>` : ""}</div>${team(home, "home")}</div>` +
+    (lastText ? `<p class="gl-last">${edgeEsc(lastText)}</p>` : "") + field + chanceHtml +
+    (driveHtml ? `<h3 class="gl-head">Drive by drive</h3><div class="gl-drives">${driveHtml}</div>` : "") +
+    `<p class="table-footnote">Our win chance plays the rest of the game out from the real score, clock and ball ` +
+    `using our line. Plays and scores from ESPN.</p>`;
+  const h2 = card.querySelector(".card-header h2"), sub = card.querySelector(".card-header .subtitle");
+  if (h2) h2.textContent = live ? "Live" : "How it played out";
+  if (sub && !live) sub.textContent = "Every play from ESPN, with our win chance after each one";
+  card.hidden = false;
+  glPlayers(data, sport);
+  return live;
+}
+
+// A dot on each Players to watch bar for the yards so far.
+function glPlayers(data, sport) {
+  const rows = document.querySelectorAll(".pr-list li[data-name]");
+  if (!rows.length) return;
+  const cats = { "Passing yards": ["passing", "passingYards"], "Rushing yards": ["rushing", "rushingYards"],
+                 "Receiving yards": ["receiving", "receivingYards"] };
+  ((data.boxscore || {}).players || []).forEach(tp => {
+    const tm = edgeTeamAbbr(tp.team || {});
+    (tp.statistics || []).forEach(cat => {
+      const stat = Object.keys(cats).find(k => cats[k][0] === cat.name);
+      const at = stat ? (cat.keys || []).indexOf(cats[stat][1]) : -1;
+      if (at < 0) return;
+      (cat.athletes || []).forEach(a => {
+        const yds = Number((a.stats || [])[at]);
+        if (!Number.isFinite(yds)) return;
+        rows.forEach(li => {
+          if (li.dataset.stat !== stat || edgeFavKey(sport, li.dataset.team) !== edgeFavKey(sport, tm)) return;
+          if (!glSamePlayer(li.dataset.name, a.athlete || {})) return;
+          const track = li.querySelector(".pr-track");
+          let dot = track && track.querySelector(".pr-live");
+          if (track && !dot) { dot = edgeNode("span", "pr-live"); track.append(dot); }
+          if (dot) dot.style.left = Math.min(100, Math.max(0, yds / (Number(li.dataset.top) || 1) * 100)) + "%";
+          const small = li.querySelector(".pr-nums small");
+          let so = li.querySelector(".pr-sofar");
+          if (!so) { so = edgeNode("span", "pr-sofar"); li.querySelector(".pr-nums").insertBefore(so, small); }
+          so.textContent = `${yds} so far`;
+          const box = li.closest(".pr-list").parentElement, note = box && box.querySelector(".table-footnote");
+          if (note && !note.querySelector(".pr-live-note"))
+            note.append(edgeNode("span", "pr-live-note", " The blue dot is yards so far in this game, from ESPN."));
+        });
+      });
+    });
+  });
+}
+
+async function initLiveGame() {
+  const card = document.querySelector(".gl[data-path]");
+  if (!card) return;
+  const site = gcLiveSite();
+  if (!site) return;
+  let id = null;
+  const tick = async () => {
+    if (Date.now() < new Date(card.dataset.start).getTime() - 5 * 60000) return 60000;
+    if (!id) {
+      const e = gcLiveMatch(card, await gcLiveEvents(site, [card.dataset.day].filter(Boolean)), site.sport);
+      if (!e) return 120000;
+      id = e.id;
+    }
+    const data = await edgeFetchJson(`https://site.api.espn.com/apis/site/v2/sports/${card.dataset.path}/summary?event=${id}`, 8000);
+    if (!data) return 60000;
+    const state = ((((data.header || {}).competitions || [])[0] || {}).status || {}).type || {};
+    if (!state.state || state.state === "pre") return 60000;
+    return glRender(card, data, site.sport) ? 30000 : null;
+  };
+  const loop = async () => { const wait = await tick(); if (wait) setTimeout(loop, wait); };
+  loop();
+}
+initLiveGame();
