@@ -526,60 +526,92 @@ function glRender(card, data, sport) {
   if (status.state === "post") now = toPick(sh > sa ? 1 : sh < sa ? 0 : 0.5);
   else now = series[series.length - 1];
 
+  // Team colors from ESPN, for the score bars, end zones and drive swatches.
+  const color = c => /^[0-9a-f]{6}$/i.test((c.team || {}).color || "") ? "#" + c.team.color : "var(--text-faint)";
+  const colorOf = {};
+  [away, home].forEach(c => { colorOf[String(c.team.id)] = color(c); colorOf[abbr(c)] = color(c); });
+
   // Board: score, clock, down and distance.
   const poss = last && last.end && last.end.team ? String(last.end.team.id) : String((comp.situation || {}).possession || "");
-  const team = (c, side) => `<div class="gl-team gl-${side}${String(c.team.id) === poss && live ? " has-ball" : ""}">` +
-    `${c.team.logo || ((c.team.logos || [])[0] || {}).href ? `<img src="${edgeEsc(c.team.logo || c.team.logos[0].href)}" alt="" onerror="this.remove()">` : ""}` +
+  const team = (c, side) => `<div class="gl-team gl-${side}${String(c.team.id) === poss && live ? " has-ball" : ""}" style="--tc:${color(c)}">` +
     `<b>${edgeEsc(abbr(c))}</b><span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
   const clock = status.state === "post" ? "Final" : (status.shortDetail || status.detail || "Live");
   const down = live && last && last.end && last.end.downDistanceText ? last.end.downDistanceText : "";
   const lastText = live && last ? String(last.text || "").trim() : "";
 
-  // The ball on the field: the away team's end zone on the left.
+  // The ball on a drawn field: the away team's end zone on the left.
   let field = "";
   if (live && last && last.end && last.end.team && last.end.yardsToEndzone != null) {
     const offHome = String(last.end.team.id) === homeId;
-    const x = offHome ? last.end.yardsToEndzone : 100 - last.end.yardsToEndzone;
+    const X = y => 100 + y * 10;  // yard 0-100 from the away goal line to x in a 1200 x 400 field
+    const los = offHome ? last.end.yardsToEndzone : 100 - last.end.yardsToEndzone;
     const gain = last.end.distance || 0;
-    const fd = Math.max(0, Math.min(100, offHome ? x - gain : x + gain));
-    const lines = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(y => `<i style="left:${y}%"><em>${50 - Math.abs(50 - y)}</em></i>`).join("");
-    field = `<div class="gl-field" aria-label="${edgeEsc(down || "Ball position")}">` +
-      `<span class="gl-ez gl-ez-away">${edgeEsc(abbr(away))}</span><div class="gl-turf">${lines}` +
-      (last.end.down ? `<span class="gl-fd" style="left:${fd}%"></span>` : "") +
-      `<span class="gl-ball${offHome ? " to-left" : ""}" style="left:${x}%"></span></div>` +
-      `<span class="gl-ez gl-ez-home">${edgeEsc(abbr(home))}</span></div>`;
+    const fd = Math.max(0, Math.min(100, offHome ? los - gain : los + gain));
+    let turf = "";
+    for (let y = 0; y < 100; y += 10) turf += `<rect x="${X(y)}" y="0" width="100" height="400" class="${(y / 10) % 2 ? "s2" : "s1"}"/>`;
+    for (let y = 5; y < 100; y += 5) turf += `<line x1="${X(y)}" x2="${X(y)}" y1="0" y2="400" class="${y % 10 ? "yl5" : "yl"}"/>`;
+    for (let y = 1; y < 100; y++) if (y % 5) turf += `<line x1="${X(y)}" x2="${X(y)}" y1="132" y2="144" class="hash"/><line x1="${X(y)}" x2="${X(y)}" y1="256" y2="268" class="hash"/>`;
+    for (let y = 10; y < 100; y += 10) {
+      const n = 50 - Math.abs(50 - y);
+      turf += `<text x="${X(y)}" y="62" class="num">${n}</text><text x="${X(y)}" y="362" class="num">${n}</text>`;
+    }
+    const ez = (c, x, rot) => `<rect x="${x}" y="0" width="100" height="400" fill="${color(c)}"/>` +
+      `<text x="${x + 50}" y="200" class="ezt" transform="rotate(${rot} ${x + 50} 200)">${edgeEsc(((c.team || {}).name || abbr(c)).toUpperCase())}</text>`;
+    const bx = X(los), dir = offHome ? -1 : 1;
+    field = `<div class="gl-field" role="img" aria-label="${edgeEsc(down || "Ball position")}">` +
+      `<svg viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet">${turf}${ez(away, 0, -90)}${ez(home, 1100, 90)}` +
+      (last.end.down ? `<line x1="${X(fd)}" x2="${X(fd)}" y1="0" y2="400" class="fd"/>` : "") +
+      `<line x1="${bx}" x2="${bx}" y1="0" y2="400" class="los"/>` +
+      `<path d="M${bx - dir * 50} 96 L${bx} 96" class="dir"/><path d="M${bx} 96 L${bx - dir * 16} 86 L${bx - dir * 16} 106 Z" class="dirh"/>` +
+      `<ellipse cx="${bx}" cy="200" rx="22" ry="14" class="ball"/><line x1="${bx - 8}" x2="${bx + 8}" y1="200" y2="200" class="lace"/>` +
+      `<rect x="1" y="1" width="1198" height="398" class="edge"/></svg></div>`;
   }
 
-  // Win chance line over the plays.
-  const W = 300, H = 70;
-  const pts = series.map((v, i) => `${(i / Math.max(series.length - 1, 1) * W).toFixed(1)},${(H - v * H).toFixed(1)}`).join(" ");
-  const pick = pickHome ? abbr(home) : abbr(away);
-  const chart = `<svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">` +
-    `<line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}"></line><polyline points="${pts}"></polyline></svg>`;
-  const word = status.state === "post" ? "Final" : "Now";
-  const chanceHtml = `<div class="gl-chance"><div class="gl-now"><span class="gl-eyebrow">Our win chance for ${edgeEsc(pick)}</span>` +
-    `<b>${Math.round(now * 100)}<small>%</small></b><span class="gl-sub">${word} · ${Math.round(series[0] * 100)}% at kickoff</span></div>${chart}</div>`;
+  // Win chance over game time, with the quarters marked.
+  const W = 600, H = 160;
+  const t = p => { const per = (p.period || {}).number || 1; return per > 4 ? GL_LEN + 1 : GL_LEN - glLeft(per, (p.clock || {}).displayValue); };
+  const times = [0].concat(plays.map(t));
+  const span = Math.max(GL_LEN, times[times.length - 1]);
+  const xy = (v, i) => [(times[i] / span * W).toFixed(1), (H - v * H).toFixed(1)];
+  const pts = series.map((v, i) => xy(v, i).join(",")).join(" ");
+  const [ex, ey] = xy(series[series.length - 1], series.length - 1);
+  const pick = pickHome ? abbr(home) : abbr(away), other = pickHome ? abbr(away) : abbr(home);
+  const quarters = [1, 2, 3, 4].map(q => `<line x1="${q * 900 / span * W}" x2="${q * 900 / span * W}" y1="0" y2="${H}" class="q"/>`).join("");
+  const chart = `<div class="gl-plot"><span class="gl-up">${edgeEsc(pick)} wins &uarr;</span><span class="gl-down">${edgeEsc(other)} wins &darr;</span>` +
+    `<div class="gl-svg"><svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${quarters}` +
+    `<line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" class="mid"></line><polyline points="${pts}"></polyline></svg>` +
+    `<i class="gl-dot" style="left:${ex / W * 100}%;top:${ey / H * 100}%"></i></div>` +
+    `<div class="gl-qs">${[1, 2, 3, 4].map(q => `<span style="left:${(q - 0.5) * 900 / span * 100}%">Q${q}</span>`).join("")}</div></div>`;
+  const word = status.state === "post" ? "at the final whistle" : "from right here";
+  const chanceHtml = `<div class="gl-chance"><span class="gl-eyebrow">Our win chance</span>` +
+    `<div class="gl-now"><b>${Math.round(now * 100)}<small>%</small></b><span>${edgeEsc(pick)}</span></div>` +
+    `<p class="gl-sub">${word}. ${Math.round(series[0] * 100)}% at kickoff.</p>${chart}</div>`;
 
-  // Drives, latest first; the one in progress open.
+  // Drives, latest first; the one in progress open with its latest play in bold.
   const driveHtml = drives.slice().reverse().map((d, i) => {
-    const t = d.team || {};
-    const result = d.displayResult || (live && cur && d.id === cur.id ? "Driving" : "");
-    const rows = (d.plays || []).slice().reverse().map(p => {
+    const dt = d.team || {};
+    const going = live && cur && d.id === cur.id;
+    const result = going ? "Drive in progress" : [d.description, d.displayResult].filter(Boolean).join(" · ");
+    const rows = (d.plays || []).slice().reverse().map((p, j) => {
       const st = p.start || {};
       const dd = st.down ? (st.shortDownDistanceText || `${st.down} & ${st.distance}`) + (st.possessionText ? ` at ${st.possessionText}` : "") : "";
-      return `<li class="${p.scoringPlay ? "is-score" : ""}"><span class="gl-when">Q${(p.period || {}).number || ""} ${edgeEsc((p.clock || {}).displayValue || "")}` +
-        `${dd ? `<small>${edgeEsc(dd)}</small>` : ""}</span><span>${edgeEsc(String(p.text || "").trim())}</span></li>`;
+      const when = `Q${(p.period || {}).number || ""} ${(p.clock || {}).displayValue || ""}` + (dd ? ` · ${dd}` : "");
+      const cls = [i === 0 && j === 0 && live ? "is-cur" : "", p.scoringPlay ? "is-score" : ""].filter(Boolean).join(" ");
+      return `<li${cls ? ` class="${cls}"` : ""}><span class="gl-when">${edgeEsc(when)}</span><span class="gl-text">${edgeEsc(String(p.text || "").trim())}</span></li>`;
     }).join("");
     return `<details class="gl-drive${d.isScore ? " is-score" : ""}"${i === 0 && live ? " open" : ""}><summary>` +
-      `<b>${edgeEsc(t.abbreviation || "")}</b><span class="gl-res">${edgeEsc(result)}</span>` +
-      `<small>${edgeEsc(d.description || "")}</small></summary><ol>${rows}</ol></details>`;
+      `<span class="gl-sw" style="background:${colorOf[String(dt.id)] || colorOf[dt.abbreviation] || "var(--text-faint)"}"></span>` +
+      `<b>${edgeEsc(dt.abbreviation || "")}</b><span class="gl-res">${edgeEsc(result)}</span></summary><ol>${rows}</ol></details>`;
   }).join("");
 
+  const at = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" });
   card.querySelector(".gl-body").innerHTML =
-    `<div class="gl-board${live ? " is-live" : ""}">${team(away, "away")}<div class="gl-clock">${edgeEsc(clock)}` +
-    `${down ? `<small>${edgeEsc(down)}</small>` : ""}</div>${team(home, "home")}</div>` +
-    (lastText ? `<p class="gl-last">${edgeEsc(lastText)}</p>` : "") + field + chanceHtml +
-    (driveHtml ? `<h3 class="gl-head">Drive by drive</h3><div class="gl-drives">${driveHtml}</div>` : "") +
+    `<div class="gl-panel"><div class="gl-board${live ? " is-live" : ""}">${team(away, "away")}${team(home, "home")}</div>` +
+    `<div class="gl-sit"><span class="gl-clock">${edgeEsc(clock)}</span>${down ? `<b>${edgeEsc(down)}</b>` : ""}</div>` +
+    field + (lastText ? `<p class="gl-last">${edgeEsc(lastText)}</p>` : "") +
+    (live ? `<p class="gl-upd">Updated ${at}. ESPN's feed runs about 10 to 30 seconds behind TV.</p>` : "") + `</div>` +
+    `<div class="gl-panel">${chanceHtml}</div>` +
+    (driveHtml ? `<div class="gl-panel gl-plays"><span class="gl-eyebrow">Drive by drive</span><div class="gl-drives">${driveHtml}</div></div>` : "") +
     `<p class="table-footnote">Our win chance plays the rest of the game out from the real score, clock and ball ` +
     `using our line. Plays and scores from ESPN.</p>`;
   const h2 = card.querySelector(".card-header h2"), sub = card.querySelector(".card-header .subtitle");
