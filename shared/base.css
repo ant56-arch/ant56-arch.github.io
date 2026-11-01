@@ -2163,3 +2163,15 @@ circle.sp-red { fill: var(--miss); stroke: none; }
   .gl-drive li { grid-template-columns: 1fr; gap: 2px; }
   .gl-when { display: flex; gap: 6px; }
 }
+
+/* How the pick moved (extras.moves_html) */
+.pm-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.pm-table th { text-align: left; font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--rule); }
+.pm-table td { white-space: nowrap; padding: 7px 8px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.pm-table td.pm-when { white-space: normal; }
+.pm-table tr:last-child td { border-bottom: 0; }
+.pm-table .pm-when small { display: block; color: var(--text-muted); font-size: 0.75rem; }
+.pm-table tr.is-flip td { background: color-mix(in srgb, var(--ours) 9%, transparent); }
+.pm-table .pill { margin-left: 4px; font-size: 0.625rem; vertical-align: 1px; }
+.pm-older { margin: 4px 0 10px; }
+.pm-older summary { cursor: pointer; color: var(--text-muted); font-size: 0.8125rem; padding: 4px 0; }

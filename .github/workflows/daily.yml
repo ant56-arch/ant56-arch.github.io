@@ -180,6 +180,12 @@ jobs:
             gh workflow run research_pull.yml --ref main -f trigger="cold stretch"
           fi
 
+      # How the pick moved on each game page: a row each time a game's pick,
+      # chance or Vegas line changed (shared/pick_moves.py).
+      - name: Save pick moves
+        continue-on-error: true
+        run: python ../shared/pick_moves.py daily
+
       - name: Commit picks history
         run: |
           git config user.name "MLB Edge Bot"
@@ -191,6 +197,7 @@ jobs:
           [ -f teams/model_history.json ] && git add teams/model_history.json
           for f in nhl/data nhl/picks_history.json nhl/model_weights.json nhl/model_history.json \
                    cbb/data cbb/brackets cbb/picks_history.json cbb/ratings.json cbb/model_weights.json cbb/model_history.json \
+                   teams/pick_moves.json nba/pick_moves.json nhl/pick_moves.json cbb/pick_moves.json soccer/pick_moves.json \
                    soccer/data soccer/picks_history.json soccer/ratings.json soccer/model_weights.json soccer/model_history.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done

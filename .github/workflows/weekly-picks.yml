@@ -227,6 +227,14 @@ jobs:
           path: nfl-cfb/data/raw/cfbd_cache
           key: cfbd-${{ github.run_id }}-${{ github.run_attempt }}
 
+      # How the pick moved on each game page: a row each time a game's pick,
+      # chance or Vegas line changed (shared/pick_moves.py), committed with
+      # the tracking data below.
+      - name: Save pick moves
+        if: always() && steps.track_results.outcome == 'success'
+        continue-on-error: true
+        run: python ../shared/pick_moves.py football
+
       - name: Commit tracking data
         id: commit_tracking
         if: always() && steps.track_results.outcome == 'success'

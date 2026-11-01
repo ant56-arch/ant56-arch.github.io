@@ -937,8 +937,29 @@ def mlb_games(team_history, history):
     return [mlb_game(p, by_game.get((p["date"], str(p["game_id"])), ())) for p in team_history.get("picks", [])]
 
 
+# How the pick moved (Anthony, 2026-11-01): ../shared/pick_moves.py keeps a
+# row each time a game's pick, chance or Vegas line changed before it started.
+MOVES_DIR = {"MLB": "teams", "NBA": "nba", "NHL": "nhl", "CBB": "cbb", "Soccer": "soccer"}
+
+
+def with_moves(games):
+    """Adds each game's saved pick moves (g["moves"], for extras.moves_html)."""
+    saved = {}
+    for g in games:
+        folder = MOVES_DIR.get(g.get("sport"))
+        if folder and folder not in saved:
+            try:
+                with open(os.path.join(ROOT, folder, "pick_moves.json")) as f:
+                    saved[folder] = json.load(f)
+            except (OSError, ValueError):
+                saved[folder] = {}
+        g["moves"] = ((saved.get(folder) or {}).get(str(g["id"])) or {}).get("moves", [])
+    return games
+
+
 def build_game_pages(games):
     cutoff = (NOW.date() - timedelta(days=GAME_PAGE_DAYS)).isoformat()
+    games = with_moves([g for g in games if g["date"] >= cutoff])
     return {g["file"]: page_shell(f"{g['away']['abbr']} @ {g['home']['abbr']}", None,
                                   extras.game_page_body(g, "games.html", "All of today's games"))
             for g in games if g["date"] >= cutoff}
@@ -972,6 +993,7 @@ def bb_game(p, sport, slug, logo_url, facts, name=None):
 
 def bb_game_pages(games, shell):
     cutoff = (NOW.date() - timedelta(days=GAME_PAGE_DAYS)).isoformat()
+    games = with_moves([g for g in games if g["date"] >= cutoff])
     return {g["file"]: shell(f"{g['away']['abbr']} {'vs' if g.get('neutral') else '@'} {g['home']['abbr']}", None,
                              extras.game_page_body(g, "index.html", "All of today's games"))
             for g in games if g["date"] >= cutoff}
