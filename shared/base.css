@@ -2058,3 +2058,15 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .mr-col.is-real .mr-bar { opacity: 1; outline: 2px solid var(--text); outline-offset: 1px; }
 .mr-lab { font-size: 10px; line-height: 1.2; text-align: center; color: var(--text-muted); border-top: 1px solid var(--rule); padding-top: 4px; margin-top: 2px; min-height: 26px; overflow-wrap: anywhere; }
 .mr-note { margin: 4px 0; font-size: 14px; }
+
+/* Game page: likely yards for key players (extras.players_html) */
+.pr-head { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); margin: 14px 0 6px; }
+.pr-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pr-list li { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) 86px; gap: 10px; align-items: center; }
+.pr-name { display: grid; min-width: 0; }
+.pr-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pr-name small, .pr-nums small { color: var(--text-faint); font-size: 12px; }
+.pr-track { position: relative; height: 10px; border-radius: 5px; background: var(--surface-2); }
+.pr-span { position: absolute; top: 0; bottom: 0; border-radius: 5px; background: var(--ours); opacity: .45; }
+.pr-mid { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; background: var(--ours); }
+.pr-nums { display: grid; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }

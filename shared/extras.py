@@ -171,6 +171,30 @@ def range_html(g):
               f'(about {sd:.0f} points either way, 2 games in 3).</div>')
 
 
+def players_html(g):
+    """Likely yards for each team's key players: the bar spans 8 games in 10,
+    the tick is the middle game, plus the chance of a big game."""
+    rows = g.get("players") or []
+    if not rows:
+        return ""
+    out = ""
+    for stat in dict.fromkeys(p["stat"] for p in rows):
+        group = [p for p in rows if p["stat"] == stat]
+        top = max(p["hi"] for p in group) * 1.1 or 1
+        items = ""
+        for p in group:
+            tag = f' <span class="pill pill-primary">{escape(p["status"].upper())}</span>' if p.get("status") else ""
+            items += (f'<li><span class="pr-name"><b>{escape(p["name"])}</b>{tag}<small>{escape(p["team"])} · '
+                      f'projected {p["proj"]:.0f}</small></span>'
+                      f'<span class="pr-track" aria-hidden="true"><span class="pr-span" style="left:{p["lo"] / top * 100:.1f}%;'
+                      f'width:{max(p["hi"] - p["lo"], 1) / top * 100:.1f}%"></span>'
+                      f'<span class="pr-mid" style="left:{p["mid"] / top * 100:.1f}%"></span></span>'
+                      f'<span class="pr-nums">{p["lo"]:.0f}-{p["hi"]:.0f}<small>{p["big"]}+ in {p["big_chance"]:.0%}</small></span></li>')
+        out += f'<h3 class="pr-head">{escape(stat)}</h3><ul class="pr-list">{items}</ul>'
+    return out + ('<div class="table-footnote">The bar covers 8 games in 10 for a projection like this one, and the tick is '
+                  'the middle game. Measured from how far real yards landed from our projections over the last two seasons.</div>')
+
+
 def ml_fact(g):
     ml = g.get("ml")
     if not ml:
@@ -209,6 +233,9 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
     rng = range_html(g)
     if rng:
         panels += _card("How it could end", rng, "Final margin, and how often each comes up")
+    plays = players_html(g)
+    if plays:
+        panels += _card("Players to watch", plays, "Likely yards for each team's key players")
     body = hero + f'<div class="gh-grid">{panels}</div>'
     if g.get("hitters"):
         rows = "".join(f'<li><span class="hw-name"><b>{escape(n)}</b><small>{escape(t)}</small></span>'

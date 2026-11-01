@@ -145,6 +145,36 @@ def evaluate_holdout(df, coefs, stat_type, min_usage):
         "mae_fitted": float(np.mean(np.abs(fitted_proj - d[actual_col]))),
     }
 
+RANGE_BINS = 5  # projection-size groups the ranges are measured in
+RANGE_PCTS = list(range(5, 100, 5))
+
+def projection_ranges(df, coefs, stat_type, min_usage):
+    """How real yards spread around our projection on the held-out games
+    (Anthony, 2026-11-01: player ranges on the game pages, measured, not
+    guessed). Players are grouped by projection size, since a 90-yard
+    projection swings more than a 20-yard one. Each group keeps its
+    projection range, mean projection and the 5th..95th percentiles of the
+    real yards; the site scales those to a player's own projection."""
+    cfg = STAT_TYPES[stat_type]
+    usage_col, eff_col, actual_col = f"{cfg['usage']}_asof", f"{cfg['efficiency']}_asof", cfg["actual"]
+    matchup_col = f"{cfg['matchup_metric']}_asof"
+    league_col = "league_avg_pass" if "pass" in cfg["matchup_metric"] else "league_avg_rush"
+    d = df[(df[usage_col] >= min_usage) & df[usage_col].notna() & df[eff_col].notna()
+           & df[matchup_col].notna() & df[actual_col].notna()]
+    baseline = d[usage_col] * d[eff_col]
+    proj = (coefs["baseline_scale"] * baseline + coefs["matchup_scale"] * baseline * (d[matchup_col] - d[league_col])).clip(lower=0)
+    actual = d[actual_col].astype(float)
+    if len(d) < RANGE_BINS * 50:
+        return None
+    edges = np.quantile(proj, np.linspace(0, 1, RANGE_BINS + 1))
+    groups = []
+    for i, (lo, hi) in enumerate(zip(edges[:-1], edges[1:])):
+        m = (proj >= lo) & ((proj < hi) if i < RANGE_BINS - 1 else (proj <= hi))
+        groups.append({"lo": round(float(lo), 1), "hi": round(float(hi), 1), "n": int(m.sum()),
+                       "mean_proj": round(float(proj[m].mean()), 1),
+                       "pcts": [round(float(v), 1) for v in np.percentile(actual[m], RANGE_PCTS)]})
+    return {"percentiles": RANGE_PCTS, "groups": groups}
+
 MIN_INJURY_SAMPLES = 30  # below this, a fitted multiplier is noise, not signal - fall back to the hand-picked default
 
 def fit_injury_multipliers(pbp_seasons, player_game_asof):
@@ -271,6 +301,7 @@ def run():
         "matchup_scaling": final_matchup_coefs,
         "injury_multipliers": injury_multipliers,
         "holdout_validation": {"seasons": holdout_seasons, "by_stat_type": holdout_report},
+        "ranges": {t: projection_ranges(holdout_df, matchup_coefs[t], t, MIN_USAGE_ASOF[t]) for t in STAT_TYPES},
     }
     out_path = os.path.join(MODELS_DIR, "fitted_props_coefficients.json")
     with open(out_path, "w") as f:
