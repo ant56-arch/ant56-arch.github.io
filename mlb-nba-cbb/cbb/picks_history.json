@@ -30,7 +30,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-01T10:28:55Z",
+   "set_at": "2026-11-01T13:07:11Z",
    "ml": {
     "team": "VILL",
     "side": "home",
@@ -41,7 +41,7 @@
     "value": false,
     "home_ml": -325,
     "away_ml": 260,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -76,18 +76,18 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-01T10:28:55Z",
+   "set_at": "2026-11-01T13:07:11Z",
    "ml": {
     "team": "HPU",
     "side": "home",
-    "price": -310,
+    "price": -325,
     "prob": 62.9,
-    "book_prob": 72.6,
-    "edge": -9.7,
+    "book_prob": 73.4,
+    "edge": -10.5,
     "value": false,
-    "home_ml": -310,
-    "away_ml": 250,
-    "book": "DraftKings",
+    "home_ml": -325,
+    "away_ml": 260,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
