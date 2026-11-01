@@ -2070,3 +2070,89 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .pr-span { position: absolute; top: 0; bottom: 0; border-radius: 5px; background: var(--ours); opacity: .45; }
 .pr-mid { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; background: var(--ours); }
 .pr-nums { display: grid; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* Live game card on football game pages (sport-pages.js initLiveGame). */
+.gl-body { display: grid; gap: 14px; }
+.gl-panel { border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); padding: 16px 18px; min-width: 0; }
+.gl-eyebrow { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-faint); }
+.gl-board { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.gl-team { display: flex; align-items: center; gap: 12px; }
+.gl-team::before { content: ""; width: 5px; height: 30px; border-radius: 2px; background: var(--tc); }
+.gl-home { flex-direction: row-reverse; }
+.gl-team b { font-family: var(--font-mono); font-size: 24px; font-weight: 500; letter-spacing: 1px; }
+.gl-score { font-family: var(--font-mono); font-size: 34px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; }
+.gl-team.has-ball .gl-score::before { content: "\2022"; color: var(--ours); margin-right: 8px; font-size: 22px; vertical-align: middle; }
+.gl-home.has-ball .gl-score::before { content: none; }
+.gl-home.has-ball .gl-score::after { content: "\2022"; color: var(--ours); margin-left: 8px; font-size: 22px; vertical-align: middle; }
+.gl-sit { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; font-family: var(--font-mono); font-size: 14px; }
+.gl-clock { color: var(--text-muted); }
+.gl-board.is-live + .gl-sit .gl-clock { color: var(--miss); }
+.gl-sit b { font-weight: 500; text-align: right; }
+.gl-field { margin-top: 10px; border-radius: 6px; overflow: hidden; line-height: 0; }
+.gl-field svg { width: 100%; height: auto; display: block; }
+.gl-field .s1 { fill: #2c5a34; } .gl-field .s2 { fill: #2f6138; }
+.gl-field .yl { stroke: rgba(255,255,255,.55); stroke-width: 2; } .gl-field .yl5 { stroke: rgba(255,255,255,.25); stroke-width: 2; }
+.gl-field .hash { stroke: rgba(255,255,255,.3); stroke-width: 2; }
+.gl-field .num { fill: rgba(255,255,255,.6); font: 600 34px var(--font-mono); text-anchor: middle; }
+.gl-field .ezt { fill: rgba(255,255,255,.9); font: 600 36px var(--font-mono); letter-spacing: 6px; text-anchor: middle; dominant-baseline: middle; }
+.gl-field .fd { stroke: #f2d24b; stroke-width: 6; }
+.gl-field .los { stroke: #4f8bf0; stroke-width: 6; }
+.gl-field .dir { stroke: #ff6b57; stroke-width: 9; stroke-linecap: round; fill: none; } .gl-field .dirh { fill: #ff6b57; }
+.gl-field .ball { fill: #9a5b2e; stroke: #fff; stroke-width: 4; } .gl-field .lace { stroke: #fff; stroke-width: 3; }
+.gl-field .edge { fill: none; stroke: rgba(255,255,255,.7); stroke-width: 3; }
+.gl-last { margin: 12px 0 0; font-size: 15px; line-height: 1.45; }
+.gl-upd { margin: 8px 0 0; font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+.gl-upd::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--miss); margin-right: 8px; vertical-align: 1px; }
+.gl-now { display: flex; align-items: baseline; gap: 10px; margin-top: 8px; }
+.gl-now b { font-size: 48px; line-height: 1; color: var(--ours); font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+.gl-now b small { font-size: 0.7em; }
+.gl-now span { font-size: 18px; font-weight: 700; }
+.gl-sub { margin: 4px 0 0; font-size: 14px; color: var(--text-muted); }
+.gl-plot { position: relative; margin-top: 14px; padding-bottom: 22px; }
+.gl-svg { position: relative; }
+.gl-chart { display: block; width: 100%; height: 150px; }
+.gl-chart .q { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.gl-chart .mid { stroke: var(--rule-strong); stroke-dasharray: 4 4; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.gl-chart polyline { fill: none; stroke: var(--ours); stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.gl-dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--ours); }
+.gl-up, .gl-down { position: absolute; left: 6px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.gl-up { top: 4px; } .gl-down { bottom: 28px; }
+.gl-qs span { position: absolute; bottom: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.gl-drives { margin-top: 8px; }
+.gl-drive { border-bottom: 1px solid var(--rule); }
+.gl-drive summary { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; cursor: pointer; list-style: none; }
+.gl-drive summary::-webkit-details-marker { display: none; }
+.gl-drive summary::before { content: "\25B8"; font-size: 12px; color: var(--text-faint); transition: transform .15s; }
+.gl-drive[open] summary::before { transform: rotate(90deg); }
+.gl-sw { flex: none; align-self: center; width: 4px; height: 18px; border-radius: 2px; }
+.gl-drive summary b { font-family: var(--font-mono); font-weight: 500; font-size: 15px; }
+.gl-res { color: var(--text-muted); font-size: 15px; }
+.gl-drive.is-score .gl-res { color: var(--hit); }
+.gl-drive ol { list-style: none; margin: 0; padding: 0 0 12px 22px; display: grid; gap: 14px; }
+.gl-drive li { display: grid; gap: 3px; }
+.gl-when { font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+.gl-text { font-size: 14px; line-height: 1.45; }
+.gl-drive li.is-cur .gl-text { font-weight: 700; font-size: 15px; }
+.gl-drive li.is-score .gl-text { color: var(--hit); font-weight: 600; }
+@media (min-width: 1000px) {
+  .gl-body { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; }
+  .gl-plays, .gl-body > .table-footnote { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .gl-panel { padding: 14px; }
+  .gl-team b { font-size: 20px; }
+  .gl-score { font-size: 30px; }
+  .gl-sit { font-size: 13px; }
+}
+.pr-live { position: absolute; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--vegas);
+  box-shadow: 0 0 0 2px var(--surface); transition: left .4s; }
+.pr-sofar { color: var(--vegas); font-size: 12px; font-weight: 700; }
+@media (max-width: 640px) {
+  .gl-score { font-size: 28px; }
+  .gl-team img { width: 28px; height: 28px; }
+  .gl-chance { grid-template-columns: 1fr; gap: 8px; }
+  .gl-drive summary { grid-template-columns: 40px 1fr; }
+  .gl-drive summary small { grid-column: 1 / -1; text-align: left; }
+  .gl-drive li { grid-template-columns: 1fr; gap: 2px; }
+  .gl-when { display: flex; gap: 6px; }
+}
