@@ -16,6 +16,10 @@ Each builder turns its own picks into one game shape (a dict):
 and, for the game cards on each sport's Home tab (all optional): tv and venue
 (from ESPN's scoreboard), "proj" on away/home (projected points), and lines
 [(label, value html, "vegas"|"ours"|"", sub)] for the strip under the teams.
+Game pages also show "range" when given (Anthony, 2026-11-01: more detail
+when you click a game, the card stays the same): {"margin": home margin we
+post, "sd": the model's usual miss on it, "step": points per bar, "total",
+"total_sd"}, drawn as how often each final margin comes up.
 Soccer adds (also optional): "chance" on away/home (that team's own chance to
 win, since a draw takes the rest), pick_name / pick_label / pick_sub for a pick
 that isn't a team ("Draw"), and group (data-group on the card, for filters).
@@ -26,6 +30,7 @@ reads it from summary.json: a moneyline unit is 1 bet at the price the pick
 locked at, so dollars are units times 10. Live picks only.
 """
 import json
+import math
 from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
@@ -120,6 +125,52 @@ def why_html(g):
             'each factor, and which team it pulls toward.</div>')
 
 
+def _cdf(x):
+    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+
+
+def range_html(g):
+    """Bars for how often each final margin comes up, from our posted line and
+    the model's usual miss (a bell curve around the line), plus the likely
+    total. Once final, the bar the real margin landed in is marked."""
+    rg = g.get("range")
+    if not rg or not rg.get("sd"):
+        return ""
+    a, h, mu, sd, step = g["away"]["abbr"], g["home"]["abbr"], rg["margin"], rg["sd"], rg.get("step", 7)
+    cuts = [-3 * step - 0.5, -2 * step - 0.5, -step - 0.5, 0, step + 0.5, 2 * step + 0.5, 3 * step + 0.5]
+    edges = [-math.inf] + cuts + [math.inf]
+    shares = [_cdf((hi - mu) / sd) - _cdf((lo - mu) / sd) for lo, hi in zip(edges[:-1], edges[1:])]
+    labels = ([f"{a} {3 * step + 1}+", f"{a} {2 * step + 1}-{3 * step}", f"{a} {step + 1}-{2 * step}", f"{a} 1-{step}"]
+              + [f"{h} 1-{step}", f"{h} {step + 1}-{2 * step}", f"{h} {2 * step + 1}-{3 * step}", f"{h} {3 * step + 1}+"])
+    real = None
+    if g.get("final") and g["away"].get("score") is not None and g["home"].get("score") is not None:
+        m = g["home"]["score"] - g["away"]["score"]
+        real = next((i for i, (lo, hi) in enumerate(zip(edges[:-1], edges[1:])) if lo <= m < hi), None) if m else None
+    top = max(shares)
+    bars = ""
+    for i, (share, label) in enumerate(zip(shares, labels)):
+        side = "is-pick" if (i >= 4) == (g["pick"] == h) else "is-other"
+        mark = " is-real" if i == real else ""
+        bars += (f'<li class="mr-col {side}{mark}"><span class="mr-pct">{share:.0%}</span>'
+                 f'<span class="mr-bar" style="height:{max(share / top, 0.04) * 100:.0f}%"></span>'
+                 f'<span class="mr-lab">{escape(label)}</span></li>')
+    best = max(range(1, 7), key=lambda i: shares[i])  # the open-ended end bars are wider, so not 'most likely'
+    close = _cdf((step + 0.5 - mu) / sd) - _cdf((-step - 0.5 - mu) / sd)
+    big_h, big_a = 1 - _cdf((2 * step + 0.5 - mu) / sd), _cdf((-2 * step - 0.5 - mu) / sd)
+    lines = [f"Most likely: {labels[best].replace(' ', ' by ', 1)} points ({shares[best]:.0%}).",
+             f"Decided by {step} or fewer: {close:.0%}. {h} wins by {2 * step + 1}+: {big_h:.0%}. "
+             f"{a} wins by {2 * step + 1}+: {big_a:.0%}."]
+    if rg.get("total") and rg.get("total_sd"):
+        lo, hi = rg["total"] - 1.28 * rg["total_sd"], rg["total"] + 1.28 * rg["total_sd"]
+        lines.append(f"Total points: {max(lo, 0):.0f} to {hi:.0f} in 8 of 10 games like this (our total {rg['total']:.1f}).")
+    if real is not None:
+        lines.append(f"Final landed in the marked bar: {labels[real].replace(' ', ' by ', 1)}.")
+    return (f'<ol class="margin-range" aria-label="How often each final margin comes up">{bars}</ol>'
+            + "".join(f'<p class="mr-note">{escape(x)}</p>' for x in lines)
+            + '<div class="table-footnote">From our line and how far real results usually land from it '
+              f'(about {sd:.0f} points either way, 2 games in 3).</div>')
+
+
 def ml_fact(g):
     ml = g.get("ml")
     if not ml:
@@ -155,6 +206,9 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
     if why:
         panels += _card(f"Why the model likes {escape(g['pick'])}", why)
     panels += _card("The matchup", f'<dl class="gh-facts">{dl}</dl>')
+    rng = range_html(g)
+    if rng:
+        panels += _card("How it could end", rng, "Final margin, and how often each comes up")
     body = hero + f'<div class="gh-grid">{panels}</div>'
     if g.get("hitters"):
         rows = "".join(f'<li><span class="hw-name"><b>{escape(n)}</b><small>{escape(t)}</small></span>'
