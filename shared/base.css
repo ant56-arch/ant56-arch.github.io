@@ -2118,6 +2118,11 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .gl-up, .gl-down { position: absolute; left: 6px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
 .gl-up { top: 4px; } .gl-down { bottom: 28px; }
 .gl-qs span { position: absolute; bottom: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.gl-plays > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; }
+.gl-plays > summary::-webkit-details-marker { display: none; }
+.gl-count { font-size: 14px; color: var(--text-muted); }
+.gl-plays[open] .gl-count { display: none; }
+.gl-plays[open] > summary .gl-chev { transform: translateY(2px) rotate(-135deg); }
 .gl-drives { margin-top: 8px; }
 .gl-drive { border-bottom: 1px solid var(--rule); }
 .gl-drive summary { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; cursor: pointer; list-style: none; }
@@ -2125,7 +2130,7 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .gl-drive summary:hover .gl-res { color: var(--text); }
 .gl-chev { flex: none; margin-left: auto; align-self: center; width: 9px; height: 9px; border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted); transform: translateY(-3px) rotate(45deg); transition: transform .15s; }
-.gl-drive[open] .gl-chev { transform: translateY(2px) rotate(-135deg); }
+.gl-drive[open] > summary .gl-chev { transform: translateY(2px) rotate(-135deg); }
 .gl-sw { flex: none; align-self: center; width: 4px; height: 18px; border-radius: 2px; }
 .gl-drive summary b { font-family: var(--font-mono); font-weight: 500; font-size: 15px; }
 .gl-res { color: var(--text-muted); font-size: 15px; }

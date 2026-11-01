@@ -612,7 +612,9 @@ function glRender(card, data, sport) {
     field + (lastText ? `<p class="gl-last">${edgeEsc(lastText)}</p>` : "") +
     (live ? `<p class="gl-upd">Updated ${at}. ESPN's feed runs about 10 to 30 seconds behind TV.</p>` : "") + `</div>` +
     `<div class="gl-panel">${chanceHtml}</div>` +
-    (driveHtml ? `<div class="gl-panel gl-plays"><span class="gl-eyebrow">Drive by drive</span><div class="gl-drives">${driveHtml}</div></div>` : "") +
+    (driveHtml ? `<details class="gl-panel gl-plays" data-drive="all"${card.glOpen && card.glOpen.all ? " open" : ""}>` +
+      `<summary><span class="gl-eyebrow">Drive by drive</span><span class="gl-count">${drives.length} drive${drives.length === 1 ? "" : "s"}</span>` +
+      `<i class="gl-chev" aria-hidden="true"></i></summary><div class="gl-drives">${driveHtml}</div></details>` : "") +
     `<p class="table-footnote">Our win chance plays the rest of the game out from the real score, clock and ball ` +
     `using our line. Plays and scores from ESPN.</p>`;
   const h2 = card.querySelector(".card-header h2"), sub = card.querySelector(".card-header .subtitle");
@@ -664,7 +666,7 @@ async function initLiveGame() {
   // Keep the drives a reader opened or closed open or closed when the card refreshes.
   card.glOpen = {};
   card.addEventListener("click", e => {
-    const sum = e.target.closest(".gl-drive > summary");
+    const sum = e.target.closest(".gl-drive > summary, .gl-plays > summary");
     if (sum) card.glOpen[sum.parentElement.dataset.drive] = !sum.parentElement.open;
   });
   const site = gcLiveSite();
