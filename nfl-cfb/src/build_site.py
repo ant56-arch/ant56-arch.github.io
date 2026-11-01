@@ -237,6 +237,11 @@ def spread_sigma(sport):
     coefs = load_coefficients(sport)
     return coefs.get("coefficients", coefs).get("margin_std_dev")
 
+def total_sigma(sport):
+    """The model's typical miss on the total, in points (total_std_dev)."""
+    coefs = load_coefficients(sport)
+    return coefs.get("coefficients", coefs).get("total_std_dev")
+
 def ml_payout(price):
     """What a price means in dollars: '$100 pays $1,600' / 'Bet $150 to win $100'."""
     price = float(price)
@@ -1852,6 +1857,8 @@ def nf_game(sport, g, espn=None):
                "won": {"W": True, "L": False}.get(ml["result"])} if ml else None,
         "why": [], "facts": facts, "hitters": [], "note": g.get("lock_html", ""),
         "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "series": eg.get("series", ""), "lines": card_lines(g),
+        "range": {"margin": home_margin, "sd": spread_sigma(sport), "step": 10 if sport["slug"] == "cfb" else 7,
+                  "total": g["total"] if pd.notna(g.get("total")) else None, "total_sd": total_sigma(sport)},
     }
 
 

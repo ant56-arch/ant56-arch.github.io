@@ -2048,3 +2048,13 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .show-all { display: block; margin: 18px auto 0; padding: 10px 22px; border: 1px solid var(--rule-strong); border-radius: 999px;
   background: none; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .show-all:hover { border-color: var(--ours); color: var(--ours); }
+
+/* Game page: how often each final margin comes up (extras.range_html) */
+.margin-range { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; height: 150px; align-items: end; }
+.mr-col { display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; height: 100%; min-width: 0; }
+.mr-pct { font-size: 11px; text-align: center; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.mr-bar { display: block; border-radius: 3px 3px 0 0; background: var(--rule-strong); opacity: .6; min-height: 3px; }
+.mr-col.is-pick .mr-bar { background: var(--ours); }
+.mr-col.is-real .mr-bar { opacity: 1; outline: 2px solid var(--text); outline-offset: 1px; }
+.mr-lab { font-size: 10px; line-height: 1.2; text-align: center; color: var(--text-muted); border-top: 1px solid var(--rule); padding-top: 4px; margin-top: 2px; min-height: 26px; overflow-wrap: anywhere; }
+.mr-note { margin: 4px 0; font-size: 14px; }
