@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-31T23:16:01Z",
+ "updated": "2026-11-01T01:20:28Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -103,9 +103,9 @@
   "cfb": {
    "label": "College football",
    "picks": 60,
-   "won": 34,
-   "expected": 42.0,
-   "z": -2.3,
+   "won": 35,
+   "expected": 43.0,
+   "z": -2.34,
    "from": "2026-10-17",
    "through": "2026-10-31",
    "alarm": true,
