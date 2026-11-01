@@ -30,6 +30,8 @@ from fetch_cfb_data import fetch_team_info, fetch_games, fetch_lines, fetch_adva
 from historical_features import compute_walkforward_features
 from build_features import RECENCY_HALF_LIFE_GAMES
 import model_guard as guard
+import cfb_context
+import cfb_ratings
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 
@@ -42,11 +44,21 @@ BLEND_GRID = np.round(np.arange(0.0, 1.01, 0.05), 2)
 # scored on the most recent RECENT_HOLDOUT_GAMES lined games (about a season).
 RECENT_HOLDOUT_GAMES = 350
 DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES, "seasons": "all"}
-RECIPES = [{"team_half_life": h, "seasons": n} for h in (2, 4, 8) for n in ("all", 3)]
+# 2026-11-01 (Anthony: 10 versions per sport, using methods others use): four
+# tryouts add one input on top of the live settings (see cfb_context.py): our
+# power ratings, power ratings + rest/bye weeks, Elo, and Pythagorean record.
+RECIPES = ([{"team_half_life": h, "seasons": n} for h in (2, 4, 8) for n in ("all", 3)]
+           + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "seasons": "all", "extras": extras}
+              for extras in (["power"], ["power", "bye"], ["elo"], ["pyth"])])
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_cfb_coefficients.json")
+EXTRA_FEATURES = cfb_context.COLUMNS
+
+def recipe_extras(r):
+    return list(r.get("extras", []))
 
 def recipe_name(r):
-    return f"half-life {r['team_half_life']} games, {r['seasons']} seasons"
+    extras = "".join(f" + {kind}" for kind in recipe_extras(r))
+    return f"half-life {r['team_half_life']} games, {r['seasons']} seasons{extras}"
 
 def window(recipe, dataset):
     if recipe["seasons"] == "all" or dataset.empty:
@@ -125,7 +137,14 @@ def make_features(games, suffix="_asof"):
         "explosiveness_diff": games[f"home_off_explosiveness{suffix}"] - games[f"away_off_explosiveness{suffix}"],
     })
     feats["combined_exp_eff"] = home_exp_eff + away_exp_eff
+    # Context inputs only exist on a recipe's dataset when the recipe uses them.
+    for col in EXTRA_FEATURES:
+        if col in games.columns:
+            feats[col] = games[col].values
     return feats
+
+def extra_columns(feats):
+    return [c for c in EXTRA_FEATURES if c in feats.columns]
 
 def fit_ols(X, y):
     beta, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
@@ -139,7 +158,9 @@ def fit_margin_and_total(feats, games):
     n = len(feats)
     ones = np.ones(n)
 
-    X_margin = np.column_stack([feats["ppa_diff"], feats["success_rate_diff"], feats["explosiveness_diff"], ones])
+    extras = extra_columns(feats)
+    X_margin = np.column_stack([feats["ppa_diff"], feats["success_rate_diff"], feats["explosiveness_diff"]]
+                               + [feats[c] for c in extras] + [ones])
     beta_margin, resid_margin = fit_ols(X_margin, games["actual_margin"].values)
 
     X_total = np.column_stack([feats["combined_exp_eff"], ones])
@@ -149,7 +170,8 @@ def fit_margin_and_total(feats, games):
         "ppa_diff_coef": float(beta_margin[0]),
         "success_rate_weight": float(beta_margin[1]),
         "explosiveness_weight": float(beta_margin[2]),
-        "home_field_advantage": float(beta_margin[3]),
+        **{f"{c}_weight": float(b) for c, b in zip(extras, beta_margin[3:-1])},
+        "home_field_advantage": float(beta_margin[-1]),
         "margin_std_dev": float(np.std(resid_margin, ddof=X_margin.shape[1])),
         "total_coef": float(beta_total[0]),
         "total_intercept": float(beta_total[1]),
@@ -164,6 +186,9 @@ def model_predict(feats, coefs):
         + feats["explosiveness_diff"] * coefs["explosiveness_weight"]
         + coefs["home_field_advantage"]
     )
+    for col in EXTRA_FEATURES:
+        if f"{col}_weight" in coefs:
+            spread = spread + feats[col] * coefs[f"{col}_weight"]
     total = feats["combined_exp_eff"] * coefs["total_coef"] + coefs["total_intercept"]
     return spread, total
 
@@ -281,14 +306,55 @@ def run():
     print(f"  {len(games)} games, {len(stats)} team-game stat rows")
 
     datasets = {}
+    context = {}
+
+    def context_for(kind):
+        """One extra input (cfb_context.py) for every game id, built once.
+        Loads CFBD's full game lists from a season earlier, so week 1 has a
+        preseason rating and Elo has a season to settle."""
+        if "games" not in context:
+            years = range(seasons[0] - 1, current_season + 1)
+            context["games"] = pd.concat([cfb_ratings.season_games(y) for y in years], ignore_index=True)
+            context["fbs"] = {y: set(cfb_ratings.fbs_teams(y)["team"]) for y in years}
+        if kind not in context:
+            all_games, fbs = context["games"], context["fbs"]
+            print(f"  Building the {kind} input...")
+            if kind == "bye":
+                context[kind] = cfb_context.rest_features(all_games)
+            elif kind == "pyth":
+                context[kind] = cfb_context.pyth_features(all_games)
+            elif kind == "elo":
+                context[kind], context["elo_start"] = cfb_context.elo_walk(all_games, set().union(*fbs.values()))
+            elif kind == "power":
+                eff = {}
+                for y in fbs:
+                    eff.update(cfb_ratings.season_efficiency(y))
+                returning = {y: cfb_ratings.team_values("/player/returning", y, "team", ("percentPPA", "percent_ppa"))
+                             for y in seasons}
+                talent = {y: cfb_ratings.team_values("/talent", y, "team", ("talent",)) for y in seasons}
+                context[kind] = cfb_context.power_features(all_games, seasons, fbs, eff, returning, talent)
+        return context[kind]
 
     def dataset_for(recipe):
         """Completed lined games with walk-forward (no-leakage) features at
-        this recipe's half-life."""
+        this recipe's half-life, plus its extra inputs."""
         hl = recipe["team_half_life"]
         if hl not in datasets:
             datasets[hl] = build_dataset(compute_walkforward_features(stats, METRICS, half_life=hl), games)
-        return datasets[hl]
+        extras = recipe_extras(recipe)
+        if not extras:
+            return datasets[hl]
+        full = (hl,) + tuple(extras)
+        if full not in datasets:
+            d = datasets[hl]
+            for kind in extras:
+                d = d.merge(context_for(kind).drop_duplicates("id"), on="id", how="left")
+            # A game CFBD's full list somehow lacks gets a neutral 0, so every
+            # version is scored on the same games.
+            cols = [c for c in EXTRA_FEATURES if c in d.columns]
+            d[cols] = d[cols].fillna(0.0)
+            datasets[full] = d
+        return datasets[full]
 
     live = guard.load_json(COEFFICIENTS_PATH)
     live_recipe = live.get("recipe", DEFAULT_RECIPE)
@@ -312,7 +378,9 @@ def run():
         return
     trained_through = guard.latest_gameday(dataset)
     output.update({"recipe": chosen, "team_half_life_games": chosen["team_half_life"],
-                   "trained_through": trained_through})
+                   "context_inputs": recipe_extras(chosen), "trained_through": trained_through})
+    if "elo" in recipe_extras(chosen):
+        output["elo_start"] = context["elo_start"]  # the live picks walk this season's games from here
     ok, why, new, live_score = guard.deploy_ok(output["coefficients"], live.get("coefficients"), live_recipe, chosen,
                                                dataset_for, make_features, model_predict, report["keys"])
     if ok:
