@@ -1,3 +1,96 @@
 {
- "picks": []
+ "picks": [
+  {
+   "date": "2026-11-01",
+   "game_id": "401920982",
+   "start": "2026-11-01T09:30:00-05:00",
+   "type": "regular",
+   "note": "Eternal City Tip-Off",
+   "home": "VILL",
+   "away": "ND",
+   "home_id": "222",
+   "away_id": "87",
+   "home_name": "Villanova",
+   "away_name": "Notre Dame",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 46,
+   "away_em_rank": 166,
+   "home_record": "0-0",
+   "away_record": "0-0",
+   "neutral": true,
+   "pick": "VILL",
+   "prob": 65.9,
+   "home_prob": 65.9,
+   "margin": 5.0,
+   "proj": {
+    "home": 77,
+    "away": 72,
+    "tempo": 68
+   },
+   "model": "2026-10-17T15:00:23+00:00",
+   "correct": null,
+   "set_at": "2026-11-01T10:28:55Z",
+   "ml": {
+    "team": "VILL",
+    "side": "home",
+    "price": -325,
+    "prob": 65.9,
+    "book_prob": 73.4,
+    "edge": -7.5,
+    "value": false,
+    "home_ml": -325,
+    "away_ml": 260,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-01",
+   "game_id": "401920409",
+   "start": "2026-11-01T23:59:00-05:00",
+   "type": "regular",
+   "note": "Field of 68 Opening Day Marathon",
+   "home": "HPU",
+   "away": "LIB",
+   "home_id": "2272",
+   "away_id": "2335",
+   "home_name": "High Point",
+   "away_name": "Liberty",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 40,
+   "away_em_rank": 100,
+   "home_record": "0-0",
+   "away_record": "0-0",
+   "neutral": true,
+   "pick": "HPU",
+   "prob": 62.9,
+   "home_prob": 62.9,
+   "margin": 4.0,
+   "proj": {
+    "home": 79,
+    "away": 75,
+    "tempo": 68
+   },
+   "model": "2026-10-17T15:00:23+00:00",
+   "correct": null,
+   "set_at": "2026-11-01T10:28:55Z",
+   "ml": {
+    "team": "HPU",
+    "side": "home",
+    "price": -310,
+    "prob": 62.9,
+    "book_prob": 72.6,
+    "edge": -9.7,
+    "value": false,
+    "home_ml": -310,
+    "away_ml": 250,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  }
+ ]
 }
