@@ -2122,13 +2122,15 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .gl-drive { border-bottom: 1px solid var(--rule); }
 .gl-drive summary { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; cursor: pointer; list-style: none; }
 .gl-drive summary::-webkit-details-marker { display: none; }
-.gl-drive summary::before { content: "\25B8"; font-size: 12px; color: var(--text-faint); transition: transform .15s; }
-.gl-drive[open] summary::before { transform: rotate(90deg); }
+.gl-drive summary:hover .gl-res { color: var(--text); }
+.gl-chev { flex: none; margin-left: auto; align-self: center; width: 9px; height: 9px; border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted); transform: translateY(-3px) rotate(45deg); transition: transform .15s; }
+.gl-drive[open] .gl-chev { transform: translateY(2px) rotate(-135deg); }
 .gl-sw { flex: none; align-self: center; width: 4px; height: 18px; border-radius: 2px; }
 .gl-drive summary b { font-family: var(--font-mono); font-weight: 500; font-size: 15px; }
 .gl-res { color: var(--text-muted); font-size: 15px; }
 .gl-drive.is-score .gl-res { color: var(--hit); }
-.gl-drive ol { list-style: none; margin: 0; padding: 0 0 12px 22px; display: grid; gap: 14px; }
+.gl-drive ol { list-style: none; margin: 0; padding: 0 0 12px 14px; display: grid; gap: 14px; }
 .gl-drive li { display: grid; gap: 3px; }
 .gl-when { font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
 .gl-text { font-size: 14px; line-height: 1.45; }
