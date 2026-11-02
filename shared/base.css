@@ -2170,11 +2170,27 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .pm-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 .pm-table th { text-align: left; font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--rule); }
 .pm-table td { white-space: nowrap; padding: 7px 8px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
-.pm-table td.pm-when { white-space: normal; }
+.pm-table td.pm-when { white-space: nowrap; }
 .pm-table tr:last-child td { border-bottom: 0; }
 .pm-table .pm-when small { display: block; color: var(--text-muted); font-size: 0.75rem; }
 .pm-table tr.is-flip td { background: color-mix(in srgb, var(--ours) 9%, transparent); }
-.pm-table .pill { margin-left: 4px; font-size: 0.625rem; vertical-align: 1px; }
 .pm-older { margin: 4px 0 10px; }
 .pm-older summary { cursor: pointer; color: var(--text-muted); font-size: 0.8125rem; padding: 4px 0; }
 .gl-dot-team { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pm-chart { display: block; width: 100%; height: auto; margin: 4px 0 14px; overflow: visible; }
+.pm-chart .pmc-grid { stroke: var(--rule); stroke-width: 1; }
+.pm-chart .pmc-even { stroke: var(--rule-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.pm-chart text { font-family: var(--font-mono); font-size: 10px; fill: var(--text-muted); }
+.pm-chart .pmc-y { text-anchor: end; }
+.pm-chart .pmc-x { text-anchor: middle; }
+.pm-chart .pmc-ours, .pm-chart .pmc-vegas { fill: none; stroke-width: 2.5; stroke-linejoin: round; }
+.pm-chart .pmc-ours { stroke: var(--ours); }
+.pm-chart .pmc-vegas { stroke: var(--vegas); stroke-dasharray: 5 3; }
+.pm-chart .pmc-ours-dot { fill: var(--ours); }
+.pm-chart .pmc-vegas-dot { fill: var(--vegas); }
+.pmc-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 0.8125rem; margin-top: 8px; }
+.pmc-k::before { content: ""; display: inline-block; width: 18px; height: 0; border-top: 2.5px solid; margin-right: 6px; vertical-align: 3px; }
+.pmc-k-ours::before { border-color: var(--ours); }
+.pmc-k-vegas::before { border-color: var(--vegas); border-top-style: dashed; }
+.pmc-what { color: var(--text-muted); margin-left: auto; }
+.pm-table .pm-flip { display: block; color: var(--ours); font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; }

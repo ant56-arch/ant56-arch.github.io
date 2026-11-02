@@ -954,8 +954,28 @@ def with_moves(games):
                     saved[folder] = json.load(f)
             except (OSError, ValueError):
                 saved[folder] = {}
-        g["moves"] = ((saved.get(folder) or {}).get(str(g["id"])) or {}).get("moves", [])
+        g["moves"] = [dict(m, **chance_points(g, m))
+                      for m in ((saved.get(folder) or {}).get(str(g["id"])) or {}).get("moves", [])]
+        g["moves_unit"] = "chance"
     return games
+
+
+def chance_points(g, m):
+    """The home side's win chance in a saved move, ours and the one in Vegas's
+    moneyline (the price's own, vig left in), for the chart."""
+    home, away = g["home"]["abbr"], g["away"]["abbr"]
+    out = {}
+    if m.get("pick") in (home, away) and m.get("prob") is not None:
+        out["h_ours"] = m["prob"] if m["pick"] == home else 100 - m["prob"]
+    parts = str(m.get("vegas") or "").replace("\u2212", "-").rsplit(" ", 1)
+    if len(parts) == 2 and parts[0] in (home, away):
+        try:
+            price = float(parts[1])
+        except ValueError:
+            return out
+        p = -price / (-price + 100) if price < 0 else 100 / (price + 100)
+        out["h_vegas"] = round(100 * (p if parts[0] == home else 1 - p), 1)
+    return out
 
 
 def build_game_pages(games):
