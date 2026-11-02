@@ -240,7 +240,8 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
    The score bars fixed at the very top, the home nav under them (clear over
    the stadium, paper once scrolled), a stadium hero with the page's name in
    big type, then the paper sheet with the page links as pills. */
-:root { --gutter: clamp(16px, 2.6vw, 40px); }
+/* On wide screens the gutter grows so the nav and hero line up with the 1180px page column. */
+:root { --gutter: max(clamp(16px, 2.6vw, 40px), calc((100vw - var(--maxw, 1180px)) / 2)); }
 .edge-tick { position: fixed; inset: 0 0 auto 0; z-index: 41; }
 .edge-tick .crawl { height: 36px; }
 .edge-nav {

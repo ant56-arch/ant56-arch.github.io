@@ -29,7 +29,8 @@
   --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --f-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --gutter: clamp(16px, 2.6vw, 40px);
+  /* On wide screens the gutter grows so the nav, hero and every section share one centered 1440px column. */
+  --gutter: max(clamp(16px, 2.6vw, 40px), calc((100vw - 1440px) / 2));
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
