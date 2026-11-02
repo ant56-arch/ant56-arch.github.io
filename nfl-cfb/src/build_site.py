@@ -953,11 +953,8 @@ def td_result_row(r, faces):
     if pd.notna(r.get("price")):
         book = f'<span class="tdp-book-price">{moneyline.format_price(r["price"])}</span>'
         if is_value:
-            cls = "is-up" if r["profit"] > 0 else ("is-down" if r["profit"] < 0 else "faint")
-            book = '<span class="tdp-value">VALUE</span>' + book + f'<span class="td-money {cls}">{money(r["profit"])}</span>'
+            book = '<span class="tdp-value">VALUE</span>' + book
     note = outcome + td_price_bits(r)
-    if is_value:
-        note += f" $10 at {moneyline.format_price(r['price'])}: {money(r['profit'])}."
     pos = r["pos"] if isinstance(r.get("pos"), str) else ""
     return f"""<details class="tdp tdr is-{str(r['result']).lower()}"><summary>
       <span class="tdp-rank">{int(r['rank'])}</span>{td_face(name, shot)}
@@ -994,8 +991,8 @@ def td_results_list(sport, wk):
         vals = [r for r in rows if bool(r["value"]) and pd.notna(r.get("profit"))]
         chips = f'<span class="tdp-chip">{hit} of {dec} scored</span>'
         if vals:
-            pr = sum(float(r["profit"]) for r in vals)
-            chips += f'<span class="tdp-chip {"is-up" if pr > 0 else "is-down" if pr < 0 else ""}">Value {money(pr)}</span>'
+            vw = sum(r["result"] == "W" for r in vals)
+            chips += f'<span class="tdp-chip">Value {vw}-{len(vals) - vw}</span>'
         html += f"""<section class="tdg">
       <header class="tdg-head">
         <div class="tdg-teams">{logo(g['away'])}<b>{g['away']}</b>{score}<span class="faint">@</span>{logo(g['home'])}<b>{g['home']}</b>{hscore}</div>
@@ -1058,9 +1055,8 @@ def build_td_page(sport, props):
             stats = [(f"{int((top['result'] == 'W').sum())}/{len(top)}", "Our top 10 scored"),
                      (f"{scored}/{decided}", "All picks scored")]
             if len(val):
-                vp = float(val["profit"].fillna(0).sum())
                 stats.insert(1, (f"{int((val['result'] == 'W').sum())}-{int((val['result'] == 'L').sum())}",
-                                 f"Value picks, {money(vp)} at $10"))
+                                 "Value picks"))
             head = '<div class="tdr-week">' + "".join(
                 f'<div><b>{a}</b><span>{b}</span></div>' for a, b in stats) + "</div>"
             panels.append((f"td-w{int(w['season'])}-{int(w['week'])}", label, head + td_results_list(sport, wk)))
