@@ -118,6 +118,13 @@ h2 em { font-size: 1.06em; }
 .board .bar i { position: absolute; inset: 0 auto 0 0; background: var(--forest-ink); }
 .board th:not(:first-child), .board td:not(:first-child) { padding-left: 14px; white-space: nowrap; }
 @media (max-width: 640px) { .board .bar { display: none; } .jump { flex-wrap: wrap; overflow: visible; } }
+.season-notes { display: grid; gap: 12px; margin: 28px 0 0; }
+.snote { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; align-items: end; padding: 18px 20px; border: 1px solid var(--rule); border-left: 3px solid var(--forest); border-radius: 6px; text-decoration: none; background: var(--paper-2); }
+.snote .mono { grid-column: 1 / -1; color: var(--ink-soft); }
+.snote p { margin: 0; max-width: 70ch; }
+.snote p b { font-weight: 600; }
+.snote .go { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; color: var(--forest); }
+@media (max-width: 640px) { .snote { grid-template-columns: 1fr; } }
 .streak { font-family: var(--f-mono); font-size: 11px; padding: 2px 7px; border-radius: 99px; border: 1px solid currentColor; opacity: .9; }
 .board-foot { opacity: .7; font-size: 12.5px; }
 .stats { display: grid; gap: 0; }
@@ -600,6 +607,7 @@ a.crawl-item:hover { background: var(--paper); }
 
 <main class="sheet">
   <nav class="jump mono" id="jump" aria-label="Jump to"></nav>
+  <div class="season-notes" id="seasonNotes" aria-label="Seasons that are over" hidden></div>
   <section id="record">
     <div class="record-grid">
       <div class="board" aria-label="Record by league">
@@ -787,8 +795,32 @@ async function loadAll() {
   const [sums] = await Promise.all([
     Promise.all(SITES.map(s => fetch(s.file, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null))),
     loadVenues(),
+    fetch("/seasons.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null)
+      .then(d => { SEASONS = (d && d.leagues) || {}; }),
   ]);
   return sums;
+}
+
+// /seasons.json (shared/seasons.py, docs/season-end.md): each league's season
+// state. A league whose season is over gets a note up top, "Final" in place of
+// its streak and a "Season over" tag; it all goes away once the next season's
+// picks start.
+let SEASONS = {};
+const seasonOver = lg => { const s = SEASONS[lg]; return s && s.over ? s : null; };
+const recLine = r => `${r.label.toLowerCase()} <b>${esc(r.value)}</b> (${esc(r.pct)}${r.vs ? ", vs " + esc(r.vs) : ""})`;
+function seasonNotes() {
+  const lgs = (LG === "All" ? BOARD_ORDER : [LG]).filter(seasonOver);
+  const el = $("seasonNotes");
+  el.hidden = !lgs.length;
+  el.innerHTML = lgs.map(lg => {
+    const s = seasonOver(lg), site = SITES.find(x => x.lg === lg), recs = (s.records || []).map(recLine);
+    const ended = longDate(s.last_day, { month: "short", day: "numeric" });
+    return `<a class="snote" href="${esc(s.archive || site.href)}">
+      <span class="mono">Season over · ${esc(lg)} ${esc(s.label)} · Archived</span>
+      <p>The ${esc(s.label)} ${esc(lg)} season ended ${ended}.${recs.length ? ` Final: ${recs.join(", ")}.` : ""} Picks return on ${esc(s.next_label)}.</p>
+      <span class="go">Final records →</span>
+    </a>`;
+  }).join("");
 }
 
 // Each league's games.json (ESPN's board, written next to its summary): the
@@ -1478,8 +1510,9 @@ function leagueTop(s, today) {
   document.querySelector(".board th").textContent = "Span";
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
   const src = LG === "MLB" ? s && s.games : s;
+  const done = seasonOver(LG);
   const rows = [];
-  const row = (label, r, st) => { const x = r && wl(r.value); if (x && x[0] + x[1]) rows.push({ label, w: x[0], l: x[1], st }); };
+  const row = (label, r, st) => { const x = r && wl(r.value); if (x && x[0] + x[1]) rows.push({ label, w: x[0], l: x[1], st: done ? "Final" : st }); };
   if (src) {
     const st = streakText(src.ml_streak);
     row("All-time", src.record, st);
@@ -1496,14 +1529,14 @@ function leagueTop(s, today) {
   }
   const N = main.w + main.l, since = src.record.since ? new Date(src.record.since) : null;
   const sinceShort = since && !isNaN(since) ? since.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-  $("heroTally").textContent = `${N} games graded · ${(main.w / N * 100).toFixed(1)}% right`;
+  $("heroTally").textContent = done ? `Season over · ${done.label} archived` : `${N} games graded · ${(main.w / N * 100).toFixed(1)}% right`;
   const stats = [[`${main.w}-${main.l}`, `Picks right${sinceShort ? " since " + sinceShort : ""}`]];
   if (LG === "MLB" && s.record) { const h = wl(s.record.value); if (h) stats.push([`${Math.round(h[0] / (h[0] + h[1]) * 100)}%`, "Top hitters who got a hit"]); }
-  if (src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, streakLabel(src.ml_streak)]);
+  if (!done && src.ml_streak && src.ml_streak.n) stats.push([`${src.ml_streak.kind}${src.ml_streak.n}`, streakLabel(src.ml_streak)]);
   const last = s.last && s.last.games && s.last.games.length ? s.last : null;
   if (last) {
     const lw = last.games.filter(g => g.hit === true).length, ll = last.games.filter(g => g.hit === false).length;
-    stats.push([`${lw}-${ll}`, `${longDate(last.date, { weekday: "long" })}'s picks`]);
+    stats.push([`${lw}-${ll}`, done ? `The final day's picks, ${longDate(last.date, { month: "short", day: "numeric" })}` : `${longDate(last.date, { weekday: "long" })}'s picks`]);
   }
   $("stats").innerHTML = stats.map(([b, t]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("");
 }
@@ -1539,6 +1572,7 @@ function leaguePages(s) {
 function render(sums) {
   const by = {}; SITES.forEach((s, i) => by[s.lg] = sums[i]);
   const today = sportsDay();
+  seasonNotes();
 
   if (LG !== "All") leagueTop(by[LG], today);
   else {
@@ -1551,12 +1585,12 @@ function render(sums) {
     if (!rec || rec[0] + rec[1] === 0) return;
     const st = src.ml_streak;
     board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
-                 streak: streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
+                 streak: seasonOver(lg) ? "Final" : streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
   });
   // MLB hitters sit under the game picks: top hitters who got a hit (no streak).
   const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
   const rows = board.slice();
-  if (hits && hits[0] + hits[1]) rows.push({ lg: "MLB hitters", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: "" });
+  if (hits && hits[0] + hits[1]) rows.push({ lg: "MLB hitters", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: seasonOver("MLB") ? "Final" : "" });
   $("boardRows").innerHTML = rows.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td>${b.streak ? `<span class="streak">${b.streak}</span>` : ""}</td></tr>`).join("");
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
   $("boardYear").textContent = "Picks to win · " + today.slice(0, 4);
@@ -1634,8 +1668,11 @@ function render(sums) {
     const recd = src && src.record && wl(src.record.value);
     let tag = recd ? (live ? "In season" : (site.lg === "MLB" ? "Postseason" : "Between games")) : (site.lg === "CBB" && month < 11 && month > 4 ? "Offseason" : "Preseason");
     if (site.lg === "MLB" && month >= 10 && recd) tag = "Postseason";
+    const done = seasonOver(site.lg);
+    if (done) tag = "Season over";
     let sub = !recd ? null : `picks to win since ${(src.record.since || "").replace(/, \d{4}$/, "")}`;
     if (site.lg === "MLB" && recd && s.record) sub += ` · hitters ${s.record.value}`;
+    if (done && recd) sub += ` · back on ${done.next_label.replace(/^(.)/, c => c.toUpperCase()).replace(/, usually.*/, "")}`;
     leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" });
   });
   $("leagueGrid").innerHTML = leagues.map(l => `

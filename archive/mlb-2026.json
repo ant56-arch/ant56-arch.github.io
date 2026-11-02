@@ -1,0 +1,22 @@
+{
+ "league": "MLB",
+ "slug": "mlb",
+ "season": 2026,
+ "label": "2026",
+ "final_day": "2026-10-28",
+ "final": "the World Series",
+ "records": [
+  {
+   "label": "Game picks",
+   "value": "73-39",
+   "pct": "65.2%"
+  },
+  {
+   "label": "Top hitters who got a hit",
+   "value": "441-236",
+   "pct": "65.1%",
+   "vs": "56.6% for all hitters"
+  }
+ ],
+ "archived_on": "2026-11-02"
+}

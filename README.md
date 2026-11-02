@@ -47,5 +47,9 @@ from the `summary.json` each site publishes next to its pages
 `/nba/summary.json`, `/cbb/summary.json`), and the scoreboard strip and
 Schedule tab read each sport's `games.json`.
 
+When a league's season ends, its pages say so, its final records are frozen in
+`archive/`, and its daily work pauses until the next season. `docs/season-end.md`
+has the whole process; `shared/seasons.py` and `shared/seasons.json` run it.
+
 The workflows' secrets (`ODDS_API_KEY` for betting lines and `CFBD_API_KEY`
 for college football data) are set in this repo's settings.

@@ -1,0 +1,28 @@
+{
+ "_about": "Each league's season, for shared/seasons.py (see docs/season-end.md). override: auto (decide from the picks), over (force the season-over pages and skip the daily work) or in_season (never treat it as over). end_months: months a season can end in. gap_days: days with no pick (and none scheduled) after the last one before the season counts as over; longer than any break inside the playoffs. next_start: month-day the next season usually starts (the year comes from the last pick's date). label: year (2026) or span (2026-27).",
+ "leagues": {
+  "NFL": {"slug": "nfl", "override": "auto", "final": "the Super Bowl", "start_month": 8, "end_months": [1, 2],
+          "gap_days": 16, "next_start": "09-08", "next_label": "opening night, usually early September", "label": "year",
+          "records": [{"label": "Picks to win", "kind": "football", "path": "nfl-cfb/data/tracking/predictions_log.csv"}]},
+  "CFB": {"slug": "cfb", "override": "auto", "final": "the national title game", "start_month": 8, "end_months": [12, 1],
+          "gap_days": 16, "next_start": "08-29", "next_label": "Week 1, usually late August", "label": "year",
+          "records": [{"label": "Picks to win", "kind": "football", "path": "nfl-cfb/data/tracking/cfb_predictions_log.csv"}]},
+  "MLB": {"slug": "mlb", "override": "auto", "final": "the World Series", "start_month": 3, "end_months": [9, 10, 11],
+          "gap_days": 5, "next_start": "03-26", "next_label": "Opening Day, usually late March", "label": "year",
+          "records": [{"label": "Game picks", "kind": "games", "path": "mlb-nba-cbb/teams/picks_history.json"},
+                      {"label": "Top hitters who got a hit", "kind": "hitters", "path": "mlb-nba-cbb/picks_history.json"}]},
+  "NHL": {"slug": "nhl", "override": "auto", "final": "the Stanley Cup Final", "start_month": 10, "end_months": [5, 6, 7],
+          "gap_days": 10, "next_start": "10-07", "next_label": "opening night, usually early October", "label": "span",
+          "records": [{"label": "Picks to win", "kind": "games", "path": "mlb-nba-cbb/nhl/picks_history.json"}]},
+  "NBA": {"slug": "nba", "override": "auto", "final": "the NBA Finals", "start_month": 10, "end_months": [5, 6, 7],
+          "gap_days": 10, "next_start": "10-21", "next_label": "opening night, usually late October", "label": "span",
+          "records": [{"label": "Picks to win", "kind": "games", "path": "mlb-nba-cbb/nba/picks_history.json"}]},
+  "CBB": {"slug": "cbb", "override": "auto", "final": "the national title game", "start_month": 11, "end_months": [3, 4],
+          "gap_days": 10, "next_start": "11-03", "next_label": "opening night, usually early November", "label": "span",
+          "records": [{"label": "Picks to win", "kind": "games", "path": "mlb-nba-cbb/cbb/picks_history.json"}]},
+  "Soccer": {"slug": "soccer", "override": "auto", "final": "the last league and Champions League matches", "start_month": 8,
+             "end_months": [5, 6], "gap_days": 21, "next_start": "08-14", "next_label": "opening weekend, usually mid-August",
+             "label": "span",
+             "records": [{"label": "Picks to win", "kind": "games", "path": "mlb-nba-cbb/soccer/picks_history.json"}]}
+ }
+}

@@ -6,10 +6,13 @@ paper sheet that opens with the page's links as pills. Every sport's
 page_shell calls page_top() and closes with page_bottom(), so every page of
 every sport matches the home page's league tabs. Betting, Schedule, Terms
 and Privacy carry the same nav, hero and pills, written in once with nav(),
-hero() and pills(). Styled in morrow.css (.edge-*), wired up in edge.js
+hero() and pills(). A league whose season is over gets the season-over
+banner under the pills (seasons.banner_html). Styled in morrow.css (.edge-*), wired up in edge.js
 (initEdgeNav).
 """
 from html import escape
+
+import seasons
 
 LEAGUES = [("All", "/"), ("NFL", "/?l=nfl"), ("CFB", "/?l=cfb"), ("MLB", "/?l=mlb"), ("NHL", "/?l=nhl"),
            ("NBA", "/?l=nba"), ("CBB", "/?l=cbb"), ("Soccer", "/?l=soccer")]
@@ -71,4 +74,5 @@ def page_top(sport, title, tabs, active, updated, tagline=""):
     return f"""{nav(slug)}
 {hero(sport.upper(), f"Updated {escape(updated)}", escape(sport), escape(label(active or "", title)) + ".", tagline)}
 <div class="wrap edge-sheet">
-  {pills(links, active, escape(sport) + " pages")}"""
+  {pills(links, active, escape(sport) + " pages")}
+  {seasons.banner_html(sport)}"""

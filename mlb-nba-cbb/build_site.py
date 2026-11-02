@@ -47,6 +47,7 @@ import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import chrome  # noqa: E402
 import moneyline  # noqa: E402
+import seasons  # noqa: E402
 
 WEB_DIR = os.path.join(ROOT, "web")
 DIST_DIR = os.path.join(ROOT, "dist")
@@ -448,18 +449,18 @@ def no_games_today(slate):
     return bool(slate) and not slate.get("games") and slate.get("date") == NOW.date().isoformat()
 
 
-def season_over(team_history):
-    """Between the World Series and Opening Day: October to March with no
-    game picked in the last five days (longer than any postseason break)."""
-    if NOW.month not in (10, 11, 12, 1, 2, 3):
-        return False
-    dates = [p["date"] for p in team_history.get("picks", [])]
-    return not dates or (NOW.date() - date.fromisoformat(max(dates))).days >= 5
+def season_over():
+    """Between the World Series and Opening Day, as shared/seasons.py decides
+    it for every league (seasons.json: no game picked in the five days after
+    a September-November pick, or the override). The season-over banner at
+    the top of every page (chrome.page_top) has the final records, so the
+    pages drop their empty "today" sections and call the last day "final"."""
+    return seasons.state("MLB", NOW.date())["over"]
 
 
 def no_games_note(team_history):
     """The empty-state line for a day without MLB games."""
-    if season_over(team_history):
+    if season_over():
         return "The season's over. Picks are back on Opening Day."
     return "No MLB games today. Picks resume on the next game day."
 
@@ -512,6 +513,7 @@ def last_results(history, team_history):
 
 
 def build_index(history, slate, team_history, espn_games=()):
+    over = season_over()
     body = duo_band(history, team_history)
     more = '<a class="more-link" href="{}">{}</a>'.format
     # Today's game picks, or on a day off the latest day's (as the hitters do).
@@ -522,21 +524,25 @@ def build_index(history, slate, team_history, espn_games=()):
         board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays[:3]],
                                   top_n=0)
         n, when = len(todays), "Today's" if day == NOW.date().isoformat() else "Latest"
+        title = f"{when} surest games: {day_label(day)}"
+        if over:
+            when, title = "the final day's", f"The season's last {'game' if n == 1 else 'games'}: {day_label(day)}"
         body += extras.board_section(
-            f"{when} surest games: {day_label(day)}", BOARD_NOTE,
+            title, BOARD_NOTE,
             board + more("games.html", f"All {n} of {when.lower()} games" if n > 3 else "Every game and past results"))
     latest, day_picks = latest_hitters(history)
-    if no_games_today(slate):
+    if no_games_today(slate) and not over:
         body += extras.board_section("Today", "", f'<div class="empty-state">{no_games_note(team_history)}</div>')
     elif day_picks:
-        when = "Today's" if latest == NOW.date().isoformat() else "Latest"
+        when = "The final day's" if over else "Today's" if latest == NOW.date().isoformat() else "Latest"
         body += extras.board_section(
             f"{when} surest hitters: {day_label(latest)}",
             "The three hitters most likely to get a hit. Tap one for why.",
             picks_list(sorted(day_picks, key=lambda p: -p["confidence"])[:3])
-            + more("players.html", f"All {len(day_picks)} picks and every hitter in today's games"
+            + more("players.html", "Every past day's hitters" if over else
+                   f"All {len(day_picks)} picks and every hitter in today's games"
                    if len(day_picks) > 3 else "Every hitter in today's games and past days"))
-    return page_shell("Home", "index.html", body + last_results(history, team_history))
+    return page_shell("Home", "index.html", body + ("" if over else last_results(history, team_history)))
 
 
 # ── Player Hits ──────────────────────────────────────────────────────────────
@@ -546,12 +552,14 @@ def todays_picks(history, slate, team_history):
     latest, day_picks = latest_hitters(history)
     if not day_picks:
         return card("Today's Hitters", "", '<div class="empty-state">No picks yet.</div>')
-    heading = "Today's hitters" if latest == NOW.date().isoformat() else "Latest hitters"
+    over = season_over()
+    heading = ("The final day's hitters" if over else "Today's hitters" if latest == NOW.date().isoformat()
+               else "Latest hitters")
     html = extras.board_section(f"{heading}: {day_label(latest)}",
                                 f"The {len(day_picks)} hitters most likely to get a hit, at most two per game. "
                                 "Tap one for why.",
                                 picks_list(day_picks) + HOW_TO_READ)
-    if no_games_today(slate):
+    if no_games_today(slate) and not over:
         html = card("Today's Hitters", "", f'<div class="empty-state">{no_games_note(team_history)}</div>') + html
     return html
 
@@ -627,7 +635,8 @@ def past_days(history):
 
 def build_players(history, slate, team_history):
     # On a day without games "Today's Hitters" already says so; skip the empty every-hitter table.
-    hitters = "" if no_games_today(slate) else every_hitter(slate)
+    # Nor in the offseason, when the season-over banner says why there's no slate.
+    hitters = "" if no_games_today(slate) or season_over() else every_hitter(slate)
     body = record_band(history, team_history) + todays_picks(history, slate, team_history) + hitters + past_days(history)
     return page_shell("Player Hits", "players.html", body)
 
@@ -800,9 +809,8 @@ def build_games(team_history, espn_games=()):
     if todays:
         board = extras.game_board([card_game(mlb_game(p), p, espn_games, mlb_lines(p)) for p in todays])
         body += extras.board_section(f"Today's games: {day_label(today)}", BOARD_NOTE, board)
-    elif picks and season_over(team_history):
-        body += card("Today's Games", "", '<div class="empty-state">The season\'s over. Picks are back on Opening '
-                     'Day; every past day is under Results below.</div>')
+    elif picks and season_over():
+        pass  # the season-over banner says it
     elif picks:
         body += card("Today's Games", "", '<div class="empty-state">No MLB games today, or the slate isn\'t up '
                      'yet. Picks go up on the next game day; past days are under Results below.</div>')
