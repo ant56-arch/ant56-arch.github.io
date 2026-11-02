@@ -1539,7 +1539,9 @@ details.tdp > summary:hover, details.tdp[open] > summary { background: rgba(255,
 .tdr-res.is-hit { background: var(--hit); color: #fff; }
 .tdr-res.is-miss { background: rgba(226, 102, 95, 0.16); color: var(--miss); }
 .tdr-res.is-void { background: var(--surface-2); color: var(--text-faint); }
-details.tdr.is-w { box-shadow: inset 3px 0 0 var(--hit); }
+details.tdr.is-w { box-shadow: inset 3px 0 0 var(--hit); background: color-mix(in srgb, var(--hit) 14%, transparent); }
+details.tdr.is-w .tdp-pct { background: var(--hit); border-color: var(--hit); color: #fff; }
+details.tdr.is-l .tdp-pct, details.tdr.is-void .tdp-pct { background: none; border-color: var(--rule); color: var(--text-muted); }
 details.tdr.is-l { box-shadow: inset 3px 0 0 var(--miss); }
 details.tdr.is-void { opacity: 0.7; }
 details.tdr .tdp-book { grid-auto-flow: row; }

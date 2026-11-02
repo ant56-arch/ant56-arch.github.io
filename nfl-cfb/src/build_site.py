@@ -1010,8 +1010,8 @@ def td_record_band(summary):
     if not n:
         return f"""<section class="card record-card"><div class="record-band"><div>{eyebrow}
       <div class="rb-num rb-wait">Starts with the first final</div>
-      <div class="rb-since">Value picks are graded at $10 a pick at the price locked at kickoff.</div></div></div></section>"""
-    side = [(money(v["profit"]), "Profit", f"$10 a pick, {v['roi']:+.0%} on ${v['risked']}")]
+      <div class="rb-since">Value picks are graded at the price locked at kickoff.</div></div></div></section>"""
+    side = []
     if top["graded"]:
         side.append((f"{top['scored']}/{top['graded']}", "Our top 10 scored", f"we expected {top['predicted'] * 100:.0f}%"))
     side_html = "".join(f'<div class="stat"><div class="stat-value">{a}</div><div class="stat-label">{b}</div>'
