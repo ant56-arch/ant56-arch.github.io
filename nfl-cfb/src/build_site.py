@@ -845,6 +845,19 @@ def td_upcoming_list(sport, props, td_log):
         if c not in p.columns:
             p[c] = np.nan
     p["value"] = p["value"].fillna(False).astype(bool)
+    # Each row's own game, by its week: on a Sunday some teams have already
+    # moved on to next week while the rest still play this one
+    sched = {}
+    for season, week in p[["season", "week"]].drop_duplicates().itertuples(index=False):
+        sched.update({(int(season), int(week), t): v for t, v in td_kickoffs(int(season), int(week)).items()})
+    p["_game"] = [sched.get((int(s), int(w), t), (pd.NaT, None, None)) for s, w, t in zip(p["season"], p["week"], p["team"])]
+    # Only games not started yet, from the earliest week that still has one
+    kick = pd.to_datetime(pd.Series([g[0] for g in p["_game"]], index=p.index), utc=True)
+    p = p[kick.isna() | (kick > pd.Timestamp.now(tz="UTC"))]
+    if p.empty:
+        return empty, empty
+    first = p[["season", "week"]].apply(tuple, axis=1).min()
+    p = p[(p["season"] == first[0]) & (p["week"] == first[1])]
     # A team on a bye is projected for its next game, a week before its
     # opponent is: keep a game only when both teams are projected for it
     wk = p.groupby("team")["week"].first()
@@ -856,12 +869,9 @@ def td_upcoming_list(sport, props, td_log):
     p["rank"] = np.arange(1, len(p) + 1)
     details = load_td_details()
     players, defense = details.get("players", {}), details.get("defense", {})
-    sched = {}
-    for season, week in p[["season", "week"]].drop_duplicates().itertuples(index=False):
-        sched.update(td_kickoffs(int(season), int(week)))
     games = {}
     for _, r in p.iterrows():
-        kick, home, away = sched.get(r["team"], (pd.NaT, None, None))
+        kick, home, away = r["_game"]
         if home is None:
             home, away = (r["team"], r["opponent"]) if bool(r.get("is_home")) else (r["opponent"], r["team"])
         key = (away, home)
@@ -1054,6 +1064,16 @@ def build_td_page(sport, props):
             head = '<div class="tdr-week">' + "".join(
                 f'<div><b>{a}</b><span>{b}</span></div>' for a, b in stats) + "</div>"
             panels.append((f"td-w{int(w['season'])}-{int(w['week'])}", label, head + td_results_list(sport, wk)))
+        # The latest week's results open first until Tuesday 6 AM ET after its
+        # last game (as on Teams), so Sunday's picks can be checked before
+        # next week's take over
+        if len(weeks):
+            w = weeks.iloc[0]
+            mine = td_log[(td_log["season"] == w["season"]) & (td_log["week"] == w["week"])]
+            kicks = pd.to_datetime(mine["kickoff"], utc=True, errors="coerce", format="ISO8601").dropna()
+            days = [k.tz_convert("America/New_York").date().isoformat() for k in kicks]
+            if days and week_held({"games": [{"gameday": max(days)}]}):
+                panels.insert(0, panels.pop(2))
     tabs = "".join(
         f'<button type="button" class="subtab{" active" if i == 0 else ""}" aria-pressed="{"true" if i == 0 else "false"}" '
         f'data-target="{pid}">{label}</button>' for i, (pid, label, _) in enumerate(panels))
