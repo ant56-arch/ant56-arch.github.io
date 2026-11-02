@@ -1938,7 +1938,8 @@ def game_moves(sport, g, entry):
         team = g["home_label"] if home_by > 0 else g["away_label"]
         return f"{team} {extras.MINUS}{abs(home_by):.1f}"
     return [{"t": m["t"], "pick": names.get(m["pick"], team_short(sport, m["pick"])), "prob": m["prob"],
-             "ours": line(m.get("ours")), "vegas": line(m.get("vegas"))} for m in entry.get("moves", [])]
+             "ours": line(m.get("ours")), "vegas": line(m.get("vegas")),
+             "h_ours": m.get("ours"), "h_vegas": m.get("vegas")} for m in entry.get("moves", [])]
 
 
 # Player ranges on game pages (Anthony, 2026-11-01): each projection's likely

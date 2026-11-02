@@ -293,30 +293,115 @@ def players_html(g):
                   'the middle game. Measured from how far real yards landed from our projections over the last two seasons.</div>')
 
 
+MOVES_DAYS = 14  # how far before game day the pick history goes (Anthony, 2026-11-02)
+
+
+def _moves_time(m):
+    try:
+        return datetime.fromisoformat(m["t"].replace("Z", "+00:00")).astimezone(ET)
+    except (ValueError, AttributeError, KeyError):
+        return None
+
+
+def moves_chart(g, moves, start, end):
+    """Our line and Vegas's over the last two weeks, as steps, from the side
+    of the team we picked last: points it's favored by (NFL, CFB, entries
+    with h_ours / h_vegas as home points) or its chance to win (the other
+    sports, home win percent). None when there's nothing to draw."""
+    unit = g.get("moves_unit") or "points"
+    pick = moves[-1]["pick"]
+    if pick not in (g["home"]["abbr"], g["away"]["abbr"]):
+        return ""  # a draw pick: no single team's line to follow
+    home = pick == g["home"]["abbr"]
+    side = (lambda v: v if home else -v) if unit == "points" else (lambda v: v if home else 100 - v)
+    series = {}
+    for key in ("h_ours", "h_vegas"):
+        pts = [(max(_moves_time(m), start), side(m[key])) for m in moves if m.get(key) is not None and _moves_time(m)]
+        if pts:
+            series[key] = pts
+    if "h_ours" not in series:
+        return ""
+    vals = [v for pts in series.values() for _, v in pts]
+    if unit == "points":
+        lo, hi = min(vals + [0]) - 1, max(vals + [0]) + 1
+    else:
+        lo, hi = max(min(vals + [50]) - 5, 0), min(max(vals + [50]) + 5, 100)
+    W, H, L, R, T, B = 360, 170, 58 if unit == "points" else 40, 10, 12, 26
+    span = max((end - start).total_seconds(), 1)
+    X = lambda t: L + (t - start).total_seconds() / span * (W - L - R)
+    Y = lambda v: T + (hi - v) / (hi - lo) * (H - T - B)
+    other = g["away"]["abbr"] if home else g["home"]["abbr"]
+    fmt = ((lambda v: "PK" if abs(v) < 0.05 else f"{pick if v > 0 else other} {MINUS}{abs(v):g}") if unit == "points"
+           else (lambda v: f"{v:.0f}%"))
+    step = next(st for st in (0.5, 1, 2, 2.5, 5, 10, 20, 25) if (hi - lo) / st <= 4)
+    lo, hi = math.floor(lo / step) * step, math.ceil(hi / step) * step
+    grid = ""
+    ticks = [lo + k * step for k in range(int(round((hi - lo) / step)) + 1)]
+    for v in ticks:
+        grid += (f'<line x1="{L}" x2="{W - R}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" class="pmc-grid"/>'
+                 f'<text x="{L - 6}" y="{Y(v) + 4:.1f}" class="pmc-y">{fmt(v)}</text>')
+    mid = 0 if unit == "points" else 50
+    grid += f'<line x1="{L}" x2="{W - R}" y1="{Y(mid):.1f}" y2="{Y(mid):.1f}" class="pmc-even"/>'
+    if span > 3 * 86400:  # a label every few days, else every few hours
+        every = 7 if span > 9 * 86400 else 2
+        day = datetime.combine(start.date() + timedelta(days=1), datetime.min.time(), ET) if start.hour else start
+        n = 0
+        while day <= end:
+            if n % every == 0:
+                grid += f'<text x="{X(day):.1f}" y="{H - 8}" class="pmc-x">{day:%b} {day.day}</text>'
+            day += timedelta(days=1)
+            n += 1
+    else:
+        for k in range(4):
+            t = start + timedelta(seconds=span * (k + 0.5) / 4)
+            grid += f'<text x="{X(t):.1f}" y="{H - 8}" class="pmc-x">{t:%a} {t:%-I %p}</text>'
+    lines = ""
+    for key, cls in (("h_vegas", "pmc-vegas"), ("h_ours", "pmc-ours")):
+        pts = series.get(key)
+        if not pts:
+            continue
+        d, prev = "", None
+        for t, v in pts:
+            d += f"M{X(t):.1f} {Y(v):.1f}" if prev is None else f" H{X(t):.1f} V{Y(v):.1f}"
+            prev = v
+        d += f" H{X(end):.1f}"
+        lines += f'<path d="{d}" class="{cls}"/><circle cx="{X(end):.1f}" cy="{Y(prev):.1f}" r="3.5" class="{cls}-dot"/>'
+    what = "Spread" if unit == "points" else f"{pick} chance to win"
+    legend = ('<div class="pmc-legend"><span class="pmc-k pmc-k-ours">Our line</span>'
+              + ('<span class="pmc-k pmc-k-vegas">Vegas</span>' if "h_vegas" in series else "")
+              + f'<span class="pmc-what">{escape(what)}</span></div>')
+    return (legend + f'<svg class="pm-chart" viewBox="0 0 {W} {H}" role="img" '
+            f'aria-label="Our line and the Vegas line over the two weeks before the game">{grid}{lines}</svg>')
+
+
 def moves_html(g):
-    """How the pick moved: one row each time our pick, our chance or the Vegas
-    line changed before the game (shared/pick_moves.py), oldest first, with a
-    tag where the pick switched teams. g["moves"]: [{"t": UTC ISO, "pick",
-    "prob", "ours" (text or None), "vegas" (text or None)}]."""
-    moves = g.get("moves") or []
+    """How the pick moved over the two weeks before the game: a chart of our
+    line and Vegas's, then one row each time our pick, our chance or the
+    Vegas line changed (shared/pick_moves.py), oldest first, with a tag where
+    the pick switched teams. g["moves"]: [{"t": UTC ISO, "pick", "prob",
+    "ours" / "vegas" (text or None), "h_ours" / "h_vegas" (the home side's
+    points favored, or its win percent when g["moves_unit"] is "chance")}]."""
+    moves = [m for m in g.get("moves") or [] if _moves_time(m)]
     if not moves:
         return ""
-    try:  # game week: the 6 days before game day, plus game day
-        week_from = datetime.combine(date.fromisoformat(str(g.get("date"))[:10]) - timedelta(days=6),
-                                     datetime.min.time(), ET)
+    try:
+        game_day = date.fromisoformat(str(g.get("date"))[:10])
     except ValueError:
-        week_from = None
-    has_ours = any(m.get("ours") for m in moves)
-    rows, prev, split = [], None, 0
-    for m in moves:
-        try:
-            t = datetime.fromisoformat(m["t"].replace("Z", "+00:00")).astimezone(ET)
-            when = f"{t:%a, %b} {t.day}<small>{t:%-I:%M %p} ET</small>"
-        except (ValueError, AttributeError):
-            t, when = None, ""
-        if week_from and t and t < week_from:
-            split = len(rows)  # the last row before game week still shows, as where the week started
-        flip = ' <span class="pill pill-primary">SWITCHED</span>' if prev and prev != m["pick"] else ""
+        game_day = _moves_time(moves[-1]).date()
+    start = datetime.combine(game_day - timedelta(days=MOVES_DAYS - 1), datetime.min.time(), ET)
+    recent = [m for m in moves if _moves_time(m) >= start]
+    before = [m for m in moves if _moves_time(m) < start]
+    if before:  # where things stood when the two weeks began
+        recent = [before[-1]] + recent
+    end = max(_moves_time(recent[-1]), min(datetime.combine(game_day, datetime.min.time(), ET) + timedelta(hours=20),
+                                          max(datetime.now(ET), _moves_time(recent[-1]))))
+    has_ours = any(m.get("ours") for m in recent)
+    rows, prev = [], None
+    for i, m in enumerate(recent):
+        t = _moves_time(m)
+        when = (f"{start:%a} {start.month}/{start.day}<small>Start</small>" if before and i == 0
+                else f"{t:%a} {t.month}/{t.day}<small>{t:%-I:%M %p}</small>")
+        flip = '<small class="pm-flip">Switched</small>' if prev and prev != m["pick"] else ""
         cls = ' class="is-flip"' if flip else ""
         vegas = escape(m.get("vegas") or "") or '<span class="faint">None yet</span>'
         rows.append(f'<tr{cls}><td class="pm-when">{when}</td>'
@@ -325,26 +410,19 @@ def moves_html(g):
                     f'<td>{vegas}</td></tr>')
         prev = m["pick"]
     head = f'<tr><th>When</th><th>Our pick</th>{"<th>Our line</th>" if has_ours else ""}<th>Vegas</th></tr>'
-    if not week_from:
-        split = max(len(rows) - 8, 0)
-    shown, older = rows[split:], rows[:split]
-    more = (f'<details class="pm-older"><summary>{len(older)} earlier update{"s" if len(older) != 1 else ""}, before game week</summary>'
-            f'<div class="table-wrap"><table class="pm-table">{head}{"".join(older)}</table></div></details>' if older else "")
     flips = sum(1 for r in rows if "is-flip" in r)
     if flips:
-        lead = f"Our pick switched teams {flips} time{'s' if flips != 1 else ''} before the game."
-        week_flips = sum(1 for r in shown[1:] if "is-flip" in r)
-        if older:
-            lead += f" {week_flips or 'None'} of those came in game week."
+        lead = f"Our pick switched teams {flips} time{'s' if flips != 1 else ''} in the two weeks before the game."
     elif len(rows) == 1:
-        lead = "Our pick hasn't moved since it went up."
+        lead = "Our pick didn't move in the two weeks before the game."
     else:
-        lead = f"Same team all along; our chance or the line moved {len(rows) - 1} time{'s' if len(rows) != 2 else ''}."
+        lead = f"Same team the whole two weeks; our chance or the line moved {len(rows) - 1} time{'s' if len(rows) != 2 else ''}."
     locked = "The last row is the pick that locked at the start and gets graded." if g.get("final") or g.get("started") \
         else "The last row is the pick right now. It locks when the game starts."
-    return (f'<p class="mr-note">{escape(lead)}</p>{more}<div class="table-wrap"><table class="pm-table">{head}'
-            f'{"".join(shown)}</table></div><div class="table-footnote">A new row each time our pick, our chance '
-            f'(to the whole percent) or the Vegas line changed. Times are Eastern. {locked}</div>')
+    chart = moves_chart(g, recent, start if before else _moves_time(recent[0]), end)
+    return (f'<p class="mr-note">{escape(lead)}</p>{chart}<div class="table-wrap"><table class="pm-table">{head}'
+            f'{"".join(rows)}</table></div><div class="table-footnote">The two weeks before the game. A new row each time '
+            f'our pick, our chance (to the whole percent) or the Vegas line changed. Times are Eastern. {locked}</div>')
 
 
 # ESPN's path for each sport's game pages that get the live view (soccer
@@ -426,7 +504,7 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
         panels += _card("Players to watch", plays, "Likely yards for each team's key players")
     moves = moves_html(g)
     if moves:
-        panels += _card("How the pick moved", moves, "Every change to our pick and the Vegas line before the game")
+        panels += _card("How the pick moved", moves, "Our line and the Vegas line over the two weeks before the game")
     body = hero + live_html(g) + f'<div class="gh-grid">{panels}</div>'
     if g.get("hitters"):
         rows = "".join(f'<li><span class="hw-name"><b>{escape(n)}</b><small>{escape(t)}</small></span>'
