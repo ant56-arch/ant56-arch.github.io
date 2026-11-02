@@ -103,13 +103,26 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt -r research/requirements.txt  # numpy, for the NBA retrain
 
+      # A league whose season is over (shared/seasons.py, docs/season-end.md)
+      # skips its pipeline and retrain until 10 days before its next season's
+      # usual start; its pages are still rebuilt and published below. If this
+      # check breaks, every league runs as usual.
+      - name: Season check
+        id: season
+        continue-on-error: true
+        run: |
+          for lg in mlb nba nhl cbb soccer; do echo "$lg=$(python ../shared/seasons.py idle $lg)" >> "$GITHUB_OUTPUT"; done
+          python ../shared/seasons.py
+
       - name: Run pipeline
+        if: steps.season.outputs.mlb != 'yes'
         env:
           MODE: ${{ (github.event.schedule == '0 6 * * *' || github.event.schedule == '7 7 * * *' || github.event.schedule == '37 8 * * *') && 'results' || inputs.mode || 'picks' }}
         run: python predict.py
 
       # NBA Edge (nba/) rides the same schedule. Its steps can't block MLB Edge.
       - name: Run NBA pipeline
+        if: steps.season.outputs.nba != 'yes'
         continue-on-error: true
         run: python nba/predict.py
 
@@ -117,11 +130,13 @@ jobs:
       # the NBA model, switching how it's built only if that wins on held-out
       # recent games. Logs every retrain to nba/model_history.json.
       - name: Retrain NBA model
+        if: steps.season.outputs.nba != 'yes'
         continue-on-error: true
         run: python nba/research/train.py
 
       # MLB Edge's game picks (the Games tab). Like NBA, its steps can't block the hit picks.
       - name: Run MLB team pipeline
+        if: steps.season.outputs.mlb != 'yes'
         continue-on-error: true
         run: python teams/predict.py
 
@@ -129,40 +144,48 @@ jobs:
       # the team model, switching how it's built only if that wins on held-out
       # recent games. Logs every retrain to teams/model_history.json.
       - name: Retrain MLB team model
+        if: steps.season.outputs.mlb != 'yes'
         continue-on-error: true
         run: python teams/research/train.py
 
       # NHL Edge (nhl/) works like NBA: stores finals, grades, refreshes the
       # day's picks, and retrains weekly in season. Its steps can't block the others.
       - name: Run NHL pipeline
+        if: steps.season.outputs.nhl != 'yes'
         continue-on-error: true
         run: python nhl/predict.py
 
       - name: Retrain NHL model
+        if: steps.season.outputs.nhl != 'yes'
         continue-on-error: true
         run: python nhl/research/train.py
 
       # CBB Edge (men's college basketball). Like NBA, its steps can't block the others.
       - name: Run CBB pipeline
+        if: steps.season.outputs.cbb != 'yes'
         continue-on-error: true
         run: python cbb/predict.py
 
       - name: Retrain CBB model
+        if: steps.season.outputs.cbb != 'yes'
         continue-on-error: true
         run: python cbb/research/train.py
 
       # March Madness: imports the bracket from ESPN once the field is out (cbb/brackets/).
       - name: Update CBB bracket
+        if: steps.season.outputs.cbb != 'yes'
         continue-on-error: true
         run: python cbb/bracket.py
 
       # Soccer Edge (Premier League, La Liga, Champions League). Like NBA, its
       # steps can't block the others.
       - name: Run Soccer pipeline
+        if: steps.season.outputs.soccer != 'yes'
         continue-on-error: true
         run: python soccer/predict.py
 
       - name: Retrain Soccer model
+        if: steps.season.outputs.soccer != 'yes'
         continue-on-error: true
         run: python soccer/research/train.py
 
@@ -186,12 +209,18 @@ jobs:
         continue-on-error: true
         run: python ../shared/pick_moves.py daily
 
+      # Freezes a season that just ended into archive/ (its final records).
+      - name: Archive finished seasons
+        continue-on-error: true
+        run: python ../shared/seasons.py archive
+
       - name: Commit picks history
         run: |
           git config user.name "MLB Edge Bot"
           git config user.email "actions@github.com"
           git add picks_history.json nba/picks_history.json nba/data/ nba/model_weights.json
           [ -f ../model_watch.json ] && git add ../model_watch.json
+          [ -d ../archive ] && git add ../archive
           [ -f nba/model_history.json ] && git add nba/model_history.json
           git add teams/picks_history.json teams/data/ teams/model_weights.json
           [ -f teams/model_history.json ] && git add teams/model_history.json

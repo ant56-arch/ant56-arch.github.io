@@ -52,6 +52,9 @@ for attempt in 1 2 3 4 5; do
   if [ -f "$root/teams.json" ]; then cp "$root/teams.json" "$work/teams.json"; fi
   # The home page's style.css and home.js are built from shared/ (see shared/assets.py).
   python3 "$root/shared/assets.py" home "$work"
+  # Each league's season state (/seasons.json, read by the home page) and the
+  # past seasons' final records (/archive.html): shared/seasons.py.
+  python3 "$root/shared/seasons.py" site "$work" || echo "Couldn't write seasons.json and archive.html; publishing without them"
 
   export GIT_INDEX_FILE="$tmp/index"
   rm -f "$GIT_INDEX_FILE"

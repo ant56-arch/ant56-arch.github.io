@@ -78,6 +78,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # A league whose season is over (shared/seasons.py, docs/season-end.md)
+      # pulls no Vegas odds until 10 days before its next season's usual
+      # start; the pages are still rebuilt. If this check breaks, odds are
+      # pulled as usual.
+      - name: Season check
+        id: season
+        continue-on-error: true
+        run: |
+          for lg in nfl cfb; do echo "$lg=$(python ../shared/seasons.py idle $lg)" >> "$GITHUB_OUTPUT"; done
+          python ../shared/seasons.py
+
       - name: Fetch data
         id: fetch_data
         run: python src/fetch_data.py
@@ -107,7 +118,7 @@ jobs:
 
       - name: Fetch Vegas odds
         id: fetch_odds
-        if: (github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '35 13 * * 0' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == ''
+        if: steps.season.outputs.nfl != 'yes' && ((github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '35 13 * * 0' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == '')
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python src/fetch_odds.py
@@ -132,7 +143,7 @@ jobs:
       # last pull is over 6 hours old (~18 credits a week, see the script).
       - name: Fetch anytime TD odds
         id: fetch_td_odds
-        if: github.event_name != 'workflow_dispatch' || inputs.odds
+        if: steps.season.outputs.nfl != 'yes' && (github.event_name != 'workflow_dispatch' || inputs.odds)
         continue-on-error: true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -187,7 +198,7 @@ jobs:
       # Other runs keep the logged lines.
       - name: Fetch CFB odds
         id: fetch_cfb_odds
-        if: steps.fetch_cfb_data.outcome == 'success' && ((github.event_name == 'workflow_dispatch' && inputs.odds) || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5')
+        if: steps.season.outputs.cfb != 'yes' && steps.fetch_cfb_data.outcome == 'success' && ((github.event_name == 'workflow_dispatch' && inputs.odds) || github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '15 23 * * 5')
         continue-on-error: true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -242,6 +253,8 @@ jobs:
           git config user.name "nfl-edge-bot"
           git config user.email "actions@github.com"
           git add data/tracking/
+          python ../shared/seasons.py archive || true  # freezes a season that just ended
+          [ -d ../archive ] && git add ../archive
           git diff --cached --quiet && exit 0
           git commit -m "Update prediction tracking [skip ci]"
           git pull --rebase origin main

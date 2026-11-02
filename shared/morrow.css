@@ -319,3 +319,19 @@ header.masthead.edge-hero::before { z-index: 0; background: linear-gradient(180d
 .edge-plain .edge-jump + main { padding-top: 32px; }
 html:has(.edge-nav) { scroll-padding-top: calc(var(--tick-h, 0px) + var(--nav-h, 64px)); }
 .edge-sheet .tv-head { top: calc(var(--tick-h, 0px) + var(--nav-h, 64px)); }
+
+/* ---------- Season over (shared/seasons.py): banner under the page pills, and the archive page ---------- */
+.season-over { margin: 28px 0 8px; padding: clamp(20px, 3vw, 30px); border-radius: 6px; background: var(--forest); color: var(--forest-ink); }
+.season-over h2 { margin: 10px 0 8px; font-family: var(--font-head); font-weight: 400; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.05; letter-spacing: -0.015em; }
+.season-over h2 em { font-family: var(--font-serif); font-style: italic; }
+.season-over p { margin: 0; max-width: 62ch; opacity: .88; }
+.season-over a { color: inherit; }
+.so-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.so-recs { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 20px; }
+.so-rec { display: grid; gap: 2px; }
+.so-rec b { font-family: var(--font-serif); font-weight: 400; font-size: 44px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.so-rec span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+.archive-season h2 { margin: 8px 0 6px; font-family: var(--font-head); font-weight: 400; font-size: clamp(28px, 3.4vw, 40px); }
+.archive-season p { margin: 0; color: var(--text-muted); }
+.archive-season .so-tag { color: var(--text-muted); opacity: 1; }
+.archive-season .so-rec span { color: var(--text-muted); opacity: 1; }

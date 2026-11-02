@@ -19,6 +19,9 @@ on:
       - shared/edge.js
       - shared/morrow.css
       - shared/assets.py
+      - shared/seasons.py
+      - shared/seasons.json
+      - archive/**
       - terms.html
       - privacy.html
       - teams.json
