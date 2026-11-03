@@ -2079,6 +2079,7 @@ def attach_game_picks(sport, slate, games, log, comparison):
     on both teams (ESPN abbreviation, or school name for CFB)."""
     weeks = assemble_season_weeks(sport, games, log, comparison, display_season(sport, games, log))
     keys = lambda code: espn_keys_for(sport, code)
+    sigma = spread_sigma(sport) or 13.0
 
     picks = []
     for wk in weeks.values():
@@ -2096,6 +2097,11 @@ def attach_game_picks(sport, slate, games, log, comparison):
             # rather than showing our margin, which would read like a spread bet.
             eg["pick"] = {"text": f"{match['favored_team']} to win, {match['win_pct']:.0%}",
                           "result": match["correct"] if final else None, "labels": ["WON", "LOST"]}
+            # Our pregame line, so the score ticker can re-run the win chance live (edgeLiveChance).
+            pick_home = match["favored_team"] == match["home_label"]
+            eg["pick"]["live"] = {"margin": round(match["favored_by"] if pick_home else -match["favored_by"], 2),
+                                  "sd": round(float(sigma), 2), "pick_home": pick_home,
+                                  "team": eg["home"]["abbr"] if pick_home else eg["away"]["abbr"]}
             sp = match.get("spread")
             if sp:
                 eg["pick"]["spread"] = {"text": f"{sp['team']} {sp['line']}, {sp['prob']:.0%} to cover",

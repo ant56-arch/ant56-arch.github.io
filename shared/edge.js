@@ -101,8 +101,15 @@ function edgeParseEspn(ev) {
   };
   const tv = [];
   (comp.broadcasts || []).forEach(b => (b.names || []).forEach(n => { if (!tv.includes(n)) tv.push(n); }));
-  const lastPlay = ((comp.situation || {}).lastPlay || {}).text || "";
+  const sit = comp.situation || {};
+  const lastPlay = (sit.lastPlay || {}).text || "";
+  const st = comp.status || ev.status || {};
+  // Football: where the ball is, for the live win chance (edgeLiveChance).
+  // ESPN's yardLine counts from the home team's goal line.
+  const ball = sit.possession && sit.yardLine != null && sit.down > 0
+    ? { home: String(sit.possession) === String((sides.home.team || {}).id), yardLine: Number(sit.yardLine) } : null;
   return { id: String(ev.id), start: ev.date, lastPlay, state: type.state || "pre", detail: type.shortDetail || type.detail || "",
+           period: st.period || 0, clock: st.displayClock || "", ball,
            tv: tv.slice(0, 2).join(", "), neutral: !!comp.neutralSite, series: edgeSeriesLabel(ev, comp),
            away: team(sides.away), home: team(sides.home) };
 }
@@ -691,6 +698,50 @@ function edgeCrawlSave(cls) {
   edgeStore(EDGE_CRAWL_KEY, all);
 }
 
+// --- Live win chance for football (the score ticker and the game page's Live card) ---
+const GL_LEN = 3600;  // regulation seconds
+
+// Seconds left in regulation after a play ("mm:ss" in period p), 0 in overtime.
+function glLeft(period, clock) {
+  const [m, s] = String(clock || "0:00").split(":").map(Number);
+  const secs = (m || 0) * 60 + (s || 0);
+  return period > 4 ? 0 : Math.max(0, (4 - period) * 900 + secs);
+}
+
+// Home team's win chance: the rest of the game as our line scaled to the time
+// left (the same bell curve as How it could end), plus about what the drive
+// in progress is worth from where the ball is.
+function glHomeWin(margin, left, homeBall, toGo, mu, sd, ot) {
+  let mean = margin;
+  if (homeBall != null && toGo != null) {
+    const ep = Math.max(-1, Math.min(6, 6 - 0.07 * toGo));
+    mean += homeBall ? ep : -ep;
+  }
+  const f = ot ? 0.08 : left / GL_LEN;
+  mean += mu * f;
+  const spread = sd * Math.sqrt(f);
+  if (spread < 0.3) return margin > 0 ? 1 : margin < 0 ? 0 : 0.5;
+  const z = mean / spread;
+  // Normal CDF (Abramowitz-Stegun).
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+
+// A live NFL or CFB game's win chance for our pick, from the score, clock and
+// ball in ESPN's scoreboard and our pregame line (pick.live, written by the
+// football build): {team, pct}, or null when the game isn't live or has no line.
+function edgeLiveChance(g) {
+  const line = g && g.pick && g.pick.live;
+  if (!line || g.state !== "in" || g.away.score == null || g.home.score == null || !line.sd) return null;
+  const toGo = g.ball ? (g.ball.home ? 100 - g.ball.yardLine : g.ball.yardLine) : null;
+  const h = glHomeWin(g.home.score - g.away.score, glLeft(g.period || 1, g.clock), g.ball ? g.ball.home : null,
+                      toGo, line.margin, line.sd, (g.period || 0) > 4);
+  const p = line.pick_home ? h : 1 - h;
+  return { team: line.team, pct: Math.round(Math.min(0.99, Math.max(0.01, p)) * 100) };
+}
+
 function edgeTickerItem(site, g, mine) {
   return () => {
     const a = edgeNode("a", "crawl-item" + (g.state === "in" ? " is-live" : ""));
@@ -711,7 +762,12 @@ function edgeTickerItem(site, g, mine) {
       a.append(team);
     });
     a.append(edgeNode("span", "crawl-status", edgeGameStatus(g)));
-    if (edgeSettings().picks && g.pick && g.pick.text) {
+    const liveNow = edgeLiveChance(g);
+    if (edgeSettings().picks && liveNow) {
+      const pick = edgeNode("span", "crawl-pick is-live");
+      pick.append(edgeNode("span", null, `Our win chance: ${liveNow.team} ${liveNow.pct}%`), edgeNode("span", "crawl-live", "LIVE"));
+      a.append(pick);
+    } else if (edgeSettings().picks && g.pick && g.pick.text) {
       const pick = edgeNode("span", "crawl-pick");
       pick.append(edgeNode("span", null, "Pick: " + g.pick.text));
       const pill = edgeResultPill(g.pick.result, g.pick.labels);
@@ -1368,6 +1424,25 @@ function edgeSpDrawing(g) {
   return edgeSpField(g.sport) + edgeSpMarker(g, g.away, 262, away) + edgeSpMarker(g, g.home, 538, home) + bar;
 }
 
+// "TB @ DAL" with each team's logo in front of its name (a logo that fails to
+// load just goes away). big: the larger logos for the picker's title.
+function edgeMatchup(g, cls, big) {
+  const box = edgeNode("span", cls);
+  const side = t => {
+    if (t.logo) {
+      const img = edgeNode("img", big ? "mt-logo is-big" : "mt-logo");
+      img.src = t.logo; img.alt = ""; img.loading = "lazy";
+      img.onerror = () => img.remove();
+      box.append(img);
+    }
+    box.append(document.createTextNode(t.abbr));
+  };
+  side(g.away);
+  box.append(edgeNode("span", "mt-at", g.at === "vs" ? " vs " : " @ "));
+  side(g.home);
+  return box;
+}
+
 // opts: {multiSport, withDay, onSelect(key)}. Returns {el, set(games, key)}.
 function edgeSlatePicker(opts) {
   opts = opts || {};
@@ -1433,8 +1508,7 @@ function edgeSlatePicker(opts) {
       b.type = "button";
       b.dataset.i = i;
       const tag = stateTag(g);
-      b.append(edgeNode("span", "sp-lg", opts.multiSport ? g.sport : (tag || "")),
-               edgeNode("span", "sp-mt", `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`));
+      b.append(edgeNode("span", "sp-lg", opts.multiSport ? g.sport : (tag || "")), edgeMatchup(g, "sp-mt"));
       const pk = edgeNode("span", "sp-pk", g.pick ? `${g.pick} ${Math.round(g.prob)}%` : "No pick yet");
       if (opts.multiSport && tag) pk.prepend(edgeNode("b", "is-" + tag.toLowerCase(), tag + " "));
       b.append(pk);
@@ -1455,7 +1529,7 @@ function edgeSlatePicker(opts) {
     const tag = stateTag(g);
     $(".sp-of").textContent = [`Game ${st.cur + 1} of ${L.length}`, g.sport, tag ? tag[0] + tag.slice(1).toLowerCase() : ""].filter(Boolean).join(" · ");
     const title = `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`;
-    $(".sp-title").textContent = title;
+    $(".sp-title").replaceChildren(...edgeMatchup(g, "x", 1).childNodes);
     $(".sp-title").classList.toggle("is-long", title.length > 13);
     $(".sp-pick").textContent = !g.pick ? "None yet" : g.pick === "Draw" ? "Draw" : g.pick;
     $(".sp-prob").textContent = g.pick && g.prob != null ? Math.round(g.prob) + "%" : "–";
