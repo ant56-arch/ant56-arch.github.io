@@ -181,7 +181,7 @@ class TeamSite:
 <a class="skip-link" href="#main-content">Skip to main content</a>
 {chrome.page_top(self.sport, title, self.tabs, active, NOW.strftime("%b %-d, %-I:%M %p") + " ET", self.tagline)}
   <main id="main-content">
-  {body_html}
+  {chrome.sections(body_html)}
   </main>
   {slim_footer(f"{self.sport} Edge", self.sources)}
 </div>

@@ -10,6 +10,7 @@ hero() and pills(). A league whose season is over gets the season-over
 banner under the pills (seasons.banner_html). Styled in morrow.css (.edge-*), wired up in edge.js
 (initEdgeNav).
 """
+import re
 from html import escape
 
 import seasons
@@ -76,3 +77,65 @@ def page_top(sport, title, tabs, active, updated, tagline=""):
 <div class="wrap edge-sheet">
   {pills(links, active, escape(sport) + " pages")}
   {seasons.banner_html(sport)}"""
+
+
+# Section headings in the home page's style: a numbered mono label
+# ("01 — Record") over a big sentence-case headline with a serif italic
+# ending ("Accuracy over <em>time.</em>"). Known titles get a written
+# headline; anything else is the title in sentence case with its last word
+# in italics.
+HEADLINES = {
+    "Record": "How we've <em>done.</em>",
+    "Accuracy Over Time": "Accuracy over <em>time.</em>",
+    "Calibration": "Does 70% mean <em>70%?</em>",
+    "Backtest": "Tested on past <em>seasons.</em>",
+    "How It Learns": "How it <em>learns.</em>",
+    "Results By Day": "Results by <em>day.</em>",
+    "Is It Getting Better?": "Is it getting <em>better?</em>",
+    "Retrain Log": "Every <em>retrain.</em>",
+    "What It's Weighing": "What it's <em>weighing.</em>",
+    "History": "Every pick, <em>day by day.</em>",
+    "Today's Games": "Today's <em>games.</em>",
+    "Today's Matches": "Today's <em>matches.</em>",
+    "Latest Games": "Latest <em>games.</em>",
+    "Moneyline Picks": "Moneyline <em>picks.</em>",
+    "Against Vegas": "Against <em>Vegas.</em>",
+    "Teams": "Every <em>team.</em>",
+    "Player Projections": "Player <em>projections.</em>",
+    "TD Props": "Touchdown <em>scorers.</em>",
+    "TD Props Record": "Touchdown scorer <em>record.</em>",
+    "Power Ratings": "Power <em>ratings.</em>",
+    "Past Days": "Past <em>days.</em>",
+}
+_KEEP = {"Vegas", "West", "East", "South", "Midwest", "Final", "Four", "First", "Elo"}
+_H2 = re.compile(r'<h2>([^<]+)</h2>')
+
+
+def headline(title):
+    """The big headline for a section titled title (plain text, may be escaped)."""
+    from html import unescape
+    base = unescape(title).split(":")[0].strip()
+    if base in HEADLINES:
+        return HEADLINES[base]
+    words = base.split()
+    words = [w if i == 0 or w in _KEEP or (w.isupper() and len(w) > 1) or any(c.isdigit() for c in w) else w.lower()
+             for i, w in enumerate(words)]
+    end = "" if words and words[-1][-1:] in "?.!" else "."
+    if len(words) > 1:
+        return " ".join(words[:-1]) + f" <em>{words[-1]}{end}</em>"
+    return " ".join(words) + end
+
+
+def sections(body_html):
+    """Number a page's section headings and give each the home page's
+    label-over-headline look. Headings that already carry markup are left as is."""
+    n = 0
+
+    def one(m):
+        nonlocal n
+        n += 1
+        title = m.group(1).strip()
+        label = title.replace(": ", " &middot; ")
+        return (f'<div class="sec-label"><span>{n:02d}</span><b>{label}</b></div>'
+                f'<h2 class="sec-h2">{headline(title)}</h2>')
+    return _H2.sub(one, body_html)
