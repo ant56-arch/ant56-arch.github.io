@@ -1,7 +1,7 @@
 """
 versions.py - the name of the model version making today's picks, for the
 game pages. Every version is named for the day it was added, MMDDYYYY
-(Anthony, 2026-11-02), with -2, -3 ... for a second or third added the same
+(Anthony, 2026-11-02), with -V2, -V3 ... for a second or third added the same
 day; model_room/versions.json holds them (model_room/number_versions.py).
 """
 import json
@@ -27,7 +27,7 @@ def names(added):
         parts = (day or "").split("-")
         code = f"{parts[1]}{parts[2]}{parts[0]}" if len(parts) == 3 else "new"
         seen[code] = seen.get(code, 0) + 1
-        out.append(code if seen[code] == 1 else f"{code}-{seen[code]}")
+        out.append(code if seen[code] == 1 else f"{code}-V{seen[code]}")
     return out
 
 

@@ -438,7 +438,7 @@ def version_names(added):
         parts = (day or "").split("-")
         code = f"{parts[1]}{parts[2]}{parts[0]}" if len(parts) == 3 else "new"
         seen[code] = seen.get(code, 0) + 1
-        out.append(code if seen[code] == 1 else f"{code}-{seen[code]}")
+        out.append(code if seen[code] == 1 else f"{code}-V{seen[code]}")
     return out
 
 
@@ -639,7 +639,7 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     if has_edge:
         call.append(f"Edge scores here come from the accuracy score the retrain picks with. The live version keeps its own score"
                     f"{'' if live_score is not None else ' (50 until it has live picks)'}, and a tryout must score {SWITCH_POINTS}+ more to take over.")
-    call.append("Each version is named for the day it was added (month, day, year; -2 for a second one that day) and keeps that name for good.")
+    call.append("Each version is named for the day it was added (month, day, year; -V2 for a second one that day) and keeps that name for good.")
     return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note, "cls": "tryouts"}
 
 

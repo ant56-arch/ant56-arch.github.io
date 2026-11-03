@@ -5,7 +5,7 @@ version is easy to spot. Numbers never change and are never reused: old
 versions keep theirs, and a new recipe gets the next free number.
 
 Every version is also named for the day it was added (Anthony, 2026-11-02),
-written MMDDYYYY: "11022026", with "-2", "-3" for a second or third version
+written MMDDYYYY: "11022026", with "-V2", "-V3" for a second or third version
 of the same model added that day (version_names()).
 
 Writes model_room/versions.json:
@@ -66,14 +66,14 @@ def key(recipe):
 
 
 def version_names(added):
-    """MMDDYYYY for each version's added day, in order, with -2, -3 ... on a
+    """MMDDYYYY for each version's added day, in order, with -V2, -V3 ... on a
     second or third version added the same day."""
     seen, out = {}, []
     for day in added:
         y, m, d = (day or "0000-00-00").split("-")
         code = f"{m}{d}{y}"
         seen[code] = seen.get(code, 0) + 1
-        out.append(code if seen[code] == 1 else f"{code}-{seen[code]}")
+        out.append(code if seen[code] == 1 else f"{code}-V{seen[code]}")
     return out
 
 
