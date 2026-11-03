@@ -1839,7 +1839,6 @@ a.gc.is-top { border-top-color: var(--ours); }
 .gc-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
 .gc-pick b { min-width: 0; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .gc-odds { font-weight: 600; color: var(--vegas); white-space: nowrap; }
-.gc-value { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--hit); }
 .gc-pct { margin-left: auto; font: 600 26px/1 var(--font-head); color: var(--ours); }
 .gc-pct i { font-size: 0.6em; }
 
@@ -1964,11 +1963,6 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
 .sp-chips small.is-live, .sp-list .is-live { color: var(--miss); }
 .sp-chips small.is-hit, .sp-list .is-hit { color: var(--hit); }
 .sp-chips small.is-miss, .sp-list .is-miss { color: var(--miss); }
-.sp-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.sp-filters button { padding: 6px 12px; border: 1px solid var(--rule-strong); border-radius: 999px; background: none; color: var(--text); font: 600 12px var(--font); cursor: pointer; }
-.sp-filters button span { margin-left: 6px; color: var(--text-faint); }
-.sp-filters button[aria-pressed="true"] { background: var(--ours); border-color: var(--ours); color: #16110d; }
-.sp-filters button[aria-pressed="true"] span { color: inherit; opacity: 0.75; }
 .sp-list { position: relative; max-height: 360px; margin-top: 10px; overflow-y: auto; overscroll-behavior: contain; border-block: 1px solid var(--rule); }
 .sp-list h4 { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; margin: 0; padding: 8px 2px 6px; background: var(--bg); border-bottom: 1px solid var(--rule); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
 .sp-list button { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; padding: 9px 8px; border: 0; border-bottom: 1px solid var(--rule); background: none; color: var(--text); font: 500 14px var(--font); text-align: left; cursor: pointer; }
@@ -1979,9 +1973,8 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
 .sp-mt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .sp-pk { font-size: 12.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sp-pk b { font-size: 10.5px; letter-spacing: 0.08em; }
-.sp-vdot { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--ours); vertical-align: 1px; }
 .sp-empty { padding: 16px 4px; color: var(--text-muted); }
-:root[data-theme="light"] .sp-chips button[aria-pressed="true"], :root[data-theme="light"] .sp-filters button[aria-pressed="true"],
+:root[data-theme="light"] .sp-chips button[aria-pressed="true"],
 :root[data-theme="light"] .sp-list button[aria-pressed="true"] { color: #fff; }
 .sp-frame { position: relative; aspect-ratio: 8 / 5.4; max-width: 100%; overflow: hidden; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); }
 .sp-bar { position: absolute; inset: 0 0 auto; z-index: 1; display: flex; align-items: center; gap: 10px; padding: 9px 12px 0 14px; }

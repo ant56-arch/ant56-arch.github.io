@@ -168,8 +168,8 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 .sp { background: var(--surface-2); border-radius: var(--radius); padding: clamp(16px, 2.6vw, 30px); }
 .sp-frame { background: var(--bg); box-shadow: 0 30px 60px -30px rgba(20, 30, 22, 0.35); }
 .sp-chips button { font-family: var(--font-mono); font-stretch: 100%; font-weight: 500; font-size: 12px; border-radius: 0; }
-.sp-chips button[aria-pressed="true"], .sp-filters button[aria-pressed="true"], .sp-list button[aria-pressed="true"],
-:root[data-theme="light"] .sp-chips button[aria-pressed="true"], :root[data-theme="light"] .sp-filters button[aria-pressed="true"],
+.sp-chips button[aria-pressed="true"], .sp-list button[aria-pressed="true"],
+:root[data-theme="light"] .sp-chips button[aria-pressed="true"],
 :root[data-theme="light"] .sp-list button[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: var(--forest-ink); }
 .sp-title { font-weight: 500; font-stretch: 125%; }
 

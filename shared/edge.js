@@ -1288,8 +1288,7 @@ function edgePickNote(g) {
   if (g.book == null) s = `We have ${pk} at ${p}% to win. No price is posted yet, so there's nothing to compare it with.`;
   else {
     const gap = g.prob - g.book, b = g.book.toFixed(0);
-    if (g.value) s = `Value pick. We have ${pk} at ${p}%, Vegas has ${b}%.`;
-    else if (gap >= 2) s = `We like ${pk} a little more than Vegas does, ${p}% to ${b}%, but not by enough for a Value tag.`;
+    if (gap >= 2) s = `We like ${pk} more than Vegas does, ${p}% to ${b}%.`;
     else if (gap <= -2) s = `We pick ${pk} too, but Vegas likes ${them} more, ${b}% to our ${p}%.`;
     else s = `Vegas agrees with us on ${pk}, ${b}% to our ${p}%.`;
   }
@@ -1369,10 +1368,10 @@ function edgeSpDrawing(g) {
   return edgeSpField(g.sport) + edgeSpMarker(g, g.away, 262, away) + edgeSpMarker(g, g.home, 538, home) + bar;
 }
 
-// opts: {multiSport, filters, onSelect(key)}. Returns {el, set(games, key)}.
+// opts: {multiSport, withDay, onSelect(key)}. Returns {el, set(games, key)}.
 function edgeSlatePicker(opts) {
   opts = opts || {};
-  const st = { games: [], list: [], cur: 0, filter: "all", key: null };
+  const st = { games: [], list: [], cur: 0, key: null };
   const el = edgeNode("div", "sp");
   el.innerHTML = `
     <div class="sp-left">
@@ -1382,7 +1381,6 @@ function edgeSlatePicker(opts) {
       <div class="sp-choose">
         <div class="sp-choose-top"><span>Choose a game</span><span class="sp-arrows">
           <button type="button" class="sp-prev" aria-label="Previous game">&larr;</button><button type="button" class="sp-next" aria-label="Next game">&rarr;</button></span></div>
-        <div class="sp-filters" role="group" aria-label="Filter games" hidden></div>
         <div class="sp-chips"></div>
         <div class="sp-list" hidden></div>
       </div>
@@ -1392,7 +1390,7 @@ function edgeSlatePicker(opts) {
       <svg class="sp-svg" viewBox="0 0 800 500" role="img"><title></title><g></g></svg>
     </div>`;
   const $ = s => el.querySelector(s);
-  const chips = $(".sp-chips"), list = $(".sp-list"), filters = $(".sp-filters");
+  const chips = $(".sp-chips"), list = $(".sp-list");
 
   function stateTag(g) {
     if (g.hit === true) return "HIT";
@@ -1402,16 +1400,10 @@ function edgeSlatePicker(opts) {
     return null;
   }
   function renderChooser() {
-    st.list = st.games.filter(g => st.filter === "all" || (st.filter === "value" && g.value));
+    st.list = st.games;
     const many = st.games.length > EDGE_SP_NUMBERED;
     chips.hidden = many;
     list.hidden = !many;
-    filters.hidden = !many || !opts.filters;
-    if (!filters.hidden) {
-      const nv = st.games.filter(g => g.value).length;
-      filters.innerHTML = `<button type="button" data-f="all" aria-pressed="${st.filter === "all"}">All<span>${st.games.length}</span></button>` +
-        `<button type="button" data-f="value" aria-pressed="${st.filter === "value"}">Value<span>${nv}</span></button>`;
-    }
     if (!many) {
       chips.replaceChildren(...st.list.map((g, i) => {
         const b = edgeNode("button", null, String(i + 1).padStart(2, "0"));
@@ -1444,7 +1436,6 @@ function edgeSlatePicker(opts) {
       b.append(edgeNode("span", "sp-lg", opts.multiSport ? g.sport : (tag || "")),
                edgeNode("span", "sp-mt", `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`));
       const pk = edgeNode("span", "sp-pk", g.pick ? `${g.pick} ${Math.round(g.prob)}%` : "No pick yet");
-      if (g.value && g.state === "pre") pk.append(edgeNode("i", "sp-vdot"));
       if (opts.multiSport && tag) pk.prepend(edgeNode("b", "is-" + tag.toLowerCase(), tag + " "));
       b.append(pk);
       nodes.push(b);
@@ -1462,7 +1453,7 @@ function edgeSlatePicker(opts) {
     const n = String(st.cur + 1).padStart(2, "0");
     $(".sp-num").textContent = n;
     const tag = stateTag(g);
-    $(".sp-of").textContent = [`Game ${st.cur + 1} of ${L.length}`, g.sport, g.value && g.state === "pre" ? "Value" : tag ? tag[0] + tag.slice(1).toLowerCase() : ""].filter(Boolean).join(" · ");
+    $(".sp-of").textContent = [`Game ${st.cur + 1} of ${L.length}`, g.sport, tag ? tag[0] + tag.slice(1).toLowerCase() : ""].filter(Boolean).join(" · ");
     const title = `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`;
     $(".sp-title").textContent = title;
     $(".sp-title").classList.toggle("is-long", title.length > 13);
@@ -1500,14 +1491,6 @@ function edgeSlatePicker(opts) {
   const pickFrom = e => { const b = e.target.closest("button[data-i]"); if (b) show(+b.dataset.i, true); };
   chips.addEventListener("click", pickFrom);
   list.addEventListener("click", pickFrom);
-  filters.addEventListener("click", e => {
-    const b = e.target.closest("button[data-f]");
-    if (!b) return;
-    st.filter = b.dataset.f;
-    renderChooser();
-    list.scrollTop = 0;
-    show(0, true);
-  });
   $(".sp-prev").addEventListener("click", () => show(st.cur - 1, true));
   $(".sp-next").addEventListener("click", () => show(st.cur + 1, true));
   el.addEventListener("keydown", e => {
@@ -1521,7 +1504,6 @@ function edgeSlatePicker(opts) {
   function set(games, key) {
     const want = key || st.key;
     st.games = games;
-    if (st.filter === "value" && !games.some(g => g.value)) st.filter = "all";
     renderChooser();
     el.hidden = !st.list.length;
     if (!st.list.length) return;

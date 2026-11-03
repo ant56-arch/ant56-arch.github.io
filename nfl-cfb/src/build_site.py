@@ -252,12 +252,12 @@ def ml_payout(price):
 
 def ml_cell_html(ml):
     """The Moneyline cell, spelled out: which team to take and at what price,
-    what the price pays, our win % vs the book's (vig removed), a VALUE tag at
-    6+ points of edge, and W/L once graded. The bet is always the team our
+    what the price pays, our win % vs the book's (vig removed), and W/L once
+    graded. The bet is always the team our
     model picks to win."""
     if not ml:
         return f'<span class="faint">{DASH}</span>'
-    tags = f' {pill("VALUE", "positive")}' if ml["value"] else ""
+    tags = ""
     if ml["result"] == "W":
         tags += f' {pill("W", "positive")}'
     elif ml["result"] == "L":
@@ -635,17 +635,13 @@ def ml_record(sport, games, log):
     return season, moneyline.summarize(log, season)
 
 def build_moneyline_block(season, ml, with_label=True):
-    """Moneyline record tiles (W-L and Value picks), or the empty state until
+    """Moneyline record tile (W-L), or the empty state until
     a pick this season has been graded. Units live on the home site's Betting tab."""
     label = f'<div class="section-label">Moneyline, {season}</div>' if with_label else ""
     if not ml:
         return label + f'<div class="empty-state">{ML_EMPTY}</div>'
     pushes = f", {ml['pushes']} no decision" if ml["pushes"] else ""
-    v = ml["value"]
-    stats = [
-        (ml["record"], f"{season} moneyline", f"{ml['n_decided']} picks graded{pushes}"),
-        (v["record"] if v["n_decided"] else DASH, "Value picks", "our chance 6%+ higher than Vegas's"),
-    ]
+    stats = [(ml["record"], f"{season} moneyline", f"{ml['n_decided']} picks graded{pushes}")]
     statline = '<div class="statline">' + "".join(
         f'<div class="stat"><div class="stat-value">{val}</div><div class="stat-label">{lab}</div>'
         f'<div class="stat-sub">{sub}</div></div>' for val, lab, sub in stats) + "</div>"
@@ -1218,7 +1214,7 @@ def display_season(sport, games, log):
     return sport["live_tracking_start_season"]
 
 BOARD_NOTE = ("Scores are our projections, lines show the favored team, and the odds are our pick's moneyline. "
-              "Value means our chance is at least 6% higher than Vegas's. Tap a game for more.")
+              "Tap a game for more.")
 
 def build_index_page(sport, games, log, comparison, espn=None):
     season = display_season(sport, games, log)

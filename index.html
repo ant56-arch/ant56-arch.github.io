@@ -179,7 +179,6 @@ h2 em { font-size: 1.06em; }
 .glist .mt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .glist .mt b { font-weight: 600; }
 .glist .pk { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.glist .vdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--clay); margin-left: 6px; vertical-align: middle; }
 .glist .empty { padding: 16px 4px; color: var(--ink-soft); }
 .field-frame { position: relative; background: var(--paper); border-radius: 4px; box-shadow: 0 30px 60px -30px rgba(20, 30, 22, .35); overflow: hidden; aspect-ratio: 4 / 3; width: 100%; max-height: calc(100vh - var(--tick-h, 0px) - 120px); min-height: 320px; position: sticky; top: calc(var(--tick-h, 0px) + 84px); }
 .field-frame svg { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -190,22 +189,6 @@ h2 em { font-size: 1.06em; }
 #fieldArt { transition: opacity .35s; }
 #fieldArt.swap { opacity: 0; }
 @media (max-width: 900px) { .slate { grid-template-columns: 1fr; } .field-frame { order: -1; position: relative; top: 0; } }
-
-/* 03 Value picks */
-.value-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(24px, 3vw, 40px); }
-.vcard { display: grid; gap: 16px; align-content: start; }
-.vart { aspect-ratio: 3 / 2; border-radius: 4px; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: 14px 16px; color: #F2EEE6; max-width: 100%; }
-.vart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.vart > :not(canvas) { position: relative; }
-.vart .vtop { display: flex; justify-content: space-between; gap: 12px; }
-.vmeter { position: relative; height: 4px; margin-top: 16px; background: rgba(242,238,230,.22); }
-.vmeter i { position: absolute; inset: 0 auto 0 0; background: #F2EEE6; }
-.vmeter b { position: absolute; top: -5px; width: 2px; height: 14px; background: #E59D72; transform: translateX(-1px); }
-.vart .vbig { font-family: var(--f-serif); font-size: clamp(48px, 4.6vw, 72px); line-height: .85; }
-.vcard h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; }
-.vcard .vline { color: var(--ink-soft); font-size: 13px; }
-.vcard p { margin: 0; color: var(--ink-soft); max-width: 42ch; }
-@media (max-width: 860px) { .value-grid { grid-template-columns: 1fr; } .vart { aspect-ratio: 2 / 1; } }
 
 /* Game status: start time, live score, final with Hit or Miss */
 .st-live { color: var(--clay); }
@@ -221,12 +204,6 @@ h2 em { font-size: 1.06em; }
 .frame-pill.st-miss { background: var(--clay); color: #fff; }
 .glist .st { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; white-space: nowrap; }
 .glist button { grid-template-columns: 44px minmax(0, 1fr) auto auto; }
-.vart .vtop .st { color: inherit; }
-.vart > .vstamp { position: absolute; justify-self: end; width: max-content; right: 14px; top: 42px; transform: rotate(-8deg); border: 2px solid currentColor; padding: 3px 10px 2px; font-family: var(--f-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; }
-.vstamp.st-hit { color: #9FE0B4; } .vstamp.st-miss { color: #F2A07B; } .vstamp.st-live { color: #F2EEE6; }
-.vstamp.st-live::before { display: none; }
-.vstamp:empty { display: none; }
-.vline .st { color: var(--ink); }
 .jump { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 40px 0 0; margin: 0; }
 .jump::-webkit-scrollbar { display: none; }
 .jump a { flex: none; text-decoration: none; padding: 9px 14px; border: 1px solid var(--rule); border-radius: 99px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
@@ -280,8 +257,8 @@ h2 em { font-size: 1.06em; }
 a.league { text-decoration: none; color: inherit; transition: background .2s; }
 a.league:hover { background: var(--paper-2); }
 a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--paper)); }
-.g-head h3 a, .vcard h3 a { text-decoration: none; }
-.g-head h3 a:hover, .vcard h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.g-head h3 a { text-decoration: none; }
+.g-head h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .foot-links { display: flex; flex-wrap: wrap; gap: 10px 22px; color: var(--ink-soft); }
 .foot-links a { text-decoration: none; }
 .foot-links a:hover { color: var(--ink); }
@@ -295,7 +272,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
   .nav ul#tabs a { white-space: nowrap; }
   .hero { padding-top: 160px; }
 }
-#record[hidden], .record-grid[hidden], #calendar[hidden], #value[hidden], #slate[hidden] { display: none; }
+#record[hidden], .record-grid[hidden], #calendar[hidden], #slate[hidden] { display: none; }
 
 /* --- Settings gear: the shared edge.js menu, mapped onto this page's colors --- */
 .ticker-settings, .team-picker {
@@ -660,21 +637,14 @@ a.crawl-item:hover { background: var(--paper); }
     </div>
   </section>
 
-  <section id="value">
-    <div class="sec-head mono"><span class="num">02<b>Value picks</b></span><span id="valCount"></span></div>
-    <h2 id="valH2">Prices Vegas <em>left on the table.</em></h2>
-    <p class="lede" id="valLede">Our win chance is at least 6% higher than Vegas's.</p>
-    <div class="value-grid" id="valueGrid"></div>
-  </section>
-
   <section id="leagues">
-    <div class="sec-head mono"><span class="num">03<b id="lgHead">The leagues</b></span><span id="lgSub">Seven sites, one record</span></div>
+    <div class="sec-head mono"><span class="num">02<b id="lgHead">The leagues</b></span><span id="lgSub">Seven sites, one record</span></div>
     <h2 id="lgH2">A model for <em>every season.</em></h2>
     <div class="leagues" id="leagueGrid"></div>
   </section>
 
   <section id="calendar">
-    <div class="sec-head mono"><span class="num">04<b>Results by day</b></span><span>Last six days</span></div>
+    <div class="sec-head mono"><span class="num">03<b>Results by day</b></span><span>Last six days</span></div>
     <h2>The <em>calendar.</em></h2>
     <ul class="cal" id="cal"></ul>
   </section>
@@ -824,16 +794,14 @@ function seasonNotes() {
   }).join("");
 }
 
-// Each league's games.json (ESPN's board, written next to its summary): the
-// venue and home-team colors the Value cards paint their stadiums with.
-const VENUES = {};
+// Each league's games.json (ESPN's board, written next to its summary): its
+// live feed address and the day's games, for live status.
 function loadVenues() {
   return Promise.all(SITES.map(s => fetch(s.file.replace("summary.json", "games.json"), { cache: "no-cache" })
     .then(r => r.ok ? r.json() : null).catch(() => null)
     .then(d => {
       if (d && d.espn) ESPN[s.lg] = [d.espn];
       ((d && d.games) || []).forEach(gm => {
-        if (gm.home && gm.home.abbr) VENUES[`${s.lg}:${gm.home.abbr}`] = { venue: gm.neutral ? "" : gm.venue, ...gm.home };
         if (gm.start && gm.away && gm.home) {
           const k = `${s.lg}|${dayKey(new Date(gm.start))}`;
           (LIVE[k] = LIVE[k] || []).push({ away: gm.away.abbr, home: gm.home.abbr, state: gm.state, detail: gm.detail, a: gm.away.score, h: gm.home.score });
@@ -933,11 +901,6 @@ async function fetchLive(games) {
     fetchLive.t = setTimeout(() => fetchLive(games), Math.min(Math.max(next, 60e3), 3600e3));
   }
 }
-// The painted-stadium theme for a pick's home team (null when unknown).
-function homeTeam(g) {
-  const v = VENUES[`${g.sp}:${g.home}`];
-  return v ? { sp: g.sp, abbr: g.home, short: v.short || g.home, color: v.color, alt: v.alt, logo: v.logo, venue: v.venue } : null;
-}
 
 // ---------- Nav turns solid over the paper sheet ----------
 const nav = $("nav");
@@ -998,7 +961,7 @@ function drawHero() {
   for (let i = 0; i < W * H / 90; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * .035})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
 }
 // ---------- Home-team stadiums ----------
-// A Value card is drawn as the home team's own building: its colors in the
+// A stadium can be drawn as the home team's own building: its colors in the
 // seats, ribbon boards and banners, its name painted on the field, a roof
 // where the venue has one, and a few landmarks (the Green Monster, Wrigley's
 // ivy, the Garden's parquet). t = { sp, abbr, short, color, alt, venue } or
@@ -1026,13 +989,11 @@ function teamInk(t) {
 // Team logos (ESPN's, from games.json), drawn into the logo spots once
 // they've loaded; until then, or if one fails, the abbreviation stands in.
 const LOGOS = {};
-let logoRedraw;
 function teamLogo(url) {
   if (!url) return null;
   let im = LOGOS[url];
   if (!im) {
     im = LOGOS[url] = new Image();
-    im.onload = () => { clearTimeout(logoRedraw); logoRedraw = setTimeout(drawValueArt, 60); };
     im.src = url;
   }
   return im.complete && im.naturalWidth ? im : null;
@@ -1354,26 +1315,25 @@ function autoNote(g) {
   const gap = g.prob - g.book;
   const pickName = g.pick === "Draw" ? "the draw" : g.pick;
   const other = g.pick === g.home ? g.away : g.home;
-  if (g.value) return `Value pick. We give ${pickName} a ${g.prob.toFixed(1)}% chance to win. Vegas's odds (${fmtPrice(g.price)}) only give them ${g.book.toFixed(1)}%, so the bet pays more than our numbers say it should.`;
-  if (gap >= 2) return g.pick === "Draw" ? `We like the draw a little more than Vegas does, but not by enough for a Value tag.` : `We like ${g.pick} over ${other} a little more than Vegas does, but not by enough for a Value tag.`;
+  if (gap >= 2) return `We give ${pickName} a ${g.prob.toFixed(1)}% chance to win, more than Vegas's ${g.book.toFixed(1)}%${g.pick === "Draw" ? "" : ` over ${other}`}.`;
   if (gap <= -2) return `Vegas likes ${pickName} even more than we do, so the bet pays less than our numbers say it should.`;
   return `We and Vegas agree on ${pickName} within a couple of points.`;
 }
 function counts(games) {
-  const c = { All: games.length, Value: games.filter(g => g.value).length };
+  const c = { All: games.length };
   games.forEach(g => c[g.sp] = (c[g.sp] || 0) + 1);
   return c;
 }
 function renderChooser() {
   const games = SLATES[day].games;
-  list = games.filter(g => filt === "All" || (filt === "Value" ? g.value : g.sp === filt));
+  list = games.filter(g => filt === "All" || g.sp === filt);
   const many = games.length > NUMBERED_MAX;
   chips.hidden = many; glist.hidden = !many; filters.hidden = !many;
   if (!many) {
     chips.innerHTML = list.map((g, i) => `<button type="button" aria-pressed="false" data-i="${i}">${String(i + 1).padStart(2, "0")}<small>${lgShort(g.sp)}</small><small>${stSpan(g, "short")}</small></button>`).join("");
   } else {
     const c = counts(games);
-    const keys = ["All", "Value", ...Object.keys(c).filter(k => k !== "All" && k !== "Value").sort((a, b) => c[b] - c[a])];
+    const keys = ["All", ...Object.keys(c).filter(k => k !== "All").sort((a, b) => c[b] - c[a])];
     filters.innerHTML = keys.map(k => `<button type="button" data-f="${k}" aria-pressed="${k === filt}">${k}<span>${c[k]}</span></button>`).join("");
     let html = "", last = null;
     list.forEach((g, i) => {
@@ -1382,7 +1342,7 @@ function renderChooser() {
         html += `<h4 class="mono"><span>${g.t} ET</span><span>${n} game${n > 1 ? "s" : ""}</span></h4>`;
         last = g.t;
       }
-      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%${g.value ? '<i class="vdot" title="Value pick"></i>' : ""}</span>${stSpan(g, "result")}</button>`;
+      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%</span>${stSpan(g, "result")}</button>`;
     });
     glist.innerHTML = html || `<div class="empty">No games match this filter.</div>`;
   }
@@ -1394,7 +1354,7 @@ function show(i, animate) {
   cur = (i + list.length) % list.length;
   const g = list[cur], n = String(cur + 1).padStart(2, "0");
   $("gNum").textContent = n;
-  $("gOf").textContent = `Game ${cur + 1} of ${list.length} · ${g.sp}${g.value ? " · Value" : ""}`;
+  $("gOf").textContent = `Game ${cur + 1} of ${list.length} · ${g.sp}`;
   $("gTitle").innerHTML = g.url ? `<a href="${esc(g.url)}">${esc(g.away)} @ ${esc(g.home)}</a>` : `${esc(g.away)} @ ${esc(g.home)}`;
   $("gStatus").innerHTML = stSpan(g, "text");
   $("gPick").textContent = g.pick;
@@ -1446,25 +1406,6 @@ document.addEventListener("keydown", e => {
 $("prevG").onclick = () => show(cur - 1, true);
 $("nextG").onclick = () => show(cur + 1, true);
 
-// ---------- 03 value cards with drawn night-light art ----------
-// Each Value card is that sport's stadium under lights, shaded top and
-// bottom so the labels and the big number read over it.
-const KIND = sp => ({ NHL: "ice", NBA: "court", CBB: "court", NFL: "pitch", CFB: "pitch", Soccer: "pitch" }[sp] || "park");
-function drawValueArt() {
-  document.querySelectorAll(".vart").forEach(el => {
-    const c = el.querySelector("canvas");
-    homeStadium(c, KIND(el.dataset.sp), homeTeam({ sp: el.dataset.sp, home: el.dataset.home }));
-    const r = c.getBoundingClientRect(), x = c.getContext("2d"), W = r.width, H = r.height;
-    if (!W) return;
-    let g = x.createLinearGradient(0, 0, 0, H * .3); g.addColorStop(0, "rgba(8,14,11,.6)"); g.addColorStop(1, "rgba(8,14,11,0)");
-    x.fillStyle = g; x.fillRect(0, 0, W, H * .3);
-    g = x.createLinearGradient(0, H * .45, 0, H); g.addColorStop(0, "rgba(8,14,11,0)"); g.addColorStop(1, "rgba(8,14,11,.85)");
-    x.fillStyle = g; x.fillRect(0, H * .45, W, H * .55);
-  });
-}
-addEventListener("resize", () => setTimeout(drawValueArt, 160));
-// The painted team names need Archivo; redraw once it has loaded.
-if (document.fonts) document.fonts.ready.then(() => drawValueArt());
 
 // ---------- Live data ----------
 function slateGames(sums) {
@@ -1474,7 +1415,7 @@ function slateGames(sums) {
     out.push({
       sp: g.sport || SITES[i].lg, start: g.start, date: g.date || dayKey(new Date(g.start)),
       t: etTime(g.start), h: etHour(g.start), away: g.away, home: g.home, pick: g.pick,
-      prob: +g.prob, price: g.price, book: g.book == null ? null : +g.book, value: !!g.value, final: !!g.final, url: g.url,
+      prob: +g.prob, price: g.price, book: g.book == null ? null : +g.book, final: !!g.final, url: g.url,
       score: Array.isArray(g.score) ? g.score : null, hit: g.hit == null ? null : !!g.hit,
     });
   }));
@@ -1546,7 +1487,7 @@ function leagueTop(s, today) {
 function renderJump() {
   const slate = $("slate").hidden ? null : "#slate";
   let links;
-  if (LG === "All") links = [[slate, SLATES.today ? "Today's games" : "Next games", true], ["#value", "Value picks"], ["#record", "Record"], ["#calendar", "Past days"],
+  if (LG === "All") links = [[slate, SLATES.today ? "Today's games" : "Next games", true], ["#record", "Record"], ["#calendar", "Past days"],
                              ["/bets.html", "Betting"], ["/schedule.html", "Schedule"]];
   else {
     const base = SITE.href.replace(/index\.html$/, "");
@@ -1630,30 +1571,6 @@ function render(sums) {
     $("slate").hidden = true;
   }
 
-  // Value picks: the slate's Value tags, games still to play (or live) before
-  // finished ones, biggest gap first, up to three.
-  const vsrc = (SLATES[start] || { games: [] }).games;
-  const VAL = vsrc.filter(g => g.value && g.book)
-    .sort((a, b) => (!!a.final - !!b.final) || (b.prob - b.book) - (a.prob - a.book)).slice(0, 3);
-  const vn = vsrc.filter(g => g.value).length;
-  $("value").hidden = LG !== "All" && !vsrc.length;
-  $("valCount").textContent = `${String(vn).padStart(2, "0")} ${start === "today" ? "today" : label(start === "next" ? nextKey : lastKey).toLowerCase()}`;
-  $("valH2").innerHTML = !VAL.length ? `No prices left <em>on the table.</em>`
-    : vn > VAL.length ? `${Words(VAL.length)} of ${words(vn)} prices Vegas <em>left on the table.</em>`
-    : `${Words(VAL.length)} price${VAL.length === 1 ? "" : "s"} Vegas <em>left on the table.</em>`;
-  if (!VAL.length) $("valLede").textContent = "No pick has a win chance at least 6% higher than Vegas's.";
-  $("valueGrid").innerHTML = VAL.map((g, i) => `
-    <article class="vcard">
-      <div class="vart" data-k="${i}" data-sp="${g.sp}" data-home="${esc(g.home)}"><canvas aria-hidden="true"></canvas>
-        <div class="vtop mono"><span>${g.sp}${homeTeam(g) && homeTeam(g).venue ? ` · ${esc(homeTeam(g).venue)}` : ""}</span>${stSpan(g, "short")}</div>
-        ${stSpan(g, "stamp", "vstamp")}
-        <div><div class="mono" style="opacity:.8;margin-bottom:8px">Our chance to win</div><div class="vbig">${Math.round(g.prob)}%</div><div class="mono" style="opacity:.8;margin-top:8px">Vegas odds say ${Math.round(g.book)}%</div>
-          <div class="vmeter" aria-hidden="true"><i style="width:${g.prob}%"></i><b style="left:${g.book}%"></b></div></div>
-      </div>
-      <h3>${g.url ? `<a href="${esc(g.url)}">` : ""}${esc(g.pick)} ${fmtPrice(g.price)}${g.url ? "</a>" : ""}</h3>
-      <div class="vline">${stSpan(g, "line")}</div>
-    </article>`).join("");
-  drawValueArt();
   updateStatus();
   fetchLive(all);
 
