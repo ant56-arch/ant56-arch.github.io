@@ -18,13 +18,13 @@ predict.py - daily MLB Edge pipeline. Two modes (MODE env var):
 import json
 import math
 import os
-import time
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
 
 import features as F
+import fetch_common
 
 API = "https://statsapi.mlb.com/api/v1"
 ET = ZoneInfo("America/New_York")
@@ -50,16 +50,7 @@ session = requests.Session()
 
 
 def get(path, **params):
-    for attempt in range(4):
-        try:
-            r = session.get(f"{API}/{path}", params=params, timeout=30)
-            r.raise_for_status()
-            return r.json()
-        except requests.RequestException as e:
-            if attempt == 3:
-                raise
-            print(f"  retrying {path}: {e}")
-            time.sleep(2 ** attempt)
+    return fetch_common.get_json(session, API, path, params)
 
 
 def total_line(splits):

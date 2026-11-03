@@ -4,18 +4,22 @@ public site API. Shared by the season pull (research/pull_seasons.py) and the
 daily pipeline (predict.py).
 """
 
+import os
 import re
-import time
+import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import requests
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import fetch_common  # noqa: E402
+
 API = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 ET = ZoneInfo("America/New_York")
-# Games called off, never to finish on their date (the same set as soccer/espn.py).
-# A delay isn't here: a delayed game still finishes, and sync re-checks it.
-VOID_STATUS = {"STATUS_POSTPONED", "STATUS_CANCELED", "STATUS_ABANDONED", "STATUS_SUSPENDED", "STATUS_FORFEIT"}
+# Games called off, never to finish on their date (fetch_common, the same set for
+# every ESPN sport).
+VOID_STATUS = fetch_common.ESPN_VOID_STATUS
 # ESPN season types: 1 preseason, 2 regular season, 3 postseason, 5 play-in.
 GAME_TYPES = {2: "regular", 3: "playoffs", 5: "play-in"}
 
@@ -24,16 +28,7 @@ session.headers["User-Agent"] = "Mozilla/5.0 (NBA Edge; github.com/ant56-arch/ml
 
 
 def get(path, **params):
-    for attempt in range(4):
-        try:
-            r = session.get(f"{API}/{path}", params=params, timeout=30)
-            r.raise_for_status()
-            return r.json()
-        except requests.RequestException as e:
-            if attempt == 3:
-                raise
-            print(f"  retrying {path}: {e}")
-            time.sleep(2 ** attempt)
+    return fetch_common.get_json(session, API, path, params)
 
 
 def is_franchise(team):

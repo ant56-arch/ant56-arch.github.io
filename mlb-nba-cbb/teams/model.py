@@ -29,13 +29,13 @@ counts as a bit worse than average. The win chance is a logistic regression
 on these features (research/train.py fits it).
 """
 
-import math
 import os
 import sys
 from collections import defaultdict
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game_methods import SeasonMethods  # noqa: E402
+from team_model_common import WalkBase, elo_update, low_score_mov, regress_elo, sigmoid  # noqa: E402
 
 ELO_START = 1500
 ELO_HOME = 24
@@ -54,16 +54,12 @@ EXTRAS = {"massey": ["massey"], "pyth": ["pyth"]}
 PYTH_EXPONENT = 1.83  # baseball-reference's Pythagorean exponent
 
 
-def sigmoid(z):
-    return 1 / (1 + math.exp(-max(-30.0, min(30.0, z))))
-
-
 def _add(a, b, w=1.0):
     for i, v in enumerate(b):
         a[i] += w * v
 
 
-class League:
+class League(WalkBase):
     def __init__(self, params=None):
         self.p = {**DEFAULT_PARAMS, **(params or {})}
         self.elo = defaultdict(lambda: ELO_START)
@@ -80,9 +76,7 @@ class League:
     # ── season rollover ──
     def _start_season(self, season):
         if self.season is not None:
-            mean = sum(self.elo.values()) / max(len(self.elo), 1)
-            for t in list(self.elo):
-                self.elo[t] = mean + self.p["elo_carry"] * (self.elo[t] - mean)
+            regress_elo(self.elo, self.p["elo_carry"])
             for pid in set(self.sp_prior) | set(self.sp_season):
                 prior = [PRIOR_DECAY * v for v in self.sp_prior[pid]]
                 _add(prior, self.sp_season.get(pid, [0.0] * 6))
@@ -96,8 +90,7 @@ class League:
         self.season = season
 
     def check_season(self, season):
-        if season != self.season:
-            self._start_season(season)
+        self._check_season(season)
 
     # ── league context ──
     def _league_totals(self):
@@ -151,18 +144,6 @@ class League:
         w, l = self.wins[team]
         return f"{w}-{l}"
 
-    def _methods_through(self, day):
-        """Add every pending result from before `day` to the Massey /
-        Pythagorean ratings. Holding back a day's results until the next day
-        means the ratings are solved once a day, not after every game (the
-        solve is the slow part of a walk), and stand as they did that morning,
-        as at pick time."""
-        ready = [r for r in self.methods_pending if r[0] < day]
-        if ready:
-            for _, h, a, hp, ap in ready:
-                self.methods.add(h, a, hp, ap)
-            self.methods_pending = [r for r in self.methods_pending if r[0] >= day]
-
     def features(self, g, home_sp=None, away_sp=None):
         """Features for game g with the given starter ids (None = not announced)."""
         self.check_season(g["season"])
@@ -190,14 +171,7 @@ class League:
         self.check_season(g["season"])
         h, a = g["home"], g["away"]
         margin = g["home_runs"] - g["away_runs"]
-        diff = self.elo[h] + ELO_HOME - self.elo[a]
-        expected = 1 / (1 + 10 ** (-diff / 400))
-        won = 1.0 if margin > 0 else 0.0
-        winner_diff = diff if margin > 0 else -diff
-        mult = math.log(abs(margin) + 1) * 2.2 / (winner_diff * 0.001 + 2.2)
-        shift = self.p["elo_k"] * mult * (won - expected)
-        self.elo[h] += shift
-        self.elo[a] -= shift
+        elo_update(self.elo, h, a, margin, ELO_HOME, self.p["elo_k"], low_score_mov)
 
         if g["type"] == "regular":
             self.wins[h][0 if margin > 0 else 1] += 1

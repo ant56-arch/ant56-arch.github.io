@@ -1002,7 +1002,7 @@ def chance_points(g, m):
             price = float(parts[1])
         except ValueError:
             return out
-        p = -price / (-price + 100) if price < 0 else 100 / (price + 100)
+        p = moneyline.implied(price)
         out["h_vegas"] = round(100 * (p if parts[0] == home else 1 - p), 1)
     return out
 

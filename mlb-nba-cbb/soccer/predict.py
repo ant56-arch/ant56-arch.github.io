@@ -23,7 +23,6 @@ soccer/build_pages.py. SOCCER_TODAY=YYYY-MM-DD overrides today's date for
 testing.
 """
 
-import json
 import os
 import sys
 from collections import defaultdict
@@ -37,6 +36,7 @@ import model as M  # noqa: E402
 import moneyline  # noqa: E402
 import names  # noqa: E402
 import store  # noqa: E402
+from daily_common import grade_moneylines, kept_price, load, save  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -48,19 +48,6 @@ NOW = datetime.now(espn.ET)
 TODAY = os.environ.get("SOCCER_TODAY") or NOW.date().isoformat()
 PICK_DAYS = 2  # today and tomorrow
 SIDES = ("home", "draw", "away")
-
-
-def load(path, default):
-    if not os.path.exists(path):
-        return default
-    with open(path) as f:
-        return json.load(f)
-
-
-def save(path, data, **kw):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, **kw)
 
 
 # ── 1. sync ──────────────────────────────────────────────────────────────────
@@ -141,12 +128,6 @@ def grade(history, games_by_id):
     print(f"Graded {graded} picks")
 
 
-def grade_moneylines(history):
-    n = sum(moneyline.grade(p) for p in history["picks"])
-    if n:
-        print(f"Graded {n} moneyline picks")
-
-
 # ── 4. picks ─────────────────────────────────────────────────────────────────
 def three_way(probs, odds, pick_side):
     """The moneyline on our pick (home, draw or away): its price, the no-vig
@@ -208,9 +189,7 @@ def make_picks(history, ratings, weights):
         }
         try:  # the moneyline is extra: without odds, the pick still goes out
             odds = g.get("odds")
-            if not odds and old and old.get("ml"):  # no price right now: keep the last one
-                odds = {"home": old["ml"]["home_ml"], "draw": old["ml"]["draw_ml"], "away": old["ml"]["away_ml"],
-                        "book": old["ml"].get("book")}
+            odds = kept_price(odds, old, SIDES)  # no price right now: keep the last one
             ml = three_way({s: p[s] for s in SIDES}, odds, side)
         except Exception as e:
             print(f"  moneyline for {g['away']} @ {g['home']} failed: {e}")

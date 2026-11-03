@@ -1,14 +1,15 @@
 """
-game_store.py - where NBA, NHL and CBB Edge keep game results and box scores.
-Each sport's store.py is a GameStore over its own folder:
+game_store.py - where NBA, NHL and CBB Edge keep game results and box scores,
+and the MLB team model its games (box=False: no box scores, the starters are
+in each game). Each sport's store.py is a GameStore over its own folder:
 
   <sport>/data/seasons/<year>.json  finished seasons, written by the research pull
   <sport>/data/days/<date>.json     each day of the current season, written by the
                                     daily run as its games go final, and rolled up
                                     into its season file once the season is over
 
-Both hold {"games": [...], "box": {game_id: box score}}. One small file per day
-keeps the daily commits small.
+Both hold {"games": [...], "box": {game_id: box score}} ({"games": [...]} with
+box=False). One small file per day keeps the daily commits small.
 """
 
 import glob
@@ -28,12 +29,17 @@ def _write(path, data):
 
 
 class GameStore:
-    def __init__(self, sport_dir):
+    def __init__(self, sport_dir, box=True):
         self.seasons_dir = os.path.join(sport_dir, "data", "seasons")
         self.days_dir = os.path.join(sport_dir, "data", "days")
+        self.with_box = box
+
+    def _file(self, games, box):
+        return {"games": games, "box": box} if self.with_box else {"games": games}
 
     def load_all(self):
-        """Every stored final game in start order, and box scores by game id."""
+        """Every stored final game in start order, and box scores by game id
+        (only the games with box=False)."""
         games, box = {}, {}
         for path in (sorted(glob.glob(os.path.join(self.seasons_dir, "*.json")))
                      + sorted(glob.glob(os.path.join(self.days_dir, "*.json")))):
@@ -41,13 +47,14 @@ class GameStore:
             for g in d["games"]:
                 games[g["id"]] = g
             box.update(d.get("box", {}))
-        return sorted(games.values(), key=lambda g: (g["start"], g["id"])), box
+        ordered = sorted(games.values(), key=lambda g: (g["start"], g["id"]))
+        return (ordered, box) if self.with_box else ordered
 
-    def save_season(self, season, games, box):
-        _write(os.path.join(self.seasons_dir, f"{season}.json"), {"games": games, "box": box})
+    def save_season(self, season, games, box=None):
+        _write(os.path.join(self.seasons_dir, f"{season}.json"), self._file(games, box))
 
-    def save_day(self, day, games, box):
-        _write(os.path.join(self.days_dir, f"{day}.json"), {"games": games, "box": box})
+    def save_day(self, day, games, box=None):
+        _write(os.path.join(self.days_dir, f"{day}.json"), self._file(games, box))
 
     def roll_up_days(self):
         """Merges every day file into its season's file and deletes it. Run in the

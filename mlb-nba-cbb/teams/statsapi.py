@@ -12,11 +12,15 @@ A stored game is a flat dict:
     pen = [outs, earned runs] for everyone after the starter
 """
 
-import time
+import os
+import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import requests
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import fetch_common  # noqa: E402
 
 API = "https://statsapi.mlb.com/api/v1"
 ET = ZoneInfo("America/New_York")
@@ -30,16 +34,7 @@ session.headers["User-Agent"] = "Mozilla/5.0 (MLB Edge; github.com/ant56-arch/ml
 
 
 def get(path, **params):
-    for attempt in range(5):
-        try:
-            r = session.get(f"{API}/{path}", params=params, timeout=30)
-            r.raise_for_status()
-            return r.json()
-        except requests.RequestException as e:
-            if attempt == 4:
-                raise
-            print(f"  retrying {path}: {e}")
-            time.sleep(2 ** attempt)
+    return fetch_common.get_json(session, API, path, params, tries=5)
 
 
 def parse_game(g):

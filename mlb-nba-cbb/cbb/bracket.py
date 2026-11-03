@@ -32,6 +32,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import espn  # noqa: E402
 import model as M  # noqa: E402
 import store  # noqa: E402
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from daily_common import season_of  # noqa: E402  (cbb/build_pages.py imports it from here too)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, "brackets")
@@ -48,11 +50,6 @@ SEED_ORDER = [1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15]
 
 def today():
     return os.environ.get("CBB_TODAY") or datetime.now(espn.ET).date().isoformat()
-
-
-def season_of(day):
-    d = date.fromisoformat(day)
-    return d.year + 1 if d.month >= 7 else d.year
 
 
 def parse_note(note):

@@ -16,17 +16,18 @@ Writes nba/picks_history.json for build_site.py. NBA_TODAY=YYYY-MM-DD
 overrides today's date for testing.
 """
 
-import json
 import os
 import sys
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import espn  # noqa: E402
 import model as M  # noqa: E402
+import daily_common  # noqa: E402
 import moneyline  # noqa: E402
 import store  # noqa: E402
+from daily_common import grade_moneylines, kept_price, load, record, save  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -49,19 +50,6 @@ TODAY = os.environ.get("NBA_TODAY") or NOW.date().isoformat()
 OUT_STATUSES = {"Out", "Doubtful"}
 
 
-def load(path, default):
-    if not os.path.exists(path):
-        return default
-    with open(path) as f:
-        return json.load(f)
-
-
-def save(path, data, **kw):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, **kw)
-
-
 def in_season(day):
     """October through June. July-September never has regular-season or playoff games."""
     return date.fromisoformat(day).month not in (7, 8, 9)
@@ -69,64 +57,16 @@ def in_season(day):
 
 # ── 1. sync ──────────────────────────────────────────────────────────────────
 def sync():
-    games, _ = store.load_all()
-    through = load(SYNC_FILE, {}).get("through") or (games[-1]["date"] if games else "2026-06-30")
-    day = date.fromisoformat(through) + timedelta(days=1)
-    yesterday = date.fromisoformat(TODAY) - timedelta(days=1)
-    # A game neither final nor called off doesn't stop the sync: the day's
-    # finals are stored and later days still sync, but "through" stays
-    # before that day so the next runs check it again, until it's older than
-    # the 3 days grade() waits before voiding its pick.
-    recheck_from = (yesterday - timedelta(days=2)).isoformat()
-    held = False
-    while day <= yesterday:
-        d = day.isoformat()
-        if in_season(d):
-            day_games = espn.scoreboard(d)
-            pending = [g for g in day_games if not (g["final"] or g["postponed"])]
-            if pending:
-                print(f"  {d}: {len(pending)} game(s) not final yet ({', '.join(g['id'] for g in pending)}), "
-                      "will re-check next run")
-                held = held or d >= recheck_from
-            finals = [g for g in day_games if g["final"] and g["home_pts"] is not None]
-            if finals:
-                box = {}
-                for g in finals:
-                    try:
-                        box[g["id"]] = espn.boxscore(g["id"])
-                    except Exception as e:  # scores still count without a box score
-                        print(f"  box score {g['id']} failed: {e}")
-                store.save_day(d, finals, box)
-                print(f"  stored {d}: {len(finals)} games")
-        if not held:
-            through = d
-        day += timedelta(days=1)
-    save(SYNC_FILE, {"through": through}, indent=1)
+    def start():
+        games, _ = store.load_all()
+        return games[-1]["date"] if games else "2026-06-30"
+    daily_common.sync(SYNC_FILE, TODAY, start, in_season, espn.scoreboard,
+                      lambda d, finals: daily_common.store_espn_day(d, finals, espn, store))
 
 
 # ── 2. grade ─────────────────────────────────────────────────────────────────
 def grade(history, games_by_id):
-    graded = 0
-    stale = (date.fromisoformat(TODAY) - timedelta(days=3)).isoformat()
-    for p in history["picks"]:
-        if p.get("correct") is not None or p.get("void") or p["date"] >= TODAY:
-            continue
-        g = games_by_id.get(p["game_id"])
-        if g and g["date"] == p["date"]:
-            p["home_pts"], p["away_pts"] = g["home_pts"], g["away_pts"]
-            p["winner"] = g["home"] if g["home_pts"] > g["away_pts"] else g["away"]
-            p["correct"] = p["winner"] == p["pick"]
-            graded += 1
-        elif (g and g["date"] != p["date"]) or p["date"] < stale:
-            p["void"] = True  # postponed or suspended: not played to a finish on its date
-            graded += 1
-    print(f"Graded {graded} picks")
-
-
-def grade_moneylines(history):
-    n = sum(moneyline.grade(p) for p in history["picks"])
-    if n:
-        print(f"Graded {n} moneyline picks")
+    print(f"Graded {daily_common.grade(history, games_by_id, TODAY)} picks")
 
 
 # ── 3. picks ─────────────────────────────────────────────────────────────────
@@ -163,12 +103,6 @@ def blend_on(history, season_start):
 
 
 
-def record(league, team):
-    m = league.margins[team]
-    w = sum(1 for x in m if x > 0)
-    return f"{w}-{len(m) - w}"
-
-
 def make_picks(history, league, weights):
     slate = espn.scoreboard(TODAY)
     print(f"{len(slate)} games today")
@@ -203,8 +137,7 @@ def make_picks(history, league, weights):
         feats = league.features(g, out["home"][0], out["away"][0])
         model_home, model_margin = M.win_prob(weights, feats)
         odds = (events.get(g["id"]) or {}).get("odds")
-        if not odds and old and old.get("ml"):  # ESPN has no price right now: keep the last one
-            odds = {"home": old["ml"]["home_ml"], "away": old["ml"]["away_ml"], "book": old["ml"].get("book")}
+        odds = kept_price(odds, old)  # ESPN has no price right now: keep the last one
         p_home, margin, w = model_home, model_margin, model_weight(league, g)
         if blend and odds:
             try:
