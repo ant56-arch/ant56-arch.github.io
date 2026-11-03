@@ -465,9 +465,8 @@ def ml_fact(g):
     ml = g.get("ml")
     if not ml:
         return ("Moneyline", '<span class="faint">No price posted</span>', "")
-    value = ' <span class="pill pill-positive">VALUE</span>' if ml.get("value") else ""
     sub = f"{payout_text(ml['price'])}. We say {g['prob']:.0f}%, the price says {ml['book']:.0f}%."
-    return ("Moneyline", f"{escape(g['pick'])} {price_text(ml['price'])}{value}", sub)
+    return ("Moneyline", f"{escape(g['pick'])} {price_text(ml['price'])}", sub)
 
 
 def game_page_body(g, back_href="index.html", back_text="All picks"):
@@ -594,7 +593,6 @@ def game_card(g, top=False):
     pick_name = g.get("pick_name") or (g["home"]["name"] if g["pick"] == g["home"]["abbr"] else g["away"]["name"])
     ml = g.get("ml") or {}
     odds = f'<span class="gc-odds">{price_text(ml["price"])}</span>' if ml.get("price") is not None else ""
-    value = '<span class="gc-value">Value</span>' if ml.get("value") else ""
     res = ""
     if g.get("void"):
         res = '<span class="pill pill-void">NO DECISION</span>'
@@ -609,7 +607,7 @@ def game_card(g, top=False):
     return (f'<a class="gc{" is-top" if top else ""}" href="{g["file"]}" data-day="{escape(g["date"][:10])}"{group}{live}>'
             f'<div class="gc-head"><span class="gc-when">{head}{tag}</span>{venue}</div>{series}{rows}{lines}'
             f'<div class="gc-pick"><span class="gc-label">{escape(g.get("pick_label") or "Pick to win")}</span>'
-            f'<b>{escape(pick_name or g["pick"])}</b>{odds}{value}{res}'
+            f'<b>{escape(pick_name or g["pick"])}</b>{odds}{res}'
             f'<span class="gc-pct">{g["prob"]:.0f}<i>%</i></span></div></a>')
 
 

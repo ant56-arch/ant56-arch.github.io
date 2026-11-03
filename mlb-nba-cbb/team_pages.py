@@ -83,8 +83,8 @@ class TeamSite:
     sources = "Scores, box scores, injury reports and Vegas odds via ESPN."
     has_games_feed = True  # ESPN scoreboard for the board, games.json and the Schedule redirect
     has_schedule = True    # a tab on the home site's Schedule page
-    board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. Value means "
-                  "our chance is at least 6% higher than Vegas's. Tap a game for injuries and rest.")
+    board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. "
+                  "Tap a game for injuries and rest.")
     no_games = "No NBA games today."
     preseason = "The season tips off in late October"
     summary_empty = "No NBA picks yet. They start on opening night in late October."

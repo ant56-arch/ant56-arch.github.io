@@ -107,7 +107,7 @@ function initSlatePickers() {
     const scope = mount.parentElement;
     let view = "slate";
     try { if (localStorage.getItem(SP_VIEW_KEY) === "cards") view = "cards"; } catch (e) { /* storage blocked */ }
-    const picker = edgeSlatePicker({ filters: true, withDay: new Set(games.map(g => g.date)).size > 1 });
+    const picker = edgeSlatePicker({ withDay: new Set(games.map(g => g.date)).size > 1 });
     const bar = edgeNode("div", "sp-view");
     bar.setAttribute("role", "group");
     bar.setAttribute("aria-label", "Games view");

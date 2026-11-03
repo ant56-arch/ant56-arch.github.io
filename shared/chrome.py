@@ -24,7 +24,7 @@ BRAND_MARK = ('<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="1
 
 
 # The home page's own pages (the All tab's links), for Betting and Schedule.
-SITE_PILLS = [("/#slate", "Today's games"), ("/#value", "Value picks"), ("/#record", "Record"),
+SITE_PILLS = [("/#slate", "Today's games"), ("/#record", "Record"),
               ("/#calendar", "Past days"), ("/bets.html", "Betting"), ("/schedule.html", "Schedule")]
 
 

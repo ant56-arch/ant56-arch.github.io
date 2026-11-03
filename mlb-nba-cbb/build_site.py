@@ -799,7 +799,7 @@ def games_band(picks):
 
 
 BOARD_NOTE = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. "
-              "Value means our chance is at least 6% higher than Vegas's. Tap a game for more.")
+              "Tap a game for more.")
 
 
 def build_games(team_history, espn_games=()):

@@ -14,7 +14,7 @@ function edgeFetchSummaries() {
 // plus the last few days' finished ones marked "final", each with our
 // pick, its moneyline price and a link to the game's page), "units" (the
 // running total of 1 unit on every graded moneyline pick, split into
-// favorites, underdogs and value picks) and "last" (the latest day's
+// favorites and underdogs) and "last" (the latest day's
 // results). Units and money show only on the Betting tab: a unit is $10.
 const EDGE_STAKE = 10;
 // Mid-tone line colors that read on both the cream and the dark background.
@@ -67,31 +67,6 @@ function edgeOverText(g) {
   return g.pick === "Draw" ? `${g.away} vs ${g.home}` : `over ${g.other}`;
 }
 
-function edgeValueRow(g) {
-  const row = edgeNode("a", "vb-row");
-  row.href = g.url;
-  row.append(edgeNode("span", "vb-sport", g.sport));
-  const who = edgeNode("span", "vb-pick");
-  who.append(edgeNode("b", null, `${g.pick} ${edgePrice(g.price)}`), edgeNode("small", null, edgeOverText(g)));
-  const bar = edgeNode("span", "vb-bar");
-  const track = edgeNode("span", "vb-track");
-  track.setAttribute("aria-hidden", "true");
-  const fill = edgeNode("span", "vb-fill");
-  fill.style.width = g.prob + "%";
-  const tick = edgeNode("span", "vb-tick");
-  tick.style.left = g.book + "%";
-  track.append(fill, tick);
-  const say = edgeNode("small");
-  say.append("We say ", edgeNode("b", "vb-ours", Math.round(g.prob) + "%"), ", Vegas says ",
-             edgeNode("b", "vb-book", Math.round(g.book) + "%"));
-  bar.append(track, say);
-  const when = edgeNode("span", "vb-when");
-  const pays = g.price >= 100 ? `$100 wins $${g.price}` : `Bet $${-g.price} to win $100`;
-  when.append(edgeNode("span", null, edgeWhen(g.start) || "Time TBA"), edgeNode("small", null, pays));
-  row.append(who, bar, when);
-  return row;
-}
-
 function edgeSureCard(eyebrow, name, pct, sub, href) {
   const card = edgeNode("a", "bet-card");
   card.href = href;
@@ -105,15 +80,10 @@ function edgeSureCard(eyebrow, name, pct, sub, href) {
 }
 
 async function initBestBets() {
-  const list = document.getElementById("value-picks");
   const sure = document.getElementById("surest-picks");
-  if (!list || !sure) return;
+  if (!sure) return;
   const summaries = await edgeFetchSummaries();
   const games = edgeUpcoming(summaries);
-  const value = games.filter(g => g.value && g.price != null && g.book != null);
-  if (value.length) list.replaceChildren(...value.map(edgeValueRow));
-  else list.replaceChildren(edgeNode("div", "empty-state",
-    "No value picks right now. They show up here when our chance is at least 6% higher than Vegas's."));
 
   const cards = [];
   EDGE_SITES.forEach((site, i) => {
@@ -234,7 +204,7 @@ async function initDollars() {
   const table = edgeNode("table", "data units-table responsive-stack");
   const head = edgeNode("thead");
   const hr = edgeNode("tr");
-  ["Sport", "Every pick", "Favorites", "Underdogs", "Value picks", "Return"].forEach((h, i) => hr.append(edgeNode("th", i ? "num" : null, h)));
+  ["Sport", "Every pick", "Favorites", "Underdogs", "Return"].forEach((h, i) => hr.append(edgeNode("th", i ? "num" : null, h)));
   head.append(hr);
   const body = edgeNode("tbody");
   lines.forEach(l => {
@@ -244,9 +214,9 @@ async function initDollars() {
     const a = edgeNode("a", null, l.name);
     a.href = l.href;
     name.append(a);
-    tr.append(name, cell(l.units), cell(sp.favorites), cell(sp.underdogs), cell(sp.value),
+    tr.append(name, cell(l.units), cell(sp.favorites), cell(sp.underdogs),
               edgeNode("td", "num", `${(l.units.roi * 100 >= 0 ? "+" : "−")}${Math.abs(l.units.roi * 100).toFixed(1)}%`));
-    ["", "Every pick", "Favorites", "Underdogs", "Value picks", "Return"].forEach((lab, i) => { if (i) tr.children[i].dataset.label = lab; });
+    ["", "Every pick", "Favorites", "Underdogs", "Return"].forEach((lab, i) => { if (i) tr.children[i].dataset.label = lab; });
     body.append(tr);
   });
   table.append(head, body);
@@ -261,8 +231,7 @@ async function initDollars() {
   const howBody = edgeNode("div");
   howBody.append(
     edgeNode("p", null, "A winning favorite pays less than it risks (1 unit at −150 wins 0.67) and a winning underdog " +
-      "pays more (1 unit at +130 wins 1.30). Value picks are the ones where our win chance was at least 6% " +
-      "higher than Vegas's. Return is units won per unit risked. A postponed game or a tie is no bet."),
+      "pays more (1 unit at +130 wins 1.30). Return is units won per unit risked. A postponed game or a tie is no bet."),
     edgeNode("p", null, "MLB hitter picks have no betting price, so they aren't in this." +
       (missing.length ? ` ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing[missing.length - 1] : missing[0]}` +
         " join with their first graded pick." : "")));
