@@ -33,6 +33,17 @@ HISTORY_FILE = os.path.join(HERE, "picks_history.json")
 SYNC_FILE = os.path.join(HERE, "data", "sync.json")
 MODEL_FILE = os.path.join(HERE, "model_weights.json")
 
+# The Vegas blend (Anthony, 2026-11-02): the posted win chance is part our
+# model and part the sportsbook's no-vig price, like NHL Edge. On the first
+# 92 graded picks of 2026-27 the model alone was 17% less accurate than Vegas
+# (Brier .224 vs .192): it starts each season from last year's ratings, so
+# it's behind on offseason moves the book already knows. The model's share
+# starts at BLEND_START and grows to BLEND_FULL once both teams have played
+# BLEND_GAMES games. blend_on() keeps it only while it beats the model alone
+# on this season's graded picks.
+BLEND_START, BLEND_FULL, BLEND_GAMES = 0.3, 0.5, 20
+BLEND_MIN_CHECK = 40  # graded picks before the check can turn the blend off
+
 NOW = datetime.now(espn.ET)
 TODAY = os.environ.get("NBA_TODAY") or NOW.date().isoformat()
 OUT_STATUSES = {"Out", "Doubtful"}
@@ -109,6 +120,39 @@ def grade_moneylines(history):
 
 
 # ── 3. picks ─────────────────────────────────────────────────────────────────
+def model_weight(league, g):
+    """Our model's share of the posted chance for this game."""
+    played = min(len(league.margins[g["home"]]), len(league.margins[g["away"]]))
+    return BLEND_START + (BLEND_FULL - BLEND_START) * min(played, BLEND_GAMES) / BLEND_GAMES
+
+
+def blend_on(history, season_start):
+    """Whether the blend has beaten the model alone (Brier, lower is better)
+    on this season's graded, priced picks. Picks from before the blend carry
+    no model_home_prob: their posted chance was the model's own."""
+    ours = mixed = 0.0
+    n = 0
+    for p in history["picks"]:
+        ml = p.get("ml") or {}
+        if p["date"] < season_start or p.get("correct") is None or p.get("void") or not p.get("winner"):
+            continue
+        if ml.get("home_ml") is None or ml.get("away_ml") is None:
+            continue
+        model = (p.get("model_home_prob") if p.get("model_home_prob") is not None else p["home_prob"]) / 100
+        vegas = moneyline.no_vig(ml["home_ml"], ml["away_ml"])[0]
+        w = p.get("model_weight", BLEND_START)
+        y = 1.0 if p["winner"] == p["home"] else 0.0
+        ours += (model - y) ** 2
+        mixed += (w * model + (1 - w) * vegas - y) ** 2
+        n += 1
+    on = n < BLEND_MIN_CHECK or mixed <= ours
+    if n:
+        print(f"  Vegas blend on {n} graded picks: Brier {mixed / n:.4f} blended, {ours / n:.4f} model alone"
+              f" -> {'on' if on else 'off'}")
+    return on
+
+
+
 def record(league, team):
     m = league.margins[team]
     w = sum(1 for x in m if x > 0)
@@ -129,6 +173,8 @@ def make_picks(history, league, weights):
     events = {e["id"]: e for e in moneyline.fetch("basketball/nba", TODAY)}
 
     existing = {p["game_id"]: p for p in history["picks"] if p["date"] == TODAY}
+    season_start = f"{int(TODAY[:4]) - (1 if int(TODAY[5:7]) < 7 else 0)}-07-01"
+    blend = blend_on(history, season_start)
     for g in slate:
         league._check_season(g["season"])  # new season: ratings regress, last season's rotations clear
         old = existing.get(g["id"])
@@ -141,7 +187,19 @@ def make_picks(history, league, weights):
             playing = league.rotation(team) - injured
             out[side] = (league.missing_value(team, playing), league.missing_players(team, playing))
         feats = league.features(g, out["home"][0], out["away"][0])
-        p_home, margin = M.win_prob(weights, feats)
+        model_home, model_margin = M.win_prob(weights, feats)
+        odds = (events.get(g["id"]) or {}).get("odds")
+        if not odds and old and old.get("ml"):  # ESPN has no price right now: keep the last one
+            odds = {"home": old["ml"]["home_ml"], "away": old["ml"]["away_ml"], "book": old["ml"].get("book")}
+        p_home, margin, w = model_home, model_margin, model_weight(league, g)
+        if blend and odds:
+            try:
+                p_home = w * model_home + (1 - w) * moneyline.no_vig(odds["home"], odds["away"])[0]
+                # Our line from the blended chance, the same way the model turns a margin into one.
+                margin = weights["sigma"] * M.norm_inv(min(max(p_home, 0.001), 0.999))
+            except Exception as e:
+                print(f"  sportsbook price for {g['away']} @ {g['home']} unreadable: {e}")
+                p_home, margin = model_home, model_margin
         pick_home = p_home >= 0.5
         pick = {
             "date": TODAY, "game_id": g["id"], "start": g["start"], "type": g["type"],
@@ -151,6 +209,9 @@ def make_picks(history, league, weights):
             "pick": g["home"] if pick_home else g["away"],
             "prob": round(100 * (p_home if pick_home else 1 - p_home), 1),
             "home_prob": round(100 * p_home, 1),
+            "model_home_prob": round(100 * model_home, 1),  # before the Vegas blend
+            "model_weight": round(w, 3),  # the model's share in the blend (even while the blend is off)
+            "blended": p_home != model_home,
             "margin": round(abs(margin), 1),
             "home_out": [n for n, _ in out["home"][1]], "away_out": [n for n, _ in out["away"][1]],
             "rest": {"home": league.rest_days(g["home"], TODAY), "away": league.rest_days(g["away"], TODAY)},
@@ -161,9 +222,6 @@ def make_picks(history, league, weights):
             "set_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
         try:  # the moneyline pick is extra: without odds, the game pick still goes out
-            odds = (events.get(g["id"]) or {}).get("odds")
-            if not odds and old and old.get("ml"):  # ESPN has no price right now: keep the last one
-                odds = {"home": old["ml"]["home_ml"], "away": old["ml"]["away_ml"], "book": old["ml"].get("book")}
             ml = moneyline.pick(g["home"], g["away"], pick["home_prob"], odds, pick["pick"])
         except Exception as e:
             print(f"  moneyline for {g['away']} @ {g['home']} failed: {e}")

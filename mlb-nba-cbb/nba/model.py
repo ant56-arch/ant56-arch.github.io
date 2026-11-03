@@ -60,6 +60,12 @@ def game_score(p):
     return pts + 0.4 * fgm - 0.7 * fga - 0.4 * (fta - ftm) + 0.5 * reb + stl + 0.7 * ast + 0.7 * blk - tov
 
 
+def norm_inv(p):
+    """The z with norm_cdf(z) = p."""
+    from statistics import NormalDist
+    return NormalDist().inv_cdf(p)
+
+
 def norm_cdf(x):
     return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
