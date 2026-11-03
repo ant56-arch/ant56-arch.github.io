@@ -53,7 +53,9 @@ class SeasonMethods:
         self._srs = None
 
     def _solve(self):
-        edge = self.home_margin[0] / self.home_margin[1] / 2 if self.home_margin[1] else 0.0
+        # The whole average home margin comes off each side's margin (home
+        # margin = rating gap + edge); half would credit hosts with the rest.
+        edge = self.home_margin[0] / self.home_margin[1] if self.home_margin[1] else 0.0
         adj = {t: [(o, m - edge * side) for o, m, side in gs] for t, gs in self.games.items()}
         r = defaultdict(float)
         for _ in range(SRS_ROUNDS):

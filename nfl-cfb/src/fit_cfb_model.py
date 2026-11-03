@@ -23,10 +23,12 @@ import numpy as np
 import json
 import os
 import sys
+import requests
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(__file__))
-from fetch_cfb_data import fetch_team_info, fetch_games, fetch_lines, fetch_advanced_stats, current_cfb_season, _headers
+from fetch_cfb_data import (fetch_team_info, fetch_games, fetch_lines, merge_lines, fetch_advanced_stats, current_cfb_season,
+                            _headers, neutral_flags, running_week)
 from historical_features import compute_walkforward_features
 from build_features import RECENCY_HALF_LIFE_GAMES
 import model_guard as guard
@@ -78,9 +80,7 @@ def fetch_historical(seasons):
         games = fetch_games(season)
         if not games.empty and covered:
             games = games[games["home_team"].isin(covered) | games["away_team"].isin(covered)]
-        lines = fetch_lines(season)
-        if not games.empty and not lines.empty:
-            games = games.merge(lines, on=["home_team", "away_team"], how="left")
+        games = merge_lines(games, fetch_lines(season))
         if not games.empty:
             all_games.append(games)
 
@@ -92,6 +92,13 @@ def fetch_historical(seasons):
 
     games = pd.concat(all_games, ignore_index=True) if all_games else pd.DataFrame()
     stats = pd.concat(all_stats, ignore_index=True) if all_stats else pd.DataFrame()
+    # Postseason weeks restart at 1: shift them past the regular season so the
+    # walk-forward features sort bowls last and the (season, week, team) joins
+    # below don't match a bowl to week 1.
+    if not games.empty:
+        games["week"] = running_week(games)
+    if not stats.empty:
+        stats["week"] = running_week(stats)
     return games, stats
 
 def _merge_side(games, stats, side):
@@ -137,6 +144,8 @@ def make_features(games, suffix="_asof"):
         "explosiveness_diff": games[f"home_off_explosiveness{suffix}"] - games[f"away_off_explosiveness{suffix}"],
     })
     feats["combined_exp_eff"] = home_exp_eff + away_exp_eff
+    # 1 for a true home game, 0 at a neutral site (bowls, kickoff classics).
+    feats["home_field"] = (~neutral_flags(games)).astype(float).values
     # Context inputs only exist on a recipe's dataset when the recipe uses them.
     for col in EXTRA_FEATURES:
         if col in games.columns:
@@ -160,7 +169,7 @@ def fit_margin_and_total(feats, games):
 
     extras = extra_columns(feats)
     X_margin = np.column_stack([feats["ppa_diff"], feats["success_rate_diff"], feats["explosiveness_diff"]]
-                               + [feats[c] for c in extras] + [ones])
+                               + [feats[c] for c in extras] + [feats["home_field"]])
     beta_margin, resid_margin = fit_ols(X_margin, games["actual_margin"].values)
 
     X_total = np.column_stack([feats["combined_exp_eff"], ones])
@@ -184,7 +193,7 @@ def model_predict(feats, coefs):
         feats["ppa_diff"] * coefs["ppa_diff_coef"]
         + feats["success_rate_diff"] * coefs["success_rate_weight"]
         + feats["explosiveness_diff"] * coefs["explosiveness_weight"]
-        + coefs["home_field_advantage"]
+        + coefs["home_field_advantage"] * feats["home_field"]
     )
     for col in EXTRA_FEATURES:
         if f"{col}_weight" in coefs:
@@ -290,19 +299,23 @@ def validate_and_fit(dataset):
 
     return output
 
+def skip(reason):
+    """Logs a refit the data source stopped (model_guard.log_skip) and returns;
+    the workflow step still passes."""
+    print(f"{reason} - keeping the live CFB model.")
+    guard.log_skip("cfb", reason, guard.load_json(COEFFICIENTS_PATH))
+
 def run():
     if _headers() is None:
-        print("CFBD_API_KEY not set - skipping college football model fit. "
-              "Get a free key at https://collegefootballdata.com/key and add it as a repo secret.")
-        return
+        print("Get a free key at https://collegefootballdata.com/key and add it as a repo secret.")
+        return skip("skipped: CFBD_API_KEY not set")
 
     current_season = current_cfb_season()
     seasons = list(range(current_season - TRAIN_SEASONS_BACK, current_season + 1))
     print(f"Fetching {len(seasons)} seasons of CFB data ({seasons[0]}-{seasons[-1]})...")
     games, stats = fetch_historical(seasons)
     if games.empty or stats.empty:
-        print("Not enough CFB data returned to fit a model - aborting.")
-        return
+        return skip("skipped: CFBD returned no games or advanced stats")
     print(f"  {len(games)} games, {len(stats)} team-game stat rows")
 
     datasets = {}
@@ -365,6 +378,10 @@ def run():
         return
     if guard.nothing_new(live, base):
         print(f"No games since the live model's last fit ({live['trained_through']}) - keeping it.")
+        # Mid-season that means the cached CFBD data is stale (quota used up),
+        # not the offseason: log it so the Model tab says why.
+        if datetime.now(timezone.utc).month in (9, 10, 11, 12, 1):
+            return skip(f"skipped: CFBD data has no games after {live['trained_through']} (quota used up or cache stale)")
         return
 
     print(f"\nScoring recipes on the most recent {RECENT_HOLDOUT_GAMES} games (each fit only on earlier games)...")
@@ -382,7 +399,7 @@ def run():
     if "elo" in recipe_extras(chosen):
         output["elo_start"] = context["elo_start"]  # the live picks walk this season's games from here
     ok, why, new, live_score = guard.deploy_ok(output["coefficients"], live.get("coefficients"), live_recipe, chosen,
-                                               dataset_for, make_features, model_predict, report["keys"])
+                                               dataset_for, make_features, model_predict, report)
     if ok:
         with open(COEFFICIENTS_PATH, "w") as f:
             json.dump(output, f, indent=2)
@@ -398,4 +415,7 @@ def run():
                    f"- Deployed: {'yes' if ok else 'no - ' + why}"])
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except requests.exceptions.RequestException as e:  # quota used up, CFBD down
+        skip(f"skipped: CFBD couldn't be reached ({str(e)[:120]})")

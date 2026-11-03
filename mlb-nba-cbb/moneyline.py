@@ -198,7 +198,7 @@ def detail(ml):
     return f"We give {ml['team']} {ml['prob']:.0f}%, Vegas {ml['book_prob']:.0f}%"
 
 
-def detail_lines(ml, other=None):
+def detail_lines(ml):
     """Every line under the pick: the payout and our chance vs the price's."""
     return [payout_text(ml["price"]), detail(ml)]
 

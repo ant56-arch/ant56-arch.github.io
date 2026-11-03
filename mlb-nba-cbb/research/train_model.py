@@ -39,6 +39,7 @@ import os
 import sys
 from collections import defaultdict, deque
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import numpy as np
 
@@ -47,6 +48,7 @@ import features as F  # noqa: E402
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 import model_watch  # noqa: E402  (the repo root's cold-stretch check)
 
+ET = ZoneInfo("America/New_York")  # the site's days are US Eastern, like predict.ET
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 MODEL_FILE = "model_weights.json"
 HISTORY_FILE = "model_history.json"
@@ -55,7 +57,7 @@ PICKS_FILE = "picks_history.json"
 HOLDOUT_ROWS = 8000
 MIN_TRAIN_ROWS = 5000
 SWITCH_MARGIN = 0.0005  # log loss a new recipe must win by
-SANITY_MARGIN = 0.002  # how much worse than the live model the refit may score on the holdout
+SANITY_MARGIN = 0.002  # how much worse than the live model the chosen recipe (fit without the holdout) may score on it
 PARK_PRIOR_ROWS = 3000  # hitter-games of the fixed table's value blended into each learned park factor
 TOP_N = 10
 
@@ -314,7 +316,7 @@ def live_record(days=7):
             picks = json.load(f)["picks"]
     except (OSError, ValueError, KeyError):
         return None
-    since = (date.today() - timedelta(days=days)).isoformat()
+    since = (datetime.now(ET).date() - timedelta(days=days)).isoformat()
     g = [p for p in picks if p["date"] >= since and p.get("got_hit") is not None and p.get("confidence") is not None]
     if not g:
         return None
@@ -323,17 +325,19 @@ def live_record(days=7):
 
 
 # ── The run ──────────────────────────────────────────────────────────────────
-def deploy_ok(final, final_ev, live_ev, baseline_ll, chosen_ev):
+def deploy_ok(final, live_ev, baseline_ll, chosen_ev):
     """Sanity checks before the refit replaces the live model: finite numbers,
     it beats guessing the average on games it never saw, and on the recent
-    games it isn't clearly worse than the model it replaces."""
+    games it isn't clearly worse than the model it replaces. Both scores are
+    the chosen recipe fit without the holdout: the refit has seen the holdout,
+    so its own score there would flatter it."""
     numbers = final["weights"] + [final["bias"]] + final["means"] + final["stds"]
     if not all(math.isfinite(x) for x in numbers):
         return False, "the refit has non-finite coefficients"
     if chosen_ev["log_loss"] >= baseline_ll:
         return False, "the chosen recipe didn't beat guessing the average on held-out games"
-    if live_ev and final_ev["log_loss"] > live_ev["log_loss"] + SANITY_MARGIN:
-        return False, "the refit scored worse than the live model on recent games"
+    if live_ev and chosen_ev["log_loss"] > live_ev["log_loss"] + SANITY_MARGIN:
+        return False, "the chosen recipe scored worse than the live model on recent games"
     return True, ""
 
 
@@ -429,8 +433,7 @@ def main():
 
     live_ev = evaluate(live, data, test) if live.get("features") else None
     final = train(chosen_recipe, data, np.ones(len(data.y), dtype=bool))
-    final_ev = evaluate(final, data, test)
-    ok, why = deploy_ok(final, final_ev, live_ev, baseline_ll, chosen_ev)
+    ok, why = deploy_ok(final, live_ev, baseline_ll, chosen_ev)
 
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     if ok:

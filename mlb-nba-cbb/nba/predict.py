@@ -73,13 +73,21 @@ def sync():
     through = load(SYNC_FILE, {}).get("through") or (games[-1]["date"] if games else "2026-06-30")
     day = date.fromisoformat(through) + timedelta(days=1)
     yesterday = date.fromisoformat(TODAY) - timedelta(days=1)
+    # A game neither final nor called off doesn't stop the sync: the day's
+    # finals are stored and later days still sync, but "through" stays
+    # before that day so the next runs check it again, until it's older than
+    # the 3 days grade() waits before voiding its pick.
+    recheck_from = (yesterday - timedelta(days=2)).isoformat()
+    held = False
     while day <= yesterday:
         d = day.isoformat()
         if in_season(d):
             day_games = espn.scoreboard(d)
-            if any(not (g["final"] or g["postponed"]) for g in day_games):
-                print(f"  {d}: not every game is final yet, will retry next run")
-                break
+            pending = [g for g in day_games if not (g["final"] or g["postponed"])]
+            if pending:
+                print(f"  {d}: {len(pending)} game(s) not final yet ({', '.join(g['id'] for g in pending)}), "
+                      "will re-check next run")
+                held = held or d >= recheck_from
             finals = [g for g in day_games if g["final"] and g["home_pts"] is not None]
             if finals:
                 box = {}
@@ -90,7 +98,8 @@ def sync():
                         print(f"  box score {g['id']} failed: {e}")
                 store.save_day(d, finals, box)
                 print(f"  stored {d}: {len(finals)} games")
-        through = d
+        if not held:
+            through = d
         day += timedelta(days=1)
     save(SYNC_FILE, {"through": through}, indent=1)
 
@@ -98,17 +107,18 @@ def sync():
 # ── 2. grade ─────────────────────────────────────────────────────────────────
 def grade(history, games_by_id):
     graded = 0
+    stale = (date.fromisoformat(TODAY) - timedelta(days=3)).isoformat()
     for p in history["picks"]:
         if p.get("correct") is not None or p.get("void") or p["date"] >= TODAY:
             continue
         g = games_by_id.get(p["game_id"])
-        if g:
+        if g and g["date"] == p["date"]:
             p["home_pts"], p["away_pts"] = g["home_pts"], g["away_pts"]
             p["winner"] = g["home"] if g["home_pts"] > g["away_pts"] else g["away"]
             p["correct"] = p["winner"] == p["pick"]
             graded += 1
-        elif p["date"] < (date.fromisoformat(TODAY) - timedelta(days=3)).isoformat():
-            p["void"] = True  # postponed and never played on its date
+        elif (g and g["date"] != p["date"]) or p["date"] < stale:
+            p["void"] = True  # postponed or suspended: not played to a finish on its date
             graded += 1
     print(f"Graded {graded} picks")
 
@@ -178,8 +188,12 @@ def make_picks(history, league, weights):
     for g in slate:
         league._check_season(g["season"])  # new season: ratings regress, last season's rotations clear
         old = existing.get(g["id"])
-        if g["state"] != "pre" or g["postponed"]:
-            continue  # started, final or postponed: a pick already made stays as it was
+        if g["postponed"]:
+            if old and old.get("correct") is None:
+                old["void"] = True
+            continue
+        if g["state"] != "pre":
+            continue  # started or final: a pick already made stays as it was
         out = {}
         for side in ("home", "away"):
             team, team_id = g[side], str(g[f"{side}_id"])

@@ -93,7 +93,9 @@ def sync():
         rows, fresh = [], 0
         for code in fd.LEAGUES:
             got = fd.fetch(code, season)
-            if got is None:
+            # None = unreachable, [] = a 404: either way keep the stored season
+            # rather than wipe it, unless nothing was stored for that league.
+            if got is None or (not got and old.get(code)):
                 rows += old.get(code, [])
             else:
                 rows += got

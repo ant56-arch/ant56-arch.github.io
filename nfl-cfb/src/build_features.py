@@ -183,6 +183,9 @@ def apply_recency_weighting(game_stats, group_cols, metric_cols, half_life=RECEN
             else:
                 weighted[col] = np.average(g.loc[valid, col], weights=weights[valid])
 
+        # NOTE: despite the name, an unweighted mean over EVERY game on record
+        # (every season loaded: 3 NFL, 2 CFB), not this season's; only read when
+        # use_current_form=False.
         season_avg = {f"{col}_season_avg": g[col].mean() for col in metric_cols}
 
         row = {key_col: key if isinstance(key, str) else key[0], "games_played": len(g)}
@@ -223,15 +226,17 @@ def build_player_game_stats(pbp):
     instead of the coarser "blend last 2 season totals" approach the props
     model used before fit_props_model.py's backtest replaced it.
     """
-    # Receiving stats
-    targets = pbp[pbp["pass"] == 1].copy()
+    # Receiving stats. Real pass attempts only: pass == 1 also counts sacks
+    # and scrambles, and nflverse's pass_attempt still includes sacks.
+    attempts = pbp[(pbp["pass_attempt"] == 1) & (pbp["sack"] != 1)]
+    targets = attempts.copy()
     team_pass_attempts = targets.groupby(["season", "week", "posteam"])["play_id"].count().rename("team_targets")
 
     receiving = targets.groupby(["season", "week", "posteam", "receiver_player_id", "receiver_player_name"]).agg(
         targets=("play_id", "count"),
         receptions=("complete_pass", "sum"),
         rec_yards=("yards_gained", "sum"),
-        rec_tds=("touchdown", "sum"),
+        rec_tds=("pass_touchdown", "sum"),  # not "touchdown": that counts pick-sixes and fumble returns
     ).reset_index()
     receiving = receiving.merge(team_pass_attempts, left_on=["season", "week", "posteam"], right_index=True)
     receiving["target_share"] = receiving["targets"] / receiving["team_targets"]
@@ -245,7 +250,7 @@ def build_player_game_stats(pbp):
     rushing = rushes.groupby(["season", "week", "posteam", "rusher_player_id", "rusher_player_name"]).agg(
         carries=("play_id", "count"),
         rush_yards=("yards_gained", "sum"),
-        rush_tds=("touchdown", "sum"),
+        rush_tds=("rush_touchdown", "sum"),
     ).reset_index()
     rushing = rushing.merge(team_rush_attempts, left_on=["season", "week", "posteam"], right_index=True)
     rushing["carry_share"] = rushing["carries"] / rushing["team_carries"]
@@ -253,12 +258,12 @@ def build_player_game_stats(pbp):
     rushing = rushing[rushing["player_id"].notna()]
 
     # Passing stats (QBs)
-    passes = pbp[pbp["pass"] == 1].copy()
+    passes = attempts.copy()
     passing = passes.groupby(["season", "week", "posteam", "passer_player_id", "passer_player_name"]).agg(
         pass_attempts=("play_id", "count"),
         completions=("complete_pass", "sum"),
         pass_yards=("yards_gained", "sum"),
-        pass_tds=("touchdown", "sum"),
+        pass_tds=("pass_touchdown", "sum"),
     ).reset_index()
     passing = passing.rename(columns={"passer_player_id": "player_id", "passer_player_name": "player_name", "posteam": "team"})
     passing = passing[passing["player_id"].notna()]

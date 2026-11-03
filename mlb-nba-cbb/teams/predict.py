@@ -64,13 +64,21 @@ def sync():
         through = games[-1]["date"] if games else f"{date.fromisoformat(TODAY).year}-02-28"
     day = date.fromisoformat(through) + timedelta(days=1)
     yesterday = date.fromisoformat(TODAY) - timedelta(days=1)
+    # A game neither final nor called off doesn't stop the sync: the day's
+    # finals are stored and later days still sync, but "through" stays
+    # before that day so the next runs check it again, until it's older than
+    # the 3 days grade() waits before voiding its pick.
+    recheck_from = (yesterday - timedelta(days=2)).isoformat()
+    held = False
     while day <= yesterday:
         d = day.isoformat()
         if in_season(d):
             day_games = statsapi.schedule(d)  # can include a suspended game resumed today
-            if any(not (g["final"] or g["postponed"]) for g in day_games if g["date"] == d):
-                print(f"  {d}: not every game is final yet, will retry next run")
-                break
+            pending = [g for g in day_games if g["date"] == d and not (g["final"] or g["postponed"])]
+            if pending:
+                print(f"  {d}: {len(pending)} game(s) not final yet ({', '.join(g['id'] for g in pending)}), "
+                      "will re-check next run")
+                held = held or d >= recheck_from
             finals = [g for g in day_games if g["final"] and g["home_runs"] is not None]
             if finals:
                 rows = []
@@ -83,7 +91,8 @@ def sync():
                     rows.append(statsapi.stored(g, box))
                 store.save_day(d, rows)
                 print(f"  stored {d}: {len(finals)} games")
-        through = d
+        if not held:
+            through = d
         day += timedelta(days=1)
     save(SYNC_FILE, {"through": through}, indent=1)
 

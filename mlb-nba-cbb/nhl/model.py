@@ -79,6 +79,7 @@ class League:
         self.starts = defaultdict(list)   # team -> recent starting goalie ids
         self.lg = [0.0, 0.0]              # league shots against, saves (decayed)
         self.methods = SeasonMethods(PYTH_EXPONENT, shrink=8.0, prior=8.0)
+        self.methods_pending = []  # results not yet in self.methods: they go in when a later day is asked
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -88,6 +89,7 @@ class League:
                 self.elo[t] = mean + self.p["elo_carry"] * (self.elo[t] - mean)
             self.margins.clear()
             self.methods.reset()
+            self.methods_pending = []
         self.season = season
 
     def _check_season(self, season):
@@ -131,8 +133,20 @@ class League:
             total += 100 * (sv - avg * sa) / (sa + GOALIE_PRIOR)
         return total / len(starts)
 
+    def _methods_through(self, day):
+        """Add every pending result from before `day` to the Massey /
+        Pythagorean ratings, so they stand as they did that morning (a game
+        earlier the same day isn't known at pick time) and are solved once a
+        day (the solve is the slow part of a walk)."""
+        ready = [x for x in self.methods_pending if x[0] < day]
+        if ready:
+            for _, h, a, hp, ap, neutral in ready:
+                self.methods.add(h, a, hp, ap, neutral)
+            self.methods_pending = [x for x in self.methods_pending if x[0] >= day]
+
     def features(self, g):
         self._check_season(g["season"])
+        self._methods_through(g["date"])
         h, a = g["home"], g["away"]
         h_net, h_recent = self.team_form(h)
         a_net, a_recent = self.team_form(a)
@@ -199,7 +213,7 @@ class League:
         self.elo[a] -= shift
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
-        self.methods.add(h, a, g["home_pts"], g["away_pts"], g.get("neutral"))
+        self.methods_pending.append((g["date"], h, a, g["home_pts"], g["away_pts"], g.get("neutral")))
         self.last_date[h] = self.last_date[a] = g["date"]
 
 

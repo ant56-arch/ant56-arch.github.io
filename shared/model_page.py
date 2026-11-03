@@ -112,7 +112,7 @@ def render(spec, calendar=True):
     # Is it getting better: held-out score after each retrain.
     scored = [r for r in reversed(runs) if r.get("after") is not None]
     if scored:
-        last = runs[0]
+        last = scored[-1]  # newest retrain that scored (a skipped run has no score)
         tiles = []
         if last.get("before") is not None:
             tiles.append((fmt(last["before"]), "Before last retrain", "live model on recent games"))

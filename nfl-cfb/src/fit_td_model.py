@@ -6,8 +6,9 @@ Runs in the Tuesday refit next to fit_props_model.py.
   1. Pulls play-by-play for the last FIT_SEASONS seasons (the daily data only
      keeps three) and builds one row per player-game, every feature from
      games before that one.
-  2. Backtest: fits on every season before the last full one and scores the
-     last full season, against the old carries-times-TD-rate math. This is
+  2. Backtest: fits on every season before the last full one (the xTD table
+     and league rates too) and scores the last full season, against the old
+     carries-times-TD-rate math. This is
      the check that a 60% player really scores about 60% of the time; it is
      saved with the coefficients and shown on the Model tab.
   3. Guard: fits on everything but the last HOLDOUT_WEEKS weeks played and
@@ -95,13 +96,21 @@ def load_schedules(seasons):
     return s[s["season"].isin(seasons)]
 
 
-def build_rows(seasons):
-    pbp = load_pbp(seasons)
-    opps = m.opportunities(pbp)
-    table = m.xtd_table(opps)
+def load_inputs(seasons):
     schedules, rosters = load_schedules(seasons), load_rosters(seasons)
-    pg = m.add_quiet_games(m.player_games(m.add_xtd(opps, table)), rosters, schedules)
-    rows = m.walkforward_rows(pg, load_positions(rosters), m.implied_points(schedules))
+    return {"opps": m.opportunities(load_pbp(seasons)), "schedules": schedules, "rosters": rosters,
+            "positions": load_positions(rosters), "implied": m.implied_points(schedules)}
+
+
+def build_rows(inp, before=None):
+    """Walk-forward rows. before: build the xTD table and league rates only
+    from seasons before this one (the backtest), so the season it scores
+    doesn't leak into them; None uses every season (the live fit)."""
+    opps = inp["opps"]
+    table = m.xtd_table(opps if before is None else opps[opps["season"] < before])
+    pg = m.add_quiet_games(m.player_games(m.add_xtd(opps, table)), inp["rosters"], inp["schedules"])
+    rates = None if before is None else pg[pg["season"] < before]
+    rows = m.walkforward_rows(pg, inp["positions"], inp["implied"], rates_pg=rates)
     return rows, table
 
 
@@ -114,7 +123,8 @@ def main():
     season = current_nfl_season()
     seasons = list(range(season - FIT_SEASONS, season + 1))
     print(f"Fitting the anytime-TD model on seasons {seasons[0]}-{seasons[-1]}...")
-    rows, table = build_rows(seasons)
+    inp = load_inputs(seasons)
+    rows, table = build_rows(inp)
     rows = rows.sort_values(["season", "week"]).reset_index(drop=True)
     latest = f"{int(rows['season'].max())}-{int(rows[rows['season'] == rows['season'].max()]['week'].max()):02d}"
     if current.get("trained_through") == latest and not forced():
@@ -124,7 +134,8 @@ def main():
 
     # Backtest on the last full season
     test_season = int(rows["season"].max()) - (1 if rows["season"].max() == season else 0)
-    train, test = rows[rows["season"] < test_season], rows[rows["season"] == test_season]
+    bt_rows = build_rows(inp, before=test_season)[0]
+    train, test = bt_rows[bt_rows["season"] < test_season], bt_rows[bt_rows["season"] == test_season]
     bt = m.fit_poisson(train)
     p_new = m.prob_from_lambda(m.predict_lambda(test, bt))
     p_old = m.prob_from_lambda(test["old_lambda"])

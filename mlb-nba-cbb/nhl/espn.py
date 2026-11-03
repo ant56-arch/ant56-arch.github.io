@@ -11,6 +11,9 @@ import requests
 
 API = "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl"
 ET = ZoneInfo("America/New_York")
+# Games called off, never to finish on their date (the same set as soccer/espn.py).
+# A delay isn't here: a delayed game still finishes, and sync re-checks it.
+VOID_STATUS = {"STATUS_POSTPONED", "STATUS_CANCELED", "STATUS_ABANDONED", "STATUS_SUSPENDED", "STATUS_FORFEIT"}
 # ESPN season types: 1 preseason, 2 regular season, 3 postseason.
 GAME_TYPES = {2: "regular", 3: "playoffs"}
 # All-Star teams (named after divisions) and exhibition sides aren't franchises.
@@ -55,7 +58,7 @@ def parse_event(ev, day):
     status = comp.get("status") or ev.get("status") or {}
     stype = status.get("type", {})
     start = datetime.fromisoformat(ev["date"].replace("Z", "+00:00")).astimezone(ET)
-    final = bool(stype.get("completed"))
+    final = bool(stype.get("completed")) and stype.get("name") not in VOID_STATUS
 
     def score(c):
         try:
@@ -82,7 +85,7 @@ def parse_event(ev, day):
         "neutral": bool(comp.get("neutralSite")),
         "state": stype.get("state", ""),  # pre / in / post
         "final": final,
-        "postponed": stype.get("name") in ("STATUS_POSTPONED", "STATUS_CANCELED"),
+        "postponed": stype.get("name") in VOID_STATUS,
     }
 
 

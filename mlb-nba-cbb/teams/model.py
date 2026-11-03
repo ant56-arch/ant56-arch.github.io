@@ -33,7 +33,6 @@ import math
 import os
 import sys
 from collections import defaultdict
-from datetime import date
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game_methods import SeasonMethods  # noqa: E402
@@ -70,11 +69,9 @@ class League:
         self.elo = defaultdict(lambda: ELO_START)
         self.season = None
         self.wins = defaultdict(lambda: [0, 0])  # regular-season wins and losses
-        self.last_date = {}
         # pitcher -> [outs, er, h, bb, k, hr] as a starter
         self.sp_season = defaultdict(lambda: [0.0] * 6)
         self.sp_prior = defaultdict(lambda: [0.0] * 6)
-        self.sp_name = {}
         self.lg = [0.0] * 6  # league starter totals this season
         self.lg_prior = None  # last season's league starter totals
         self.methods = SeasonMethods(PYTH_EXPONENT, shrink=10.0, prior=10.0)
@@ -154,12 +151,6 @@ class League:
         w, l = self.wins[team]
         return f"{w}-{l}"
 
-    def rest_days(self, team, day):
-        last = self.last_date.get(team)
-        if last is None:
-            return 3
-        return max(0, min(3, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
-
     def _methods_through(self, day):
         """Add every pending result from before `day` to the Massey /
         Pythagorean ratings. Holding back a day's results until the next day
@@ -186,10 +177,11 @@ class League:
         }
 
     def features_for_past(self, g):
-        """Features for a stored final game. Uses the starters who actually
-        started, which were almost always the announced probables."""
+        """Features for a stored final game. Uses the announced probables, as
+        at pick time (a late scratch isn't known that morning), and the
+        starter who actually started only when no probable was stored."""
         def sp(side):
-            line = g.get(f"{side}_sp") or g.get(f"{side}_probable")
+            line = g.get(f"{side}_probable") or g.get(f"{side}_sp")
             return line[0] if line else None
         return self.features(g, sp("home"), sp("away"))
 
@@ -211,13 +203,11 @@ class League:
             self.wins[h][0 if margin > 0 else 1] += 1
             self.wins[a][1 if margin > 0 else 0] += 1
         self.methods_pending.append((g["date"], h, a, g["home_runs"], g["away_runs"]))
-        self.last_date[h] = self.last_date[a] = g["date"]
 
         for side in ("home", "away"):
             sp = g.get(f"{side}_sp")
             if sp:
-                pid, name, stats = sp[0], sp[1], sp[2:8]
-                self.sp_name[pid] = name
+                pid, stats = sp[0], sp[2:8]
                 _add(self.sp_season[pid], stats)
                 _add(self.lg, stats)
 

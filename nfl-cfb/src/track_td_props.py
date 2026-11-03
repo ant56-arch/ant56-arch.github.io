@@ -106,6 +106,11 @@ def merge_snapshot(log, snap, now):
     fetched. Started games keep what was logged before kickoff."""
     if log.empty:
         log = pd.DataFrame(columns=LOG_COLS)
+    if snap.empty:
+        # No TD chances this run (the TD model failed, or no props file):
+        # keep the open rows as logged instead of dropping them all.
+        print("  WARNING: no anytime-TD chances this run - keeping the logged upcoming TD picks unchanged.")
+        return log.reindex(columns=LOG_COLS)
     started = kickoff_ts(log["kickoff"]) <= now
     locked, open_ = log[started], log[~started].set_index(KEY)
     snap = snap[kickoff_ts(snap["kickoff"]) > now].set_index(KEY)

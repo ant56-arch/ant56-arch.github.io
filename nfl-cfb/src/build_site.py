@@ -1758,7 +1758,7 @@ def build_model_page(sport):
         chosen = r["best_candidate"] if r.get("switched_recipe") else (r.get("current_recipe_refit_on_holdout") or r["best_candidate"])
         rows.append({
             "date": model_page.short_date(r["run_at"]), "data_through": model_page.short_date(r.get("data_through")),
-            "tested": len(r.get("candidates", [])), "decision": label, "tone": tone, "reason": r["reason"].capitalize() + ".",
+            "tested": len(r.get("candidates", [])), "decision": label, "tone": tone, "reason": r["reason"][:1].upper() + r["reason"][1:] + ".",
             "before": (r.get("live_model_on_holdout") or {}).get("accuracy"),
             "after": chosen.get("accuracy") if r.get("deployed") else None,
         })
@@ -1803,7 +1803,8 @@ def build_model_page(sport):
         ],
         "runs": rows,
         "score_name": "Picked right",
-        "score_fmt": lambda v: f"{v:.1%}",
+        # None when the latest retrain wasn't deployed or was skipped (CFBD out)
+        "score_fmt": lambda v: f"{v:.1%}" if v is not None else DASH,
         "higher_better": True,
         "factors": factors,
         "factors_note": "Points are how much each factor moves the predicted margin toward the team that has the "
