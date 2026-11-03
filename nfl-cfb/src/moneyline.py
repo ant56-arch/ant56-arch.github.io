@@ -34,10 +34,12 @@ ML_COLS = ["ml_commence_time", "ml_home_price", "ml_away_price", "ml_pick_side",
 ML_GRADE_COLS = ["ml_won", "ml_push", "ml_units"]
 
 
-def implied_prob(american):
-    """American odds -> implied probability (vig still in)."""
+def implied_prob(american, missing=np.nan):
+    """American odds -> implied probability (vig still in); `missing` for no
+    price (0 isn't a real American price, so it counts as none). The one copy
+    of this conversion: the odds fetchers and fit_model.py use it too."""
     if american is None or pd.isna(american) or american == 0:
-        return np.nan
+        return missing
     american = float(american)
     return -american / (-american + 100) if american < 0 else 100 / (american + 100)
 

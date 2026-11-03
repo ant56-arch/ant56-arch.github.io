@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 import cfb_ratings as cr
+import rating_walks as rw
 
 FEATURES = {"power": ["power_diff"], "bye": ["rest_diff"], "elo": ["elo_diff"], "pyth": ["pyth_diff"]}
 COLUMNS = [c for cols in FEATURES.values() for c in cols]
@@ -67,8 +68,7 @@ def elo_walk(games, fbs=(), start=None):
     for r in _in_order(games).itertuples(index=False):
         if r.season != season:
             if season is not None and elo:
-                mean = sum(elo.values()) / len(elo)
-                elo = {t: mean + ELO_CARRY * (v - mean) for t, v in elo.items()}
+                elo = rw.regress_to_mean(elo, ELO_CARRY)
             season = r.season
             if season == last_season:
                 snap = {"season": int(season), "ratings": {t: round(v, 2) for t, v in elo.items()}}
@@ -77,13 +77,7 @@ def elo_walk(games, fbs=(), start=None):
         out.append((r.id, (h - a) / 100))
         if pd.isna(r.home_score) or pd.isna(r.away_score):
             continue
-        margin = r.home_score - r.away_score
-        diff = h + (0 if _neutral(r.neutral) else ELO_HOME) - a
-        expected = 1 / (1 + 10 ** (-diff / 400))
-        won = 1.0 if margin > 0 else 0.5 if margin == 0 else 0.0
-        winner_diff = diff if margin > 0 else -diff
-        mult = np.log(abs(margin) + 1) * 2.2 / (winner_diff * 0.001 + 2.2) if margin else 1.0
-        shift = ELO_K * mult * (won - expected)
+        shift = rw.elo_shift(h, a, r.home_score - r.away_score, _neutral(r.neutral), ELO_K, ELO_HOME)
         elo[r.home_team], elo[r.away_team] = h + shift, a - shift
     return pd.DataFrame(out, columns=["id", "elo_diff"]), snap
 
@@ -92,25 +86,7 @@ def pyth_features(games):
     """pyth_diff before every game: the gap in log-odds of each team's
     Pythagorean win rate from this season's finished games, each starting
     from PYTH_PRIOR games at the league average."""
-    pf, pa, season, tot, out = {}, {}, None, [0.0, 0], []
-    for r in _in_order(games).itertuples(index=False):
-        if r.season != season:
-            pf, pa, tot, season = {}, {}, [0.0, 0], r.season
-        avg = tot[0] / tot[1] if tot[1] else 28.0
-
-        def lo(t):
-            f = pf.get(t, 0.0) + PYTH_PRIOR * avg
-            x = pa.get(t, 0.0) + PYTH_PRIOR * avg
-            p = f ** PYTH_EXP / (f ** PYTH_EXP + x ** PYTH_EXP)
-            return np.log(p / (1 - p))
-        out.append((r.id, lo(r.home_team) - lo(r.away_team)))
-        if pd.isna(r.home_score) or pd.isna(r.away_score):
-            continue
-        for t, f, x in ((r.home_team, r.home_score, r.away_score), (r.away_team, r.away_score, r.home_score)):
-            pf[t] = pf.get(t, 0.0) + f
-            pa[t] = pa.get(t, 0.0) + x
-            tot[0] += f
-            tot[1] += 1
+    out = [(r.id, d) for r, d in rw.pyth_walk(_in_order(games).itertuples(index=False), 28.0, PYTH_EXP, PYTH_PRIOR)]
     return pd.DataFrame(out, columns=["id", "pyth_diff"])
 
 

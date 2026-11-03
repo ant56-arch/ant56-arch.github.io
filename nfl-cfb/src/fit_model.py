@@ -45,7 +45,6 @@ import requests
 import json
 import os
 import sys
-from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(__file__))
 from fetch_data import download_csv_gz, current_nfl_season
@@ -53,6 +52,9 @@ from build_features import build_team_game_stats, build_team_defense_game_stats
 from historical_features import compute_walkforward_features
 from build_features import RECENCY_HALF_LIFE_GAMES
 import model_guard as guard
+import fit_common as fc
+from fit_common import fit_ols, recipe_extras, window  # fit_props_model uses fm.fit_ols
+import moneyline
 import team_ratings
 import game_context
 
@@ -63,8 +65,6 @@ os.makedirs(HISTORICAL_RAW_DIR, exist_ok=True)
 BASE = "https://github.com/nflverse/nflverse-data/releases/download"
 
 TRAIN_START_SEASON = 2013          # modern EPA-era data, ~13 seasons by default
-VALIDATION_SEASONS = 2             # most recent N completed seasons held out
-BLEND_GRID = np.round(np.arange(0.0, 1.01, 0.05), 2)
 
 # Recipe search (see model_guard.py): how fast the opponent-adjusted team
 # ratings forget old games (team_ratings.py, in weeks), how many seasons to
@@ -101,26 +101,8 @@ COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 def rating_half_life(r):
     return r.get("rating_half_life", team_ratings.RATING_HALF_LIFE_WEEKS)
 
-def recipe_extras(r):
-    return list(r.get("extras", []))
-
 def recipe_name(r):
-    extras = "".join(f" + {kind}" for kind in recipe_extras(r))
-    if r.get("season_decay"):
-        extras += f", older seasons x{r['season_decay']}"
-    return f"ratings half-life {rating_half_life(r)} weeks, {r['seasons']} seasons{extras}"
-
-def window(recipe, dataset):
-    if recipe["seasons"] != "all" and not dataset.empty:
-        dataset = dataset[dataset["season"] > dataset["season"].max() - recipe["seasons"]]
-    # season_decay (Anthony, 2026-10-26: keep learning from this season): each
-    # older season counts this much as much as the one after it when the
-    # weights are fit, so 0.5 makes this season count double last season.
-    decay = recipe.get("season_decay")
-    if decay and not dataset.empty:
-        dataset = dataset.copy()
-        dataset["_fit_weight"] = decay ** (dataset["season"].max() - dataset["season"])
-    return dataset
+    return fc.recipe_name(r, f"ratings half-life {rating_half_life(r)} weeks")
 
 OFF_METRICS = ["epa_per_play", "third_down_rate", "redzone_td_rate", "explosive_rate", "sack_rate"]
 DEF_METRICS = ["def_epa_per_play_allowed"]
@@ -154,14 +136,6 @@ def load_pbp_offense_defense(pbp):
     defn = build_team_defense_game_stats(pbp)
     return off, defn
 
-def _merge_side(games, stats, side):
-    """Rename a per-team stats frame's team/metric columns to home_/away_
-    and merge onto games on (season, week, <side>_team)."""
-    rename = {"team": f"{side}_team"}
-    rename.update({c: f"{side}_{c}" for c in stats.columns if c not in ("season", "week", "team")})
-    renamed = stats.rename(columns=rename)
-    return games.merge(renamed, on=["season", "week", f"{side}_team"], how="left")
-
 def build_dataset(off_walk, def_walk, schedules):
     """
     One row per completed REG/POST game with actual results, closing Vegas
@@ -175,10 +149,10 @@ def build_dataset(off_walk, def_walk, schedules):
     games = schedules[schedules["result"].notna()].copy()
     games = games[games["spread_line"].notna() & games["total_line"].notna()]
 
-    games = _merge_side(games, off, "home")
-    games = _merge_side(games, off, "away")
-    games = _merge_side(games, defn, "home")
-    games = _merge_side(games, defn, "away")
+    games = fc.merge_side(games, off, "home")
+    games = fc.merge_side(games, off, "away")
+    games = fc.merge_side(games, defn, "home")
+    games = fc.merge_side(games, defn, "away")
 
     games["actual_margin"] = games["home_score"] - games["away_score"]
     games["actual_total"] = games["home_score"] + games["away_score"]
@@ -189,8 +163,8 @@ def build_dataset(off_walk, def_walk, schedules):
     # home margin; -spread_line correlates -0.43 (confirms the sign).
     games["vegas_home_favored_by"] = games["spread_line"]
     games["vegas_total"] = games["total_line"]
-    games["vegas_home_ml_prob"] = games["home_moneyline"].apply(_moneyline_to_prob)
-    games["vegas_away_ml_prob"] = games["away_moneyline"].apply(_moneyline_to_prob)
+    games["vegas_home_ml_prob"] = games["home_moneyline"].apply(moneyline.implied_prob)
+    games["vegas_away_ml_prob"] = games["away_moneyline"].apply(moneyline.implied_prob)
     vig_sum = games["vegas_home_ml_prob"] + games["vegas_away_ml_prob"]
     games["vegas_home_win_prob"] = games["vegas_home_ml_prob"] / vig_sum
     games["home_won"] = (games["actual_margin"] > 0).astype(float)
@@ -203,11 +177,6 @@ def attach_ratings(dataset, pbp, schedules, half_life=team_ratings.RATING_HALF_L
     feats = team_ratings.game_features(pbp, schedules[schedules["season"] >= pbp["season"].min()],
                                        from_season=int(dataset["season"].min()), half_life=half_life)
     return dataset.merge(feats, on=["season", "week", "home_team", "away_team"], how="left")
-
-def _moneyline_to_prob(ml):
-    if pd.isna(ml):
-        return np.nan
-    return -ml / (-ml + 100) if ml < 0 else 100 / (ml + 100)
 
 def make_features(games, suffix="_asof"):
     """Build the exact feature set predict_game() uses, for every row."""
@@ -239,13 +208,6 @@ def make_features(games, suffix="_asof"):
 
 def spread_columns(feats):
     return team_ratings.FEATURES + [c for c in EXTRA_FEATURES if c in feats.columns]
-
-def fit_ols(X, y):
-    """Plain OLS via lstsq (no sklearn dependency): y = X @ beta, X's last
-    column is a constant 1s column so beta[-1] is the fitted intercept."""
-    beta, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
-    residuals = y - X @ beta
-    return beta, residuals
 
 def fit_margin_and_total(feats, games):
     valid = feats.notna().all(axis=1) & games["actual_margin"].notna() & games["actual_total"].notna()
@@ -309,113 +271,11 @@ def model_predict(feats, coefs):
     )
     return spread, total
 
-def evaluate_blend(model_spread, vegas_spread, actual_margin, model_wp, vegas_wp, home_won, sigma):
-    """For every blend weight in BLEND_GRID, compute spread MAE and win-prob
-    Brier score. Returns the grid as a DataFrame plus the best weight for each."""
-    rows = []
-    for w in BLEND_GRID:
-        blended_spread = w * model_spread + (1 - w) * vegas_spread
-        spread_mae = float(np.mean(np.abs(blended_spread - actual_margin)))
-
-        blended_wp = w * model_wp + (1 - w) * vegas_wp
-        brier = float(np.mean((blended_wp - home_won) ** 2))
-
-        rows.append({"weight_on_model": float(w), "spread_mae": spread_mae, "brier_score": brier})
-
-    grid = pd.DataFrame(rows)
-    best_spread_w = float(grid.loc[grid["spread_mae"].idxmin(), "weight_on_model"])
-    best_wp_w = float(grid.loc[grid["brier_score"].idxmin(), "weight_on_model"])
-    return grid, best_spread_w, best_wp_w
-
 def validate_and_fit(dataset):
     """Fit on all but the last VALIDATION_SEASONS seasons, pick blend weights
-    on those held-out seasons, then refit on everything."""
-    holdout_seasons = sorted(dataset["season"].unique())[-VALIDATION_SEASONS:]
-    train = dataset[~dataset["season"].isin(holdout_seasons)]
-    validation = dataset[dataset["season"].isin(holdout_seasons)]
-    print(f"  Train: {len(train)} games ({train['season'].min()}-{train['season'].max()})")
-    print(f"  Validation (held out): {len(validation)} games (seasons {holdout_seasons})")
-
-    print("\nFitting margin/total regressions on TRAIN only...")
-    train_feats = make_features(train)
-    train_coefs, _ = fit_margin_and_total(train_feats, train)
-    print(f"  {json.dumps(train_coefs, indent=2)}")
-
-    print("\nEvaluating model vs Vegas vs blends on the HELD-OUT validation seasons...")
-    val_feats = make_features(validation)
-    valid_mask = val_feats.notna().all(axis=1) & validation["actual_margin"].notna() & validation["vegas_home_win_prob"].notna()
-    val_feats, val_games = val_feats[valid_mask], validation[valid_mask]
-
-    from scipy.stats import norm
-    model_spread, model_total = model_predict(val_feats, train_coefs)
-    model_wp = norm.cdf(model_spread / train_coefs["margin_std_dev"])
-
-    vegas_spread = val_games["vegas_home_favored_by"].values
-    vegas_total = val_games["vegas_total"].values
-    vegas_wp = val_games["vegas_home_win_prob"].values
-    actual_margin = val_games["actual_margin"].values
-    actual_total = val_games["actual_total"].values
-    home_won = val_games["home_won"].values
-
-    model_only_mae = float(np.mean(np.abs(model_spread - actual_margin)))
-    vegas_only_mae = float(np.mean(np.abs(vegas_spread - actual_margin)))
-    model_only_brier = float(np.mean((model_wp - home_won) ** 2))
-    vegas_only_brier = float(np.mean((vegas_wp - home_won) ** 2))
-    model_total_mae = float(np.mean(np.abs(model_total - actual_total)))
-    vegas_total_mae = float(np.mean(np.abs(vegas_total - actual_total)))
-
-    print(f"  Spread MAE  - model only: {model_only_mae:.2f} pts | Vegas only: {vegas_only_mae:.2f} pts")
-    print(f"  Total MAE   - model only: {model_total_mae:.2f} pts | Vegas only: {vegas_total_mae:.2f} pts")
-    print(f"  Win Brier   - model only: {model_only_brier:.4f} | Vegas only: {vegas_only_brier:.4f}")
-
-    grid, best_spread_w, best_wp_w = evaluate_blend(
-        model_spread, vegas_spread, actual_margin, model_wp, vegas_wp, home_won, train_coefs["margin_std_dev"]
-    )
-    best_row_spread = grid.loc[grid["weight_on_model"] == best_spread_w].iloc[0]
-    best_row_wp = grid.loc[grid["weight_on_model"] == best_wp_w].iloc[0]
-    print(f"\n  Best blend weight on OUR model for spread: {best_spread_w} "
-          f"(blended MAE {best_row_spread['spread_mae']:.2f} pts, vs Vegas-only {vegas_only_mae:.2f})")
-    print(f"  Best blend weight on OUR model for win-prob: {best_wp_w} "
-          f"(blended Brier {best_row_wp['brier_score']:.4f}, vs Vegas-only {vegas_only_brier:.4f})")
-
-    # Also fit a blend weight for totals the same way (grid search on total MAE)
-    total_rows = []
-    for w in BLEND_GRID:
-        blended_total = w * model_total + (1 - w) * vegas_total
-        total_rows.append({"weight_on_model": float(w), "total_mae": float(np.mean(np.abs(blended_total - actual_total)))})
-    total_grid = pd.DataFrame(total_rows)
-    best_total_w = float(total_grid.loc[total_grid["total_mae"].idxmin(), "weight_on_model"])
-    print(f"  Best blend weight on OUR model for total: {best_total_w} "
-          f"(blended MAE {total_grid['total_mae'].min():.2f} pts, vs Vegas-only {vegas_total_mae:.2f})")
-
-    print("\nRefitting final coefficients on FULL dataset (train + validation) for production...")
-    full_feats = make_features(dataset)
-    final_coefs, _ = fit_margin_and_total(full_feats, dataset)
-
-    output = {
-        "fitted_at": datetime.now(timezone.utc).isoformat(),
-        "train_seasons": [int(s) for s in sorted(dataset["season"].unique())],
-        "n_games_used": final_coefs["n_games"],
-        "coefficients": final_coefs,
-        "blend_weight_on_model_spread": best_spread_w,
-        "blend_weight_on_model_winprob": best_wp_w,
-        "blend_weight_on_model_total": best_total_w,
-        "holdout_validation": {
-            "seasons": [int(s) for s in holdout_seasons],
-            "n_games": int(len(val_games)),
-            "model_only_spread_mae": model_only_mae,
-            "vegas_only_spread_mae": vegas_only_mae,
-            "blended_spread_mae": float(best_row_spread["spread_mae"]),
-            "model_only_total_mae": model_total_mae,
-            "vegas_only_total_mae": vegas_total_mae,
-            "blended_total_mae": float(total_grid["total_mae"].min()),
-            "model_only_brier": model_only_brier,
-            "vegas_only_brier": vegas_only_brier,
-            "blended_brier": float(best_row_wp["brier_score"]),
-        },
-    }
-
-    return output
+    on those held-out seasons, then refit on everything (fit_common.py)."""
+    return fc.validate_and_fit(dataset, make_features, lambda feats, games: fit_margin_and_total(feats, games)[0],
+                               model_predict, verbose=True)
 
 def run():
     current_season = current_nfl_season()
@@ -471,6 +331,8 @@ def run():
     print(f"\nRecipe: {recipe_name(chosen)}{' (switched)' if report['switched'] else ''}")
 
     output = validate_and_fit(dataset)
+    if output is None:
+        return
     trained_through = guard.latest_gameday(dataset)
     output.update({"recipe": chosen, "team_half_life_games": chosen["team_half_life"],
                    "rating_half_life_weeks": rating_half_life(chosen), "context_inputs": recipe_extras(chosen),

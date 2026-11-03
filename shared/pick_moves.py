@@ -95,19 +95,55 @@ def football_key(r):
                                       f"{r['home_team']}".lower()).strip("-")
 
 
+def _present(v):
+    """A tracking-log value that's there: not None, NaN or a blank CSV cell."""
+    return v is not None and v == v and v != ""
+
+
+# The posted pick for an NFL/CFB game, in one place: our moneyline pick when
+# the book has a moneyline, else the model's side. A tracking-log row may be
+# a csv.DictReader row (strings) or a pandas row (NaN for missing); these
+# read both. Used here, by seasons.py and by nfl-cfb/src/build_site.py.
+
+def football_has_ml(r):
+    """Whether the book had a moneyline for our pick in a tracking-log row."""
+    return _present(r.get("ml_pick_side")) and _num(r.get("ml_pick_price")) is not None
+
+
+def football_pick(r):
+    """(team, our chance) for a tracking-log row's posted pick, or None when
+    there's neither a moneyline pick nor a model line."""
+    if football_has_ml(r) and _num(r.get("ml_our_prob")) is not None:
+        return r["ml_pick_team"], _num(r["ml_our_prob"])
+    spread, hp = _num(r.get("model_spread")), _num(r.get("model_home_win_prob"))
+    if spread is not None and hp is not None:
+        return (r["home_team"], hp) if spread > 0 else (r["away_team"], 1 - hp)
+    return None
+
+
+def football_hit(r):
+    """Whether the posted pick in a graded tracking-log row won: the
+    moneyline pick when the book had one (a tie is a miss; the bet itself is
+    a push), else the team the model favored. None when ungraded."""
+    if football_has_ml(r):
+        if _num(r.get("ml_push")) == 1:
+            return False
+        won = _num(r.get("ml_won"))
+        return None if won is None else won == 1
+    c = _num(r.get("model_correct_pick"))
+    return None if c is None else c == 1
+
+
 def football_entry(r, t):
-    """The posted pick in a tracking-log row (build_site.game_pick): our
-    moneyline pick when the book has a moneyline, else the model's side."""
+    """The posted pick in an ungraded tracking-log row (football_pick), as a
+    pick-moves entry."""
     if r.get("actual_margin") not in (None, ""):
         return None  # graded
-    spread, hp = _num(r.get("model_spread")), _num(r.get("model_home_win_prob"))
-    if r.get("ml_pick_side") and _num(r.get("ml_pick_price")) is not None and _num(r.get("ml_our_prob")) is not None:
-        pick, prob = r["ml_pick_team"], _num(r["ml_our_prob"])
-    elif spread is not None and hp is not None:
-        home = spread > 0
-        pick, prob = (r["home_team"], hp) if home else (r["away_team"], 1 - hp)
-    else:
+    picked = football_pick(r)
+    if picked is None:
         return None
+    pick, prob = picked
+    spread = _num(r.get("model_spread"))
     return {"t": t, "pick": pick, "prob": round(prob * 100, 1), "vegas": _num(r.get("vegas_home_favored_by")),
             "ours": None if spread is None else round(spread, 1)}
 

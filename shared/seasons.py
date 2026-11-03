@@ -39,6 +39,9 @@ from html import escape
 from zoneinfo import ZoneInfo
 
 SHARED = os.path.dirname(os.path.abspath(__file__))
+if SHARED not in sys.path:  # pick_moves.py sits next to this file
+    sys.path.append(SHARED)
+from pick_moves import football_hit  # noqa: E402 - the football pick rule, defined once
 ROOT = os.path.dirname(SHARED)
 ARCHIVE_DIR = os.path.join(ROOT, "archive")
 ET = ZoneInfo("America/New_York")
@@ -62,19 +65,6 @@ def _f(x):
         return None
 
 
-def _football_hit(r):
-    """Our pick to win in a graded NFL/CFB tracking-log row, as the football
-    site counts it: the moneyline pick when the book had one (a tie is a
-    miss), else the team the model favored."""
-    if r.get("ml_pick_side") and _f(r.get("ml_pick_price")) is not None:
-        if _f(r.get("ml_push")) == 1:
-            return False
-        won = _f(r.get("ml_won"))
-        return None if won is None else won == 1
-    c = _f(r.get("model_correct_pick"))
-    return None if c is None else c == 1
-
-
 @functools.lru_cache(maxsize=None)
 def _picks(kind, path):
     """[(date, season key or None, won: True/False/None)] for one pick file,
@@ -91,7 +81,7 @@ def _picks(kind, path):
                 d = date.fromisoformat(str(r.get("gameday", ""))[:10])
             except ValueError:
                 continue
-            won = _football_hit(r) if _f(r.get("actual_margin")) is not None else None
+            won = football_hit(r) if _f(r.get("actual_margin")) is not None else None
             out.append((d, int(float(r["season"])) if _f(r.get("season")) is not None else None, won))
         return out, {}
     with open(full) as f:

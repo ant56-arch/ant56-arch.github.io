@@ -1,12 +1,10 @@
 """
 track_cfb_results.py
 College football's version of track_results.py - same snapshot-then-grade
-architecture, same ATS logic, pointed at the CFB-specific data files instead
-of the NFL ones. See track_results.py's own docstring for the full
-rationale; this file intentionally mirrors its logic closely rather than
-trying to share code across sports, since a shared abstraction over already
-dtype-sensitive pandas code (see upsert_snapshot's LossySetitemError history)
-is a good way to reintroduce that exact class of bug for BOTH sports at once.
+architecture and grading (track_common.py), pointed at the CFB-specific data
+files instead of the NFL ones, with CFB's Friday-night line lock and ESPN
+filling in final scores CFBD hasn't posted yet. See track_results.py's own
+docstring for the full rationale.
 
 Degrades gracefully: if cfb_game_predictions.csv doesn't exist yet (CFBD_API_KEY
 not configured, or no games predicted this run), this exits without writing
@@ -14,7 +12,6 @@ anything rather than crashing the pipeline.
 """
 
 import pandas as pd
-import numpy as np
 import json
 import os
 import sys
@@ -24,6 +21,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from fetch_cfb_data import current_cfb_season
 import games as espn
 import moneyline
+import track_common
+from track_common import KEY_COLS
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
@@ -33,8 +32,6 @@ os.makedirs(TRACKING_DIR, exist_ok=True)
 LOG_PATH = os.path.join(TRACKING_DIR, "cfb_predictions_log.csv")
 SUMMARY_PATH = os.path.join(TRACKING_DIR, "cfb_accuracy_summary.json")
 
-KEY_COLS = ["season", "week", "home_team", "away_team"]
-LAST_N_WEEKS = 4
 
 def load_predictions_snapshot():
     preds_path = os.path.join(PROCESSED_DIR, "cfb_game_predictions.csv")
@@ -43,72 +40,16 @@ def load_predictions_snapshot():
     games = pd.read_csv(preds_path)
     if games.empty:
         return None
-
-    vegas_cols = ["home_team", "away_team", "vegas_home_favored_by", "total_line", "vegas_home_win_prob"]
-    comparison_path = os.path.join(PROCESSED_DIR, "cfb_vegas_comparison.csv")
-    if os.path.exists(comparison_path):
-        comparison = pd.read_csv(comparison_path)
-        comparison = comparison[[c for c in vegas_cols if c in comparison.columns]].drop_duplicates(["home_team", "away_team"])
-        games = games.merge(comparison, on=["home_team", "away_team"], how="left")
-    for c in vegas_cols[2:]:
-        if c not in games.columns:
-            games[c] = np.nan
-
-    if "game_type" not in games.columns:
-        games["game_type"] = np.nan
-
-    snapshot = games[KEY_COLS + [
-        "gameday", "game_type", "model_spread", "model_total", "model_home_win_prob",
-        "projected_spread", "projected_total", "home_win_prob",
-        "vegas_home_favored_by", "total_line", "vegas_home_win_prob",
-    ]].copy()
-    return snapshot.rename(columns={
-        "projected_spread": "sharp_spread", "projected_total": "sharp_total", "home_win_prob": "sharp_home_win_prob",
-        "total_line": "vegas_total",
-    })
+    return track_common.load_predictions_snapshot(games, os.path.join(PROCESSED_DIR, "cfb_vegas_comparison.csv"))
 
 def load_moneyline_snapshot():
-    """This run's moneyline picks (see src/moneyline.py), keyed like the log.
-    Written into the log by moneyline.lock_and_merge, which skips any game
-    whose kickoff has already passed - the pick and price lock at kickoff."""
-    path = os.path.join(PROCESSED_DIR, "cfb_vegas_comparison.csv")
-    if not os.path.exists(path):
-        return None
-    comparison = pd.read_csv(path)
-    if comparison.empty or "ml_pick_side" not in comparison.columns:
-        return None
-    return comparison[[c for c in KEY_COLS + moneyline.ML_COLS if c in comparison.columns]].drop_duplicates(KEY_COLS)
+    """This run's moneyline picks (see src/moneyline.py), keyed like the log."""
+    return track_common.load_moneyline_snapshot(os.path.join(PROCESSED_DIR, "cfb_vegas_comparison.csv"))
 
 def upsert_snapshot(log, snapshot):
-    if log is None or log.empty:
-        return snapshot
-
     # Lines and predictions lock Friday at 9 PM ET for weekend games (at
-    # kickoff for the rest): a locked game keeps what was logged before, so a
-    # later run can't swap in new or live odds or a refit model's number.
-    started = log.loc[moneyline.kicked_off(log, friday_lock=True), KEY_COLS]
-    locked = pd.MultiIndex.from_frame(started) if not started.empty else None
-    log = log.set_index(KEY_COLS)
-    snapshot_indexed = snapshot.set_index(KEY_COLS)
-    if locked is not None:
-        snapshot_indexed = snapshot_indexed[~snapshot_indexed.index.isin(locked)]
-    # A run that didn't fetch odds (or a game the feed dropped) has no line:
-    # keep the line and market numbers already logged rather than blank them.
-    if "vegas_home_favored_by" in snapshot_indexed.columns and "vegas_home_favored_by" in log.columns:
-        no_line = snapshot_indexed["vegas_home_favored_by"].isna() & snapshot_indexed.index.isin(log.index)
-        market = [c for c in snapshot_indexed.columns if c.startswith(("vegas_", "sharp_"))]
-        if no_line.any() and market:
-            snapshot_indexed = snapshot_indexed.copy()
-            prior = log.reindex(snapshot_indexed.index[no_line])
-            for c in market:
-                if c in prior.columns:
-                    snapshot_indexed.loc[no_line, c] = prior[c].values
-    log = log.reindex(log.index.union(snapshot_indexed.index))
-    for col in snapshot_indexed.columns:
-        if col not in log.columns:
-            log[col] = pd.Series(index=log.index, dtype=snapshot_indexed[col].dtype)
-        log.loc[snapshot_indexed.index, col] = snapshot_indexed[col]
-    return log.reset_index()
+    # kickoff for the rest).
+    return track_common.upsert_snapshot(log, snapshot, friday_lock=True)
 
 def espn_final_scores(log, scored):
     """Final scores from ESPN's scoreboard for logged games CFBD hasn't scored
@@ -173,120 +114,10 @@ def grade_completed_games(log):
         espn_results = espn_results.astype({"season": results["season"].dtype, "week": results["week"].dtype}, errors="ignore")
         results = pd.concat([results, espn_results], ignore_index=True).drop_duplicates(KEY_COLS, keep="first")
 
-    log = log.drop(columns=[c for c in ["home_score", "away_score"] if c in log.columns])
-    log = log.merge(results, on=KEY_COLS, how="left")
-
-    graded = log["home_score"].notna()
-    if not graded.any():
-        # Nothing graded yet (true for every run until this week's games
-        # actually finish, since tracking only just started). Bail out here
-        # rather than let the loop below run its .loc[graded, ...] assignments
-        # against an all-False mask - pandas' empty-selection assignment into
-        # a column reloaded from CSV with a different dtype than the fresh
-        # in-memory value can raise (TypeError: Invalid value '[]' for dtype
-        # ...) even though logically nothing needs to change, since it goes
-        # through the same dtype-compatibility check as a real assignment.
-        return log
-    log.loc[graded, "actual_margin"] = log.loc[graded, "home_score"] - log.loc[graded, "away_score"]
-    log.loc[graded, "actual_total"] = log.loc[graded, "home_score"] + log.loc[graded, "away_score"]
-    home_won = (log["actual_margin"] > 0).astype(float)
-
-    for label, spread_col, total_col, wp_col in [
-        ("model", "model_spread", "model_total", "model_home_win_prob"),
-        ("sharp", "sharp_spread", "sharp_total", "sharp_home_win_prob"),
-        ("vegas", "vegas_home_favored_by", "vegas_total", "vegas_home_win_prob"),
-    ]:
-        # No line (a Vegas row without one) is no pick: left ungraded.
-        picked_home_won = (log[spread_col] > 0) == (log["actual_margin"] > 0)
-        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float).where(log.loc[graded, spread_col].notna())
-        log.loc[graded, f"{label}_spread_error"] = (log[spread_col] - log["actual_margin"]).abs()[graded]
-        log.loc[graded, f"{label}_total_error"] = (log[total_col] - log["actual_total"]).abs()[graded]
-        log.loc[graded, f"{label}_brier"] = ((log[wp_col] - home_won) ** 2)[graded]
-
-        # Against the spread, always against the VEGAS line (the same grading
-        # as the site's spread picks, build_site.spread_result): model/sharp
-        # take the home side when their spread is above Vegas's, the away side
-        # when below, and have no ATS pick when they match it. Vegas's own row
-        # grades its favorite. cover_margin > 0 means the home team beat the
-        # line, == 0 is a push (excluded from the win/loss count, tracked
-        # separately - the standard way ATS records are reported). No Vegas
-        # line: nothing to grade.
-        # (Before 2026-11-03 model/sharp were graded against their OWN spread,
-        # which isn't a bet anyone could make; the Model Room's ATS record
-        # changes when the log is next regraded.)
-        vegas_line = log["vegas_home_favored_by"]
-        cover_margin = log["actual_margin"] - vegas_line
-        home_covered = cover_margin > 0
-        if label == "vegas":
-            side_home, has_pick = vegas_line >= 0, vegas_line.notna()
-        else:
-            side_home = log[spread_col] > vegas_line
-            has_pick = vegas_line.notna() & log[spread_col].notna() & (log[spread_col] != vegas_line)
-        push = (cover_margin == 0) & has_pick
-        picked_covered = side_home == home_covered
-        # As floats: on the first-ever grade this column comes back from the CSV as
-        # all-NaN float64, and pandas refuses to write bools into it.
-        log.loc[graded, f"{label}_ats_push"] = push[graded].astype(float)
-        decided = graded & has_pick & ~push
-        log.loc[graded & ~decided, f"{label}_ats_correct"] = np.nan
-        if decided.any():
-            log.loc[decided, f"{label}_ats_correct"] = picked_covered[decided].astype(float)
-
-    return log
+    return track_common.grade(log, results, push_as_float=True)
 
 def summarize(log):
-    graded = log[log["actual_margin"].notna()].copy()
-    if graded.empty:
-        return {"n_graded_games": 0}
-
-    graded = graded.sort_values(["season", "week"])
-    current_season = current_cfb_season()
-    this_season = graded[graded["season"] == current_season]
-
-    distinct_weeks = this_season[["season", "week"]].drop_duplicates().sort_values(["season", "week"])
-    recent_weeks = pd.MultiIndex.from_frame(distinct_weeks.tail(LAST_N_WEEKS))
-    recent_mask = pd.MultiIndex.from_frame(this_season[["season", "week"]]).isin(recent_weeks)
-
-    summary = {
-        "n_graded_games": int(len(graded)),
-        "current_season_year": current_season,
-        "last_updated": pd.Timestamp.now("UTC").isoformat(),
-    }
-    windows = {
-        "all_time": graded,
-        "current_season": this_season,
-        f"last_{LAST_N_WEEKS}_weeks": this_season[recent_mask],
-    }
-
-    for window_name, window_df in windows.items():
-        if window_df.empty:
-            continue
-        window_summary = {}
-        for label in ["model", "sharp", "vegas"]:
-            wins = int(window_df[f"{label}_correct_pick"].sum())
-            losses = int(window_df[f"{label}_correct_pick"].notna().sum()) - wins  # an ungraded pick isn't a loss
-
-            ats_col = f"{label}_ats_correct"
-            push_col = f"{label}_ats_push"
-            ats_decided = window_df[ats_col].notna() if ats_col in window_df.columns else pd.Series(False, index=window_df.index)
-            ats_wins = int(window_df.loc[ats_decided, ats_col].sum())
-            ats_losses = int(ats_decided.sum()) - ats_wins
-            ats_pushes = int(window_df[push_col].sum()) if push_col in window_df.columns else 0
-            ats_record = f"{ats_wins}-{ats_losses}" + (f"-{ats_pushes}" if ats_pushes else "")
-
-            window_summary[label] = {
-                "wins": wins, "losses": losses, "record": f"{wins}-{losses}",
-                "pick_accuracy": round(float(window_df[f"{label}_correct_pick"].mean()), 3),
-                "spread_mae": round(float(window_df[f"{label}_spread_error"].mean()), 2),
-                "total_mae": round(float(window_df[f"{label}_total_error"].mean()), 2),
-                "brier_score": round(float(window_df[f"{label}_brier"].mean()), 4),
-                "n_games": int(len(window_df)),
-                "ats_wins": ats_wins, "ats_losses": ats_losses, "ats_pushes": ats_pushes,
-                "ats_record": ats_record,
-                "ats_accuracy": round(ats_wins / (ats_wins + ats_losses), 3) if (ats_wins + ats_losses) > 0 else None,
-            }
-        summary[window_name] = window_summary
-    return summary
+    return track_common.summarize(log, current_cfb_season())
 
 def main():
     print("Loading this run's CFB predictions to snapshot...")

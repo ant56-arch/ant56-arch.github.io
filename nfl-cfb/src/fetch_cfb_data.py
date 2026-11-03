@@ -32,19 +32,17 @@ from datetime import datetime
 import pandas as pd
 import requests
 
+# Same calendar as the NFL side: a season runs Aug-Jan, labeled by the year
+# it starts in, and the CFP championship is mid-January, so before March
+# we're still finishing last year's season.
+from fetch_data import current_nfl_season as current_cfb_season
+
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 os.makedirs(RAW_DIR, exist_ok=True)
 
 BASE = "https://api.collegefootballdata.com"
 
 POWER_CONFERENCES = {"SEC", "Big Ten", "Big 12", "ACC", "FBS Independents"}
-
-def current_cfb_season():
-    """Same convention as the NFL side: a season runs Aug-Jan, labeled by the
-    year it starts in. The CFP championship is mid-January, so before March
-    we're still finishing last year's season."""
-    now = datetime.utcnow()
-    return now.year if now.month >= 3 else now.year - 1
 
 def _headers():
     key = os.environ.get("CFBD_API_KEY")

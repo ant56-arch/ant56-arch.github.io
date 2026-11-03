@@ -23,13 +23,6 @@ RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 
 PREFERRED_BOOKMAKER = "draftkings"
 
-def moneyline_to_implied_prob(ml):
-    if pd.isna(ml):
-        return None
-    if ml < 0:
-        return -ml / (-ml + 100)
-    return 100 / (ml + 100)
-
 def load_known_teams():
     path = os.path.join(RAW_DIR, "cfb_teams.csv")
     if not os.path.exists(path):
@@ -77,8 +70,8 @@ def extract_game_odds(game, known_teams):
                     result["total_line"] = outcome["point"]
 
     result["vegas_home_favored_by"] = -result["spread_home_point"] if "spread_home_point" in result else None
-    home_prob = moneyline_to_implied_prob(result.get("moneyline_home"))
-    away_prob = moneyline_to_implied_prob(result.get("moneyline_away"))
+    home_prob = moneyline.implied_prob(result.get("moneyline_home"), missing=None)
+    away_prob = moneyline.implied_prob(result.get("moneyline_away"), missing=None)
     result["vegas_home_win_prob"] = home_prob / (home_prob + away_prob) if home_prob and away_prob else None
 
     return result

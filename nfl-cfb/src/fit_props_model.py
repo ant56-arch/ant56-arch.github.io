@@ -105,7 +105,10 @@ def league_avg_by_week(def_walk):
         "def_pass_epa_allowed_asof": "league_avg_pass", "def_rush_epa_allowed_asof": "league_avg_rush"
     }).reset_index()
 
-def fit_matchup_scaling(df, stat_type, min_usage):
+def matchup_rows(df, stat_type, min_usage):
+    """The rows a stat type is fit and scored on (real usage, every input
+    present), their baseline projection (usage x efficiency), the opponent's
+    defense against league average, and the actual-result column."""
     cfg = STAT_TYPES[stat_type]
     usage_col, eff_col, actual_col = f"{cfg['usage']}_asof", f"{cfg['efficiency']}_asof", cfg["actual"]
     matchup_col = f"{cfg['matchup_metric']}_asof"
@@ -115,6 +118,10 @@ def fit_matchup_scaling(df, stat_type, min_usage):
            & df[matchup_col].notna() & df[actual_col].notna()].copy()
     baseline = d[usage_col] * d[eff_col]
     matchup_diff = d[matchup_col] - d[league_col]
+    return d, baseline, matchup_diff, actual_col
+
+def fit_matchup_scaling(df, stat_type, min_usage):
+    d, baseline, matchup_diff, actual_col = matchup_rows(df, stat_type, min_usage)
 
     X = np.column_stack([baseline, baseline * matchup_diff])
     y = d[actual_col].values
@@ -125,15 +132,7 @@ def fit_matchup_scaling(df, stat_type, min_usage):
             "n_samples": int(len(d)), "mae_baseline_only": mae_baseline_only, "mae_fitted": mae_fitted}, d.index
 
 def evaluate_holdout(df, coefs, stat_type, min_usage):
-    cfg = STAT_TYPES[stat_type]
-    usage_col, eff_col, actual_col = f"{cfg['usage']}_asof", f"{cfg['efficiency']}_asof", cfg["actual"]
-    matchup_col = f"{cfg['matchup_metric']}_asof"
-    league_col = "league_avg_pass" if "pass" in cfg["matchup_metric"] else "league_avg_rush"
-
-    d = df[(df[usage_col] >= min_usage) & df[usage_col].notna() & df[eff_col].notna()
-           & df[matchup_col].notna() & df[actual_col].notna()].copy()
-    baseline = d[usage_col] * d[eff_col]
-    matchup_diff = d[matchup_col] - d[league_col]
+    d, baseline, matchup_diff, actual_col = matchup_rows(df, stat_type, min_usage)
 
     fitted_proj = coefs["baseline_scale"] * baseline + coefs["matchup_scale"] * baseline * matchup_diff
     naive_proj = baseline * (1 + matchup_diff * 2.5)  # original hand-picked constant, for comparison
@@ -155,14 +154,8 @@ def projection_ranges(df, coefs, stat_type, min_usage):
     projection swings more than a 20-yard one. Each group keeps its
     projection range, mean projection and the 5th..95th percentiles of the
     real yards; the site scales those to a player's own projection."""
-    cfg = STAT_TYPES[stat_type]
-    usage_col, eff_col, actual_col = f"{cfg['usage']}_asof", f"{cfg['efficiency']}_asof", cfg["actual"]
-    matchup_col = f"{cfg['matchup_metric']}_asof"
-    league_col = "league_avg_pass" if "pass" in cfg["matchup_metric"] else "league_avg_rush"
-    d = df[(df[usage_col] >= min_usage) & df[usage_col].notna() & df[eff_col].notna()
-           & df[matchup_col].notna() & df[actual_col].notna()]
-    baseline = d[usage_col] * d[eff_col]
-    proj = (coefs["baseline_scale"] * baseline + coefs["matchup_scale"] * baseline * (d[matchup_col] - d[league_col])).clip(lower=0)
+    d, baseline, matchup_diff, actual_col = matchup_rows(df, stat_type, min_usage)
+    proj = (coefs["baseline_scale"] * baseline + coefs["matchup_scale"] * baseline * matchup_diff).clip(lower=0)
     actual = d[actual_col].astype(float)
     if len(d) < RANGE_BINS * 50:
         return None

@@ -35,13 +35,6 @@ TEAM_NAME_TO_ABBR = {
 
 PREFERRED_BOOKMAKER = "draftkings"  # fall back to first available if not present
 
-def moneyline_to_implied_prob(ml):
-    if pd.isna(ml):
-        return None
-    if ml < 0:
-        return -ml / (-ml + 100)
-    return 100 / (ml + 100)
-
 def extract_game_odds(game):
     """Pull the odds we care about from one game's bookmaker list, preferring
     one consistent book so lines aren't a weird average of different books."""
@@ -87,8 +80,8 @@ def extract_game_odds(game):
 
     # Convenience fields for downstream comparison
     result["vegas_home_favored_by"] = -result.get("spread_home_point", 0) if "spread_home_point" in result else None
-    result["vegas_home_win_prob_raw"] = moneyline_to_implied_prob(result.get("moneyline_home"))
-    result["vegas_away_win_prob_raw"] = moneyline_to_implied_prob(result.get("moneyline_away"))
+    result["vegas_home_win_prob_raw"] = moneyline.implied_prob(result.get("moneyline_home"), missing=None)
+    result["vegas_away_win_prob_raw"] = moneyline.implied_prob(result.get("moneyline_away"), missing=None)
 
     # De-vig: raw implied probabilities always sum to >100% (the bookmaker's
     # margin). Normalize so they sum to 100%, giving a fairer "true" probability

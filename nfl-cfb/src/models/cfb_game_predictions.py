@@ -18,10 +18,14 @@ rather than crashing.
 """
 
 import pandas as pd
-import numpy as np
 from scipy.stats import norm
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import predict_common as pc
+from predict_common import blend_with_market
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed")
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
@@ -38,19 +42,7 @@ DEFAULT_BLEND_WEIGHTS = {
 }
 
 def load_coefficients():
-    if not os.path.exists(COEFFICIENTS_PATH):
-        print("  WARNING: fitted_cfb_coefficients.json not found - using un-backtested "
-              "fallback constants. Run src/fit_cfb_model.py to fit real coefficients.")
-        return DEFAULT_COEFFICIENTS, DEFAULT_BLEND_WEIGHTS, None
-    with open(COEFFICIENTS_PATH) as f:
-        fitted = json.load(f)
-    coefs = fitted["coefficients"]
-    blend = {
-        "blend_weight_on_model_spread": fitted.get("blend_weight_on_model_spread", 1.0),
-        "blend_weight_on_model_winprob": fitted.get("blend_weight_on_model_winprob", 1.0),
-        "blend_weight_on_model_total": fitted.get("blend_weight_on_model_total", 1.0),
-    }
-    return coefs, blend, fitted.get("holdout_validation")
+    return pc.load_coefficients(COEFFICIENTS_PATH, DEFAULT_COEFFICIENTS, DEFAULT_BLEND_WEIGHTS, "fit_cfb_model.py")
 
 def load_team_stats():
     path = os.path.join(PROCESSED_DIR, "cfb_team_stats.csv")
@@ -67,38 +59,15 @@ def load_upcoming_games():
     return games[games["home_score"].isna()]
 
 def load_vegas_odds():
-    odds_path = os.path.join(RAW_DIR, "cfb_odds.csv")
-    if not os.path.exists(odds_path):
-        return None
-    odds = pd.read_csv(odds_path)
-    if odds.empty:
-        return None
-    return odds.set_index(["home_team", "away_team"])
+    return pc.load_vegas_odds(os.path.join(RAW_DIR, "cfb_odds.csv"))
 
 def matchup_expected_efficiency(offense_row, defense_row, use_current_form=True):
-    suffix = "" if use_current_form else "_season_avg"
-    return (offense_row[f"off_ppa_per_play{suffix}"] + defense_row[f"def_ppa_per_play_allowed{suffix}"]) / 2
+    return pc.matchup_expected_efficiency(offense_row, defense_row, "off_ppa_per_play", "def_ppa_per_play_allowed",
+                                          use_current_form)
 
 def secondary_adjustment(home_row, away_row, coefs, use_current_form=True):
-    suffix = "" if use_current_form else "_season_avg"
     weights = {"off_success_rate": coefs["success_rate_weight"], "off_explosiveness": coefs["explosiveness_weight"]}
-    adjustment = 0.0
-    for factor, weight in weights.items():
-        home_val = home_row.get(f"{factor}{suffix}", np.nan)
-        away_val = away_row.get(f"{factor}{suffix}", np.nan)
-        if pd.notna(home_val) and pd.notna(away_val):
-            adjustment += (home_val - away_val) * weight
-    return adjustment
-
-def get_vegas_line(vegas_odds, home_team, away_team):
-    if vegas_odds is None or (home_team, away_team) not in vegas_odds.index:
-        return None
-    row = vegas_odds.loc[(home_team, away_team)]
-    return {
-        "home_favored_by": row.get("vegas_home_favored_by"),
-        "total": row.get("total_line"),
-        "home_win_prob": row.get("vegas_home_win_prob"),
-    }
+    return pc.secondary_adjustment(home_row, away_row, weights, use_current_form)
 
 def load_context(upcoming):
     """The live recipe's extra inputs (power ratings, rest/bye, Elo,
@@ -112,8 +81,6 @@ def load_context(upcoming):
     kinds = fitted.get("context_inputs") or []
     if not kinds:
         return None
-    import sys
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     import cfb_context
     import cfb_ratings
     season = int(upcoming["season"].max())
@@ -169,34 +136,6 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
     model_total = coefs["total_intercept"] + (combined_expected_eff * coefs["total_coef"])
     return blend_with_market(home_team, away_team, model_spread, model_total, model_home_win_prob,
                              blend_weights, vegas_odds)
-
-def blend_with_market(home_team, away_team, model_spread, model_total, model_home_win_prob, blend_weights, vegas_odds=None):
-    vegas = get_vegas_line(vegas_odds, home_team, away_team)
-    has_market = vegas is not None and pd.notna(vegas.get("home_favored_by"))
-
-    if has_market:
-        w_spread = blend_weights["blend_weight_on_model_spread"]
-        sharp_spread = w_spread * model_spread + (1 - w_spread) * vegas["home_favored_by"]
-
-        w_total = blend_weights["blend_weight_on_model_total"]
-        sharp_total = (w_total * model_total + (1 - w_total) * vegas["total"]
-                       if pd.notna(vegas.get("total")) else model_total)
-
-        w_wp = blend_weights["blend_weight_on_model_winprob"]
-        sharp_home_win_prob = (w_wp * model_home_win_prob + (1 - w_wp) * vegas["home_win_prob"]
-                                if pd.notna(vegas.get("home_win_prob")) else model_home_win_prob)
-    else:
-        sharp_spread, sharp_total, sharp_home_win_prob = model_spread, model_total, model_home_win_prob
-
-    return {
-        "home_team": home_team, "away_team": away_team, "has_market_line": has_market,
-        "model_home_win_prob": round(model_home_win_prob, 3),
-        "model_spread": round(model_spread, 1), "model_total": round(model_total, 1),
-        "home_win_prob": round(sharp_home_win_prob, 3), "away_win_prob": round(1 - sharp_home_win_prob, 3),
-        "projected_spread": round(sharp_spread, 1), "projected_total": round(sharp_total, 1),
-        "favored_team": home_team if sharp_spread > 0 else away_team,
-        "favored_by": round(abs(sharp_spread), 1),
-    }
 
 def load_ratings():
     """Power ratings (cfb_ratings.py) for the picks while CFBD's advanced
