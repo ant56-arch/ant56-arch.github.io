@@ -802,14 +802,15 @@ async function loadAll() {
 }
 
 // /seasons.json (shared/seasons.py, docs/season-end.md): each league's season
-// state. A league whose season is over gets a note up top, "Final" in place of
+// state. A league whose season is over gets a note on its own tab, "Final" in place of
 // its streak and a "Season over" tag; it all goes away once the next season's
 // picks start.
 let SEASONS = {};
 const seasonOver = lg => { const s = SEASONS[lg]; return s && s.over ? s : null; };
 const recLine = r => `${r.label.toLowerCase()} <b>${esc(r.value)}</b> (${esc(r.pct)}${r.vs ? ", vs " + esc(r.vs) : ""})`;
 function seasonNotes() {
-  const lgs = (LG === "All" ? BOARD_ORDER : [LG]).filter(seasonOver);
+  // Only on a finished league's own tab; the All tab stays about live leagues.
+  const lgs = LG === "All" ? [] : [LG].filter(seasonOver);
   const el = $("seasonNotes");
   el.hidden = !lgs.length;
   el.innerHTML = lgs.map(lg => {
