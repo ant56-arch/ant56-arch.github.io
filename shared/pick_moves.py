@@ -27,9 +27,11 @@ import os
 import re
 import subprocess
 import sys
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 KEEP_DAYS = 75  # games older than this drop off the file
+ET = ZoneInfo("America/New_York")  # pick dates are US Eastern
 
 FOOTBALL = {"data/tracking/predictions_log.csv": "data/tracking/pick_moves.json",
             "data/tracking/cfb_predictions_log.csv": "data/tracking/cfb_pick_moves.json"}
@@ -73,7 +75,7 @@ def add(data, key, day, entry):
 
 
 def prune(data, today=None):
-    cut = ((today or date.today()) - timedelta(days=KEEP_DAYS)).isoformat()
+    cut = ((today or datetime.now(ET).date()) - timedelta(days=KEEP_DAYS)).isoformat()
     for k in [k for k, g in data.items() if (g.get("date") or "9999") < cut]:
         del data[k]
 

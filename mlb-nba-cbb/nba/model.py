@@ -84,6 +84,7 @@ class League:
         self.p_season = defaultdict(lambda: [0, 0.0])  # player -> [games, game score sum] this season
         self.p_prior = {}  # player -> last season's average game score
         self.methods = SeasonMethods(PYTH_EXPONENT, shrink=5.0, prior=5.0)
+        self.methods_pending = []  # results not yet in self.methods: they go in when a later day is asked
 
     # ── season rollover ──
     def _start_season(self, season):
@@ -97,6 +98,7 @@ class League:
             self.last_tz.clear()
             self.team_rosters.clear()
             self.methods.reset()
+            self.methods_pending = []
         self.season = season
 
     def _check_season(self, season):
@@ -141,8 +143,20 @@ class League:
             return 3
         return max(0, min(3, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
 
+    def _methods_through(self, day):
+        """Add every pending result from before `day` to the Massey /
+        Pythagorean ratings, so they stand as they did that morning (a game
+        earlier the same day isn't known at pick time) and are solved once a
+        day (the solve is the slow part of a walk)."""
+        ready = [x for x in self.methods_pending if x[0] < day]
+        if ready:
+            for _, h, a, hp, ap, neutral in ready:
+                self.methods.add(h, a, hp, ap, neutral)
+            self.methods_pending = [x for x in self.methods_pending if x[0] >= day]
+
     def features(self, g, home_missing=0.0, away_missing=0.0):
         self._check_season(g["season"])
+        self._methods_through(g["date"])
         h, a = g["home"], g["away"]
         h_net, h_recent = self.team_form(h)
         a_net, a_recent = self.team_form(a)
@@ -159,8 +173,9 @@ class League:
             "missing_away": away_missing / 10,
             "massey": self.methods.massey(h) - self.methods.massey(a),
             "pyth": self.methods.pyth(h) - self.methods.pyth(a),
-            # Time zones crossed since each team's last game, road team minus home team.
-            "travel": float(self.tz_moved(a, h) - self.tz_moved(h, h)),
+            # Time zones crossed since each team's last game, road team minus home
+            # team; 0 at a neutral site, where the home team's zone isn't the venue's.
+            "travel": 0.0 if g.get("neutral") else float(self.tz_moved(a, h) - self.tz_moved(h, h)),
         }
 
     def tz_moved(self, team, host):
@@ -197,7 +212,7 @@ class League:
 
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
-        self.methods.add(h, a, g["home_pts"], g["away_pts"], g.get("neutral"))
+        self.methods_pending.append((g["date"], h, a, g["home_pts"], g["away_pts"], g.get("neutral")))
         self.last_date[h] = self.last_date[a] = g["date"]
         if h in TEAM_TZ:
             self.last_tz[h] = self.last_tz[a] = TEAM_TZ[h]

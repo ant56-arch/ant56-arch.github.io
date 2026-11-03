@@ -241,9 +241,11 @@ def _defense_index(pg, positions):
     return index
 
 
-def walkforward_rows(pg, positions, implied, min_prior=MIN_PRIOR_GAMES):
-    """Features for every past player-game, each built only from earlier games."""
-    league_pg, pos_xtd = league_rates(pg, positions)
+def walkforward_rows(pg, positions, implied, min_prior=MIN_PRIOR_GAMES, rates_pg=None):
+    """Features for every past player-game, each built only from earlier games.
+    rates_pg: the player-games the league rates come from (default all of pg;
+    the backtest passes only the seasons before the one it scores)."""
+    league_pg, pos_xtd = league_rates(pg if rates_pg is None else rates_pg, positions)
     implied_map = implied.set_index(["game_id", "team"])["implied"].to_dict()
     def_index = _defense_index(pg, positions)
 

@@ -196,20 +196,39 @@ def grade_completed_games(log):
         ("sharp", "sharp_spread", "sharp_total", "sharp_home_win_prob"),
         ("vegas", "vegas_home_favored_by", "vegas_total", "vegas_home_win_prob"),
     ]:
+        # No line (a Vegas row without one) is no pick: left ungraded.
         picked_home_won = (log[spread_col] > 0) == (log["actual_margin"] > 0)
-        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float)
+        log.loc[graded, f"{label}_correct_pick"] = picked_home_won[graded].astype(float).where(log.loc[graded, spread_col].notna())
         log.loc[graded, f"{label}_spread_error"] = (log[spread_col] - log["actual_margin"]).abs()[graded]
         log.loc[graded, f"{label}_total_error"] = (log[total_col] - log["actual_total"]).abs()[graded]
         log.loc[graded, f"{label}_brier"] = ((log[wp_col] - home_won) ** 2)[graded]
 
-        cover_margin = log["actual_margin"] - log[spread_col]
-        push = cover_margin == 0
+        # Against the spread, always against the VEGAS line (the same grading
+        # as the site's spread picks, build_site.spread_result): model/sharp
+        # take the home side when their spread is above Vegas's, the away side
+        # when below, and have no ATS pick when they match it. Vegas's own row
+        # grades its favorite. cover_margin > 0 means the home team beat the
+        # line, == 0 is a push (excluded from the win/loss count, tracked
+        # separately - the standard way ATS records are reported). No Vegas
+        # line: nothing to grade.
+        # (Before 2026-11-03 model/sharp were graded against their OWN spread,
+        # which isn't a bet anyone could make; the Model Room's ATS record
+        # changes when the log is next regraded.)
+        vegas_line = log["vegas_home_favored_by"]
+        cover_margin = log["actual_margin"] - vegas_line
         home_covered = cover_margin > 0
-        picked_covered = pd.Series(np.where(log[spread_col] >= 0, home_covered, ~home_covered), index=log.index)
+        if label == "vegas":
+            side_home, has_pick = vegas_line >= 0, vegas_line.notna()
+        else:
+            side_home = log[spread_col] > vegas_line
+            has_pick = vegas_line.notna() & log[spread_col].notna() & (log[spread_col] != vegas_line)
+        push = (cover_margin == 0) & has_pick
+        picked_covered = side_home == home_covered
         # As floats: on the first-ever grade this column comes back from the CSV as
         # all-NaN float64, and pandas refuses to write bools into it.
         log.loc[graded, f"{label}_ats_push"] = push[graded].astype(float)
-        decided = graded & ~push
+        decided = graded & has_pick & ~push
+        log.loc[graded & ~decided, f"{label}_ats_correct"] = np.nan
         if decided.any():
             log.loc[decided, f"{label}_ats_correct"] = picked_covered[decided].astype(float)
 
@@ -245,7 +264,7 @@ def summarize(log):
         window_summary = {}
         for label in ["model", "sharp", "vegas"]:
             wins = int(window_df[f"{label}_correct_pick"].sum())
-            losses = int(len(window_df)) - wins
+            losses = int(window_df[f"{label}_correct_pick"].notna().sum()) - wins  # an ungraded pick isn't a loss
 
             ats_col = f"{label}_ats_correct"
             push_col = f"{label}_ats_push"

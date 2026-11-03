@@ -163,6 +163,27 @@ def _add_kickoff_columns(games):
     games["gameday"] = dt_et.dt.strftime("%Y-%m-%d")
     return games
 
+POSTSEASON_WEEK_OFFSET = 20  # same as cfb_ratings._order
+
+def running_week(df):
+    """CFBD restarts postseason weeks at 1, so sorting or joining on
+    (season, week) puts bowls before the opener. This shifts postseason weeks
+    past the regular season (game_type POST, or season_type postseason on the
+    stats rows); a frame with neither column is left as it is."""
+    post = pd.Series(False, index=df.index)
+    if "game_type" in df.columns:
+        post |= df["game_type"] == "POST"
+    if "season_type" in df.columns:
+        post |= df["season_type"] == "postseason"
+    return df["week"] + post.astype(int) * POSTSEASON_WEEK_OFFSET
+
+def neutral_flags(games):
+    """True at a neutral site; a frame without the column (an older stored
+    cfb_games.csv) counts every game as a true home game."""
+    if "neutral" not in games.columns:
+        return pd.Series(False, index=games.index)
+    return games["neutral"].map(lambda v: str(v).lower() in ("true", "1", "1.0") if pd.notna(v) else False)
+
 def fetch_games(season):
     frames = []
     for season_type in ("regular", "postseason"):
@@ -178,9 +199,11 @@ def fetch_games(season):
         "homeTeam": "home_team", "awayTeam": "away_team",
         "homePoints": "home_score", "awayPoints": "away_score",
         "homeConference": "home_conference", "awayConference": "away_conference",
-        "seasonType": "game_type", "startDate": "gameday",
+        "seasonType": "game_type", "startDate": "gameday", "neutralSite": "neutral",
     })
     games["game_type"] = games["game_type"].map({"regular": "REG", "postseason": "POST"})
+    # Bowls and many early-season games are at neutral sites: no home field.
+    games["neutral"] = neutral_flags(games)
     games = _add_kickoff_columns(games)
     return games
 
@@ -214,18 +237,29 @@ def fetch_lines(season):
     for _, g in lines.iterrows():
         chosen = pick_line(g.get("lines") or [])
         rows.append({
-            "home_team": g.get("homeTeam"), "away_team": g.get("awayTeam"),
+            "id": g.get("id"), "home_team": g.get("homeTeam"), "away_team": g.get("awayTeam"),
             "vegas_home_favored_by": -chosen["spread"] if chosen.get("spread") is not None else None,
             "vegas_total": chosen.get("overUnder"),
         })
     return pd.DataFrame(rows)
+
+def merge_lines(games, lines):
+    """Each game's line, matched on CFBD's game id so a same-season rematch
+    with the same home team can't pick up both games' lines (falls back to
+    the team names when either side has no id)."""
+    if games.empty or lines.empty:
+        return games
+    if "id" in games.columns and "id" in lines.columns and lines["id"].notna().all():
+        return games.merge(lines.drop(columns=["home_team", "away_team"]), on="id", how="left")
+    return games.merge(lines.drop(columns=["id"], errors="ignore").drop_duplicates(["home_team", "away_team"]),
+                       on=["home_team", "away_team"], how="left")
 
 def fetch_advanced_stats(season):
     frames = []
     for season_type in ("regular", "postseason"):
         try:
             data = _get("/stats/game/advanced", {"year": season, "seasonType": season_type})
-            frames.append(pd.DataFrame(data))
+            frames.append(pd.DataFrame(data).assign(season_type=season_type))
         except requests.exceptions.HTTPError as e:
             print(f"  Skipping {season_type} advanced stats for {season}: {e}")
     if not frames or all(f.empty for f in frames):
@@ -239,7 +273,8 @@ def fetch_advanced_stats(season):
         offense = r.get("offense") or {}
         defense = r.get("defense") or {}
         rows.append({
-            "season": r.get("season"), "week": r.get("week"), "team": r.get("team"), "opponent": r.get("opponent"),
+            "season": r.get("season"), "week": r.get("week"), "season_type": r.get("season_type"),
+            "team": r.get("team"), "opponent": r.get("opponent"),
             "off_ppa_per_play": offense.get("ppa"),
             "off_success_rate": offense.get("successRate"),
             "off_explosiveness": offense.get("explosiveness"),
@@ -300,9 +335,7 @@ def pull_cfbd(season):
     games = fetch_games(season)
     if not games.empty and covered:
         games = games[games["home_team"].isin(covered) | games["away_team"].isin(covered)]
-    lines = fetch_lines(season)
-    if not games.empty and not lines.empty:
-        games = games.merge(lines, on=["home_team", "away_team"], how="left")
+    games = merge_lines(games, fetch_lines(season))
     if games.empty:
         raise requests.exceptions.RequestException("no games came back")
     games.to_csv(os.path.join(RAW_DIR, "cfb_games.csv"), index=False)

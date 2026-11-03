@@ -33,6 +33,7 @@ import os
 import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import numpy as np
 
@@ -43,6 +44,7 @@ import store  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
 import model_watch  # noqa: E402  (the repo root's cold-stretch check)
 
+ET = ZoneInfo("America/New_York")  # the site's days are US Eastern, like espn.ET
 OUT = os.path.join(HERE, "model_weights.json")
 HISTORY = os.path.join(HERE, "model_history.json")
 PICKS = os.path.join(HERE, "picks_history.json")
@@ -54,7 +56,7 @@ MIN_NEW_GAMES = 300
 TOP_N = 5  # most confident picks per day
 RETRAIN_EVERY_DAYS = 7
 SWITCH_MARGIN = 0.002  # log loss a new recipe must win by
-SANITY_MARGIN = 0.01  # how much worse than the live model the refit may score on the holdout
+SANITY_MARGIN = 0.01  # how much worse than the live model the chosen recipe (fit without the holdout) may score on it
 
 DEFAULT_RECIPE = {"half_life": M.DEFAULT_PARAMS["half_life"], "carry": M.DEFAULT_PARAMS["carry"], "years": 3}
 # On 2026-10-19 the bottom two (Elo only and Massey) made way for two
@@ -112,7 +114,7 @@ def build_rows(params=None):
         if league.di_game(g):  # picks are only made between Division I teams
             feats = league.features(g)
             rows.append({"game": g, "f": feats,
-                         "margin": g["home_pts"] - g["away_pts"], "has_box": g["id"] in box})
+                         "margin": g["home_pts"] - g["away_pts"]})
         league.update(g, box.get(g["id"]))
     first = rows[0]["game"]["season"] if rows else None
     for r in rows:
@@ -236,6 +238,7 @@ def train_recipe(recipe, before_idx=None):
     w["recipe"] = recipe
     w["training_games"] = len(train)
     w["training_dates"] = [train[0]["game"]["date"], train[-1]["game"]["date"]]
+    w["trained_on"] = f"{season_label(train[0]['game']['season'])} to {season_label(train[-1]['game']['season'])}"
     return w
 
 
@@ -245,7 +248,7 @@ def season_backtest(recipe):
     rows = build_rows(league_params(recipe))
     seasons = sorted({r["game"]["season"] for r in rows})
     # A season is finished once we're into the summer after it.
-    finished = [s for s in seasons if s < seasons[-1] or date.today().isoformat() >= f"{s}-05-01"]
+    finished = [s for s in seasons if s < seasons[-1] or datetime.now(ET).date().isoformat() >= f"{s}-05-01"]
     if len(finished) < 2:
         return {}
     test_season = finished[-1]
@@ -261,7 +264,7 @@ def season_backtest(recipe):
     # home court and the adjusted efficiency margin, like KenPom's own predictions
     em_bt = evaluate(fit(train, ["home_court", "em"]), test_regular)
     return {
-        "trained_on": f"{season_label(first)} to {season_label(seasons[-1])}",
+        "backtest_trained_on": f"{season_label(first)} to {season_label(test_season - 1)}",
         "backtest_season": season_label(test_season),
         "backtest": bt,
         "backtest_postseason": evaluate(w, postseason) if postseason else None,
@@ -280,7 +283,7 @@ def load(path, default):
 
 def live_record(days=14):
     picks = load(PICKS, {}).get("picks", [])
-    since = (date.today() - timedelta(days=days)).isoformat()
+    since = (datetime.now(ET).date() - timedelta(days=days)).isoformat()
     g = [p for p in picks if p["date"] >= since and p.get("correct") is not None]
     if not g:
         return None
@@ -288,16 +291,18 @@ def live_record(days=14):
             "predicted": round(sum(p["prob"] for p in g) / len(g) / 100, 4)}
 
 
-def deploy_ok(final, final_ll, live_ll, chosen_ll, baseline_ll):
+def deploy_ok(final, live_ll, chosen_ll, baseline_ll):
     """Sanity checks before the refit replaces the live model: finite numbers,
     it beats always taking the usual home-team rate on games it never saw, and
-    on the recent games it isn't clearly worse than the model it replaces."""
+    on the recent games it isn't clearly worse than the model it replaces.
+    Both scores are the chosen recipe fit without the holdout: the refit has
+    seen the holdout, so its own score there would flatter it."""
     if not all(math.isfinite(v) for v in list(final["coef"].values()) + [final["sigma"]]) or final["sigma"] <= 0:
         return False, "the refit has non-finite coefficients"
     if chosen_ll >= baseline_ll:
         return False, "the chosen recipe didn't beat the home-team rate on held-out games"
-    if live_ll is not None and final_ll > live_ll + SANITY_MARGIN:
-        return False, "the refit scored worse than the live model on recent games"
+    if live_ll is not None and chosen_ll > live_ll + SANITY_MARGIN:
+        return False, "the chosen recipe scored worse than the live model on recent games"
     return True, ""
 
 
@@ -376,8 +381,7 @@ def main():
 
     live_ll = raw_log_loss(live, holdout(live.get("recipe", DEFAULT_RECIPE))) if live.get("coef") else None
     final = train_recipe(chosen_recipe)
-    final_ll = raw_log_loss(final, holdout(chosen_recipe))
-    ok, why = deploy_ok(final, final_ll, live_ll, chosen[2], baseline_ll)
+    ok, why = deploy_ok(final, live_ll, chosen[2], baseline_ll)
 
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     if ok:

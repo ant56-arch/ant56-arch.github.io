@@ -23,6 +23,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from build_features import apply_recency_weighting, load_team_half_life
+from fetch_cfb_data import running_week
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
@@ -47,6 +48,8 @@ def main():
     # form (fading as this season's games come in) instead of no data at all.
     half_life = load_team_half_life(os.path.join(os.path.dirname(__file__), "models", "fitted_cfb_coefficients.json"))
     print(f"  Using team half-life = {half_life} games")
+    # Bowls come back from CFBD as week 1: order them after the regular season.
+    game_stats["week"] = running_week(game_stats)
     team_stats = apply_recency_weighting(game_stats, "team", METRICS, half_life=half_life)
     team_stats.to_csv(os.path.join(PROCESSED_DIR, "cfb_team_stats.csv"), index=False)
     print(f"  Saved cfb_team_stats.csv ({len(team_stats)} teams)")

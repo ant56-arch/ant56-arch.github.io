@@ -38,6 +38,7 @@ ALIASES = {
     "ath madrid": "atletico madrid", "atletico": "atletico madrid", "ath bilbao": "athletic",
     "athletic bilbao": "athletic", "celta": "celta vigo", "vallecano": "rayo vallecano", "espanol": "espanyol",
     "sociedad": "sociedad", "sp gijon": "sporting gijon", "la coruna": "la coruna",
+    "deportivo": "la coruna", "racing santander": "santander",
     # Germany
     "ein frankfurt": "eintracht frankfurt", "mgladbach": "monchengladbach", "gladbach": "monchengladbach",
     "koln": "koln", "cologne": "koln", "bayern munchen": "bayern munich", "fortuna dusseldorf": "dusseldorf",

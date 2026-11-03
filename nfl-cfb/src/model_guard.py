@@ -15,9 +15,11 @@ straight to the site. This adds three things:
      the most recent `holdout_games` games and scored on those games by the
      Brier score of its own win probability. The recipe only changes when a
      candidate beats the live recipe by SWITCH_MARGIN.
-  2. A sanity check before anything ships: finite coefficients, and the refit
-     can't score clearly worse on those recent games than the model it
-     replaces. A failed check keeps the old file.
+  2. A sanity check before anything ships: finite coefficients, and the
+     chosen recipe, fit WITHOUT those recent games, can't score worse on them
+     than the model it replaces by more than SANITY_MARGIN. (The production
+     refit itself trains on those games, so scoring it there would flatter
+     it.) A failed check keeps the old file.
   3. data/tracking/model_history.json, one entry per refit: every candidate's
      score, what was kept or switched and why.
 
@@ -35,7 +37,10 @@ from scipy.stats import norm
 
 HISTORY_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "tracking", "model_history.json")
 SWITCH_MARGIN = 0.002  # Brier score a new recipe must win by
-SANITY_MARGIN = 0.01  # how much worse than the live model the refit may score on the recent games
+# How much worse than the live model the chosen recipe may score on the recent
+# games: run-to-run noise in model_history.json (live vs. same-recipe refit)
+# is about 0.0002-0.0006 Brier, so 0.002 allows that and little more.
+SANITY_MARGIN = 0.002
 KEY = ["season", "week", "home_team", "away_team"]
 
 
@@ -84,7 +89,8 @@ def score(coefs, games, make_features, model_predict):
     margin = games["actual_margin"].values[valid]
     return {"games": int(valid.sum()), "brier": float(np.mean((wp - won) ** 2)),
             "spread_mae": float(np.mean(np.abs(spread - margin))),
-            "accuracy": float(np.mean((spread > 0) == (margin > 0)))}
+            # A tie is a miss for the pick to win (house rule), even for an away pick.
+            "accuracy": float(np.mean(((spread > 0) == (margin > 0)) & (margin != 0)))}
 
 
 def search(recipes, current, dataset_for, window, fit, make_features, model_predict, holdout_games, name):
@@ -112,12 +118,16 @@ def search(recipes, current, dataset_for, window, fit, make_features, model_pred
     return chosen, {"keys": keys, "results": results, "current": cur, "best": best, "switched": switched}
 
 
-def deploy_ok(new_coefs, live_coefs, live_recipe, chosen_recipe, dataset_for, make_features, model_predict, keys):
-    """Finite coefficients, and on the recent games the refit isn't clearly
-    worse than the live model (each scored with its own recipe's features)."""
+def deploy_ok(new_coefs, live_coefs, live_recipe, chosen_recipe, dataset_for, make_features, model_predict, report):
+    """Finite coefficients, and on the recent games the chosen recipe - as
+    search() scored it, fit only on the games before them - isn't worse than
+    the live model by more than SANITY_MARGIN (each with its own recipe's
+    features). The full refit isn't scored there: it was trained on them."""
     if not all(math.isfinite(v) for v in new_coefs.values() if isinstance(v, (int, float))):
         return False, "the refit has non-finite coefficients", None, None
-    new = score(new_coefs, split(dataset_for(chosen_recipe), keys)[1], make_features, model_predict)
+    keys = report["keys"]
+    held_out = next((r for r in report["results"] if r["recipe"] == chosen_recipe), None)
+    new = {k: v for k, v in held_out.items() if k != "recipe"} if held_out else None
     live = score(live_coefs, split(dataset_for(live_recipe), keys)[1], make_features, model_predict) if live_coefs else None
     if new is None:
         return False, "no recent games to check the refit on", new, live
@@ -157,6 +167,18 @@ def log_run(sport, current, report, deployed, reason, new, live, trained_through
     os.makedirs(os.path.dirname(HISTORY_PATH), exist_ok=True)
     with open(HISTORY_PATH, "w") as f:
         json.dump(history, f, indent=1)
+
+
+def log_skip(sport, reason, live):
+    """A history entry for a refit that couldn't run because its data source
+    was out (no key, quota used up, nothing returned), so the Model tab and
+    Model Room show why the model wasn't updated instead of going quiet.
+    Same fields as log_run, with nothing tested."""
+    log_run(sport, live.get("recipe"), {"keys": (), "results": [], "current": None, "best": None,
+                                       "switched": False},
+            False, reason, None, None, live.get("trained_through"),
+            {"skipped": True, "weights_before": weights_snapshot(live), "weights_after": weights_snapshot(live)})
+    summary([f"### {sport.upper()} game model refit skipped", f"- {reason}"])
 
 
 def summary(lines):

@@ -133,37 +133,40 @@ def project_player(row, team, opponent, team_stats, league_avgs, matchup_coefs, 
     """Build a single player's projected stat line for their next game."""
     opp_stats = team_stats.loc[opponent] if opponent in team_stats.index else None
 
+    # fit_props_model.py fits yards = a*baseline + b*baseline*diff, i.e.
+    # a*baseline*(1 + (b/a)*diff) - so the multiplier's scale is b/a, and the
+    # baseline_scale (a) is applied below.
+    def rel_scale(kind):
+        c = matchup_coefs[kind]
+        return c["matchup_scale"] / c["baseline_scale"] if c["baseline_scale"] else 0.0
+
     pass_mult = matchup_multiplier(
         opp_stats["def_pass_epa_allowed"] if opp_stats is not None else np.nan,
-        league_avgs["def_pass_epa_allowed"], matchup_coefs["receiving"]["matchup_scale"]
+        league_avgs["def_pass_epa_allowed"], rel_scale("receiving")
     )
     rush_mult = matchup_multiplier(
         opp_stats["def_rush_epa_allowed"] if opp_stats is not None else np.nan,
-        league_avgs["def_rush_epa_allowed"], matchup_coefs["rushing"]["matchup_scale"]
+        league_avgs["def_rush_epa_allowed"], rel_scale("rushing")
     )
     pass_yds_mult = matchup_multiplier(
         opp_stats["def_pass_epa_allowed"] if opp_stats is not None else np.nan,
-        league_avgs["def_pass_epa_allowed"], matchup_coefs["passing"]["matchup_scale"]
+        league_avgs["def_pass_epa_allowed"], rel_scale("passing")
     )
 
-    # Injury discount applies on top of the matchup multiplier - a banged-up
-    # player facing a bad defense might still project lower than a healthy
-    # player facing a good one.
+    # Injury discount applies once, to the volume (targets/carries/attempts)
+    # below - yards and TDs are built from that volume, so they carry it too.
     injury_disc = injury_multipliers.get(injury_status, 1.0)
-    pass_mult *= injury_disc
-    rush_mult *= injury_disc
-    pass_yds_mult *= injury_disc
 
     proj = {
         "player_id": row["player_id"], "player_name": row["player_name"],
         "team": team, "opponent": opponent,
         "injury_status": injury_status if injury_status else "",
         "games_played": row.get("games_played", 0),
-        # Matchup multiplier BEFORE the injury discount, so the site can show
-        # "tough/soft matchup" as a pure matchup signal, separate from injury risk.
-        "matchup_mult_rec": round(pass_mult / injury_disc, 3) if injury_disc else None,
-        "matchup_mult_rush": round(rush_mult / injury_disc, 3) if injury_disc else None,
-        "matchup_mult_pass": round(pass_yds_mult / injury_disc, 3) if injury_disc else None,
+        # Pure matchup signal (no injury discount in it), so the site can show
+        # "tough/soft matchup" separately from injury risk.
+        "matchup_mult_rec": round(pass_mult, 3),
+        "matchup_mult_rush": round(rush_mult, 3),
+        "matchup_mult_pass": round(pass_yds_mult, 3),
     }
 
     rec_scale = matchup_coefs["receiving"]["baseline_scale"]

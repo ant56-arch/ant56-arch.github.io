@@ -44,7 +44,7 @@ def pull_fd(season):
     out, notes = [], []
     for code in fd.LEAGUES:
         rows = fd.fetch(code, season)
-        if rows is None:  # unreachable: keep what was stored
+        if rows is None or (not rows and old.get(code)):  # unreachable or a 404: keep what was stored
             rows = old.get(code, [])
             notes.append(f"{code} kept ({len(rows)})")
         out += rows
@@ -77,8 +77,10 @@ def pull_ucl(season):
 
 
 def report_unmatched(ucl):
-    known = {m["hk"] for m in store.load_matches() if m["league"]} | \
-            {m["ak"] for m in store.load_matches() if m["league"]}
+    # Keys from football-data rows only: ESPN's own league rows would match
+    # themselves and hide a club whose ESPN name misses its football-data one.
+    league = [m for m in store.load_matches() if m["src"] == "fd"]
+    known = {m["hk"] for m in league} | {m["ak"] for m in league}
     espn_names = {m["home_name"] for m in ucl} | {m["away_name"] for m in ucl}
     espn_names |= {g.get(f"{s}_name") for g in store.day_games().values() for s in ("home", "away")} - {None}
     missing = names.unmatched(espn_names, known)

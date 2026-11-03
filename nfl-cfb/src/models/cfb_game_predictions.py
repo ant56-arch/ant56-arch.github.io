@@ -147,7 +147,7 @@ def context_points(game_id, context, coefs):
     return float(sum(row[c] * coefs[f"{c}_weight"] for c in context.columns if f"{c}_weight" in coefs))
 
 def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_odds=None, use_current_form=True,
-                 extra_points=0.0):
+                 extra_points=0.0, neutral=False):
     if home_team not in team_stats.index or away_team not in team_stats.index:
         return None
 
@@ -161,7 +161,8 @@ def predict_game(home_team, away_team, team_stats, coefs, blend_weights, vegas_o
     base_spread = ppa_diff * coefs["ppa_diff_coef"]
     adjustment = secondary_adjustment(home_row, away_row, coefs, use_current_form)
 
-    model_spread = base_spread + adjustment + coefs["home_field_advantage"] + extra_points
+    home_field = 0.0 if neutral else coefs["home_field_advantage"]  # none at a neutral site
+    model_spread = base_spread + adjustment + home_field + extra_points
     model_home_win_prob = norm.cdf(model_spread / coefs["margin_std_dev"])
 
     combined_expected_eff = home_expected_eff + away_expected_eff
@@ -215,6 +216,9 @@ def load_ratings():
     return {"teams": ratings, "home_field": data.get("home_field", 0.0),
             "average": float(pd.DataFrame(data["teams"])["offense"].mean())}
 
+def is_neutral(v):
+    return str(v).lower() in ("true", "1", "1.0") if pd.notna(v) else False
+
 def ratings_game(game, ratings):
     """Model numbers from the power ratings: margin = overall gap + home field
     (none at a neutral site); each side's points = its offense + the other
@@ -256,7 +260,8 @@ def predict_all_upcoming(use_current_form=True):
             pred = predict_game_from_ratings(game, ratings, coefs, blend_weights, vegas_odds)
         else:
             pred = predict_game(game["home_team"], game["away_team"], team_stats, coefs, blend_weights, vegas_odds,
-                                use_current_form, context_points(game.get("id"), context, coefs))
+                                use_current_form, context_points(game.get("id"), context, coefs),
+                                is_neutral(game.get("neutral")))
         if pred:
             pred["season"] = game["season"]
             pred["week"] = game["week"]

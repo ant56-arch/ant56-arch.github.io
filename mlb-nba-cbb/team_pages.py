@@ -278,7 +278,10 @@ class TeamSite:
         bt = model.get("backtest")
         backtest = None
         if bt:
-            note = (f"Fit on {model['trained_on'].split(' to ')[0]} through the season before {model['backtest_season']}, "
+            # backtest_trained_on is the backtest fit's seasons; older models only had
+            # trained_on, whose start was the backtest fit's first season.
+            fit_from = (model.get("backtest_trained_on") or model["trained_on"]).split(" to ")[0]
+            note = (f"Fit on {fit_from} through the season before {model['backtest_season']}, "
                     f"then tested on all {bt['games']} regular-season games of {model['backtest_season']}. It picked "
                     f"{pct(bt['accuracy'], 1)} of them right (it expected {pct(bt['predicted_accuracy'], 1)}), and its "
                     f"projected margins were off by {bt['margin_mae']:.1f} {self.unit} on average.")

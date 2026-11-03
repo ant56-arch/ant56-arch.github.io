@@ -49,6 +49,8 @@ def compute_walkforward_features(game_stats, metric_cols, half_life=RECENCY_HALF
     out_frames = []
 
     for key, g in game_stats.groupby(group_col, sort=False):
+        # week must run in game order within a season (CFB callers shift
+        # postseason weeks first: fetch_cfb_data.running_week).
         g = g.sort_values(["season", "week"]).reset_index(drop=True)
         n = len(g)
 

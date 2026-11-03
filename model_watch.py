@@ -29,11 +29,13 @@ import math
 import os
 import sys
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MLB = os.path.join(ROOT, "mlb-nba-cbb")
 TRACKING = os.path.join(ROOT, "nfl-cfb", "data", "tracking")
 OUT = os.path.join(ROOT, "model_watch.json")
+ET = ZoneInfo("America/New_York")  # pick dates are US Eastern
 
 Z_ALARM = -2.0
 EARLY_GAP_DAYS = 3  # an early retrain waits this long after the last retrain
@@ -149,7 +151,7 @@ def early_retrain(key, today=None):
     s = status(key)
     if not s["alarm"] or not SPORTS[key]["history"]:
         return None
-    today = today or date.today()
+    today = today or datetime.now(ET).date()
     last = s["last_retrain"]
     if last and date.fromisoformat(last) > today - timedelta(days=EARLY_GAP_DAYS):
         return None
@@ -172,7 +174,7 @@ def main():
         print("yes" if early_retrain(sys.argv[2]) else "no")
         return
     old = load(OUT, {}).get("sports", {})
-    today = date.today().isoformat()
+    today = datetime.now(ET).date().isoformat()
     sports = {}
     for key in SPORTS:
         s = status(key)

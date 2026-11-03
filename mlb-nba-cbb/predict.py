@@ -436,7 +436,7 @@ def run_results():
     for p in pending:
         st = status.get(p["game_id"], {})
         stale = date.fromisoformat(p["date"]) < TODAY - timedelta(days=3)
-        if st.get("abstractGameState") == "Final":
+        if st.get("abstractGameState") == "Final" and not st.get("detailedState", "").startswith("Suspended"):
             line = batting_line(p["game_id"], p["player_id"])
             ab = int(line.get("atBats", 0)) if line else 0
             if ab == 0:

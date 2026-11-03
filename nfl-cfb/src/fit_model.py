@@ -476,7 +476,7 @@ def run():
                    "rating_half_life_weeks": rating_half_life(chosen), "context_inputs": recipe_extras(chosen),
                    "trained_through": trained_through})
     ok, why, new, live_score = guard.deploy_ok(output["coefficients"], live.get("coefficients"), live_recipe, chosen,
-                                               dataset_for, make_features, model_predict, report["keys"])
+                                               dataset_for, make_features, model_predict, report)
     if ok:
         with open(COEFFICIENTS_PATH, "w") as f:
             json.dump(output, f, indent=2)

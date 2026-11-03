@@ -725,7 +725,9 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
 
     co = coefs_file.get("coefficients", {})
     runs = [r for r in hist_runs if r.get("sport") == sport]
-    run = runs[-1] if runs else None
+    # A skipped refit (data source out) tested nothing: show the last one that ran.
+    tested = [r for r in runs if not r.get("skipped")]
+    run = tested[-1] if tested else None
     wa = (run or {}).get("weights_after") or {}
     blend = {k: coefs_file.get(f"blend_weight_on_model_{k}", wa.get(f"blend_weight_on_model_{k}")) for k in ("winprob", "spread", "total")}
     hfa = co.get("home_field_advantage", wa.get("home_field_advantage"))
@@ -1074,6 +1076,8 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
                                      live_score=m.get("score"), margin=0.002, mid=mid, runs=runs)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = f"Tested on the {run.get('holdout_games')} most recent games, which none of them trained on. A new version takes over only if it clearly beats the live one."
+        if runs[-1].get("skipped"):
+            m["tryout_intro"] += f" The {nice_date(runs[-1]['run_at'])} retrain didn't run: {runs[-1].get('reason', 'its data source was out')}."
         note_date(f"{league} retrain", run["run_at"])
     m["status_line"] = f"{season} season, {n} graded games"
     return m, {"season": season, "weeks": weeks}
@@ -1676,7 +1680,7 @@ def build_team(mid):
     for p in picks:
         note_date(cfg["league"] + " picks", p.get("date"))
     graded = [p for p in picks if not p.get("void") and p.get("correct") in (True, False) and p.get("winner")]
-    # leave out ties (a soccer draw is a real result: our pick never takes the draw, so it counts as a miss)
+    # leave out ties (a soccer draw is a real result: a miss for a team pick, a hit when we picked the draw)
     if not soccer:
         graded = [p for p in graded if p["winner"] in (p["home"], p["away"])]
     n = len(graded)
@@ -1698,7 +1702,7 @@ def build_team(mid):
     how = {"intro": "", "weights": [], "blend": [], "formula": "", "walk": None}
     if soccer:
         how["intro"] = (f"Every club gets an attack and a defence rating, tied to its league's level, with older matches fading (half after {mw.get('recipe', {}).get('half_life')} days). "
-                        f"Expected goals for each side become home win, draw and away win chances, and the pick is the most likely of home win or away win. Trained on {mw.get('training_matches', 0):,} matches through {nice_date(mw.get('trained_through', ''))}.")
+                        f"Expected goals for each side become home win, draw and away win chances, and the pick is the most likely of the three. Trained on {mw.get('training_matches', 0):,} matches through {nice_date(mw.get('trained_through', ''))}.")
         leagues = {k[7:]: v for k, v in coef.items() if k.startswith("league_")}
         lname = {"E0": "England", "SP1": "Spain", "D1": "Germany", "I1": "Italy", "F1": "France", "N1": "Netherlands", "P1": "Portugal", "B1": "Belgium",
                  "SC0": "Scotland", "T1": "Turkey", "OTHER": "Other leagues"}
@@ -1813,7 +1817,7 @@ def build_team(mid):
         sums[day] = f"Our picks {rec(a_, len(L) - a_)}" if L else "Not played yet"
     sums["all"] = f"Our picks {rec(W, n - W)}"
     if picks:
-        m["table"] = {"id": f"t-{mid}", "intro": "Every live pick. Shaded rows are games where our pick and the sportsbook favorite differ." + (" A draw counts as a miss, since we never pick a draw." if soccer else ""),
+        m["table"] = {"id": f"t-{mid}", "intro": "Every live pick. Shaded rows are games where our pick and the sportsbook favorite differ." + (" A draw counts as a miss unless we picked the draw." if soccer else ""),
                       "tallies": [(rec(W, n - W), "Our picks", "o"), (rec(bW, len(bf) - bW), f"Sportsbook favorite ({len(bf)} with odds)", "v"),
                                   (rec(hW, n - hW), "Always the home team", "")],
                       "callout": "", "sel": "Show date", "opts": [("all", "All dates")] + [(d_, nice_date(d_) + ("" if d_ in gd else " (upcoming)")) for d_ in reversed(dates)],
@@ -1859,9 +1863,10 @@ def build_team(mid):
     if n >= MIN_N and abs(hp_rate - home_rate) >= 0.08 and not soccer:
         bad.append(f"It leans {'home' if hp_rate > home_rate else 'road'}. It picked the home team {S(pc(hp_rate))} of the time, but home teams won {S(pc(home_rate))} ({n} games).")
     if soccer:
-        draws = sum(p["winner"] == "Draw" for p in graded)
+        # drawn matches where we picked a team: each one a miss (a draw pick that hits stays in W)
+        draws = sum(p["winner"] == "Draw" and p["pick"] != "Draw" for p in graded)
         if n >= MIN_N and draws:
-            bad.append(f"{S(draws)} of {n} matches ended in a draw, and a draw is always a miss for us. Without them it went {rec(W, n - W - draws)}.")
+            bad.append(f"{S(draws)} of {n} matches ended in a draw when we picked a team, and that is always a miss. Without them it went {rec(W, n - W - draws)}.")
     post = [p for p in graded if p.get("type") == "postseason"]
     reg = [p for p in graded if p.get("type") == "regular"]
     if len(post) >= MIN_N and len(reg) >= MIN_N:
@@ -1911,7 +1916,8 @@ def build_team(mid):
         why.append(("Keep in mind", f"{len(post)} of these are playoff games, where every team is good and the gaps the model looks for are smaller."))
     if soccer and n:
         dr = (mw.get("recent_holdout") or {}).get("draw_rate")
-        why.append(("Strong evidence", f"The model never picks a draw, and about {pc(dr or 0.24)} of matches end in one (in its own test games). So a soccer pick starts out losing about one match in four before any team is picked wrong."))
+        dp = sum(p.get("pick") == "Draw" for p in picks)
+        why.append(("Strong evidence", f"The model picks the draw only when it is the single likeliest result ({dp} of {len(picks)} picks so far), and about {pc(dr or 0.24)} of matches end in one (in its own test games). A draw is a miss for a team pick, so a soccer pick starts out losing that share of matches before any team is picked wrong."))
     if n >= MIN_N and abs(hp_rate - home_rate) >= 0.08 and not soccer:
         why.append(("Our best guess", f"The home edge comes from past seasons. This season home teams have won {pc(home_rate)} of our {n} games, which may just be noise this early."))
     if 0 < n < SMALL_N:
@@ -1945,7 +1951,7 @@ def build_team(mid):
         else:
             m["verdict"] = f"Only {n} graded {'matches' if soccer else 'games'} so far, too few to grade. {rec(W, n - W)} to date."
         if soccer and n:
-            m["verdict"] += " Draws count against it."
+            m["verdict"] += " A draw counts against a team pick."
         m["summary"] = m["verdict"]
         m["status_line"] = f"{n} graded {'matches' if soccer else 'games'}"
         m["note"] = f"Live picks only, {nice_date(min(p['date'] for p in picks))} to {nice_date(max(p['date'] for p in picks))}." + (" Ties left out." if not soccer else "")

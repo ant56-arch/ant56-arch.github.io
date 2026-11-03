@@ -155,6 +155,8 @@ def power_live(games, ratings_path=None):
     hfa = float(data.get("home_field", 0.0))
     out = []
     for r in games.itertuples(index=False):
-        line = cr.rating_line(ratings, hfa, r.home_team, r.away_team, _neutral(r.neutral)) if not ratings.empty else np.nan
+        # An older cfb_games.csv has no neutral column: count it a home game.
+        neutral = _neutral(getattr(r, "neutral", False))
+        line = cr.rating_line(ratings, hfa, r.home_team, r.away_team, neutral) if not ratings.empty else np.nan
         out.append((r.id, 0.0 if np.isnan(line) else line))
     return pd.DataFrame(out, columns=["id", "power_diff"])
