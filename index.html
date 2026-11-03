@@ -129,6 +129,39 @@ h2 em { font-size: 1.06em; }
 .board-foot { opacity: .7; font-size: 12.5px; }
 .stats { display: grid; gap: 0; }
 .record-grid.solo { grid-template-columns: minmax(0, 1fr); }
+/* Last 7 days beside the record (All tab), by day, with a button per sport. */
+.wk { border: 1px solid var(--rule); border-radius: 6px; padding: clamp(20px, 3vw, 30px); background: var(--paper); min-width: 0; }
+.wk-top { display: flex; justify-content: space-between; gap: 12px; color: var(--ink-soft); }
+.wk .filters { margin-top: 14px; }
+.wk-big { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 16px; }
+.wk-big b { font-weight: 400; font-size: clamp(36px, 4.4vw, 48px); letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+.wk-big span { color: var(--ink-soft); }
+.wk-bars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: clamp(6px, 1.2vw, 12px); align-items: end; height: 170px; margin-top: 18px; }
+.wk-bars > div { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 3px; text-align: center; height: 100%; }
+.wk-bars .col { display: flex; flex-direction: column-reverse; min-height: 0; border-radius: 3px 3px 0 0; overflow: hidden; }
+.wk-bars i { display: block; flex: none; }
+.wk-bars .h { background: var(--hit); }
+.wk-bars .m { background: color-mix(in srgb, var(--miss) 30%, var(--paper-2)); }
+.wk-bars b { font-weight: 500; font-size: 13px; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.wk-bars .mono { font-size: 10.5px; color: var(--ink-soft); }
+.wk-bars .none b { color: var(--ink-faint); }
+/* Win % through the season: one line per league, week by week. */
+.rt { margin-top: clamp(28px, 4vw, 44px); border: 1px solid var(--rule); border-radius: 6px; padding: clamp(20px, 3vw, 30px); }
+.rt-plot { position: relative; height: 260px; margin: 22px 0 26px 40px; }
+.rt-plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rt-plot .g { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.rt-plot polyline { fill: none; stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.rt-y, .rt-x { position: absolute; font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+.rt-y { left: -40px; transform: translateY(-50%); }
+.rt-x { top: calc(100% + 8px); transform: translateX(-50%); }
+.rt-x.first { transform: none; } .rt-x.last { transform: translateX(-100%); }
+.rt-dot { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; }
+.rt-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; }
+.rt-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.rt-legend span::before { content: ""; width: 16px; height: 3px; border-radius: 2px; background: var(--c); }
+.rt-legend b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.wk-bars b { white-space: nowrap; }
+@media (max-width: 640px) { .rt-plot { height: 200px; } .wk-bars { height: 140px; } .wk-bars b { font-size: 11px; letter-spacing: -.02em; } .rt .wk-top span + span { display: none; } }
 .record-grid.solo .board { max-width: 760px; }
 .stat { padding: 20px 0; border-top: 1px solid var(--rule); display: grid; gap: 4px; }
 .stat:last-child { border-bottom: 1px solid var(--rule); }
@@ -523,6 +556,7 @@ a.crawl-item:hover { background: var(--paper); }
 .crawl-item.is-live .crawl-status { color: var(--miss); }
 .crawl-item.is-live .crawl-status::before { content: "\25CF  "; }
 .crawl-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--clay); font-size: 12px; font-weight: 600; }
+.crawl-live { font-family: var(--font-mono, var(--f-mono, monospace)); font-size: 10.5px; font-weight: 700; letter-spacing: .08em; color: #fff; background: var(--miss); border-radius: 99px; padding: 2px 8px; }
 .crawl-plays { background: #7E2A1C; border-bottom-color: #5C1E14; }
 .crawl-plays .crawl-tag { background: #5C1E14; color: #fff; }
 .crawl-plays .crawl-item { color: #F6DED6; border-right-color: rgba(255,255,255,.18); }
@@ -595,6 +629,17 @@ a.crawl-item:hover { background: var(--paper); }
         </table>
       </div>
       <div class="stats" id="stats"></div>
+      <div class="wk" id="wk" hidden>
+        <div class="wk-top mono"><span>Last 7 days</span><span id="wkDates"></span></div>
+        <div class="filters mono" id="wkSports" role="group" aria-label="Sport"></div>
+        <div class="wk-big"><b id="wkRec"></b><span id="wkSub"></span></div>
+        <div class="wk-bars" id="wkBars"></div>
+      </div>
+    </div>
+    <div class="rt" id="rt" hidden>
+      <div class="wk-top mono"><span>Win % through the season</span><span>Picks to win, adding up week by week</span></div>
+      <div class="rt-plot" id="rtPlot"></div>
+      <div class="rt-legend" id="rtLegend"></div>
     </div>
   </section>
 
@@ -1483,6 +1528,85 @@ function leagueTop(s, today) {
   $("stats").innerHTML = stats.map(([b, t]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("");
 }
 
+// Last 7 days (All tab): hits and misses by day, every sport or one at a time.
+let WK = "All";
+function lastWeek(daily, today) {
+  const days = [];
+  for (let i = 7; i >= 1; i--) days.push(dayKey(new Date(new Date(today + "T12:00:00Z").getTime() - i * 864e5 + 6 * 36e5)));
+  const per = {};
+  Object.entries(daily).forEach(([lg, rows]) => rows.forEach(([d, w, l]) => {
+    if (days.includes(d) && w + l) (per[lg] = per[lg] || {})[d] = [w, l];
+  }));
+  const sports = BOARD_ORDER.filter(lg => per[lg]);
+  if (!sports.length) return;
+  const box = $("wk");
+  box.hidden = false;
+  box.closest(".record-grid").classList.remove("solo");
+  const short = d => longDate(d, { month: "short", day: "numeric" });
+  $("wkDates").textContent = `${short(days[0])} to ${short(days[6])}`;
+  const draw = () => {
+    const pick = WK === "All" ? sports : [WK];
+    const day = d => pick.reduce((a, lg) => { const x = (per[lg] || {})[d]; return x ? [a[0] + x[0], a[1] + x[1]] : a; }, [0, 0]);
+    const rows = days.map(d => [d, ...day(d)]);
+    const W = rows.reduce((a, r) => a + r[1], 0), L = rows.reduce((a, r) => a + r[2], 0);
+    const max = Math.max(1, ...rows.map(r => r[1] + r[2]));
+    $("wkRec").textContent = `${W}-${L}`;
+    $("wkSub").textContent = W + L ? `${Math.round(W / (W + L) * 100)}% right · ${WK === "All" ? "all sports" : WK}` : "No games";
+    $("wkBars").innerHTML = rows.map(([d, w, l]) => `<div class="${w + l ? "" : "none"}" title="${esc(longDate(d, { weekday: "long", month: "short", day: "numeric" }))}: ${w}-${l}">` +
+      `<span class="col"><i class="h" style="height:${w / max * 100}%"></i><i class="m" style="height:${l / max * 100}%"></i></span>` +
+      `<b>${w + l ? `${w}-${l}` : "–"}</b><span class="mono">${longDate(d, { weekday: "short" })}</span></div>`).join("");
+    $("wkSports").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lg === WK)));
+  };
+  $("wkSports").innerHTML = ["All", ...sports].map(lg => `<button type="button" data-lg="${lg}">${lg}</button>`).join("");
+  $("wkSports").onclick = e => { const b = e.target.closest("button"); if (b) { WK = b.dataset.lg; draw(); } };
+  draw();
+}
+
+// Win % through the season: each league's picks to win added up week by week
+// (weeks end Monday, after Monday Night Football), one line per league; a
+// league tab shows its own line. A league with under two weeks of picks waits.
+const LG_COLOR = { NFL: "var(--forest)", CFB: "var(--clay)", MLB: "#8A6D2F", NHL: "#3C6788", NBA: "#7A4E8C", CBB: "#C08A2B", Soccer: "var(--miss)" };
+function seasonLines(daily) {
+  const lgs = BOARD_ORDER.filter(lg => daily[lg] && daily[lg].reduce((a, r) => a + r[1] + r[2], 0) >= 10);
+  if (!lgs.length) return;
+  const first = lgs.map(lg => daily[lg][0][0]).sort()[0], last = lgs.map(lg => daily[lg][daily[lg].length - 1][0]).sort().pop();
+  const sunday = d => { const x = new Date(d + "T12:00:00Z"); x.setUTCDate(x.getUTCDate() + (8 - x.getUTCDay()) % 7); return x.toISOString().slice(0, 10); };
+  const weeks = [];
+  for (let w = sunday(first); ; ) {
+    weeks.push(w < last ? w : last);
+    if (w >= last) break;
+    const x = new Date(w + "T12:00:00Z"); x.setUTCDate(x.getUTCDate() + 7); w = x.toISOString().slice(0, 10);
+  }
+  if (weeks.length < 2) return;
+  const lines = lgs.map(lg => {
+    let w = 0, l = 0, i = 0; const rows = daily[lg], pts = [];
+    weeks.forEach((wk, k) => {
+      while (i < rows.length && rows[i][0] <= wk) { w += rows[i][1]; l += rows[i][2]; i++; }
+      if (w + l) pts.push([k, w / (w + l) * 100]);
+    });
+    return { lg, pts, now: w / (w + l) * 100, rec: `${w}-${l}` };
+  }).filter(x => x.pts.length >= 2);
+  if (!lines.length) return;
+  const vals = lines.flatMap(x => x.pts.map(p => p[1]));
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - 2) / 5) * 5), hi = Math.min(100, Math.ceil((Math.max(...vals) + 2) / 5) * 5);
+  const X = k => k / (weeks.length - 1) * 100, Y = v => (hi - v) / (hi - lo) * 100;
+  let html = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">`;
+  for (let v = lo; v <= hi; v += 5) html += `<line class="g" x1="0" x2="100" y1="${Y(v)}" y2="${Y(v)}"/>`;
+  lines.forEach(x => { html += `<polyline style="stroke:${LG_COLOR[x.lg]}" points="${x.pts.map(([k, v]) => `${X(k)},${Y(v)}`).join(" ")}"/>`; });
+  html += "</svg>";
+  for (let v = lo; v <= hi; v += 5) html += `<span class="rt-y" style="top:${Y(v)}%">${v}%</span>`;
+  const step = Math.ceil(weeks.length / (innerWidth < 640 ? 4 : 8));
+  weeks.forEach((wk, k) => {
+    if (k % step && k !== weeks.length - 1) return;
+    if (k !== weeks.length - 1 && weeks.length - 1 - k < step / 2) return;
+    html += `<span class="rt-x${k === 0 ? " first" : k === weeks.length - 1 ? " last" : ""}" style="left:${X(k)}%">${longDate(wk, { month: "short", day: "numeric" })}</span>`;
+  });
+  lines.forEach(x => { const [k, v] = x.pts[x.pts.length - 1]; html += `<i class="rt-dot" style="left:${X(k)}%;top:${Y(v)}%;background:${LG_COLOR[x.lg]}"></i>`; });
+  $("rtPlot").innerHTML = html;
+  $("rtLegend").innerHTML = lines.map(x => `<span style="--c:${LG_COLOR[x.lg]}">${x.lg} <b>${x.now.toFixed(1)}%</b></span>`).join("");
+  $("rt").hidden = false;
+}
+
 // Quick links under the banner, so the board, history and model are one tap away.
 function renderJump() {
   const slate = $("slate").hidden ? null : "#slate";
@@ -1601,6 +1725,16 @@ function render(sums) {
       ${l.rec ? `<div class="lrec"><b>${l.rec}</b><span>${l.sub}</span></div>` : `<div class="wait">${l.wait}</div>`}
     </a>`).join("");
   }
+
+  // Last 7 days and win % through the season, from each league's daily record.
+  const daily = {};
+  BOARD_ORDER.filter(lg => LG === "All" || lg === LG).forEach(lg => {
+    const s = by[lg]; const src = lg === "MLB" ? s && s.games : s;
+    const rows = (src && src.daily || []).filter(([d]) => d < today);
+    if (rows.length) daily[lg] = rows;
+  });
+  if (LG === "All") lastWeek(daily, today);
+  seasonLines(daily);
 
   // Calendar: the last six days with graded team picks.
   const perDay = {};

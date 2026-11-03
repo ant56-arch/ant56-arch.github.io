@@ -444,35 +444,7 @@ document.querySelectorAll("[data-show-all]").forEach(btn => {
 // score and down, the ball on a field, our win chance re-run after every play
 // from our pregame line, and every drive. The Players to watch bars get a dot
 // for each player's yards so far. Refreshes every 30 seconds while live.
-const GL_LEN = 3600;  // regulation seconds
-
-// Seconds left in regulation after a play ("mm:ss" in period p), 0 in overtime.
-function glLeft(period, clock) {
-  const [m, s] = String(clock || "0:00").split(":").map(Number);
-  const secs = (m || 0) * 60 + (s || 0);
-  return period > 4 ? 0 : Math.max(0, (4 - period) * 900 + secs);
-}
-
-// Home team's win chance: the rest of the game as our line scaled to the time
-// left (the same bell curve as How it could end), plus about what the drive
-// in progress is worth from where the ball is.
-function glHomeWin(margin, left, homeBall, toGo, mu, sd, ot) {
-  let mean = margin;
-  if (homeBall != null && toGo != null) {
-    const ep = Math.max(-1, Math.min(6, 6 - 0.07 * toGo));
-    mean += homeBall ? ep : -ep;
-  }
-  const f = ot ? 0.08 : left / GL_LEN;
-  mean += mu * f;
-  const spread = sd * Math.sqrt(f);
-  if (spread < 0.3) return margin > 0 ? 1 : margin < 0 ? 0 : 0.5;
-  const z = mean / spread;
-  // Normal CDF (Abramowitz-Stegun).
-  const t = 1 / (1 + 0.2316419 * Math.abs(z));
-  const d = 0.3989423 * Math.exp(-z * z / 2);
-  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
-  return z > 0 ? 1 - p : p;
-}
+// glLeft and glHomeWin (the live win chance) live in edge.js, shared with the score ticker.
 
 function glShort(name) {
   return String(name || "").toLowerCase().replace(/\b(jr|sr|ii|iii|iv)\.?$/, "").replace(/[^a-z]/g, "");
@@ -881,8 +853,27 @@ async function initLiveGame() {
   const site = gcLiveSite();
   if (!site) return;
   let id = null;
+  // Gray outlines hold the card's place while ESPN answers, so the page
+  // doesn't jump when the card fills in; they go away if there's nothing to show.
+  const body = card.querySelector(".gl-body");
+  const hold = () => {
+    if (!card.hidden || card.glShown) return;
+    const sk = (w, h, more) => `<span class="gl-sk" style="width:${w};height:${h}${more ? ";" + more : ""}"></span>`;
+    body.innerHTML = `<div class="gl-panel gl-wait" aria-hidden="true"><div class="gl-sk-row">${sk("110px", "34px")}${sk("110px", "34px")}</div>` +
+      `<div class="gl-sk-row">${sk("90px", "14px")}${sk("140px", "14px")}</div>${sk("100%", "auto", "aspect-ratio:3/1")}${sk("80%", "14px")}</div>` +
+      `<div class="gl-panel gl-wait" aria-hidden="true">${sk("120px", "12px")}${sk("150px", "46px")}${sk("100%", "150px")}</div>`;
+    card.classList.add("is-waiting");
+    card.hidden = false;
+  };
+  const unhold = () => { if (card.classList.contains("is-waiting") && !card.glShown) { card.hidden = true; card.classList.remove("is-waiting"); } };
   const tick = async () => {
     if (Date.now() < new Date(card.dataset.start).getTime() - 5 * 60000) return 60000;
+    hold();
+    const wait = await fetchAndRender();
+    if (card.glShown) card.classList.remove("is-waiting"); else unhold();
+    return wait;
+  };
+  const fetchAndRender = async () => {
     if (!id) id = card.dataset.event || null;
     if (!id) {
       const e = gcLiveMatch(card, await gcLiveEvents(site, [card.dataset.day].filter(Boolean)), site.sport);
@@ -894,7 +885,9 @@ async function initLiveGame() {
     const state = ((((data.header || {}).competitions || [])[0] || {}).status || {}).type || {};
     if (!state.state || state.state === "pre") return 60000;
     const kind = card.dataset.kind || "football";
-    return (kind === "football" ? glRender(card, data, site.sport) : glRenderOther(card, data, site.sport)) ? 30000 : null;
+    const live = kind === "football" ? glRender(card, data, site.sport) : glRenderOther(card, data, site.sport);
+    if (!body.querySelector(".gl-wait")) card.glShown = true;
+    return live ? 30000 : null;
   };
   const loop = async () => { const wait = await tick(); if (wait) setTimeout(loop, wait); };
   loop();
