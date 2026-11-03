@@ -42,6 +42,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "shared"))
 import assets  # noqa: E402
 import extras  # noqa: E402
+import versions  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
@@ -951,6 +952,20 @@ def mlb_games(team_history, history):
 MOVES_DIR = {"MLB": "teams", "NBA": "nba", "NHL": "nhl", "CBB": "cbb", "Soccer": "soccer"}
 
 
+_live_names = {}
+
+
+def live_version(model_id, folder):
+    """The name of the version making today's picks (shared/versions.py)."""
+    if model_id not in _live_names:
+        _live_names[model_id] = versions.live_name(model_id, os.path.join(ROOT, folder, "model_weights.json"))
+    return _live_names[model_id]
+
+
+VERSION_IDS = {"MLB": ("mlb-games", "teams"), "NBA": ("nba", "nba"), "NHL": ("nhl", "nhl"), "CBB": ("cbb", "cbb"),
+               "Soccer": ("soccer", "soccer")}
+
+
 def with_moves(games):
     """Adds each game's saved pick moves (g["moves"], for extras.moves_html)."""
     saved = {}
@@ -965,6 +980,12 @@ def with_moves(games):
         g["moves"] = [dict(m, **chance_points(g, m))
                       for m in ((saved.get(folder) or {}).get(str(g["id"])) or {}).get("moves", [])]
         g["moves_unit"] = "chance"
+        if g.get("sport") in VERSION_IDS:
+            g["version"] = live_version(*VERSION_IDS[g["sport"]])
+            if g["sport"] == "NBA":
+                g["version_note"] = "named for the day it was added, with the Vegas blend 11022026 on top"
+            elif g["sport"] == "NHL":
+                g["version_note"] = "named for the day it was added, blended 25/75 with the Vegas price"
     return games
 
 

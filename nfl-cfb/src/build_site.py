@@ -48,6 +48,7 @@ import hashlib
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared"))
 import assets  # noqa: E402
 import extras  # noqa: E402
+import versions  # noqa: E402
 import games as games_mod  # noqa: E402
 import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
@@ -1902,8 +1903,11 @@ def season_games(sport, games, log, comparison, props=None):
     raw = [g for wk in sorted(weeks.values(), key=lambda w: w["week"]) for g in wk["games"]]
     out = [nf_game(sport, g) for g in raw]
     moves = load_pick_moves(sport)
+    version = versions.live_name("cfb-games" if sport["slug"] == "cfb" else "nfl-games",
+                                 os.path.join(os.path.dirname(__file__), "models", sport["coefficients_json"]))
     for g, ng in zip(raw, out):
         ng["moves"] = game_moves(sport, g, moves.get(g["id"]))
+        ng["version"] = version
     if props is not None and not props.empty:
         ranges = load_coefficients({"coefficients_json": "fitted_props_coefficients.json"}).get("ranges") or {}
         for ng in out:
