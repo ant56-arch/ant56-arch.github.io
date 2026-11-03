@@ -171,7 +171,7 @@ def page_shell(title, active, body_html, charts=False):
 <a class="skip-link" href="#main-content">Skip to main content</a>
 {chrome.page_top("MLB", title, tabs, active, NOW.strftime("%b %-d, %-I:%M %p") + " ET", TAGLINE)}
   <main id="main-content">
-  {body_html}
+  {chrome.sections(body_html)}
   </main>
   {footer()}
 </div>

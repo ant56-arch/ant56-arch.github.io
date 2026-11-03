@@ -424,7 +424,7 @@ def page_shell(sport, title, active_tab, body_html):
 <a class="skip-link" href="#main-content">Skip to main content</a>
 {chrome.page_top(sport["wordmark"], title, [(h, l) for h, _, l in tabs], active_tab + ".html" if active_tab else None, generated, sport["tagline"])}
   <main id="main-content">
-  {body_html}
+  {chrome.sections(body_html)}
   </main>
   <footer class="site-footer slim">
     <p class="footer-text">{sport["data_source_text"]} For entertainment only, not betting advice. Gambling problem?
