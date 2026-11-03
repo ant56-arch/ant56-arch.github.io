@@ -9380,7 +9380,7 @@
    },
    "model": "2026-10-26T17:14:44+00:00",
    "correct": null,
-   "set_at": "2026-11-02T23:00:42Z",
+   "set_at": "2026-11-03T02:07:19Z",
    "ml": {
     "team": "SJ",
     "side": "home",
@@ -9391,7 +9391,7 @@
     "value": false,
     "home_ml": -125,
     "away_ml": 105,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
