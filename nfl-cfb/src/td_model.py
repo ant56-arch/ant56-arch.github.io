@@ -32,6 +32,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
+from build_features import recency_weight
+
 COEFFICIENTS_PATH = os.path.join(os.path.dirname(__file__), "models", "fitted_td_coefficients.json")
 
 HALF_LIFE_GAMES = 6        # a player's game 6 games back counts half as much
@@ -165,7 +167,8 @@ def norm_position(pos):
 
 
 def _weights(n, half_life=HALF_LIFE_GAMES):
-    return 0.5 ** (np.arange(n)[::-1] / half_life)
+    """Recency weights for n games, oldest first (build_features.recency_weight)."""
+    return recency_weight(np.arange(n)[::-1], half_life)
 
 
 def player_form(hist, half_life=HALF_LIFE_GAMES):

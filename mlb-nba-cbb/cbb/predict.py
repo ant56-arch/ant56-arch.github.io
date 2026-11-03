@@ -19,17 +19,18 @@ Writes cbb/picks_history.json for build_pages.py. CBB_TODAY=YYYY-MM-DD
 overrides today's date for testing.
 """
 
-import json
 import os
 import sys
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import espn  # noqa: E402
 import model as M  # noqa: E402
+import daily_common  # noqa: E402
 import moneyline  # noqa: E402
 import store  # noqa: E402
+from daily_common import kept_price, load, save, season_of  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -41,86 +42,24 @@ NOW = datetime.now(espn.ET)
 TODAY = os.environ.get("CBB_TODAY") or NOW.date().isoformat()
 
 
-def load(path, default):
-    if not os.path.exists(path):
-        return default
-    with open(path) as f:
-        return json.load(f)
-
-
-def save(path, data, **kw):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, **kw)
-
-
 def in_season(day):
     """November through early April, plus late October for early tip-offs."""
     d = date.fromisoformat(day)
     return d.month in (11, 12, 1, 2, 3) or (d.month == 4 and d.day <= 15) or (d.month == 10 and d.day >= 25)
 
 
-def season_of(day):
-    """ESPN's season year: 2027 for the 2026-27 season."""
-    d = date.fromisoformat(day)
-    return d.year + 1 if d.month >= 7 else d.year
-
-
 # ── 1. sync ──────────────────────────────────────────────────────────────────
 def sync():
-    games, _ = store.load_all()
-    through = load(SYNC_FILE, {}).get("through") or (games[-1]["date"] if games else "2026-10-24")
-    day = date.fromisoformat(through) + timedelta(days=1)
-    yesterday = date.fromisoformat(TODAY) - timedelta(days=1)
-    # A game neither final nor called off doesn't stop the sync: the day's
-    # finals are stored and later days still sync, but "through" stays
-    # before that day so the next runs check it again, until it's older than
-    # the 3 days grade() waits before voiding its pick.
-    recheck_from = (yesterday - timedelta(days=2)).isoformat()
-    held = False
-    while day <= yesterday:
-        d = day.isoformat()
-        if in_season(d):
-            day_games = espn.scoreboard(d)
-            pending = [g for g in day_games if not (g["final"] or g["postponed"])]
-            if pending:
-                print(f"  {d}: {len(pending)} game(s) not final yet ({', '.join(g['id'] for g in pending)}), "
-                      "will re-check next run")
-                held = held or d >= recheck_from
-            finals = [g for g in day_games if g["final"] and g["home_pts"] is not None]
-            if finals:
-                box = {}
-                for g in finals:
-                    try:
-                        b = espn.boxscore(g["id"])
-                        if b:
-                            box[g["id"]] = b
-                    except Exception as e:  # scores still count without a box score
-                        print(f"  box score {g['id']} failed: {e}")
-                store.save_day(d, finals, box)
-                print(f"  stored {d}: {len(finals)} games, {len(box)} box scores")
-        if not held:
-            through = d
-        day += timedelta(days=1)
-    save(SYNC_FILE, {"through": through}, indent=1)
+    def start():
+        games, _ = store.load_all()
+        return games[-1]["date"] if games else "2026-10-24"
+    daily_common.sync(SYNC_FILE, TODAY, start, in_season, espn.scoreboard,
+                      lambda d, finals: daily_common.store_espn_day(d, finals, espn, store, keep_empty_box=False))
 
 
 # ── 2. grade ─────────────────────────────────────────────────────────────────
 def grade(history, games_by_id):
-    graded = 0
-    stale = (date.fromisoformat(TODAY) - timedelta(days=3)).isoformat()
-    for p in history["picks"]:
-        if p.get("correct") is not None or p.get("void") or p["date"] >= TODAY:
-            continue
-        g = games_by_id.get(p["game_id"])
-        if g and g["date"] == p["date"]:
-            p["home_pts"], p["away_pts"] = g["home_pts"], g["away_pts"]
-            p["winner"] = p["home"] if g["home_pts"] > g["away_pts"] else p["away"]
-            p["correct"] = p["winner"] == p["pick"]
-            graded += 1
-        elif (g and g["date"] != p["date"]) or p["date"] < stale:
-            p["void"] = True  # postponed or suspended: not played to a finish on its date
-            graded += 1
+    graded = daily_common.grade(history, games_by_id, TODAY, names_from_pick=True)
     n = sum(moneyline.grade(p) for p in history["picks"])
     print(f"Graded {graded} picks" + (f", {n} moneyline picks" if n else ""))
 
@@ -186,8 +125,7 @@ def make_picks(history, league, weights):
         }
         try:  # the moneyline pick is extra: without odds, the game pick still goes out
             o = odds.get(g["id"])
-            if not o and old and old.get("ml"):  # ESPN has no price right now: keep the last one
-                o = {"home": old["ml"]["home_ml"], "away": old["ml"]["away_ml"], "book": old["ml"].get("book")}
+            o = kept_price(o, old)  # ESPN has no price right now: keep the last one
             ml = moneyline.pick(home, away, pick["home_prob"], o, pick["pick"])
         except Exception as e:
             print(f"  moneyline for {away} @ {home} failed: {e}")

@@ -31,14 +31,17 @@ CDF of margin / sigma. A game decided in overtime or a shootout counts as a
 one-goal win, which is how its final score reads.
 """
 
-import math
 import os
 import sys
 from collections import defaultdict
-from datetime import date
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game_methods import SeasonMethods  # noqa: E402
+import team_model_common as TM  # noqa: E402
+from team_model_common import WalkBase, elo_update, low_score_mov, regress_elo  # noqa: E402
+
+# The win-chance helpers live in team_model_common; these names are this model's.
+norm_cdf, predict_margin, win_prob = TM.norm_cdf, TM.predict_margin, TM.win_prob
 
 ELO_START = 1500
 ELO_K = 8
@@ -62,11 +65,9 @@ GOALIE_DECAY = 0.98    # a goalie's past shots fade by this much each time he pl
 START_GAMES = 10       # starts that set a team's goalie mix
 
 
-def norm_cdf(x):
-    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+class League(WalkBase):
+    RECENT_GAMES = RECENT_GAMES
 
-
-class League:
     def __init__(self, params=None):
         self.p = {**DEFAULT_PARAMS, **(params or {})}
         self.elo = defaultdict(lambda: ELO_START)
@@ -84,32 +85,13 @@ class League:
     # ── season rollover ──
     def _start_season(self, season):
         if self.season is not None:
-            mean = sum(self.elo.values()) / max(len(self.elo), 1)
-            for t in list(self.elo):
-                self.elo[t] = mean + self.p["elo_carry"] * (self.elo[t] - mean)
+            regress_elo(self.elo, self.p["elo_carry"])
             self.margins.clear()
             self.methods.reset()
             self.methods_pending = []
         self.season = season
 
-    def _check_season(self, season):
-        if season != self.season:
-            self._start_season(season)
-
     # ── features ──
-    def team_form(self, team):
-        m = self.margins[team]
-        net = sum(m) / (len(m) + self.p["net_shrink"])
-        last = m[-RECENT_GAMES:]
-        recent = sum(last) / (len(last) + self.p["recent_shrink"])
-        return net, recent
-
-    def rest_days(self, team, day):
-        last = self.last_date.get(team)
-        if last is None:
-            return 3
-        return max(0, min(3, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
-
     def shot_share(self, team):
         last = self.shots[team][-SHOT_GAMES:]
         f, a = sum(x[0] for x in last), sum(x[1] for x in last)
@@ -132,17 +114,6 @@ class League:
             sa, sv = self.goalie[gid]
             total += 100 * (sv - avg * sa) / (sa + GOALIE_PRIOR)
         return total / len(starts)
-
-    def _methods_through(self, day):
-        """Add every pending result from before `day` to the Massey /
-        Pythagorean ratings, so they stand as they did that morning (a game
-        earlier the same day isn't known at pick time) and are solved once a
-        day (the solve is the slow part of a walk)."""
-        ready = [x for x in self.methods_pending if x[0] < day]
-        if ready:
-            for _, h, a, hp, ap, neutral in ready:
-                self.methods.add(h, a, hp, ap, neutral)
-            self.methods_pending = [x for x in self.methods_pending if x[0] >= day]
 
     def features(self, g):
         self._check_season(g["season"])
@@ -202,26 +173,9 @@ class League:
         h, a = g["home"], g["away"]
         margin = g["home_pts"] - g["away_pts"]
         home_adv = 0 if g.get("neutral") else ELO_HOME
-        diff = self.elo[h] + home_adv - self.elo[a]
-        expected = 1 / (1 + 10 ** (-diff / 400))
-        won = 1.0 if margin > 0 else 0.0
-        winner_diff = diff if margin > 0 else -diff
         # Bigger wins move ratings more, less so when the favorite won.
-        mult = math.log(abs(margin) + 1) * 2.2 / (winner_diff * 0.001 + 2.2)
-        shift = self.p["elo_k"] * mult * (won - expected)
-        self.elo[h] += shift
-        self.elo[a] -= shift
+        elo_update(self.elo, h, a, margin, home_adv, self.p["elo_k"], low_score_mov)
         self.margins[h].append(margin)
         self.margins[a].append(-margin)
         self.methods_pending.append((g["date"], h, a, g["home_pts"], g["away_pts"], g.get("neutral")))
         self.last_date[h] = self.last_date[a] = g["date"]
-
-
-def predict_margin(weights, feats):
-    return sum(weights["coef"][k] * feats[k] for k in weights["features"])
-
-
-def win_prob(weights, feats):
-    """(home win probability, projected home goal margin)."""
-    m = predict_margin(weights, feats)
-    return norm_cdf(m / weights["sigma"]), m

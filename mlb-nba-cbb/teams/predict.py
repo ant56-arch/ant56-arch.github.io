@@ -16,17 +16,18 @@ Writes teams/picks_history.json for build_site.py. MLB_TODAY=YYYY-MM-DD
 overrides today's date for testing.
 """
 
-import json
 import os
 import sys
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import model as M  # noqa: E402
+import daily_common  # noqa: E402
 import moneyline  # noqa: E402
 import statsapi  # noqa: E402
 import store  # noqa: E402
+from daily_common import grade_moneylines, kept_price, load, save  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HISTORY_FILE = os.path.join(HERE, "picks_history.json")
@@ -37,19 +38,6 @@ NOW = datetime.now(statsapi.ET)
 TODAY = os.environ.get("MLB_TODAY") or NOW.date().isoformat()
 
 
-def load(path, default):
-    if not os.path.exists(path):
-        return default
-    with open(path) as f:
-        return json.load(f)
-
-
-def save(path, data, **kw):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, **kw)
-
-
 def in_season(day):
     """Late March through early November. December-February never has
     regular-season or postseason games."""
@@ -58,68 +46,30 @@ def in_season(day):
 
 # ── 1. sync ──────────────────────────────────────────────────────────────────
 def sync():
-    through = load(SYNC_FILE, {}).get("through")
-    if not through:
+    def start():
         games = store.load_all()
-        through = games[-1]["date"] if games else f"{date.fromisoformat(TODAY).year}-02-28"
-    day = date.fromisoformat(through) + timedelta(days=1)
-    yesterday = date.fromisoformat(TODAY) - timedelta(days=1)
-    # A game neither final nor called off doesn't stop the sync: the day's
-    # finals are stored and later days still sync, but "through" stays
-    # before that day so the next runs check it again, until it's older than
-    # the 3 days grade() waits before voiding its pick.
-    recheck_from = (yesterday - timedelta(days=2)).isoformat()
-    held = False
-    while day <= yesterday:
-        d = day.isoformat()
-        if in_season(d):
-            day_games = statsapi.schedule(d)  # can include a suspended game resumed today
-            pending = [g for g in day_games if g["date"] == d and not (g["final"] or g["postponed"])]
-            if pending:
-                print(f"  {d}: {len(pending)} game(s) not final yet ({', '.join(g['id'] for g in pending)}), "
-                      "will re-check next run")
-                held = held or d >= recheck_from
-            finals = [g for g in day_games if g["final"] and g["home_runs"] is not None]
-            if finals:
-                rows = []
-                for g in finals:
-                    try:
-                        box = statsapi.boxscore(g["id"])
-                    except Exception as e:  # the score still counts without the starters
-                        print(f"  box score {g['id']} failed: {e}")
-                        box = {}
-                    rows.append(statsapi.stored(g, box))
-                store.save_day(d, rows)
-                print(f"  stored {d}: {len(finals)} games")
-        if not held:
-            through = d
-        day += timedelta(days=1)
-    save(SYNC_FILE, {"through": through}, indent=1)
+        return games[-1]["date"] if games else f"{date.fromisoformat(TODAY).year}-02-28"
+
+    def store_finals(d, finals):
+        rows = []
+        for g in finals:
+            try:
+                box = statsapi.boxscore(g["id"])
+            except Exception as e:  # the score still counts without the starters
+                print(f"  box score {g['id']} failed: {e}")
+                box = {}
+            rows.append(statsapi.stored(g, box))
+        store.save_day(d, rows)
+        print(f"  stored {d}: {len(finals)} games")
+
+    # statsapi.schedule can include a suspended game resumed today
+    daily_common.sync(SYNC_FILE, TODAY, start, in_season, statsapi.schedule, store_finals,
+                      score="home_runs", same_day=True)
 
 
 # ── 2. grade ─────────────────────────────────────────────────────────────────
 def grade(history, games_by_id):
-    graded = 0
-    stale = (date.fromisoformat(TODAY) - timedelta(days=3)).isoformat()
-    for p in history["picks"]:
-        if p.get("correct") is not None or p.get("void") or p["date"] >= TODAY:
-            continue
-        g = games_by_id.get(p["game_id"])
-        if g and g["date"] == p["date"]:
-            p["home_runs"], p["away_runs"] = g["home_runs"], g["away_runs"]
-            p["winner"] = g["home"] if g["home_runs"] > g["away_runs"] else g["away"]
-            p["correct"] = p["winner"] == p["pick"]
-            graded += 1
-        elif (g and g["date"] != p["date"]) or p["date"] < stale:
-            p["void"] = True  # postponed or suspended: not played to a finish on its date
-            graded += 1
-    print(f"Graded {graded} picks")
-
-
-def grade_moneylines(history):
-    n = sum(moneyline.grade(p) for p in history["picks"])
-    if n:
-        print(f"Graded {n} moneyline picks")
+    print(f"Graded {daily_common.grade(history, games_by_id, TODAY, score=('home_runs', 'away_runs'))} picks")
 
 
 # ── 3. picks ─────────────────────────────────────────────────────────────────
@@ -139,10 +89,7 @@ def odds_for(g, slate, events, old):
         same = [s for s in slate if (s["away"], s["home"]) == (g["away"], g["home"])]
         if min(same, key=lambda s: abs((datetime.fromisoformat(s["start"]) - ev["start"]).total_seconds())) is not g:
             ev = None
-    if ev and ev["odds"]:
-        return ev["odds"]
-    ml = (old or {}).get("ml")
-    return {"home": ml["home_ml"], "away": ml["away_ml"], "book": ml.get("book")} if ml else None
+    return kept_price(ev["odds"] if ev else None, old)
 
 
 def make_picks(history, league, weights):

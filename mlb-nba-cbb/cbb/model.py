@@ -38,7 +38,6 @@ The model predicts the home team's margin; the win chance is the normal CDF of
 margin / sigma.
 """
 
-import math
 import os
 import sys
 from collections import defaultdict
@@ -48,6 +47,11 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game_methods import SeasonMethods  # noqa: E402
+import team_model_common as TM  # noqa: E402
+from team_model_common import WalkBase, basketball_mov, elo_update, regress_elo  # noqa: E402
+
+# The win-chance helpers live in team_model_common; these names are this model's.
+norm_cdf, predict_margin, win_prob = TM.norm_cdf, TM.predict_margin, TM.win_prob
 
 ELO_START = 1500
 ELO_K = 24
@@ -70,10 +74,6 @@ PYTH_EXPONENT = 11.5  # KenPom's Pythagorean exponent before he moved to AdjEM
 # League-average four factors, used to shrink small samples.
 AVG = {"efg": 0.505, "tov": 0.175, "orb": 0.29, "ftr": 0.32}
 HOME_EFF = 1.5  # starting guess for home court, efficiency points per side
-
-
-def norm_cdf(x):
-    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
 
 def possessions(line):
@@ -116,7 +116,9 @@ def _solve(n, cols, vals, y, w, prior, lam, fixed_prior, fixed_lam):
     return np.linalg.solve(M, b)
 
 
-class League:
+class League(WalkBase):
+    REST_CAP = REST_CAP
+
     def __init__(self, params=None, di=None):
         self.p = {**DEFAULT_PARAMS, **(params or {})}
         self.di = di or {}  # season -> Division I team ids (division_one)
@@ -152,15 +154,9 @@ class League:
                 "t": {t: c * v for t, v in r["t"].items()},
                 "mu": r["mu"], "mu_t": r["mu_t"], "h": r["h"],
             }
-            mean = sum(self.elo.values()) / max(len(self.elo), 1)
-            for t in list(self.elo):
-                self.elo[t] = mean + self.p["elo_carry"] * (self.elo[t] - mean)
+            regress_elo(self.elo, self.p["elo_carry"])
             self.reset_season()
         self.season = season
-
-    def _check_season(self, season):
-        if season != self.season:
-            self._start_season(season)
 
     def is_di(self, team, season=None):
         s = self.di.get(season or self.season)
@@ -269,25 +265,9 @@ class League:
         last = self.margins[team][-RECENT_GAMES:]
         return sum(last) / (len(last) + RECENT_SHRINK)
 
-    def rest_days(self, team, day):
-        last = self.last_date.get(team)
-        if last is None:
-            return REST_CAP
-        return max(0, min(REST_CAP, (date.fromisoformat(day) - date.fromisoformat(last)).days - 1))
-
     def record(self, team):
         w, l = self.wins[team]
         return f"{w}-{l}"
-
-    def _methods_through(self, day):
-        """Add every pending result from before `day` to the Massey /
-        Pythagorean ratings, so they are solved once a day (the solve is the
-        slow part of a walk) and stand as they did that morning."""
-        ready = [x for x in self.methods_pending if x[0] < day]
-        if ready:
-            for _, h, a, hp, ap, neutral in ready:
-                self.methods.add(h, a, hp, ap, neutral)
-            self.methods_pending = [x for x in self.methods_pending if x[0] >= day]
 
     # ── features ──
     def features(self, g):
@@ -337,14 +317,7 @@ class League:
         self.opponents[h].append(a)
         self.opponents[a].append(h)
         home_adv = 0 if g.get("neutral") else ELO_HOME
-        diff = self.elo[h] + home_adv - self.elo[a]
-        expected = 1 / (1 + 10 ** (-diff / 400))
-        won = 1.0 if margin > 0 else 0.0
-        winner_diff = diff if margin > 0 else -diff
-        mult = ((abs(margin) + 3) ** 0.8) / (7.5 + 0.006 * winner_diff)
-        shift = self.p["elo_k"] * mult * (won - expected)
-        self.elo[h] += shift
-        self.elo[a] -= shift
+        elo_update(self.elo, h, a, margin, home_adv, self.p["elo_k"], basketball_mov)
 
         box = box or {}
         hl, al = box.get(h), box.get(a)
@@ -355,16 +328,6 @@ class League:
                                100 * al[-1] / poss))
             self._add_factors(h, hl, al)
             self._add_factors(a, al, hl)
-
-
-def predict_margin(weights, feats):
-    return sum(weights["coef"][k] * feats[k] for k in weights["features"])
-
-
-def win_prob(weights, feats):
-    """(home win probability, projected home margin)."""
-    m = predict_margin(weights, feats)
-    return norm_cdf(m / weights["sigma"]), m
 
 
 def team_table(league, day=None):

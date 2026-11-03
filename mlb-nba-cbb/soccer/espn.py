@@ -13,7 +13,6 @@ the goal times), and when neither is there the match has no usable result
 import os
 import re
 import sys
-import time
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -21,6 +20,8 @@ import requests
 
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "shared"))
 from soccer_abbr import fix as fix_abbr  # noqa: E402
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import fetch_common  # noqa: E402
 
 API = "https://site.api.espn.com/apis/site/v2/sports"
 ET = ZoneInfo("America/New_York")
@@ -31,24 +32,14 @@ COMPS = {
     "LALIGA": {"path": "soccer/esp.1", "name": "La Liga", "fd": "SP1"},
     "UCL": {"path": "soccer/uefa.champions", "name": "Champions League", "fd": None},
 }
-VOID_STATUS = {"STATUS_POSTPONED", "STATUS_CANCELED", "STATUS_ABANDONED", "STATUS_SUSPENDED", "STATUS_FORFEIT"}
+VOID_STATUS = fetch_common.ESPN_VOID_STATUS
 
 session = requests.Session()
 session.headers["User-Agent"] = "Mozilla/5.0 (Soccer Edge; github.com/ant56-arch/ant56-arch.github.io)"
 
 
 def get(path, **params):
-    for attempt in range(4):
-        try:
-            r = session.get(f"{API}/{path}", params=params, timeout=30)
-            r.raise_for_status()
-            return r.json()
-        except requests.RequestException as e:
-            code = getattr(getattr(e, "response", None), "status_code", None)
-            if attempt == 3 or (code and 400 <= code < 500 and code != 429):
-                raise  # a bad request won't get better by asking again
-            print(f"  retrying {path}: {e}")
-            time.sleep(2 ** attempt)
+    return fetch_common.get_json(session, API, path, params, retry_client_errors=False)
 
 
 def season_of(day):

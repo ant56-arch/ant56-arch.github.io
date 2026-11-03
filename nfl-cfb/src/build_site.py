@@ -54,6 +54,7 @@ import accuracy_page  # noqa: E402
 import model_page  # noqa: E402
 import chrome  # noqa: E402
 import moneyline  # noqa: E402
+import pick_moves  # noqa: E402 - the posted-pick rule (football_has_ml / football_hit)
 from datetime import datetime, timedelta, timezone, time as dtime
 from zoneinfo import ZoneInfo
 
@@ -188,7 +189,7 @@ def ml_view(sport, r):
     row carrying the ml_* columns - a tracking-log row (locked at kickoff,
     graded once final) or a vegas_comparison row. None when the game has no
     book moneyline."""
-    if r is None or pd.isna(r.get("ml_pick_side")) or pd.isna(r.get("ml_pick_price")):
+    if r is None or not pick_moves.football_has_ml(r):
         return None
     won, push = r.get("ml_won"), r.get("ml_push")
     result = None
@@ -503,7 +504,9 @@ def kick_time(g):
 
 def game_pick(g):
     """The one pick a game row shows: our moneyline pick (team, price, our
-    chance) when the book has a moneyline, else the team our model favors."""
+    chance) when the book has a moneyline, else the team our model favors -
+    the rule in shared/pick_moves.py (g["ml"] is set by ml_view exactly when
+    football_has_ml holds)."""
     ml = g.get("ml")
     if ml:
         return {"team": ml["team"], "other": ml["other"], "prob": ml["our"], "value": ml["value"],
@@ -519,11 +522,7 @@ def pick_hit(r):
     """Whether our pick in a graded tracking-log game won: the moneyline pick
     when the book had one, else the team our model favored. A tie is a miss
     (the moneyline bet itself is a push, which the units reflect)."""
-    if pd.notna(r.get("ml_pick_side")) and pd.notna(r.get("ml_pick_price")):
-        if r.get("ml_push") == 1:
-            return False
-        return None if pd.isna(r.get("ml_won")) else r["ml_won"] == 1
-    return None if pd.isna(r.get("model_correct_pick")) else r["model_correct_pick"] == 1
+    return pick_moves.football_hit(r)
 
 def live_record(sport, log):
     """Our record since live tracking began, added up across seasons (never

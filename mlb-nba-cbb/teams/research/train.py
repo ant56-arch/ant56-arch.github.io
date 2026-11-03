@@ -27,37 +27,21 @@ model's last training day, so it does nothing in the offseason. FORCE=1 skips
 both checks (the research workflow sets it).
 """
 
-import json
 import math
 import os
 import sys
-from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
 
 import numpy as np
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
+sys.path.append(os.path.dirname(HERE))
 import model as M  # noqa: E402
 import store  # noqa: E402
-sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
-import model_watch  # noqa: E402  (the repo root's cold-stretch check)
+import train_common  # noqa: E402  (the shared retrain engine)
 
-ET = ZoneInfo("America/New_York")  # the site's days are US Eastern, like espn.ET
-OUT = os.path.join(HERE, "model_weights.json")
-HISTORY = os.path.join(HERE, "model_history.json")
-PICKS = os.path.join(HERE, "picks_history.json")
 WARMUP_UNTIL = "07-01"  # skip the first stored season's first half: no pitcher history yet, ratings unsettled
-BANDS = [(0.5, 0.55), (0.55, 0.6), (0.6, 0.65), (0.65, 1.01)]
 L2 = 1.0  # ridge penalty on every coefficient but home field
-
-HOLDOUT_GAMES = 300  # about two weeks of the regular season
-MIN_TRAIN_GAMES = 1500
-MIN_NEW_GAMES = 60
-RETRAIN_EVERY_DAYS = 7
-SWITCH_MARGIN = 0.001  # log loss a new recipe must win by
-SANITY_MARGIN = 0.005  # how much worse than the live model the chosen recipe (fit without the holdout) may score on it
 
 DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "sp_shrink": M.SP_SHRINK_IP, "years": 2}
 # Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
@@ -86,329 +70,123 @@ RECIPES = [
 ]
 
 
-def recipe_features(recipe):
-    base = ["home_field", "elo"] if recipe.get("elo_only") else M.FEATURES
-    return base + [c for kind in recipe.get("extras", []) for c in M.EXTRAS[kind]]
-
-
-def league_params(recipe):
-    return {"elo_k": recipe["elo_k"], "elo_carry": recipe["elo_carry"], "sp_shrink": recipe["sp_shrink"]}
-
-
-_walks = {}
-
-
-def build_rows(params=None):
-    """One row per stored game with that morning's features, walking the league
-    with the given settings. Cached per setting."""
-    key = json.dumps(params or {}, sort_keys=True)
-    if key in _walks:
-        return _walks[key]
-    league = M.League(params)
-    rows = []
-    for g in store.load_all():
-        feats = league.features_for_past(g)
-        rows.append({"game": g, "f": feats,
-                     "home_won": g["home_runs"] > g["away_runs"]})
-        league.update(g)
-    first = rows[0]["game"]["season"] if rows else None
-    for r in rows:
-        g = r["game"]
-        r["usable"] = g["season"] != first or g["date"][5:] >= WARMUP_UNTIL
-    _walks[key] = rows
-    return rows
-
-
-def fit(rows, features=None, season_decay=None):
-    """Ridge-penalized logistic regression by Newton's method. season_decay
-    (Anthony, 2026-10-26: keep learning from this season): each older season
-    counts this much as much as the one after it."""
-    features = features or M.FEATURES
-    X = np.array([[r["f"][k] for k in features] for r in rows])
-    y = np.array([r["home_won"] for r in rows], dtype=float)
-    sw = np.ones(len(rows))
-    if season_decay:
-        latest = max(r["game"]["season"] for r in rows)
-        sw = np.array([season_decay ** (latest - r["game"]["season"]) for r in rows])
-        sw *= len(rows) / sw.sum()
-    pen = np.full(X.shape[1], L2)
-    pen[features.index("home_field")] = 0.0
-    w = np.zeros(X.shape[1])
-    for _ in range(50):
-        p = 1 / (1 + np.exp(-(X @ w)))
-        grad = X.T @ (sw * (p - y)) + pen * w
-        hess = (X * (sw * p * (1 - p))[:, None]).T @ X + np.diag(pen)
-        step = np.linalg.solve(hess, grad)
-        w -= step
-        if np.max(np.abs(step)) < 1e-8:
-            break
-    return {"features": features, "coef": {k: round(float(c), 5) for k, c in zip(features, w)}}
-
-
-def evaluate(weights, rows):
-    preds = []
-    for r in rows:
-        p_home = M.win_prob(weights, r["f"])
-        pick_home = p_home >= 0.5
-        preds.append({"date": r["game"]["date"], "p_home": p_home, "conf": p_home if pick_home else 1 - p_home,
-                      "correct": pick_home == r["home_won"], "home_won": r["home_won"]})
-    n = len(preds)
-    log_loss = -sum(math.log(max(1e-9, p["p_home"] if p["home_won"] else 1 - p["p_home"])) for p in preds) / n
-    brier = sum((p["p_home"] - p["home_won"]) ** 2 for p in preds) / n
-
-    bands = []
-    for lo, hi in BANDS:
-        b = [p for p in preds if lo <= p["conf"] < hi]
-        if b:
-            bands.append({"range": [lo, min(hi, 1.0)], "n": len(b),
-                          "predicted": round(sum(p["conf"] for p in b) / len(b), 4),
-                          "actual": round(sum(p["correct"] for p in b) / len(b), 4)})
-
-    by_day = defaultdict(list)
-    for p in preds:
-        by_day[p["date"]].append(p)
-    top = [p for day in by_day.values() for p in sorted(day, key=lambda p: -p["conf"])[:3]]
-
-    by_month = defaultdict(list)
-    for p in preds:
-        by_month[p["date"][:7]].append(p)
-    months = [{"month": mo, "n": len(ps), "correct": sum(p["correct"] for p in ps),
-               "predicted": round(sum(p["conf"] for p in ps) / len(ps), 4)} for mo, ps in sorted(by_month.items())]
-
-    return {
-        "games": n,
-        "correct": sum(p["correct"] for p in preds),
-        "accuracy": round(sum(p["correct"] for p in preds) / n, 4),
-        "predicted_accuracy": round(sum(p["conf"] for p in preds) / n, 4),
-        "log_loss": round(log_loss, 4),
-        "brier": round(brier, 4),
-        "home_win_rate": round(sum(p["home_won"] for p in preds) / n, 4),
-        "top3": {"days": len(by_day), "picks": len(top), "correct": sum(p["correct"] for p in top),
-                 "accuracy": round(sum(p["correct"] for p in top) / len(top), 4)},
-        "bands": bands,
-        "months": months,
-    }
-
-
-def raw_log_loss(weights, rows):
-    """Unrounded log loss, for comparing recipes whose scores are close."""
-    total = 0.0
-    for r in rows:
-        p = M.win_prob(weights, r["f"])
-        total -= math.log(max(1e-9, p if r["home_won"] else 1 - p))
-    return total / len(rows)
-
-
 def home_rate_log_loss(rate, rows):
     return -sum(math.log(rate if r["home_won"] else 1 - rate) for r in rows) / len(rows)
 
 
-def train_recipe(recipe, before_idx=None):
-    """Fit a recipe on usable games before index before_idx (all games if
-    None), within its window of years. None if there are too few games."""
-    rows = build_rows(league_params(recipe))
-    pool = rows if before_idx is None else rows[:before_idx]
-    if not pool:
-        return None
-    last = date.fromisoformat(pool[-1]["game"]["date"])
-    since = (last - timedelta(days=365 * recipe["years"])).isoformat()
-    train = [r for r in pool if r["usable"] and r["game"]["date"] > since]
-    if len(train) < MIN_TRAIN_GAMES:
-        return None
-    w = fit(train, recipe_features(recipe), recipe.get("season_decay"))
-    w["league"] = league_params(recipe)
-    w["recipe"] = recipe
-    w["training_games"] = len(train)
-    w["training_dates"] = [train[0]["game"]["date"], train[-1]["game"]["date"]]
-    return w
+class TeamsTrainer(train_common.Trainer):
+    M = M
+    store = store
+    TITLE = "MLB team model retrain"
+    WATCH_KEY = "mlb_games"
+    RECIPES = RECIPES
+    DEFAULT_RECIPE = DEFAULT_RECIPE
+    BANDS = [(0.5, 0.55), (0.55, 0.6), (0.6, 0.65), (0.65, 1.01)]
+    HOLDOUT_GAMES = 300  # about two weeks of the regular season
+    MIN_TRAIN_GAMES = 1500
+    MIN_NEW_GAMES = 60
+    SWITCH_MARGIN = 0.001  # log loss a new recipe must win by
+    SANITY_MARGIN = 0.005  # how much worse than the live model the chosen recipe (fit without the holdout) may score on it
+    ELO_ONLY = BASELINE_FEATURES = ["home_field", "elo"]
+    NAME_WIDTH = 50
+    LIVE_SKIP_VOID = True
+    SEASON_DONE = "10-01"  # a season counts once its regular season is over
 
+    def league_params(self, recipe):
+        return {"elo_k": recipe["elo_k"], "elo_carry": recipe["elo_carry"], "sp_shrink": recipe["sp_shrink"]}
 
-def season_backtest(recipe):
-    """The site's backtest: fit on the seasons before the latest finished one,
-    then pick every game of that season."""
-    rows = build_rows(league_params(recipe))
-    seasons = sorted({r["game"]["season"] for r in rows})
-    # A season counts once its regular season is over (October), so the
-    # backtest is always the latest season; its postseason fills in as played.
-    finished = [s for s in seasons if s < seasons[-1] or datetime.now(ET).date().isoformat() >= f"{s}-10-01"]
-    if len(finished) < 2:
-        return {}
-    test_season = finished[-1]
-    first = max(seasons[0], test_season - recipe["years"])
-    train = [r for r in rows if r["usable"] and first <= r["game"]["season"] < test_season]
-    test = [r for r in rows if r["game"]["season"] == test_season]
-    if len(train) < MIN_TRAIN_GAMES:
-        return {}
-    w = fit(train, recipe_features(recipe), recipe.get("season_decay"))
-    test_regular = [r for r in test if r["game"]["type"] == "regular"]
-    post = [r for r in test if r["game"]["type"] != "regular"]
-    bt = evaluate(w, test_regular)
-    home_rate = float(np.mean([r["home_won"] for r in train]))
+    def walk(self, params):
+        league = M.League(params)
+        rows = []
+        for g in store.load_all():
+            feats = league.features_for_past(g)
+            rows.append({"game": g, "f": feats,
+                         "home_won": g["home_runs"] > g["away_runs"]})
+            league.update(g)
+        return rows
 
-    elo_bt = evaluate(fit(train, ["home_field", "elo"]), test_regular)
-    return {
-        "trained_on": f"{first} to {test_season - 1}",
-        "backtest_season": str(test_season),
-        "backtest": bt,
-        "backtest_postseason": evaluate(w, post) if post else None,
-        "baselines": {"elo_only_accuracy": elo_bt["accuracy"], "elo_only_log_loss": elo_bt["log_loss"],
-                      "home_team_accuracy": bt["home_win_rate"],
-                      "home_rate_log_loss": round(home_rate_log_loss(home_rate, test_regular), 4)},
-    }
+    def usable(self, g, first):
+        return g["season"] != first or g["date"][5:] >= WARMUP_UNTIL
 
+    def won(self, r):
+        return r["home_won"]
 
-def load(path, default):
-    try:
-        with open(path) as f:
-            return json.load(f)
-    except (OSError, ValueError):
-        return default
+    def predict(self, weights, r):
+        return M.win_prob(weights, r["f"]), None
 
+    def fit(self, rows, features=None, season_decay=None):
+        """Ridge-penalized logistic regression by Newton's method. season_decay
+        (Anthony, 2026-10-26: keep learning from this season): each older season
+        counts this much as much as the one after it."""
+        features = features or self.M.FEATURES
+        X = np.array([[r["f"][k] for k in features] for r in rows])
+        y = np.array([r["home_won"] for r in rows], dtype=float)
+        sw = np.ones(len(rows))
+        if season_decay:
+            latest = max(r["game"]["season"] for r in rows)
+            sw = np.array([season_decay ** (latest - r["game"]["season"]) for r in rows])
+            sw *= len(rows) / sw.sum()
+        pen = np.full(X.shape[1], L2)
+        pen[features.index("home_field")] = 0.0
+        w = np.zeros(X.shape[1])
+        for _ in range(50):
+            p = 1 / (1 + np.exp(-(X @ w)))
+            grad = X.T @ (sw * (p - y)) + pen * w
+            hess = (X * (sw * p * (1 - p))[:, None]).T @ X + np.diag(pen)
+            step = np.linalg.solve(hess, grad)
+            w -= step
+            if np.max(np.abs(step)) < 1e-8:
+                break
+        return {"features": features, "coef": {k: round(float(c), 5) for k, c in zip(features, w)}}
 
-def live_record(days=14):
-    picks = load(PICKS, {}).get("picks", [])
-    since = (datetime.now(ET).date() - timedelta(days=days)).isoformat()
-    g = [p for p in picks if p["date"] >= since and p.get("correct") is not None and not p.get("void")]
-    if not g:
-        return None
-    return {"days": days, "picks": len(g), "accuracy": round(sum(p["correct"] for p in g) / len(g), 4),
-            "predicted": round(sum(p["prob"] for p in g) / len(g) / 100, 4)}
+    def fit_recipe(self, rows, recipe):
+        w = self.fit(rows, self.recipe_features(recipe), recipe.get("season_decay"))
+        w["league"] = self.league_params(recipe)
+        return w
 
+    def baseline_log_loss(self, before, holdout):
+        home_rate = float(np.mean([r["home_won"] for r in before]))
+        return home_rate_log_loss(home_rate, holdout)
 
-def deploy_ok(final, live_ll, chosen_ll, baseline_ll):
-    """Sanity checks before the refit replaces the live model: finite numbers,
-    it beats always taking the usual home-team rate on games it never saw, and
-    on the recent games it isn't clearly worse than the model it replaces.
-    Both scores are the chosen recipe fit without the holdout: the refit has
-    seen the holdout, so its own score there would flatter it."""
-    if not all(math.isfinite(v) for v in final["coef"].values()):
-        return False, "the refit has non-finite coefficients"
-    if chosen_ll >= baseline_ll:
-        return False, "the chosen recipe didn't beat the home-team rate on held-out games"
-    if live_ll is not None and chosen_ll > live_ll + SANITY_MARGIN:
-        return False, "the chosen recipe scored worse than the live model on recent games"
-    return True, ""
+    def label_training(self, w, train):
+        pass
 
+    def finite(self, final):
+        return all(math.isfinite(v) for v in final["coef"].values())
 
-def summary(lines):
-    text = "\n".join(lines)
-    print(text)
-    path = os.environ.get("GITHUB_STEP_SUMMARY")
-    if path:
-        with open(path, "a") as f:
-            f.write(text + "\n")
+    def season_backtest(self, recipe):
+        """The site's backtest: fit on the seasons before the latest finished
+        one, then pick every game of that season. A season counts once its
+        regular season is over (October), so the backtest is always the latest
+        season; its postseason fills in as played."""
+        split = self.backtest_split(recipe)
+        if split is None:
+            return {}
+        first, test_season, train, test = split
+        if len(train) < self.MIN_TRAIN_GAMES:
+            return {}
+        w = self.fit(train, self.recipe_features(recipe), recipe.get("season_decay"))
+        test_regular = [r for r in test if r["game"]["type"] == "regular"]
+        post = [r for r in test if r["game"]["type"] != "regular"]
+        bt = self.evaluate(w, test_regular)
+        home_rate = float(np.mean([r["home_won"] for r in train]))
 
+        elo_bt = self.evaluate(self.fit(train, ["home_field", "elo"]), test_regular)
+        return {
+            "trained_on": f"{first} to {test_season - 1}",
+            "backtest_season": str(test_season),
+            "backtest": bt,
+            "backtest_postseason": self.evaluate(w, post) if post else None,
+            "baselines": {"elo_only_accuracy": elo_bt["accuracy"], "elo_only_log_loss": elo_bt["log_loss"],
+                          "home_team_accuracy": bt["home_win_rate"],
+                          "home_rate_log_loss": round(home_rate_log_loss(home_rate, test_regular), 4)},
+        }
 
-def recipe_name(r):
-    extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
-    extras += f", older seasons x{r['season_decay']}" if r.get("season_decay") else ""
-    return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, SP shrink {r['sp_shrink']}, {r['years']} years{extras}"
-
-
-def main():
-    force = os.environ.get("FORCE", "").lower() in ("1", "true", "yes")
-    slump = None if force else model_watch.early_retrain("mlb_games")
-    if slump:
-        print(model_watch.slump_text(slump).capitalize() + ".")
-    live = load(OUT, {})
-    history = load(HISTORY, {"runs": []})
-    current = live.get("recipe", DEFAULT_RECIPE)
-
-    rows = build_rows(league_params(current))
-    if not rows:
-        print("No stored games.")
-        return
-    latest = rows[-1]["game"]["date"]
-    live_through = live.get("trained_through")
-    new_games = sum(1 for r in rows if live_through is None or r["game"]["date"] > live_through)
-    if not force and not slump:
-        last_run = history["runs"][-1]["run_at"][:10] if history["runs"] else None
-        if last_run and date.fromisoformat(last_run) > date.today() - timedelta(days=RETRAIN_EVERY_DAYS):
-            print(f"Retrained {last_run}; next retrain once a week has passed.")
-            return
-        if new_games < MIN_NEW_GAMES:
-            print(f"{new_games} games since the live model's last training day ({live_through}); "
-                  f"waiting for {MIN_NEW_GAMES}.")
-            return
-
-    cut = len(rows) - HOLDOUT_GAMES
-    holdout_from = rows[cut]["game"]["date"]
-    print(f"{len(rows)} games through {latest}; holdout: last {HOLDOUT_GAMES} games from {holdout_from}")
-
-    def holdout(recipe):
-        return build_rows(league_params(recipe))[cut:]
-
-    home_rate = float(np.mean([r["home_won"] for r in rows[:cut]]))
-    baseline_ll = home_rate_log_loss(home_rate, holdout(current))
-
-    candidates = RECIPES + ([current] if current not in RECIPES else [])
-    results = []
-    for recipe in candidates:
-        w = train_recipe(recipe, cut)
-        if w is None:
-            continue
-        ll = raw_log_loss(w, holdout(recipe))
-        results.append((recipe, w, ll))
-        print(f"  {recipe_name(recipe):<50} log loss {ll:.4f}")
-    if not results:
-        print("No recipe had enough games to fit.")
-        return
-
-    cur = next((t for t in results if t[0] == current), None)
-    best = min(results, key=lambda t: t[2])
-    switched = cur is None or (best[0] != current and best[2] < cur[2] - SWITCH_MARGIN)
-    chosen = best if switched else cur
-    chosen_recipe = chosen[0]
-
-    live_ll = raw_log_loss(live, holdout(live.get("recipe", DEFAULT_RECIPE))) if live.get("coef") else None
-    final = train_recipe(chosen_recipe)
-    ok, why = deploy_ok(final, live_ll, chosen[2], baseline_ll)
-
-    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    if ok:
-        final.update(season_backtest(chosen_recipe))
-        final.update({
-            "trained_at": now,
-            "trained_through": latest,
-            "recent_holdout": {"from": holdout_from, "games": HOLDOUT_GAMES,
-                               **{k: v for k, v in evaluate(chosen[1], holdout(chosen_recipe)).items()
-                                  if k not in ("months", "bands")}},
-        })
-        with open(OUT, "w") as f:
-            json.dump(final, f, indent=1)
-
-    history["runs"].append({
-        "run_at": now,
-        "data_through": latest,
-        "holdout": {"from": holdout_from, "games": HOLDOUT_GAMES, "home_rate_log_loss": round(baseline_ll, 4)},
-        "live_model": {"trained_at": live.get("trained_at"), "recipe": live.get("recipe", DEFAULT_RECIPE),
-                       "holdout_log_loss": round(live_ll, 4) if live_ll is not None else None},
-        "current_recipe_log_loss": round(cur[2], 4) if cur else None,
-        "best_recipe": {"recipe": best[0], "log_loss": round(best[2], 4)},
-        "candidates": [{"recipe": r, "log_loss": round(ll, 4), "accuracy": evaluate(w, holdout(r))["accuracy"]}
-                       for r, w, ll in results],
-        "switched_recipe": bool(switched and ok),
-        "deployed": ok,
-        "reason": "; ".join(x for x in (
-            model_watch.slump_text(slump) if slump else "",
-            why or ("new recipe beat the current one on held-out games" if switched
-                    else "kept the recipe, refit with the newest games")) if x),
-        "trigger": "cold stretch" if slump else ("manual" if force else "weekly"),
-        "live_picks_last_14_days": live_record(),
-        "weights_before": live.get("coef"),
-        "weights_after": (final if ok else live).get("coef"),
-    })
-    with open(HISTORY, "w") as f:
-        json.dump(history, f, indent=1)
-
-    summary([f"### MLB team model retrain ({latest})",
-             f"- Holdout: last {HOLDOUT_GAMES} games, from {holdout_from}",
-             f"- Current recipe ({recipe_name(current)}): "
-             + (f"log loss {cur[2]:.4f}" if cur else "couldn't be fit"),
-             f"- Best candidate ({recipe_name(best[0])}): log loss {best[2]:.4f}",
-             f"- Recipe: {'switched to ' + recipe_name(chosen_recipe) if switched else 'unchanged'}",
-             f"- Deployed: {'yes, refit through ' + latest if ok else 'no - ' + why}"])
+    def recipe_name(self, r):
+        extras = (" (Elo only)" if r.get("elo_only") else "") + "".join(f" + {kind}" for kind in r.get("extras", []))
+        extras += f", older seasons x{r['season_decay']}" if r.get("season_decay") else ""
+        return f"Elo K {r['elo_k']}, carry {r['elo_carry']}, SP shrink {r['sp_shrink']}, {r['years']} years{extras}"
 
 
 if __name__ == "__main__":
-    main()
+    TeamsTrainer(HERE).main()
