@@ -93,7 +93,12 @@ jobs:
     if: needs.guard.outputs.go == 'true'
     runs-on: ubuntu-24.04
     steps:
+      # The branch tip when this run starts, not the commit it was queued on: a
+      # run waiting behind another in the mlb-edge group would otherwise start
+      # from data the run before it already replaced, and its save would clash.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -232,7 +237,14 @@ jobs:
           done
           git diff --staged --quiet && exit 0
           git commit -m "Update picks history $(TZ=America/New_York date '+%Y-%m-%d %H:%M')"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
+          # If another run saved the same files first, keep its save and skip
+          # this one quietly: the next run redoes this run's picks and grading.
+          if ! git pull --rebase origin "${GITHUB_REF_NAME}"; then
+            git rebase --abort
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+            echo "Another run saved picks first; skipped this run's save." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           git push
 
       - name: Build site
