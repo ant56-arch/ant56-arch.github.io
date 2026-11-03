@@ -414,6 +414,8 @@ def version_numbers(mid, runs):
     retrain tries now."""
     reg = (load_json(path(ROOT, "model_room", "versions.json"), {}) or {}).get(mid, {})
     vers = list(reg.get("versions", []))
+    added = list(reg.get("added", []))
+    added += [""] * (len(vers) - len(added))
     keys = [vkey(r) for r in vers]
     first = {}
     for r in runs:
@@ -422,8 +424,22 @@ def version_numbers(mid, runs):
             if k not in keys:
                 vers.append(c["recipe"])
                 keys.append(k)
+                added.append((r.get("run_at") or "")[:10])
             first.setdefault(k, r.get("run_at", ""))
-    return vers, keys, first, reg.get("current")
+    return vers, keys, first, reg.get("current"), version_names(added)
+
+
+def version_names(added):
+    """Each version's name: the day it was added, MMDDYYYY (Anthony,
+    2026-11-02), with -2, -3 ... on a second or third version added the same
+    day (matches model_room/number_versions.py)."""
+    seen, out = {}, []
+    for day in added:
+        parts = (day or "").split("-")
+        code = f"{parts[1]}{parts[2]}{parts[0]}" if len(parts) == 3 else "new"
+        seen[code] = seen.get(code, 0) + 1
+        out.append(code if seen[code] == 1 else f"{code}-{seen[code]}")
+    return out
 
 
 OFF_BY_DEFAULT = ("extras", "elo_only", "rest", "promoted", "draw")
@@ -532,14 +548,14 @@ def difference_line(recipe, live):
 def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better=None, extra_callout="",
                   live_score=None, margin=None, mid=None, runs=None):
     """cands: [{'recipe':{}, metric:...}]; metrics: [(key, label, fmt, lower_is_better)].
-    Every version shows by its permanent number. The table lists the versions
+    Every version shows by its permanent name (the day it was added). The table lists the versions
     the retrain tries now (ones not tested yet included); without a numbers
     file it lists what the latest run tried. With margin (the retrain's switch
     margin on metrics[0]), every tested version also gets an Edge score from
     that same number, and the table is ranked by it."""
     if not cands:
         return None
-    vers, keys, first, current = version_numbers(mid, runs or [run])
+    vers, keys, first, current, names = version_numbers(mid, runs or [run])
     by_key = {vkey(c["recipe"]): c for c in cands}
     if current:
         shown = [(n, vers[n - 1], by_key.get(keys[n - 1])) for n in current]
@@ -587,7 +603,7 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
             tags += ' <span class="tag new">new</span>'
         for src in dict.fromkeys(DATA_SOURCES[x] for x in (r.get("extras") or []) if x in DATA_SOURCES):
             tags += f' <span class="tag src">{esc(src)} data</span>'
-        cells = [f"<b>#{n}</b>{tags}"]
+        cells = [f"<b>{esc(names[n - 1])}</b>{tags}"]
         cells.append(score_chip(edge[i]) if edge[i] is not None else ('<span class="set">Not tested yet</span>' if c is None else ""))
         cells.append(f'<span class="diff">{esc(difference_line(r, None if i == live_idx else live_r))}</span>'
                      + settings_lines(r, None if i == live_idx else live_r, all_keys))
@@ -623,7 +639,7 @@ def tryouts_block(cands, live_recipe, metrics, run, title_note="", higher_better
     if has_edge:
         call.append(f"Edge scores here come from the accuracy score the retrain picks with. The live version keeps its own score"
                     f"{'' if live_score is not None else ' (50 until it has live picks)'}, and a tryout must score {SWITCH_POINTS}+ more to take over.")
-    call.append("Each version keeps its number for good, and a brand-new version gets the next number up.")
+    call.append("Each version is named for the day it was added (month, day, year; -2 for a second one that day) and keeps that name for good.")
     return {"head": head, "rows": rows, "helps": helps, "callout": " ".join(call), "note": title_note, "cls": "tryouts"}
 
 
@@ -1627,6 +1643,12 @@ TEAM_CFG = {
                "next": "team news and a way to pick draws", "feat": {}},
 }
 COMP = {"EPL": "Premier League", "LALIGA": "LaLiga", "UCL": "Champions League"}
+# Layers on top of whichever version is live, named like the versions.
+BLEND_LAYERS = {
+    "nba": ("On top of the live version sits the Vegas blend 11022026: the posted chance is 30% the model and 70% the "
+            "sportsbook's no-vig price, moving to 50/50 once both teams have played 20 games, and it switches itself off "
+            "if it stops beating the model alone on this season's graded games."),
+}
 
 
 def book_fav(ml, side_keys):
@@ -1938,7 +1960,9 @@ def build_team(mid):
             mets.append(("accuracy", "Winners picked", lambda v: pc(v, 1), False))
         ho = run.get("holdout", {})
         m["tryouts"] = tryouts_block(cands, mw.get("recipe"), mets, run,
-                                     extra_callout=(f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else ""),
+                                     extra_callout=" ".join(x for x in (
+                                         f"The last real switch was on {last_switch(hist)}." if last_switch(hist) else "",
+                                         BLEND_LAYERS.get(mid, "")) if x),
                                      live_score=m.get("score"), margin=0.001 if mid == "mlb-games" else 0.002, mid=mid, runs=hist)
         m["tryout_title"] = f"Versions tested at the {nice_date(run['run_at'])} retrain"
         m["tryout_intro"] = (f"Tested on the {ho.get('games', '?')} most recent {'matches' if soccer else 'games'} (from {nice_date(ho.get('from', ''))}), which none of them trained on. "

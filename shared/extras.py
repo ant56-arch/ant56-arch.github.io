@@ -489,6 +489,8 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
       <span class="gh-sub">{escape(g.get("pick_sub") or f"chance to beat {g['other']}")}</span>{note}</div>
   </section>"""
     facts = [ml_fact(g)] + list(g.get("facts") or [])
+    if g.get("version") and not g.get("final"):  # the version making this pick, named for the day it was added
+        facts.append(("Model version", escape(g["version"]), g.get("version_note") or "named for the day it was added"))
     dl = "".join(f'<div><dt>{escape(label)}</dt><dd>{value}{f"<small>{escape(sub)}</small>" if sub else ""}</dd></div>'
                  for label, value, sub in facts)
     panels = ""
