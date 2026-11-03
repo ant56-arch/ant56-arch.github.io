@@ -1,7 +1,7 @@
 {
   "n_graded_games": 675,
   "current_season_year": 2026,
-  "last_updated": "2026-11-03T17:09:59.635669+00:00",
+  "last_updated": "2026-11-03T17:17:25.918745+00:00",
   "all_time": {
     "model": {
       "wins": 434,
@@ -12,11 +12,11 @@
       "total_mae": 10.37,
       "brier_score": 0.2197,
       "n_games": 675,
-      "ats_wins": 324,
-      "ats_losses": 349,
-      "ats_pushes": 2,
-      "ats_record": "324-349-2",
-      "ats_accuracy": 0.481
+      "ats_wins": 333,
+      "ats_losses": 330,
+      "ats_pushes": 8,
+      "ats_record": "333-330-8",
+      "ats_accuracy": 0.502
     },
     "sharp": {
       "wins": 453,
@@ -27,11 +27,11 @@
       "total_mae": 10.15,
       "brier_score": 0.2096,
       "n_games": 675,
-      "ats_wins": 332,
-      "ats_losses": 334,
-      "ats_pushes": 9,
-      "ats_record": "332-334-9",
-      "ats_accuracy": 0.498
+      "ats_wins": 0,
+      "ats_losses": 0,
+      "ats_pushes": 0,
+      "ats_record": "0-0",
+      "ats_accuracy": null
     },
     "vegas": {
       "wins": 453,
@@ -59,11 +59,11 @@
       "total_mae": 11.02,
       "brier_score": 0.2311,
       "n_games": 105,
-      "ats_wins": 43,
-      "ats_losses": 60,
-      "ats_pushes": 2,
-      "ats_record": "43-60-2",
-      "ats_accuracy": 0.417
+      "ats_wins": 49,
+      "ats_losses": 49,
+      "ats_pushes": 3,
+      "ats_record": "49-49-3",
+      "ats_accuracy": 0.5
     },
     "sharp": {
       "wins": 65,
@@ -74,11 +74,11 @@
       "total_mae": 10.58,
       "brier_score": 0.2281,
       "n_games": 105,
-      "ats_wins": 46,
-      "ats_losses": 55,
-      "ats_pushes": 4,
-      "ats_record": "46-55-4",
-      "ats_accuracy": 0.455
+      "ats_wins": 0,
+      "ats_losses": 0,
+      "ats_pushes": 0,
+      "ats_record": "0-0",
+      "ats_accuracy": null
     },
     "vegas": {
       "wins": 65,
@@ -106,11 +106,11 @@
       "total_mae": 10.71,
       "brier_score": 0.2342,
       "n_games": 57,
-      "ats_wins": 26,
-      "ats_losses": 31,
-      "ats_pushes": 0,
-      "ats_record": "26-31",
-      "ats_accuracy": 0.456
+      "ats_wins": 22,
+      "ats_losses": 32,
+      "ats_pushes": 1,
+      "ats_record": "22-32-1",
+      "ats_accuracy": 0.407
     },
     "sharp": {
       "wins": 37,
@@ -121,11 +121,11 @@
       "total_mae": 10.53,
       "brier_score": 0.2241,
       "n_games": 57,
-      "ats_wins": 28,
-      "ats_losses": 28,
-      "ats_pushes": 1,
-      "ats_record": "28-28-1",
-      "ats_accuracy": 0.5
+      "ats_wins": 0,
+      "ats_losses": 0,
+      "ats_pushes": 0,
+      "ats_record": "0-0",
+      "ats_accuracy": null
     },
     "vegas": {
       "wins": 37,
