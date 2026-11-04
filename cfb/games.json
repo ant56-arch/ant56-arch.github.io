@@ -1,0 +1,953 @@
+{
+ "sport": "CFB",
+ "label": "Week 10",
+ "updated": "2026-11-04T14:06:05.831860+00:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=400",
+ "top25_only": true,
+ "games": [
+  {
+   "id": "401856855",
+   "start": "2026-11-07T03:15Z",
+   "state": "pre",
+   "detail": "11/6 - 10:15 PM EST",
+   "tv": "ESPN",
+   "venue": "Casino Del Sol Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TCU",
+    "name": "TCU Horned Frogs",
+    "short": "TCU",
+    "location": "TCU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2628.png",
+    "color": "4d1979",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "4-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ARIZ",
+    "name": "Arizona Wildcats",
+    "short": "Arizona",
+    "location": "Arizona",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/12.png",
+    "color": "cc0033",
+    "alt": "003366",
+    "rank": 22,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ARIZ to win, 72%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 9.0,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "ARIZ"
+    },
+    "spread": {
+     "text": "TCU +9.5, 51% to cover",
+     "short": "TCU +9.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-tcu-arizona.html"
+  },
+  {
+   "id": "401856743",
+   "start": "2026-11-07T17:00Z",
+   "state": "pre",
+   "detail": "11/7 - 12:00 PM EST",
+   "tv": "ESPN",
+   "venue": "Memorial Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TEX",
+    "name": "Texas Longhorns",
+    "short": "Texas",
+    "location": "Texas",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png",
+    "color": "af5c37",
+    "alt": "ffffff",
+    "rank": 7,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIZ",
+    "name": "Missouri Tigers",
+    "short": "Missouri",
+    "location": "Missouri",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png",
+    "color": "f1b82d",
+    "alt": "000000",
+    "rank": 18,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TEX to win, 56%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -2.2,
+     "sd": 15.69,
+     "pick_home": false,
+     "team": "TEX"
+    },
+    "spread": {
+     "text": "MIZ +2.5, 51% to cover",
+     "short": "MIZ +2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-texas-missouri.html"
+  },
+  {
+   "id": "401856849",
+   "start": "2026-11-07T17:00Z",
+   "state": "pre",
+   "detail": "11/7 - 12:00 PM EST",
+   "tv": "ABC",
+   "venue": "Rice-Eccles Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BYU",
+    "name": "BYU Cougars",
+    "short": "BYU",
+    "location": "BYU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png",
+    "color": "0047ba",
+    "alt": "002e5d",
+    "rank": 9,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "UTAH",
+    "name": "Utah Utes",
+    "short": "Utah",
+    "location": "Utah",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png",
+    "color": "be0000",
+    "alt": "ffffff",
+    "rank": 3,
+    "score": 0,
+    "record": "8-0",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "UTAH to win, 72%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 8.9,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "UTAH"
+    },
+    "spread": {
+     "text": "UTAH -5.5, 59% to cover",
+     "short": "UTAH -5.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-byu-utah.html"
+  },
+  {
+   "id": "401858512",
+   "start": "2026-11-07T17:00Z",
+   "state": "pre",
+   "detail": "11/7 - 12:00 PM EST",
+   "tv": "Fox",
+   "venue": "Huntington Bank Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "UCLA",
+    "name": "UCLA Bruins",
+    "short": "UCLA",
+    "location": "UCLA",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/26.png",
+    "color": "2774ae",
+    "alt": "f2a900",
+    "rank": 8,
+    "score": 0,
+    "record": "8-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MINN",
+    "name": "Minnesota Golden Gophers",
+    "short": "Minnesota",
+    "location": "Minnesota",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/135.png",
+    "color": "5e0a2f",
+    "alt": "fab41c",
+    "rank": null,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "UCLA to win, 72%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -9.1,
+     "sd": 15.69,
+     "pick_home": false,
+     "team": "UCLA"
+    },
+    "spread": {
+     "text": "UCLA -5.5, 59% to cover",
+     "short": "UCLA -5.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-ucla-minnesota.html"
+  },
+  {
+   "id": "401856744",
+   "start": "2026-11-07T20:00Z",
+   "state": "pre",
+   "detail": "11/7 - 3:00 PM EST",
+   "tv": "ESPN",
+   "venue": "Williams-Brice Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "TA&M",
+    "name": "Texas A&M Aggies",
+    "short": "Texas A&M",
+    "location": "Texas A&M",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png",
+    "color": "500000",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "4-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "SC",
+    "name": "South Carolina Gamecocks",
+    "short": "South Carolina",
+    "location": "South Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png",
+    "color": "73000a",
+    "alt": "000000",
+    "rank": 21,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "SC to win, 56%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 2.2,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "SC"
+    },
+    "spread": {
+     "text": "TA&M +7.0, 62% to cover",
+     "short": "TA&M +7.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-texas-a-m-south-carolina.html"
+  },
+  {
+   "id": "401856740",
+   "start": "2026-11-07T20:30Z",
+   "state": "pre",
+   "detail": "11/7 - 3:30 PM EST",
+   "tv": "ABC",
+   "venue": "Tiger Stadium (LA)",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "ALA",
+    "name": "Alabama Crimson Tide",
+    "short": "Alabama",
+    "location": "Alabama",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
+    "color": "9e1b32",
+    "alt": "ffffff",
+    "rank": 5,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "LSU",
+    "name": "LSU Tigers",
+    "short": "LSU",
+    "location": "LSU",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png",
+    "color": "461d76",
+    "alt": "fdd023",
+    "rank": 14,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "LSU to win, 61%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 4.4,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "LSU"
+    },
+    "spread": {
+     "text": "ALA +5.5, 53% to cover",
+     "short": "ALA +5.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-alabama-lsu.html"
+  },
+  {
+   "id": "401856851",
+   "start": "2026-11-07T20:30Z",
+   "state": "pre",
+   "detail": "11/7 - 3:30 PM EST",
+   "tv": "Fox",
+   "venue": "TDECU Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CIN",
+    "name": "Cincinnati Bearcats",
+    "short": "Cincinnati",
+    "location": "Cincinnati",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2132.png",
+    "color": "000000",
+    "alt": "e00122",
+    "rank": null,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "HOU",
+    "name": "Houston Cougars",
+    "short": "Houston",
+    "location": "Houston",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png",
+    "color": "c8102e",
+    "alt": "ffffff",
+    "rank": 17,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "HOU to win, 81%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 13.8,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "HOU"
+    },
+    "spread": {
+     "text": "HOU -11.5, 56% to cover",
+     "short": "HOU -11.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-cincinnati-houston.html"
+  },
+  {
+   "id": "401858290",
+   "start": "2026-11-07T20:30Z",
+   "state": "pre",
+   "detail": "11/7 - 3:30 PM EST",
+   "tv": "ACC Network",
+   "venue": "Allegacy Federal Credit Union Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "MRMK",
+    "name": "Merrimack Warriors",
+    "short": "Merrimack",
+    "location": "Merrimack",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2771.png",
+    "color": "000000",
+    "alt": "",
+    "rank": null,
+    "score": 0,
+    "record": "4-5",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "WAKE",
+    "name": "Wake Forest Demon Deacons",
+    "short": "Wake Forest",
+    "location": "Wake Forest",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/154.png",
+    "color": "ceb888",
+    "alt": "2c2a29",
+    "rank": 16,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401858514",
+   "start": "2026-11-07T20:30Z",
+   "state": "pre",
+   "detail": "11/7 - 3:30 PM EST",
+   "tv": "CBS",
+   "venue": "Ohio Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "ORE",
+    "name": "Oregon Ducks",
+    "short": "Oregon",
+    "location": "Oregon",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png",
+    "color": "00934b",
+    "alt": "fff41b",
+    "rank": 23,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "OSU",
+    "name": "Ohio State Buckeyes",
+    "short": "Ohio State",
+    "location": "Ohio State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
+    "color": "ba0c2f",
+    "alt": "a8adb4",
+    "rank": 12,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "OSU to win, 78%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 12.3,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "OSU"
+    },
+    "spread": {
+     "text": "OSU -7.5, 62% to cover",
+     "short": "OSU -7.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-oregon-ohio-state.html"
+  },
+  {
+   "id": "401860911",
+   "start": "2026-11-07T23:00Z",
+   "state": "pre",
+   "detail": "11/7 - 6:00 PM EST",
+   "tv": "USA Net",
+   "venue": "Canvas Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BOIS",
+    "name": "Boise State Broncos",
+    "short": "Boise St",
+    "location": "Boise State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/68.png",
+    "color": "0033a0",
+    "alt": "d64309",
+    "rank": 25,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "CSU",
+    "name": "Colorado State Rams",
+    "short": "Colorado St",
+    "location": "Colorado State",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/36.png",
+    "color": "004c23",
+    "alt": "c8c372",
+    "rank": null,
+    "score": 0,
+    "record": "3-5",
+    "probable": null,
+    "winner": false
+   }
+  },
+  {
+   "id": "401856745",
+   "start": "2026-11-07T23:15Z",
+   "state": "pre",
+   "detail": "11/7 - 6:15 PM EST",
+   "tv": "ESPN",
+   "venue": "Neyland Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "UK",
+    "name": "Kentucky Wildcats",
+    "short": "Kentucky",
+    "location": "Kentucky",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
+    "color": "0033a0",
+    "alt": "ffffff",
+    "rank": 6,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TENN",
+    "name": "Tennessee Volunteers",
+    "short": "Tennessee",
+    "location": "Tennessee",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png",
+    "color": "ff8200",
+    "alt": "ffffff",
+    "rank": 13,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TENN to win, 69%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 7.9,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "TENN"
+    },
+    "spread": {
+     "text": "TENN -6.5, 54% to cover",
+     "short": "TENN -6.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-kentucky-tennessee.html"
+  },
+  {
+   "id": "401856741",
+   "start": "2026-11-08T00:30Z",
+   "state": "pre",
+   "detail": "11/7 - 7:30 PM EST",
+   "tv": "ABC",
+   "venue": "Vaught-Hemingway Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "UGA",
+    "name": "Georgia Bulldogs",
+    "short": "Georgia",
+    "location": "Georgia",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png",
+    "color": "ba0c2f",
+    "alt": "2c2a29",
+    "rank": 2,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "MISS",
+    "name": "Ole Miss Rebels",
+    "short": "Ole Miss",
+    "location": "Ole Miss",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
+    "color": "13294b",
+    "alt": "cf142b",
+    "rank": 10,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "UGA to win, 50%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -0.2,
+     "sd": 15.69,
+     "pick_home": false,
+     "team": "UGA"
+    },
+    "spread": {
+     "text": "MISS +3.5, 58% to cover",
+     "short": "MISS +3.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-georgia-ole-miss.html"
+  },
+  {
+   "id": "401858291",
+   "start": "2026-11-08T00:30Z",
+   "state": "pre",
+   "detail": "11/7 - 7:30 PM EST",
+   "tv": "NBC",
+   "venue": "Notre Dame Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "MIA",
+    "name": "Miami Hurricanes",
+    "short": "Miami",
+    "location": "Miami",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png",
+    "color": "f47423",
+    "alt": "035131",
+    "rank": 1,
+    "score": 0,
+    "record": "8-0",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ND",
+    "name": "Notre Dame Fighting Irish",
+    "short": "Notre Dame",
+    "location": "Notre Dame",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
+    "color": "062340",
+    "alt": "c99700",
+    "rank": 11,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "ND to win, 65%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 6.0,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "ND"
+    },
+    "spread": {
+     "text": "ND -6.0, 50% to cover",
+     "short": "ND -6.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-miami-notre-dame.html"
+  },
+  {
+   "id": "401858513",
+   "start": "2026-11-08T00:30Z",
+   "state": "pre",
+   "detail": "11/7 - 7:30 PM EST",
+   "tv": "Fox",
+   "venue": "Ryan Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "IOWA",
+    "name": "Iowa Hawkeyes",
+    "short": "Iowa",
+    "location": "Iowa",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png",
+    "color": "231f20",
+    "alt": "fcd116",
+    "rank": 19,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "NU",
+    "name": "Northwestern Wildcats",
+    "short": "Northwestern",
+    "location": "Northwestern",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/77.png",
+    "color": "492f92",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "NU to win, 55%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 2.1,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "NU"
+    },
+    "spread": {
+     "text": "IOWA +2.5, 51% to cover",
+     "short": "IOWA +2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-iowa-northwestern.html"
+  },
+  {
+   "id": "401856739",
+   "start": "2026-11-08T00:45Z",
+   "state": "pre",
+   "detail": "11/7 - 7:45 PM EST",
+   "tv": "SEC Network",
+   "venue": "Ben Hill Griffin Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "OU",
+    "name": "Oklahoma Sooners",
+    "short": "Oklahoma",
+    "location": "Oklahoma",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png",
+    "color": "990000",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "4-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "FLA",
+    "name": "Florida Gators",
+    "short": "Florida",
+    "location": "Florida",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/57.png",
+    "color": "0021a5",
+    "alt": "fa4616",
+    "rank": 24,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "FLA to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 6.2,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "FLA"
+    },
+    "spread": {
+     "text": "FLA -6.0, 50% to cover",
+     "short": "FLA -6.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-oklahoma-florida.html"
+  },
+  {
+   "id": "401856856",
+   "start": "2026-11-08T02:30Z",
+   "state": "pre",
+   "detail": "11/7 - 9:30 PM EST",
+   "tv": "ESPN",
+   "venue": "Galaxy Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "WVU",
+    "name": "West Virginia Mountaineers",
+    "short": "West Virginia",
+    "location": "West Virginia",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/277.png",
+    "color": "eaaa00",
+    "alt": "002855",
+    "rank": null,
+    "score": 0,
+    "record": "5-3",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TTU",
+    "name": "Texas Tech Red Raiders",
+    "short": "Texas Tech",
+    "location": "Texas Tech",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png",
+    "color": "da291c",
+    "alt": "000000",
+    "rank": 15,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "TTU to win, 86%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 17.1,
+     "sd": 15.69,
+     "pick_home": true,
+     "team": "TTU"
+    },
+    "spread": {
+     "text": "WVU +17.5, 51% to cover",
+     "short": "WVU +17.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-west-virginia-texas-tech.html"
+  }
+ ]
+}
