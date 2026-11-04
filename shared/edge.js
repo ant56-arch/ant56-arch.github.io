@@ -319,7 +319,8 @@ function edgeStadiumKind(sport) {
   const s = String(sport || "").toUpperCase();
   if (s === "NHL") return "ice";
   if (s === "NBA" || s === "CBB") return "court";
-  if (s === "NFL" || s === "CFB" || s === "SOCCER") return "pitch";
+  if (s === "NFL" || s === "CFB") return "gridiron";
+  if (s === "SOCCER") return "pitch";
   return "park";
 }
 
@@ -329,7 +330,7 @@ function edgeStadium(c, kind) {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
   const x = c.getContext("2d"); x.scale(dpr, dpr);
-  const W = r.width, H = r.height, hz = H * (kind === "park" || kind === "pitch" ? 0.5 : 0.46);
+  const W = r.width, H = r.height, hz = H * (kind === "park" || kind === "pitch" || kind === "gridiron" ? 0.5 : 0.46);
   const indoor = kind === "ice" || kind === "court";
   let seed = 7;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -399,6 +400,32 @@ function edgeStadium(c, kind) {
     [0.08, 0.2, 0.36, 0.58, 0.86].forEach(f => across(f, line, 1 + f));
     x.strokeStyle = line; x.lineWidth = 1.4;
     x.beginPath(); x.ellipse(W * 0.5, top + (H - top) * 0.36, W * 0.09, (H - top) * 0.07, 0, 0, 2 * Math.PI); x.stroke();
+  } else if (kind === "gridiron") {
+    // the field seen from behind the near end zone: sidelines narrowing toward the far one,
+    // yard lines every five yards between them, hash marks and the yard numbers
+    const half = f => W * (0.14 + 0.76 * f), yAt = f => top + (H - top) * f;
+    const fy = i => 0.07 + 0.93 * Math.pow(i / 20, 1.5);
+    x.fillStyle = "rgba(6,18,10,.35)";
+    x.beginPath(); x.moveTo(0, top); x.lineTo(W / 2 - half(0), top); x.lineTo(W / 2 - half(1), yAt(1)); x.lineTo(0, yAt(1)); x.fill();
+    x.beginPath(); x.moveTo(W, top); x.lineTo(W / 2 + half(0), top); x.lineTo(W / 2 + half(1), yAt(1)); x.lineTo(W, yAt(1)); x.fill();
+    x.strokeStyle = line; x.lineWidth = 1.6;
+    x.beginPath(); x.moveTo(W / 2 - half(0), top); x.lineTo(W / 2 - half(1), yAt(1)); x.moveTo(W / 2 + half(0), top); x.lineTo(W / 2 + half(1), yAt(1)); x.stroke();
+    for (let i = 0; i <= 20; i++) {
+      const f = fy(i), y = yAt(f), h = half(f);
+      x.strokeStyle = line; x.lineWidth = (i % 2 ? 0.7 : 1.3) * (0.6 + f);
+      x.beginPath(); x.moveTo(W / 2 - h, y); x.lineTo(W / 2 + h, y); x.stroke();
+      if (i % 2 === 0 && i > 0 && i < 20) {
+        const yd = Math.min(i * 5, 100 - i * 5);
+        x.fillStyle = "rgba(242,238,230,.28)"; x.font = `600 ${Math.round(6 + 26 * f)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "bottom";
+        x.fillText(String(yd), W / 2 - h * 0.8, y - 2); x.fillText(String(yd), W / 2 + h * 0.8, y - 2);
+      }
+      if (i < 20) {
+        const f2 = fy(i + 0.5), y2 = yAt(f2), hx = half(f2) * 0.22, len = 2 + 6 * f2;
+        x.lineWidth = 1;
+        x.beginPath(); x.moveTo(W / 2 - hx, y2 - len / 2); x.lineTo(W / 2 - hx, y2 + len / 2);
+        x.moveTo(W / 2 + hx, y2 - len / 2); x.lineTo(W / 2 + hx, y2 + len / 2); x.stroke();
+      }
+    }
   } else if (kind === "ice") {
     across(0.42, "rgba(176,40,40,.65)", 4);
     across(0.18, "rgba(40,80,170,.55)", 3);
