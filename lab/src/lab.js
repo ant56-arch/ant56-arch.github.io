@@ -22,6 +22,15 @@
   ];
   const on = {};
   OPTS.forEach(([k]) => { on[k] = store.get("lab-" + k) !== "0"; });
+  // 3D players: a test inside the test, off unless picked in the panel (or ?lab3d=1)
+  OPTS.push(["three", "3D players (basketball, test)"]);
+  on.three = store.get("lab-three") === "1" || new URLSearchParams(location.search).get("lab3d") === "1";
+  let three = null;
+  function loadThree() {
+    if (three || !on.three) return;
+    three = { ready: false };
+    import(`${location.origin}/lab/lab3d.js`).then(m => m.create("/lab/")).then(r => { three = { ready: true, r }; }).catch(e => { console.warn("3D players unavailable", e); three = null; on.three = false; });
+  }
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------- small helpers ----------
@@ -760,6 +769,7 @@
     const cx = sp.ax - (W >= 760 && !sp.centered ? 0.03 * W * sp.az / f : 0);
     return {
       f, hz,
+      cx, M, h: sp.h,
       P: (X, Y, Z) => [W / 2 + M + f * (X - cx) / Z, hz + f * (sp.h - Y) / Z],
       s: Z => f / Z,
     };
@@ -1012,6 +1022,31 @@
     }
     x.strokeStyle = "rgba(255,236,200,.55)"; x.lineWidth = Math.max(0.8, hr * 0.3);
     x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, Math.PI * 1.1, Math.PI * 1.9); x.stroke();
+  }
+
+  // 3D players: shadows and numbers in 2D, bodies from the 3D renderer
+  function draw3d(x, cam, players, t, sp, o) {
+    const list = players.map(p => {
+      let speed = 0, dirX = 0, dirZ = 0;
+      if (p.keys) {
+        const a = path(p.keys, t - (p.lag || 0) - 0.08), b = path(p.keys, t - (p.lag || 0));
+        dirX = b.X - a.X; dirZ = b.Z - a.Z; speed = Math.hypot(dirX, dirZ) / 0.08;
+      }
+      if (p.run) speed = 5;
+      return { ...p, speed, dirX, dirZ, moving: speed > 0.35 };
+    });
+    list.forEach(p => {                                                   // contact shadows
+      const s = cam.s(p.Z), f0 = cam.P(p.X, 0, p.Z);
+      x.fillStyle = "rgba(0,0,0,.3)"; x.beginPath(); x.ellipse(f0[0], f0[1], 0.45 * s, 0.12 * s, 0, 0, Math.PI * 2); x.fill();
+    });
+    three.r.draw(x, list, { ...o, f: cam.f, hz: cam.hz, cx: cam.cx, h: cam.h }, o.dt);
+    list.forEach(p => {                                                   // numbers on the chest
+      const k = p.kit, s = cam.s(p.Z);
+      if (!k || !k[1] || s * 1.9 < 40) return;
+      const c = cam.P(p.X + (p.dirX ? Math.sign(p.dirX) * 0.06 : 0), (p.Y || 0) + (p.arms === "guard" ? 1.02 : 1.28), p.Z);
+      x.fillStyle = k[3]; x.font = `700 ${Math.round(0.26 * s)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+      x.fillText(String(k[1]), c[0], c[1]);
+    });
   }
 
   // A hockey player: knees bent, leaning over the puck, both hands on the
@@ -1493,7 +1528,7 @@
     }
     const margin = k => SPORT[k].centered ? 0 : Math.round(W * (W < 760 ? 0.5 : 0.1));
     function bgFor(k) { return cache[k] || (cache[k] = background(k, W, H, dpr, margin(k))); }
-    let pan = 0, lastNow = 0;
+    let pan = 0, lastNow = 0, lastDraw = 0;
     function frame(now) {
       raf = 0;
       if (!W || !H) { size(); if (!W || !H) return; }
@@ -1547,7 +1582,9 @@
       const fade = still ? 1 : clamp(t / 0.35) * clamp((sp.D - t) / 0.45);
       x.globalAlpha = fade;
       now0.players.forEach((p, j) => { p.kit = v.kits[j]; p.skin = v.skins[j]; });
-      now0.players.slice().sort((a, b) => b.Z - a.Z).forEach(p => figure(x, cam, p, t, sp));
+      if (three && three.ready && kind === "court") draw3d(x, cam, now0.players, t, sp, { W, H, ox, M: bg.M, kind, dpr, dt: clamp((now - (lastDraw || now)) / 1000, 0, 0.1) });
+      else now0.players.slice().sort((a, b) => b.Z - a.Z).forEach(p => figure(x, cam, p, t, sp));
+      lastDraw = now;
       if (sp.goal && sp.goal.Y) drawRim(x, cam, sp.goal, now0.ball.swish);
       drawBall(x, cam, now0.ball, cast, t);
       if (kind === "court") glow(x, cam, sp.goal, now0.flash, "255,200,140");
@@ -1701,7 +1738,8 @@
   function apply(k) {
     document.body.classList.toggle("lab-touches", on.touches);
     document.body.classList.toggle("lab-serif", on.serif);
-    if (k === "field" || k == null) { if (on.field) startField(); else if (field) stopField(); }
+    if (k === "three") { location.reload(); return; }
+    if (k === "field" || k == null) { loadThree(); if (on.field) startField(); else if (field) stopField(); }
     if ((k === "touches" || k == null) && on.touches && (!on.field || KIND_OF[pageSport])) {
       card.show((pageSport && NAME[pageSport.toLowerCase()]) ? pageSport.toLowerCase() : "nba");
     }

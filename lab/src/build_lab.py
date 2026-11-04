@@ -39,6 +39,9 @@ def main(site, out):
     ver = str(int((HERE / "lab.js").stat().st_mtime))
     shutil.copy(HERE / "lab.js", out / "lab.js")
     shutil.copy(HERE / "lab.css", out / "lab.css")
+    shutil.copy(HERE / "lab3d.js", out / "lab3d.js")              # 3D players (a test, off by default)
+    shutil.copytree(HERE / "vendor", out / "vendor")
+    shutil.copytree(HERE / "models", out / "models")
 
     home = (site / "index.html").read_text()
     home = lab_links(head_bits(home))
