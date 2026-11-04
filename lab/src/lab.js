@@ -51,6 +51,59 @@
 
   const ORANGE = [229, 121, 59], CREAM = [238, 231, 216], GOLD = [222, 182, 72];
   const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+
+  // Everyone on the field wears an all-time great's jersey: [name, number,
+  // jersey color, number color, stripe color]. Team colors only, no logos.
+  // Listed in the order each sport's cast() adds its players.
+  const ROSTER = {
+    court: [
+      ["Magic", 32, "#FDB927", "#552583"], ["Jordan", 23, "#CE1141", "#FFFFFF"], ["Curry", 30, "#1D428A", "#FFC72C"],
+      ["Duncan", 21, "#1B1B1B", "#C4CED4"], ["LeBron", 23, "#860038", "#FDBB30"],
+      ["Bird", 33, "#007A33", "#FFFFFF"], ["Kobe", 24, "#552583", "#FDB927"], ["Dirk", 41, "#00538C", "#FFFFFF"],
+      ["Hakeem", 34, "#F4F4F4", "#CE1141"], ["Shaq", 32, "#0077C0", "#1B1B1B"],
+    ],
+    gridiron: [
+      ["Munoz", 78, "#FB4F14", "#111111"], ["Ogden", 75, "#241773", "#FFFFFF"], ["Webster", 52, "#101820", "#FFB612"],
+      ["Hannah", 73, "#C8102E", "#FFFFFF"], ["Pace", 76, "#003594", "#FFD100"],
+      ["Brady", 12, "#002244", "#FFFFFF"], ["Payton", 34, "#0B162A", "#C83803"], ["Rice", 80, "#AA0000", "#B3995D"],
+      ["Moss", 84, "#4F2683", "#FFC62F"], ["Gronk", 87, "#F4F4F4", "#002244"],
+      ["White", 92, "#203731", "#FFB612"], ["Donald", 99, "#F4F4F4", "#003594"], ["Greene", 75, "#101820", "#FFB612"],
+      ["Strahan", 92, "#0B2265", "#FFFFFF"], ["Taylor", 56, "#F4F4F4", "#0B2265"], ["Butkus", 51, "#0B162A", "#FFFFFF"],
+      ["Deion", 21, "#A71930", "#111111"], ["Revis", 24, "#125740", "#FFFFFF"], ["Polamalu", 43, "#F4F4F4", "#101820"], ["Reed", 20, "#241773", "#FFFFFF"],
+    ],
+    park: [
+      ["Koufax", 32, "#F4F4F4", "#005A9C"], ["Piazza", 31, "#F4F4F4", "#002D72"], ["Pujols", 5, "#F4F4F4", "#C41E3A"],
+      ["Robinson", 42, "#F4F4F4", "#005A9C"], ["Jeter", 2, "#F4F4F4", "#0C2340", "#0C2340"], ["Schmidt", 20, "#F4F4F4", "#E81828"],
+      ["Williams", 9, "#F4F4F4", "#BD3039"], ["Mays", 24, "#F4F4F4", "#FD5A1E"], ["Aaron", 44, "#F4F4F4", "#13274F"],
+      ["Ruth", 3, "#A2AAAD", "#0C2340"],
+    ],
+    ice: [
+      ["Gretzky", 99, "#041E42", "#FF4C00"], ["Ovechkin", 8, "#C8102E", "#FFFFFF"], ["Lemieux", 66, "#111111", "#FCB514"],
+      ["Howe", 9, "#CE1126", "#FFFFFF"], ["Messier", 11, "#0038A8", "#FFFFFF"],
+      ["Orr", 4, "#111111", "#FFB81C"], ["Lidstrom", 5, "#F4F4F4", "#CE1126"], ["Bourque", 77, "#6F263D", "#FFFFFF"],
+      ["Potvin", 5, "#00539B", "#F47D30"], ["Niedermayer", 27, "#111111", "#F47A38"],
+      ["Roy", 33, "#AF1E2D", "#FFFFFF"],
+    ],
+    pitch: [
+      ["Cruyff", 14, "#F36C21", "#111111"], ["Messi", 10, "#75AADB", "#111111", "#FFFFFF"], ["Ronaldo", 7, "#DA291C", "#FFFFFF"],
+      ["Pelé", 10, "#FFDF00", "#009C3B"], ["Zidane", 10, "#002395", "#FFFFFF"],
+      ["Maldini", 3, "#C8102E", "#FFFFFF", "#111111"], ["Beckenbauer", 5, "#F4F4F4", "#111111"], ["Cannavaro", 5, "#1E5AA8", "#FFFFFF"],
+      ["Ramos", 4, "#AA151B", "#F1BF00"], ["Moore", 6, "#F4F4F4", "#1D2A5B"],
+      ["Cafu", 2, "#FFDF00", "#009C3B"], ["Baresi", 6, "#C8102E", "#FFFFFF", "#111111"],
+      ["Yashin", 1, "#111111", "#FFFFFF"],
+    ],
+  };
+  const CAPTION = {
+    court: "Jordan pulls up over Kobe. Splash.",
+    gridiron: "Brady goes deep to Rice.",
+    park: "Ruth drives one to left-center. Williams runs it down.",
+    ice: "Gretzky feeds Ovechkin for the one-timer.",
+    pitch: "Messi crosses, Ronaldo heads it in.",
+  };
+  // A mix of skin tones on every team, light to deep. These are fans of
+  // the greats in their jerseys, not likenesses.
+  const SKIN = ["#F2CDA8", "#5C3A24", "#D9A577", "#8A5A38", "#EBC096", "#B07A4E", "#6E4429", "#C99367"];
 
   // ---------- the sports ----------
   // Each sport: the surface size and camera (zn: near edge distance, zf: far
@@ -471,13 +524,15 @@
   }
 
   // ---------- players and the ball ----------
+  const kind0 = sp => Object.keys(SPORT).find(k => SPORT[k] === sp);
   function figure(x, cam, p, t, sp) {
     const s = cam.s(p.Z), hgt = 1.9 * s * (p.crouch || 1);
     const foot = cam.P(p.X, 0, p.Z), lift = (p.Y || 0) * s;
     const fx = foot[0], fy = foot[1] - lift;
     x.fillStyle = "rgba(0,0,0,.32)";
     x.beginPath(); x.ellipse(fx, foot[1], 0.42 * s, 0.11 * s, 0, 0, Math.PI * 2); x.fill();
-    if (hgt < 5) { x.fillStyle = rgb(p.team); x.fillRect(fx - 1, fy - hgt, 2, hgt); return; }
+    const kit = p.kit, jersey = kit ? hex(kit[2]) : p.team, skin = p.skin || "#B07A4E";
+    if (hgt < 5) { x.fillStyle = rgb(jersey); x.fillRect(fx - 1, fy - hgt, 2, hgt); return; }
     // moving? compare with where this player was a moment ago
     let speed = 0;
     if (p.keys) { const q = p.lag ? path(p.keys, t - p.lag - 0.06) : path(p.keys, t - 0.06), r = p.lag ? path(p.keys, t - p.lag) : path(p.keys, t); speed = Math.hypot(r.X - q.X, r.Z - q.Z) / 0.06; }
@@ -489,21 +544,31 @@
     [1, -1].forEach(d => {                                            // legs: shorts, then shins
       const ex = fx + d * Math.sin(ph) * stride, ey = fy - (p.Y ? (d > 0 ? 0.05 : 0.08) * hgt : 0);
       const kx = lerp(fx, ex, 0.45), ky = lerp(hip, ey, 0.45);
-      x.strokeStyle = "#3A2A20"; x.lineWidth = lw * 0.9;
+      x.strokeStyle = sp.skate || kind0(sp) === "park" ? rgb(jersey.map(v => v * 0.8)) : skin; x.lineWidth = lw * 0.9;
       x.beginPath(); x.moveTo(kx, ky); x.lineTo(ex, ey); x.stroke();
-      x.strokeStyle = rgb(p.team.map(v => v * 0.7)); x.lineWidth = lw * 1.25;
+      x.strokeStyle = rgb(jersey.map(v => v * 0.72)); x.lineWidth = lw * 1.25;
       x.beginPath(); x.moveTo(fx + d * 0.05 * hgt, hip); x.lineTo(kx, ky); x.stroke();
       x.fillStyle = "#121314"; x.fillRect(ex - lw * 0.6, ey - lw * 0.4, lw * 1.4, lw * 0.6);
     });
     // jersey
     const bw = 0.27 * hgt;
-    x.fillStyle = rgb(p.team);
+    x.fillStyle = rgb(jersey);
     x.beginPath();
     x.moveTo(fx - bw * 0.42, hip + 0.04 * hgt); x.lineTo(fx + bw * 0.42, hip + 0.04 * hgt);
     x.lineTo(fx + bw * 0.5 + lean, sh); x.lineTo(fx - bw * 0.5 + lean, sh); x.closePath(); x.fill();
-    x.fillStyle = "rgba(255,240,210,.35)"; x.fillRect(fx - bw * 0.5 + lean, sh, bw, Math.max(1, 0.03 * hgt));
+    if (kit && kit[4] && hgt > 14) {                                     // striped kits
+      x.save(); x.clip();
+      x.strokeStyle = kit[4]; x.lineWidth = Math.max(1, bw * (kit[4] === kit[3] ? 0.04 : 0.14));
+      for (let k = -2; k <= 2; k++) { const sx0 = fx + lean * 0.5 + k * bw * 0.26; x.beginPath(); x.moveTo(sx0, sh); x.lineTo(sx0, hip + 0.04 * hgt); x.stroke(); }
+      x.restore();
+    }
+    x.fillStyle = "rgba(255,240,210,.3)"; x.fillRect(fx - bw * 0.5 + lean, sh, bw, Math.max(1, 0.03 * hgt));
+    if (kit && hgt > 20) {                                               // the number
+      x.fillStyle = kit[3]; x.font = `700 ${Math.round(0.15 * hgt)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+      x.fillText(String(kit[1]), fx + lean * 0.6, lerp(sh, hip, 0.45));
+    }
     // arms
-    x.strokeStyle = "#4A3428"; x.lineWidth = lw * 0.75;
+    x.strokeStyle = skin; x.lineWidth = lw * 0.75;
     const sx = fx + lean, arm = 0.3 * hgt;
     x.beginPath();
     if (p.arms === "up") { x.moveTo(sx - bw * 0.4, sh + 2); x.lineTo(sx - bw * 0.25, sh - arm); x.moveTo(sx + bw * 0.4, sh + 2); x.lineTo(sx + bw * 0.3, sh - arm); }
@@ -516,7 +581,15 @@
       x.beginPath(); x.moveTo(hx, hy); x.lineTo(hx + Math.cos(a) * 0.45 * hgt, hy + Math.sin(a) * 0.45 * hgt); x.stroke();
     }
     // head, lit from the lamps above
-    x.fillStyle = "#4A3428"; x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, 0, Math.PI * 2); x.fill();
+    x.fillStyle = skin; x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, 0, Math.PI * 2); x.fill();
+    if (kind0(sp) === "park" || sp.skate) {                             // caps and helmets in the team color
+      x.fillStyle = rgb(jersey.every(v => v > 230) ? hex(kit ? kit[3] : "#333333") : jersey.map(v => v * 0.85));
+      x.beginPath(); x.arc(sx, sh - hr * 1.3, hr * 1.05, Math.PI, 0); x.fill();
+    } else if (sp.zn === 14 && sp.h === 9) {                            // football helmet
+      x.fillStyle = rgb(jersey.every(v => v > 230) ? hex(kit ? kit[3] : "#333333") : jersey);
+      x.beginPath(); x.arc(sx, sh - hr * 1.25, hr * 1.12, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = "rgba(240,240,240,.8)"; x.lineWidth = Math.max(0.6, hr * 0.2); x.beginPath(); x.moveTo(sx, sh - hr * 1.1); x.lineTo(sx + hr * 1.1, sh - hr * 1.1); x.stroke();
+    }
     x.strokeStyle = "rgba(255,236,200,.55)"; x.lineWidth = Math.max(0.8, hr * 0.3);
     x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, Math.PI * 1.1, Math.PI * 1.9); x.stroke();
   }
@@ -610,6 +683,8 @@
       x.globalAlpha = fade;
       const cast = tt => sp.cast(clamp(tt, 0, sp.D));
       const now0 = cast(t);
+      const kits = ROSTER[kind] || [];
+      now0.players.forEach((p, j) => { p.kit = kits[j]; p.skin = SKIN[(j * 3 + list.indexOf(kind)) % SKIN.length]; });
       now0.players.slice().sort((a, b) => b.Z - a.Z).forEach(p => figure(x, cam, p, t, sp));
       if (sp.goal && sp.goal.Y) drawRim(x, cam, sp.goal, now0.ball.swish);
       drawBall(x, cam, now0.ball, cast, t);
@@ -650,7 +725,12 @@
     // a fresh canvas, so the page's own drawing can't paint over ours
     const n = c.cloneNode(false); n.classList.add("lab-field"); c.replaceWith(n); c = n;
     const kinds = KIND_OF[pageSport] || (isHome ? ROTATION : "park");
-    field = runField(c, kinds, k => { if (Array.isArray(kinds)) card.show(SPORT_OF_KIND[k]); });
+    let cap = head.querySelector(".lab-caption");
+    if (!cap) { cap = document.createElement("div"); cap.className = "lab-caption"; cap.setAttribute("aria-hidden", "true"); head.append(cap); }
+    field = runField(c, kinds, k => {
+      cap.textContent = CAPTION[k] || ""; cap.classList.remove("in"); void cap.offsetWidth; cap.classList.add("in");
+      if (Array.isArray(kinds)) card.show(SPORT_OF_KIND[k]);
+    });
   }
   function stopField() { location.reload(); }
 
