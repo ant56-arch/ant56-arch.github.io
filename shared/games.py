@@ -19,6 +19,7 @@ Each site attaches its own pick to a game as game["pick"] = {"text", "result"}
 before writing.
 """
 import json
+import os
 import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -187,6 +188,13 @@ def write_json(path, sport, slate, updated):
         label = start_et(games[0]).strftime("%a, %b %-d") if games else ""
     else:
         label = slate["label"]
+    # Each game links to its own page when the site has one (written before
+    # games.json): game-<id>.html, or the file the build named it ("file").
+    folder = os.path.dirname(path)
+    for g in games:
+        page = g.pop("file", None) or f"game-{g['id']}.html"
+        if os.path.exists(os.path.join(folder, page)):
+            g["url"] = page
     with open(path, "w") as f:
         json.dump({"sport": sport.upper(), "label": label, "updated": updated,
                    "espn": espn_url(sport), "top25_only": sport == "cfb", "games": games}, f, indent=1)

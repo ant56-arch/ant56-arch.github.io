@@ -160,10 +160,11 @@ async function edgeLoadGames(site) {
   const live = published.espn ? await edgeFetchJson(published.espn, 6000) : null;
   if (live && Array.isArray(live.events)) {
     const picks = {};
-    (published.games || []).forEach(g => { if (g.pick) picks[g.id] = g.pick; });
+    const urls = {};
+    (published.games || []).forEach(g => { if (g.pick) picks[g.id] = g.pick; if (g.url) urls[g.id] = g.url; });
     let games = live.events.map(edgeParseEspn).filter(Boolean);
     if (published.top25_only) games = games.filter(g => g.away.rank || g.home.rank);
-    games.forEach(g => { if (picks[g.id]) g.pick = edgeGradePick(g, picks[g.id]); });
+    games.forEach(g => { if (picks[g.id]) g.pick = edgeGradePick(g, picks[g.id]); if (urls[g.id]) g.url = urls[g.id]; });
     const week = live.week && live.week.number;
     return { label: week && !["MLB", "NBA", "NHL"].includes(site.sport) ? `Week ${week}` : published.label,
              games, live: true };
@@ -769,10 +770,15 @@ function edgeLiveChance(g) {
   return { team: line.team, pct: Math.round(Math.min(0.99, Math.max(0.01, p)) * 100) };
 }
 
+// A game's own page on our site when it has one, else the sport's schedule.
+function edgeGameHref(site, g) {
+  return g && g.url ? site.href.replace(/index\.html$/, "") + g.url : site.schedule;
+}
+
 function edgeTickerItem(site, g, mine) {
   return () => {
     const a = edgeNode("a", "crawl-item" + (g.state === "in" ? " is-live" : ""));
-    a.href = site.schedule;
+    a.href = edgeGameHref(site, g);
     a.append(edgeNode("span", "crawl-sport", (mine ? "\u2605 " : "") + site.sport));
     [g.away, g.home].forEach(t => {
       const team = edgeNode("span", "crawl-team" + (g.state === "post" && t.winner ? " is-winner" : "") +
@@ -1064,7 +1070,7 @@ function edgeStandout(site, g) {
   stars.forEach(l => notes.push(`${l.name} ${l.pts} pts`));
   if (!notes.length) return null;
   const what = stars.length ? `${stars[0].pts}-point night` : /OT/.test(g.detail || "") ? "Overtime final" : win.score - lose.score >= 20 ? "Blowout" : "Big final";
-  return { id: `${site.sport}:${g.id}:final`, sport: site.sport, href: site.schedule, t: Date.now(),
+  return { id: `${site.sport}:${g.id}:final`, sport: site.sport, href: edgeGameHref(site, g), t: Date.now(),
            teams: [g.away.abbr, g.home.abbr], what, team: win.short || win.abbr, logo: win.logo, color: win.color,
            text: notes.join(" \u00b7 "), score: `${win.abbr} ${win.score}, ${lose.abbr} ${lose.score}`, clock: "Final" };
 }
@@ -1107,7 +1113,7 @@ async function initScoreboard() {
         edgeTicker.flash.add(key);
         const team = g[side];
         const other = g[side === "away" ? "home" : "away"];
-        fresh.push({ id: `${key}:${now}`, sport: site.sport, href: site.schedule, t: Date.now(),
+        fresh.push({ id: `${key}:${now}`, sport: site.sport, href: edgeGameHref(site, g), t: Date.now(),
                      teams: [g.away.abbr, g.home.abbr],
                      what: edgeScoreWord(site.sport, now - before), team: team.short || team.abbr,
                      logo: team.logo, color: team.color, text: EDGE_SCORING_TEXT.test(g.lastPlay || "") ? g.lastPlay : "",
