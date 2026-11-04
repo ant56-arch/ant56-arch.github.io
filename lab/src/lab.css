@@ -109,3 +109,5 @@ body.lab .lab-caption {
 .lab-caption:empty { display: none; }
 .lab-caption.in { animation: lab-in .6s cubic-bezier(.2,.7,.1,1) both; }
 @media (max-width: 760px) { body.lab .lab-caption { top: calc(132px + var(--tick-h, 0px)); } }
+.lab-panel-body label.lab-mode { display: grid; gap: 4px; font-size: 12px; color: #555; }
+.lab-panel-body select { font: inherit; font-size: 13px; color: #121314; padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(0,0,0,.2); background: #fff; }

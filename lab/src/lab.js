@@ -163,9 +163,21 @@
         [-1, 1].forEach(s => g.hoop(s, zc));
       },
       goal: B,
-      variant(r) { return { kits: lineup([[HOOPS, 10]], r), shooter: 1 + Math.floor(r() * 4), make: r() < 0.7 }; },
+      variant(r, T, F = {}) {
+        const kits = T.kits([["HOOPS", "o", 5], ["HOOPS", "d", 5]], r);
+        return { kits, shooter: F.shooter ?? 1 + Math.floor(r() * 4), make: F.make ?? r() < 0.7 };
+      },
+      actors(v) { return [[v.shooter, "o"], [0, "o"], [v.shooter + 5, "d"], [v.shooter === 3 ? 9 : 8, "d"]]; },
+      // a real play from a live game: which shot, and did it go in
+      live(p, r) {
+        const t = p.text;
+        if (!/\b(makes|misses)\b/.test(t) || /free throw/i.test(t)) return null;
+        const three = /three point|three-point|3-pt|3pt/i.test(t), inside = /layup|dunk|tip|hook|driving|alley|putback|finger roll/i.test(t);
+        return { make: /\bmakes\b/.test(t), shooter: three ? (r() < 0.5 ? 2 : 4) : inside ? 3 : 1 };
+      },
+      quiet: { make: false },
       caption(v) {
-        const N = i => v.kits[i][0], sh = v.shooter, d = sh + 5, reb = sh === 3 ? 9 : 8;
+        const N = i => nameOf(v.kits[i]), sh = v.shooter, d = sh + 5, reb = sh === 3 ? 9 : 8;
         if (!v.make) return `${N(d)} contests, ${N(sh)} misses. ${N(reb)} grabs the board.`;
         if (sh === 2 || sh === 4) return `${N(sh)} drains a three over ${N(d)}.`;
         if (sh === 3) return `${N(sh)} scores inside over ${N(d)}.`;
@@ -175,13 +187,15 @@
         const sh = v.shooter, reb = sh === 3 ? 9 : 8, P = [];
         O.forEach((k, i) => {
           const p = path(k, t);
-          if (i === sh && t > 3.2 && t < 3.85) { p.Y = 0.5 * Math.sin(Math.PI * span(t, 3.2, 3.85)); p.arms = "up"; }
+          if (i === sh && t > 2.95 && t < 3.85) { p.Y = t > 3.2 ? 0.5 * Math.sin(Math.PI * span(t, 3.2, 3.85)) : 0; p.arms = "shoot"; }
+          if (i === 0 && t < 2.4) p.arms = "dribble";
           P.push({ ...p, keys: k, face: 1 });
         });
         O.forEach((k, i) => {
           const p = mark(k, t, B, i === sh ? 1.1 : 1.5);
           if (i === sh && t > 3.3 && t < 3.9) { p.Y = 0.35 * Math.sin(Math.PI * span(t, 3.3, 3.9)); p.arms = "up"; }
           if (i + 5 === reb && t > 4.75 && t < 5.3) { p.Y = 0.45 * Math.sin(Math.PI * span(t, 4.75, 5.3)); p.arms = "up"; }
+          if (!p.arms && t < 4.6) p.arms = "guard";
           P.push({ ...p, keys: k, lag: 0.28, face: -1 });
         });
         const pg = P[0], w = P[sh], rb = P[reb];
@@ -236,12 +250,29 @@
         g.goalpost(G + 10 * yd, mid);
       },
       goal,
-      variant(r) {
-        return { kits: lineup([[OL, 5], [QB, 1], [RB, 1], [WR, 2], [TE, 1], [DL, 4], [LB, 2], [CB, 2], [SAF, 2]], r),
-          target: [7, 8, 9][Math.floor(r() * 3)], caught: r() < 0.78 };
+      variant(r, T, F = {}) {
+        const kits = T.kits([["OL", "o", 5], ["QB", "o", 1], ["RB", "o", 1], ["WR", "o", 2], ["TE", "o", 1], ["DL", "d", 4], ["LB", "d", 2], ["CB", "d", 2], ["SAF", "d", 2]], r);
+        const v = { kits, run: F.run ?? r() < 0.3, target: F.target ?? [7, 8, 9][Math.floor(r() * 3)], caught: F.caught ?? r() < 0.78 };
+        v.yards = F.yards ?? Math.round(-2 + r() * r() * 24);
+        v.cut = (r() * 2 - 1) * 2.5;
+        return v;
       },
+      actors(v) { return v.run ? [[6, "o"], [14, "d"]] : [[5, "o"], [v.target, "o"], [TGT[v.target].def, "d"]]; },
+      live(p) {
+        const t = p.text;
+        if (/punt|kicks|kickoff|field goal|extra point|penalty|timeout|two-minute|end of|kneels|spiked|sacked|two-point/i.test(t + " " + p.type)) return null;
+        const y = /for (-?\d+) yards?/.exec(t), yards = y ? Number(y[1]) : 0;
+        if (/\bpass\b/i.test(t)) { const caught = !/incomplete|intercept/i.test(t); return { run: false, caught, target: caught && yards >= 20 ? 7 : /middle/i.test(t) ? 9 : 8 }; }
+        if (/rush|left end|right end|up the middle|left tackle|right tackle|left guard|right guard|scrambles|for no gain/i.test(t + " " + p.type)) return { run: true, yards };
+        return null;
+      },
+      quiet: {},
       caption(v) {
-        const N = i => v.kits[i][0], T = TGT[v.target];
+        const N = i => nameOf(v.kits[i]), T = TGT[v.target];
+        if (v.run) {
+          if (v.yards <= 0) return `${N(14)} stuffs ${N(6)} at the line.`;
+          return v.yards >= 15 ? `${N(6)} breaks one for ${v.yards} yards.` : `${N(6)} runs for ${v.yards} yard${v.yards === 1 ? "" : "s"}.`;
+        }
         return v.caught ? T.say(N(5), N(v.target)) : `${N(T.def)} breaks up ${N(5)}'s pass to ${N(v.target)}.`;
       },
       cast(t, v) {
@@ -250,24 +281,33 @@
           const z = los + (i - 2) * 1.15, push = set ? 0 : 0.6 * span(t, 1, 1.6);
           P.push({ X: -0.9 + push + Math.sin(t * 9 + i) * 0.05 * !set, Z: z, crouch: set ? 0.72 : 0.86, face: 1 });
         }
-        [QBK, RBK, WRK, WR2, TEK].forEach(k => P.push({ ...path(k, t), keys: k, face: 1 }));
+        // a run: the handoff, a cut through the line, and a linebacker who brings him down
+        const end = { X: clamp(v.yards * yd, -2.5, 28), Z: los + v.cut }, tEnd = 2.5 + Math.max(0.5, (end.X + 2) / 8.5);
+        const RUNK = [[0, -6.8, los + 1.4], [1.1, -6.8, los + 1.4], [1.55, -3.6, los + 0.5], [2.3, -0.3, los + v.cut * 0.5], [tEnd, end.X, end.Z]];
+        const QBRUN = [[0, -4.5, los], [1.1, -4.5, los], [1.5, -4.8, los + 0.6], [2.8, -7.5, los + 1.2]];
+        [v.run ? QBRUN : QBK, v.run ? RUNK : RBK, WRK, WR2, TEK].forEach(k => P.push({ ...path(k, t), keys: k, face: 1 }));
+        if (v.run && t > tEnd) P[6].crouch = 0.7;
         for (let i = 0; i < 4; i++) {                                     // defensive line
           const z = los + (i - 1.5) * 1.5, push = set ? 0 : -0.4 * span(t, 1, 1.6);
           P.push({ X: 0.9 + push, Z: z, crouch: set ? 0.74 : 0.9, face: -1 });
         }
-        P.push({ ...path([[0, 5, los - 3.5], [1, 5, los - 3.5], [3, 3, los - 4.5]], t), face: -1 });
+        const LBK = v.run ? [[0, 5, los - 3.5], [1, 5, los - 3.5], [tEnd, end.X + 0.8, end.Z - 0.5]] : [[0, 5, los - 3.5], [1, 5, los - 3.5], [3, 3, los - 4.5]];
+        P.push({ ...path(LBK, t), keys: LBK, face: -1, arms: v.run && Math.abs(t - tEnd) < 0.3 ? "up" : null });
         P.push({ ...path([[0, 5, los + 3.5], [1, 5, los + 3.5], [3, 5, los + 6.5]], t), face: -1 });
         P.push({ ...mark(WRK, t, goal, -1.4, 0.38), keys: WRK, lag: 0.38, face: -1 });
         P.push({ ...mark(WR2, t, goal, -1.4, 0.38), keys: WR2, lag: 0.38, face: -1 });
         P.push({ ...path([[0, 14, n + 15], [1.8, 15, n + 13], [4.2, 25, n + 9.5], [6, 37, n + 9]], t), face: -1 });
         P.push({ ...path([[0, 14, los + 9], [3, 13, los + 4], [6, 22, los - 2]], t), face: -1 });
-        if (!v.caught && Math.abs(t - T.at) < 0.35) P[T.def].arms = "up";
-        if (v.caught && Math.abs(t - T.at) < 0.25) P[v.target].arms = "up";
+        if (!v.run && t > 2.0 && t < 2.75) P[5].throw = span(t, 2.1, 2.55);
+        if (!v.run && !v.caught && Math.abs(t - T.at) < 0.35) P[T.def].arms = "up";
+        if (!v.run && v.caught && Math.abs(t - T.at) < 0.25) P[v.target].arms = "up";
         const q = P[5], r = P[v.target], c = path(T.keys, T.at), q0 = path(QBK, 2.5);
         let ball;
         if (t < 1) ball = { X: -0.6, Y: 0.15, Z: los };
+        else if (v.run && t >= 1.55) { const b = P[6]; ball = { X: b.X + 0.25, Y: t > tEnd ? 0.7 : 1.15, Z: b.Z - 0.25 }; }
         else if (t < 1.2) ball = arc({ X: -0.6, Y: 0.15, Z: los }, { X: q.X + 0.2, Y: 1.2, Z: q.Z - 0.2 }, 0.1, span(t, 1, 1.2));
         else if (t < 2.5) ball = { X: q.X + 0.2, Y: t > 2.2 ? 2 : 1.3, Z: q.Z - 0.25 };
+        else if (v.run) ball = { X: q.X + 0.2, Y: 1.3, Z: q.Z - 0.25 };
         else if (t < T.at) ball = arc({ X: q0.X + 0.3, Y: 2.1, Z: q0.Z - 0.2 }, { X: c.X + 0.3, Y: 1.6, Z: c.Z - 0.2 }, T.peak, span(t, 2.5, T.at));
         else if (v.caught) ball = { X: r.X + 0.3, Y: 1.25, Z: r.Z - 0.25 };
         else {
@@ -314,21 +354,39 @@
         g.ellipseW(0, H0, 0.35, "rgba(242,238,230,.95)");
         g.wall(wall, 3.2);
       },
-      variant(r) {
-        const kits = lineup([[PITCHERS, 1], [CATCHERS, 1], [INFIELD, 4], [OUTFIELD, 3], [BATTERS, 1]], r);
-        const roll = r(), type = roll < 0.45 ? "fly" : roll < 0.75 ? "hr" : "ground", a = (r() * 2 - 1) * 0.6;
+      variant(r, T, F = {}) {
+        const kits = T.kits([["PITCHERS", "d", 1], ["CATCHERS", "d", 1], ["INFIELD", "d", 4], ["OUTFIELD", "d", 3], ["BATTERS", "o", 1]], r);
+        const roll = r(), type = F.type ?? (roll < 0.4 ? "fly" : roll < 0.62 ? "hr" : roll < 0.8 ? "ground" : "hit"), a = F.a ?? (r() * 2 - 1) * 0.6;
         const v = { kits, type, a };
-        if (type === "ground") { v.f = [3, 4, 5][Math.floor(r() * 3)]; return v; }
+        if (type === "ground") { v.f = F.f ?? [3, 4, 5][Math.floor(r() * 3)]; return v; }
         v.f = a < -0.2 ? 6 : a > 0.2 ? 8 : 7;
-        const W0 = wallR(a), R = type === "hr" ? W0 + 14 : 64 + r() * 18;
-        v.land = { X: Math.sin(a) * R, Y: type === "hr" ? 2 : 1.9, Z: H0 + Math.cos(a) * R };
-        const C = type === "hr" ? { X: Math.sin(a) * (W0 - 2), Z: H0 + Math.cos(a) * (W0 - 2) } : v.land, s0 = SPOT[v.f];
+        const W0 = wallR(a), s0 = SPOT[v.f];
+        const R = F.R ?? (type === "hr" ? W0 + 14 : type === "hit" ? 42 + r() * 16 : 64 + r() * 18);
+        v.land = { X: Math.sin(a) * R, Y: type === "hr" ? 2 : type === "hit" ? 0.1 : 1.9, Z: H0 + Math.cos(a) * R };
+        if (type === "hit") {                                        // drops in; the fielder picks it up on the hop and throws to second
+          v.pick = { X: lerp(v.land.X, s0[0], 0.45), Z: lerp(v.land.Z, s0[1], 0.45) };
+          v.fpath = [[0, s0[0], s0[1]], [2.25, s0[0], s0[1]], [4.5, v.pick.X + 0.3, v.pick.Z + 0.3], [7.2, v.pick.X + 1, v.pick.Z - 1]];
+          return v;
+        }
+        const C = type === "hr" ? { X: Math.sin(a) * (W0 - 2), Z: H0 + Math.cos(a) * (W0 - 2) } : v.land;
         v.fpath = [[0, s0[0], s0[1]], [2.25, s0[0], s0[1]], [type === "hr" ? 4.9 : 5.15, C.X + 0.3, C.Z + 0.3], [7.2, C.X + 0.3, C.Z + 0.3]];
         return v;
       },
+      actors(v) { return [[9, "o"], [0, "d"], [v.f, "d"]]; },
+      live(p) {
+        const t = p.text;
+        const a = /left[- ]center/i.test(t) ? -0.2 : /right[- ]center/i.test(t) ? 0.2 : /\bleft\b/i.test(t) ? -0.45 : /\bright\b/i.test(t) ? 0.45 : 0;
+        if (/homered|home run|grand slam/i.test(t)) return { type: "hr", a };
+        if (/singled|doubled|tripled/i.test(t)) return { type: "hit", a };
+        if (/flied out|lined out|popped out|fouled out|sacrifice fly|flied into/i.test(t)) return { type: "fly", a };
+        if (/grounded|ground ball|double play|forced out|fielder's choice/i.test(t)) return { type: "ground", f: /third/i.test(t) ? 5 : /second/i.test(t) ? 3 : 4 };
+        return null;
+      },
+      quiet: { type: "fly" },
       caption(v) {
-        const N = i => v.kits[i][0], bat = N(9);
+        const N = i => nameOf(v.kits[i]), bat = N(9);
         if (v.type === "hr") return `${bat} crushes one to deep ${FIELD_NAME[v.f]}. Gone.`;
+        if (v.type === "hit") return `${bat} lines a base hit to ${FIELD_NAME[v.f]}.`;
         if (v.type === "fly") return `${bat} lifts one to ${FIELD_NAME[v.f]}. ${N(v.f)} makes the catch.`;
         return `${N(v.f)} fields it and throws out ${bat}.`;
       },
@@ -346,6 +404,7 @@
           let keys = [[0, s0[0], s0[1]], [2.3, s0[0], s0[1]], [4.4, s0[0] * 0.95, s0[1] + 1]];
           if (gr && i === 2) keys = [[0, s0[0], s0[1]], [2.2, s0[0], s0[1]], [2.9, 18.9, H0 + 19.8]];
           if (gr && i === v.f) keys = [[0, s0[0], s0[1]], [2.1, s0[0], s0[1]], [2.85, FP.X, FP.Z], [4, FP.X + 1, FP.Z - 1]];
+          if (v.type === "hit" && i === 3) keys = [[0, s0[0], s0[1]], [2.3, s0[0], s0[1]], [4.6, 0.8, H0 + 37.6]];
           P.push({ ...path(keys, t), keys });
         }
         for (let i = 6; i <= 8; i++) {
@@ -353,7 +412,7 @@
           if (!gr && i === v.f && t > 4.85 && t < 5.45) { p.arms = "up"; if (v.type === "hr") p.Y = 0.5 * Math.sin(Math.PI * span(t, 4.85, 5.45)); }
           P.push(p);
         }
-        const bat = t < 2.15 ? { X: -0.9, Z: H0 } : runner(t, v.type === "hr" ? 4.1 : gr ? 3.85 : 5.6, v.type === "hr");
+        const bat = t < 2.15 ? { X: -0.9, Z: H0 } : runner(t, v.type === "hr" ? 4.1 : gr ? 3.85 : v.type === "hit" ? 4.3 : 5.6, v.type === "hr");
         P.push({ ...bat, bat: t < 2.4 ? clamp((t - 1.85) / 0.3) : null, face: 1 });
         const hitAt = { X: -0.3, Y: 0.9, Z: H0 + 0.4 };
         let ball;
@@ -364,6 +423,13 @@
           if (t < 2.85) { const u = span(t, 2.05, 2.85); ball = { X: lerp(hitAt.X, FP.X, u), Y: 0.12 + Math.abs(Math.sin(u * Math.PI * 3)) * 0.7 * (1 - u), Z: lerp(hitAt.Z, FP.Z - 0.3, u), fly: true }; }
           else if (t < 3.2) { const f = P[v.f]; ball = { X: f.X + 0.3, Y: 1.2, Z: f.Z - 0.3 }; }
           else if (t < 3.7) { const f0 = path([[0, FP.X, FP.Z], [1, FP.X, FP.Z]], 0); ball = arc({ X: f0.X + 0.3, Y: 1.6, Z: f0.Z - 0.3 }, bag, 1.4, span(t, 3.2, 3.7)); }
+          else ball = { ...bag };
+        } else if (v.type === "hit") {
+          const f = P[v.f], bag = { X: 0.6, Y: 1.3, Z: H0 + 37.9 };
+          if (t < 3.5) ball = arc(hitAt, v.land, 5, span(t, 2.05, 3.5));
+          else if (t < 4.5) { const u = span(t, 3.5, 4.5); ball = { X: lerp(v.land.X, v.pick.X, u), Y: 0.12 + Math.abs(Math.sin(u * Math.PI * 2)) * 1.2 * (1 - u), Z: lerp(v.land.Z, v.pick.Z - 0.3, u), fly: true }; }
+          else if (t < 4.8) ball = { X: f.X + 0.3, Y: 1.4, Z: f.Z - 0.3 };
+          else if (t < 5.7) ball = arc({ X: v.pick.X + 0.3, Y: 1.8, Z: v.pick.Z - 0.3 }, bag, 3, span(t, 4.8, 5.7));
           else ball = { ...bag };
         } else if (t < 5.3) ball = arc(hitAt, v.land, v.type === "hr" ? 34 : 28, span(t, 2.05, 5.3));
         else if (v.type === "fly") { const f = P[v.f]; ball = { X: f.X + 0.3, Y: 1.8, Z: f.Z - 0.2 }; }
@@ -400,21 +466,38 @@
         g.boards(-L, L, f, 8.5, mid);
         [-1, 1].forEach(s => g.net(s, 26.6, mid));
       },
-      variant(r) { return { kits: lineup([[SKATERS, 10], [GOALIES, 1]], r), solo: r() < 0.35, goal: r() < 0.65, high: r() < 0.5 }; },
+      variant(r, T, F = {}) {
+        const kits = T.kits([["SKATERS", "o", 5], ["SKATERS", "d", 5], ["GOALIES", "d", 1]], r);
+        return { kits, solo: F.solo ?? r() < 0.35, goal: F.goal ?? r() < 0.65, high: F.high ?? r() < 0.5 };
+      },
+      actors(v) { return v.solo ? [[0, "o"], [10, "d"]] : [[1, "o"], [0, "o"], [10, "d"]]; },
+      live(p, r) {
+        const goal = p.scoring || /^goal/i.test(p.type);
+        if (!goal && !(/shot/i.test(p.type) && !/miss|block|wide/i.test(p.type + " " + p.text))) return null;
+        return { goal, solo: goal ? !/assist/i.test(p.text) : r() < 0.5 };
+      },
+      quiet: { goal: false },
       caption(v) {
-        const N = i => v.kits[i][0], a = N(0), b = N(1), g = N(10);
+        const N = i => nameOf(v.kits[i]), a = N(0), b = N(1), g = N(10);
         if (v.solo) return v.goal ? `${a} snipes one past ${g}.` : `${g} gloves ${a}'s wrister.`;
         return v.goal ? `${a} feeds ${b} for the one-timer. Goal.` : `${g} robs ${b} on the one-timer.`;
       },
       cast(t, v) {
         const P = [], K1 = v.solo ? O1SOLO : O1, ks = [K1, O2, O3, O4, O5];
         ks.forEach(k => P.push({ ...path(k, t), keys: k, face: 1, stick: 1 }));
-        ks.forEach(k => { const m = mark(k, t, G, 2.6, 0.32); P.push({ ...m, Z: m.Z + 1.1, keys: k, lag: 0.32, face: -1, stick: 1 }); });
+        ks.forEach(k => { const m = mark(k, t, G, 2.6, 0.32); P.push({ ...m, Z: m.Z + 1.7, keys: k, lag: 0.32, face: -1, stick: 1 }); });
         const shK = v.solo ? K1 : O2, tShot = v.solo ? 3.35 : 3.65, tIn = tShot + 0.3, s0 = path(shK, tShot);
         const track = t < tShot ? path(shK, t).Z : s0.Z;
         const gz = clamp(lerp(mid - 1.1, mid + 1.1, (track - (mid - 7)) / 14), mid - 1.1, mid + 1.1);
         const save = !v.goal && t > tShot;
         P.push({ X: 25.4, Z: gz, crouch: 0.78, stick: 1, goalie: 1, face: -1, arms: save && t < tIn + 0.9 ? "glove" : null });
+        const shooter = v.solo ? 0 : 1;
+        if (Math.abs(t - tShot) < 0.4) P[shooter].shoot = clamp((t - tShot) / 0.35, -1, 1);
+        if (!v.solo && Math.abs(t - 2.95) < 0.3) P[0].shoot = clamp((t - 2.95) / 0.25, -1, 1) * 0.5;
+        if (t < (v.solo ? tShot - 0.4 : 2.65)) P[0].carry = 1;
+        if (!v.solo && t > 3.35 && t < tShot - 0.4) P[1].carry = 1;
+        if (v.fly && t > tShot + 0.05) { const u = span(t, tShot + 0.05, tShot + 1); P[0].Y = 0.75 * Math.sin(Math.PI * u); P[0].dive = u > 0 && u < 1; }
+        if (v.fall && t > tShot - 0.7) P[0].crouch = lerp(1, 0.5, span(t, tShot - 0.7, tShot - 0.3));
         const blade = p => ({ X: p.X + 0.95, Y: 0.03, Z: p.Z - 0.4 });
         const net = { X: 27.2, Y: v.high ? 0.95 : 0.2, Z: G.Z + (v.high ? -0.5 : 0.55) };
         const glove = { X: 25.9, Y: v.high ? 1.05 : 0.3, Z: gz - 0.55 };
@@ -457,13 +540,21 @@
           g.goal(s, L, mid);
         });
       },
-      variant(r) {
-        const roll = r();
-        return { kits: lineup([[FOOTY, 12], [KEEPERS, 1]], r), type: roll < 0.45 ? "header" : roll < 0.75 ? "volley" : "long",
-          goal: r() < 0.62, gz: mid + (r() * 2 - 1) * 2.8, gy: 0.4 + r() * 1.6 };
+      variant(r, T, F = {}) {
+        const roll = r(), kits = T.kits([["FOOTY", "o", 5], ["FOOTY", "d", 7], ["KEEPERS", "d", 1]], r);
+        return { kits, type: F.type ?? (roll < 0.45 ? "header" : roll < 0.75 ? "volley" : "long"),
+          goal: F.goal ?? r() < 0.62, gz: F.gz ?? mid + (r() * 2 - 1) * 2.8, gy: F.gy ?? 0.4 + r() * 1.6 };
       },
+      actors(v) { const sh = v.type === "header" ? 2 : v.type === "volley" ? 3 : 1; return sh === 1 ? [[1, "o"], [12, "d"]] : [[sh, "o"], [1, "o"], [12, "d"]]; },
+      live(p) {
+        const t = p.text, goal = p.scoring || /^goal/i.test(p.type) || /^goal!/i.test(t);
+        if (!goal && !/saved/i.test(t)) return null;
+        if (/own goal|penalty/i.test(t)) return null;
+        return { goal, type: /header|headed/i.test(t) ? "header" : /outside the box|long range|from distance/i.test(t) ? "long" : "volley" };
+      },
+      quiet: { goal: false },
       caption(v) {
-        const N = i => v.kits[i][0], k = N(12);
+        const N = i => nameOf(v.kits[i]), k = N(12);
         if (v.type === "header") return v.goal ? `${N(1)} crosses, ${N(2)} heads it in.` : `${k} saves ${N(2)}'s header.`;
         if (v.type === "volley") return v.goal ? `${N(1)} cuts it back, ${N(3)} buries it.` : `${k} stops ${N(3)} from close range.`;
         return v.goal ? `${N(1)} curls one in from distance.` : `${k} tips ${N(1)}'s strike wide.`;
@@ -482,7 +573,10 @@
         const kz = t < S.t1 - 0.4 ? lerp(mid - 1, mid, span(t, 0, S.t0)) : !v.goal ? lerp(mid, T.Z - 0.4, span(t, S.t1 - 0.4, S.t1)) : mid + 0.3 * (T.Z - mid) * span(t, S.t1 - 0.4, S.t1);
         P.push({ X: 51.3, Z: kz, arms: dive || (v.goal && Math.abs(t - S.t1) < 0.3) ? "up" : null, Y: dive ? 0.5 * Math.sin(Math.PI * span(t, S.t1 - 0.4, S.t1 + 0.7)) : 0 });
         const a = P[0], b = P[1];
-        if (v.type === "header" && t > 4.05 && t < 4.55) P[2].Y = 0.45 * Math.sin(Math.PI * span(t, 4.05, 4.55));
+        if (v.type === "header" && t > 4.05 && t < 4.55) { P[2].Y = 0.45 * Math.sin(Math.PI * span(t, 4.05, 4.55)); P[2].arms = "up"; }
+        const kick = (i, at) => { if (t > at - 0.3 && t < at + 0.2) P[i].kick = span(t, at - 0.3, at + 0.15); };
+        kick(0, 1.4); kick(1, 3.3);
+        if (v.type === "volley") kick(3, S.t0);
         let ball;
         if (t < 1.4) ball = { X: a.X + 0.6, Y: 0.11, Z: a.Z - 0.3 };
         else if (t < 1.9) ball = arc({ X: path(O1, 1.4).X + 0.6, Y: 0.11, Z: path(O1, 1.4).Z - 0.3 }, { X: path(O2, 1.9).X + 0.5, Y: 0.11, Z: path(O2, 1.9).Z - 0.3 }, 0, span(t, 1.4, 1.9));
@@ -499,8 +593,83 @@
     };
   })();
 
+  // ---------- famous plays ----------
+  // On days with nothing on, the greats play, and every other play is a real
+  // moment: who was in it, both teams' colors, and the outcome. Spots are the
+  // indexes cast() uses (see each sport's actors()).
+  const kitC = (jersey, num, short) => ({ jersey, num, short });
+  SPORT.court.classics = [
+    { cap: "1998 Finals, Game 6. Jordan pulls up over Russell for the title.", F: { shooter: 1, make: true },
+      o: kitC("#CE1141", "#FFFFFF", "Bulls"), d: kitC("#F4F4F4", "#4B2E83", "Jazz"),
+      names: [[1, "Jordan", "23"], [0, "Pippen", "33"], [6, "Russell", "3"], [5, "Stockton", "12"], [8, "Malone", "32"]] },
+    { cap: "2013 Finals, Game 6. Allen backpedals to the corner and ties it.", F: { shooter: 2, make: true },
+      o: kitC("#F4F4F4", "#98002E", "Heat"), d: kitC("#1B1B1B", "#C4CED4", "Spurs"),
+      names: [[2, "Allen", "34"], [0, "Chalmers", "15"], [1, "James", "6"], [3, "Bosh", "1"], [7, "Parker", "9"], [8, "Duncan", "21"], [6, "Leonard", "2"]] },
+    { cap: "1987 Finals, Game 4. Magic's junior sky hook over McHale.", F: { shooter: 3, make: true },
+      o: kitC("#552583", "#FDB927", "Lakers"), d: kitC("#F4F4F4", "#007A33", "Celtics"),
+      names: [[3, "Magic", "32"], [0, "Scott", "4"], [1, "Worthy", "42"], [8, "McHale", "32"], [5, "Bird", "33"], [9, "Parish", "00"]] },
+  ];
+  SPORT.gridiron.classics = [
+    { cap: "1982 NFC title game. Montana to Clark. The Catch.", F: { run: false, target: 8, caught: true },
+      o: kitC("#AA0000", "#FFFFFF", "49ers"), d: kitC("#F4F4F4", "#003594", "Cowboys"),
+      names: [[5, "Montana", "16"], [8, "Clark", "87"], [7, "Solomon", "88"], [17, "Walls", "24"]] },
+    { cap: "Super Bowl XLII. Manning escapes, and Tyree pins it to his helmet.", F: { run: false, target: 7, caught: true },
+      o: kitC("#0B2265", "#FFFFFF", "Giants"), d: kitC("#F4F4F4", "#002244", "Patriots"),
+      names: [[5, "Manning", "10"], [7, "Tyree", "85"], [16, "Harrison", "37"]] },
+    { cap: "2011 playoffs. Lynch breaks every tackle for 67 yards. Beast Quake.", F: { run: true, yards: 67 },
+      o: kitC("#002244", "#69BE28", "Seahawks"), d: kitC("#F4F4F4", "#D3BC8D", "Saints"),
+      names: [[6, "Lynch", "24"], [5, "Hasselbeck", "8"]] },
+  ];
+  SPORT.park.classics = [
+    { cap: "1954 World Series. Wertz drives it to deep center. Mays, over the shoulder.", F: { type: "fly", a: 0.04, R: 116 },
+      o: kitC("#A2AAAD", "#0C2340", "Indians"), d: kitC("#F4F4F4", "#111111", "Giants"),
+      names: [[9, "Wertz", ""], [7, "Mays", "24"], [0, "Liddle", ""]] },
+    { cap: "1988 World Series. Gibson, on one good leg, walks it off.", F: { type: "hr", a: 0.42 },
+      o: kitC("#F4F4F4", "#005A9C", "Dodgers"), d: kitC("#A2AAAD", "#003831", "Athletics"),
+      names: [[9, "Gibson", "23"], [0, "Eckersley", "43"], [8, "Canseco", "33"]] },
+    { cap: "1951. Thomson's shot heard 'round the world.", F: { type: "hr", a: -0.5 },
+      o: kitC("#F4F4F4", "#111111", "Giants"), d: kitC("#A2AAAD", "#005A9C", "Dodgers"),
+      names: [[9, "Thomson", "23"], [0, "Branca", "13"], [6, "Pafko", "48"]] },
+  ];
+  SPORT.ice.classics = [
+    { cap: "1970 Cup Final. Orr scores in overtime and flies.", F: { solo: true, goal: true, high: false }, fly: 0,
+      o: kitC("#F4F4F4", "#111111", "Bruins"), d: kitC("#002F87", "#FCB514", "Blues"),
+      names: [[0, "Orr", "4"], [1, "Sanderson", "16"], [10, "Hall", "1"]] },
+    { cap: "2010 Olympic final. Iginla to Crosby. Golden goal.", F: { solo: false, goal: true, high: false },
+      o: kitC("#D80621", "#FFFFFF", "Canada"), d: kitC("#F4F4F4", "#002868", "USA"),
+      names: [[0, "Iginla", "12"], [1, "Crosby", "87"], [10, "Miller", "39"]] },
+    { cap: "2006. Ovechkin, falling on his back, hooks it in. The Goal.", F: { solo: true, goal: true, high: false }, fall: 0,
+      o: kitC("#041E42", "#FFFFFF", "Capitals"), d: kitC("#F4F4F4", "#8C2633", "Coyotes"),
+      names: [[0, "Ovechkin", "8"], [10, "Boucher", ""]] },
+  ];
+  SPORT.pitch.classics = [
+    { cap: "2002 Champions League final. Roberto Carlos loops it up, Zidane volleys it in.", F: { type: "volley", goal: true, gy: 2.1, gz: 50.4 },
+      o: kitC("#F4F4F4", "#3F2A56", "Real Madrid"), d: kitC("#E32221", "#111111", "Leverkusen"),
+      names: [[1, "Roberto Carlos", "3"], [3, "Zidane", "5"], [12, "Butt", "1"]] },
+    { cap: "Euro 88 final. Mühren's cross, Van Basten's volley from an impossible angle.", F: { type: "volley", goal: true, gy: 2.2, gz: 45.4 },
+      o: kitC("#F36C21", "#FFFFFF", "Netherlands"), d: kitC("#F4F4F4", "#CC0000", "USSR"),
+      names: [[1, "Mühren", ""], [3, "Van Basten", "12"], [12, "Dasayev", "1"]] },
+    { cap: "2010 World Cup final. Fàbregas finds Iniesta. Spain are champions.", F: { type: "volley", goal: true, gy: 0.5, gz: 49.6 },
+      o: kitC("#002F6C", "#F1BF00", "Spain"), d: kitC("#F36C21", "#111111", "Netherlands"),
+      names: [[1, "Fàbregas", "10"], [3, "Iniesta", "6"], [12, "Stekelenburg", "1"]] },
+  ];
+  // a famous play: its teams in their colors, the named players in their spots
+  function famous(sp, f, r) {
+    const o = { ...f.o, players: [] }, d = { ...f.d, players: [] };
+    const T = { mode: "classic", o, d, kits(spec) {
+      const out = [];
+      spec.forEach(([role, sd, n]) => { for (let i = 0; i < n; i++) { const k = kitFor(sd === "o" ? o : d, null); k.role = role; out.push(k); } });
+      return out;
+    } };
+    const v = sp.variant(r, T, f.F);
+    f.names.forEach(([i, nm, num]) => { const k = v.kits[i]; if (k) { k[0] = nm; k[1] = num; k.anon = false; } });
+    v.cap = f.cap; v.fly = "fly" in f; v.fall = "fall" in f;
+    return v;
+  }
+
   // ---------- the camera ----------
-  function camera(sp, W, H) {
+  // M: extra width drawn on each side, so the view can pan with the ball
+  function camera(sp, W, H, M = 0) {
     const zfit = sp.fitZf || sp.zf;
     const top = W < 760 ? 0.3 : 0.36, bot = 0.995;
     const f = (bot - top) * H / (sp.h * (1 / sp.zn - 1 / zfit));
@@ -509,14 +678,14 @@
     const cx = sp.ax - (W >= 760 && !sp.centered ? 0.03 * W * sp.az / f : 0);
     return {
       f, hz,
-      P: (X, Y, Z) => [W / 2 + f * (X - cx) / Z, hz + f * (sp.h - Y) / Z],
+      P: (X, Y, Z) => [W / 2 + M + f * (X - cx) / Z, hz + f * (sp.h - Y) / Z],
       s: Z => f / Z,
     };
   }
 
   // ---------- the still background: sky or roof, stands, field, lights ----------
-  function background(kind, W, H, dpr) {
-    const sp = SPORT[kind], cam = camera(sp, W, H);
+  function background(kind, Wv, H, dpr, M = 0) {
+    const sp = SPORT[kind], cam = camera(sp, Wv, H, M), W = Wv + 2 * M;
     const c = document.createElement("canvas");
     c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
     const x = c.getContext("2d"); x.scale(dpr, dpr);
@@ -656,7 +825,7 @@
     x.fillStyle = g; x.fillRect(0, back - 50, W, 120);
     const grain = Math.min(30000, W * H / 90);
     for (let i = 0; i < grain; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * 0.03})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
-    return { canvas: c, cam, back, rise };
+    return { canvas: c, cam, back, rise, M, W };
   }
 
   // ---------- players and the ball ----------
@@ -670,8 +839,12 @@
     const kit = p.kit, jersey = kit ? hex(kit[2]) : p.team, skin = p.skin || "#B07A4E";
     if (hgt < 5) { x.fillStyle = rgb(jersey); x.fillRect(fx - 1, fy - hgt, 2, hgt); return; }
     // moving? compare with where this player was a moment ago
-    let speed = 0;
-    if (p.keys) { const q = p.lag ? path(p.keys, t - p.lag - 0.06) : path(p.keys, t - 0.06), r = p.lag ? path(p.keys, t - p.lag) : path(p.keys, t); speed = Math.hypot(r.X - q.X, r.Z - q.Z) / 0.06; }
+    let speed = 0, dir = p.face || 1;
+    if (p.keys) {
+      const q = p.lag ? path(p.keys, t - p.lag - 0.06) : path(p.keys, t - 0.06), r = p.lag ? path(p.keys, t - p.lag) : path(p.keys, t);
+      speed = Math.hypot(r.X - q.X, r.Z - q.Z) / 0.06;
+      if (Math.abs(r.X - q.X) > 0.02) dir = r.X > q.X ? 1 : -1;
+    }
     if (p.run) speed = 5;
     const run = clamp(speed / 3), ph = t * (sp.skate ? 5 : 11) + p.X;
     const stride = (p.Y ? 0.08 : (sp.skate ? 0.2 : 0.16) * run) * hgt;
@@ -682,9 +855,15 @@
       const d = p.face || 1, bl = cam.P(p.X + d * (p.goalie ? 0.55 : 0.95), 0, p.Z - 0.4);
       return skater(x, p, { fx, fy, hgt, jersey, skin, kit, run, ph, d, blade: [bl[0], bl[1] - lift] });
     }
-    [1, -1].forEach(d => {                                            // legs: shorts, then shins
-      const ex = fx + d * Math.sin(ph) * stride, ey = fy - (p.Y ? (d > 0 ? 0.05 : 0.08) * hgt : 0);
-      const kx = lerp(fx, ex, 0.45), ky = lerp(hip, ey, 0.45);
+    [1, -1].forEach(d => {                                            // legs: thighs, bent knees, shins
+      const phi = ph + (d > 0 ? 0 : Math.PI);
+      let ex = fx + Math.sin(phi) * stride * dir, ey = fy - (p.Y ? (d > 0 ? 0.05 : 0.08) * hgt : Math.max(0, Math.cos(phi)) * 0.07 * hgt * run);
+      if (p.kick != null && d > 0) {                                   // a shot or a header's jump: the kicking leg swings through
+        const u = Math.sin(Math.PI * clamp(p.kick));
+        ex = fx + dir * (lerp(-0.18, 0.34, clamp(p.kick)) * hgt); ey = fy - u * 0.24 * hgt;
+      }
+      const bend = (0.05 + 0.06 * run) * hgt * (p.kick != null && d > 0 ? 0.4 : 1);
+      const kx = lerp(fx, ex, 0.5) + dir * bend, ky = lerp(hip, ey, 0.5);
       x.strokeStyle = sp.skate || kind0(sp) === "park" ? rgb(jersey.map(v => v * 0.8)) : skin; x.lineWidth = lw * 0.9;
       x.beginPath(); x.moveTo(kx, ky); x.lineTo(ex, ey); x.stroke();
       x.strokeStyle = rgb(jersey.map(v => v * 0.72)); x.lineWidth = lw * 1.25;
@@ -704,7 +883,7 @@
       x.restore();
     }
     x.fillStyle = "rgba(255,240,210,.3)"; x.fillRect(fx - bw * 0.5 + lean, sh, bw, Math.max(1, 0.03 * hgt));
-    if (kit && hgt > 20) {                                               // the number
+    if (kit && kit[1] && hgt > 20) {                                     // the number
       x.fillStyle = kit[3]; x.font = `700 ${Math.round(0.15 * hgt)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
       x.fillText(String(kit[1]), fx + lean * 0.6, lerp(sh, hip, 0.45));
     }
@@ -713,7 +892,20 @@
     const sx = fx + lean, arm = 0.3 * hgt;
     x.beginPath();
     if (p.arms === "up") { x.moveTo(sx - bw * 0.4, sh + 2); x.lineTo(sx - bw * 0.25, sh - arm); x.moveTo(sx + bw * 0.4, sh + 2); x.lineTo(sx + bw * 0.3, sh - arm); }
-    else { const sw = Math.sin(ph) * 0.12 * hgt * run; x.moveTo(sx - bw * 0.45, sh + 2); x.lineTo(sx - bw * 0.55 - sw, sh + arm); x.moveTo(sx + bw * 0.45, sh + 2); x.lineTo(sx + bw * 0.55 + sw, sh + arm); }
+    else if (p.arms === "shoot") {                                     // set shot: elbow under the ball, ball over the head
+      x.moveTo(sx - bw * 0.35, sh + 2); x.quadraticCurveTo(sx - bw * 0.5, sh - arm * 0.3, sx - bw * 0.1, sh - arm * 0.85);
+      x.moveTo(sx + bw * 0.35, sh + 2); x.quadraticCurveTo(sx + bw * 0.6, sh - arm * 0.35, sx + bw * 0.15, sh - arm * 0.95);
+    } else if (p.arms === "dribble") {                                 // one hand on the ball, the other out to shield it
+      const b = Math.abs(Math.sin(t * 6.5));
+      x.moveTo(sx + dir * bw * 0.45, sh + 2); x.lineTo(sx + dir * bw * 0.75, sh + arm * (0.75 + 0.2 * b));
+      x.moveTo(sx - dir * bw * 0.45, sh + 2); x.lineTo(sx - dir * bw * 0.95, sh + arm * 0.55);
+    } else if (p.throw != null) {                                      // the throwing arm comes back, then over the top
+      const u = clamp(p.throw), a = lerp(Math.PI * 0.95, Math.PI * 0.2, ease(u));
+      x.moveTo(sx + bw * 0.4, sh + 2); x.lineTo(sx - dir * Math.cos(a) * arm, sh - Math.sin(a) * arm * 0.9);
+      x.moveTo(sx - bw * 0.4, sh + 2); x.lineTo(sx + dir * bw * 0.8, sh + arm * 0.45);
+    } else if (p.arms === "guard") {                                   // defense: arms out
+      x.moveTo(sx - bw * 0.45, sh + 2); x.lineTo(sx - bw * 1.25, sh + arm * 0.35); x.moveTo(sx + bw * 0.45, sh + 2); x.lineTo(sx + bw * 1.25, sh + arm * 0.35);
+    } else { const sw = Math.sin(ph) * 0.12 * hgt * run; x.moveTo(sx - bw * 0.45, sh + 2); x.lineTo(sx - bw * 0.55 - sw, sh + arm); x.moveTo(sx + bw * 0.45, sh + 2); x.lineTo(sx + bw * 0.55 + sw, sh + arm); }
     x.stroke();
     if (p.stick) { x.strokeStyle = "#2A2420"; x.lineWidth = Math.max(1, lw * 0.5); x.beginPath(); x.moveTo(sx + bw * 0.5, sh + arm * 0.9); x.lineTo(fx + 0.9 * s, foot[1] - 0.02 * s - lift); x.stroke(); }
     if (p.bat != null) {
@@ -736,45 +928,73 @@
   }
 
   // A hockey player: knees bent, leaning over the puck, both hands on the
-  // stick with the blade flat on the ice in front, skates and a helmet.
+  // stick, skates and a helmet. The stick has a taped knob, a tapered shaft and
+  // a curved blade; it sways while he carries the puck, comes back on a
+  // wind-up and follows through on the shot. Strides push out and back.
   // Goalies get a wide stance, white pads, a glove and a blocker.
   function skater(x, p, o) {
     const { fx, fy, hgt: h, jersey, skin, kit, run, ph, d, blade } = o, g = !!p.goalie;
     const lw = Math.max(1.2, 0.085 * h), sleeve = rgb(jersey.map(v => v * 0.9)), trim = kit ? kit[3] : "#FFFFFF";
     const pants = rgb(jersey.every(v => v > 225) ? [30, 30, 34] : jersey.map(v => v * 0.32));
-    const lean = (g ? 0.05 : 0.12 + 0.07 * run) * h;
-    const hipX = fx - d * 0.03 * h, hipY = fy - (g ? 0.38 : 0.43) * h;
-    const shX = hipX + d * lean, shY = fy - (g ? 0.68 : 0.72) * h;
+    const sh0 = p.shoot != null ? p.shoot : null;                      // -1..0 wind-up, 0..1 follow-through
+    const lean = (g ? 0.05 : 0.13 + 0.09 * run + (sh0 != null ? 0.05 : 0)) * h;
+    const hipX = fx - d * 0.03 * h, hipY = fy - (g ? 0.38 : 0.42) * h;
+    const shX = hipX + d * lean, shY = fy - (g ? 0.68 : 0.7) * h;
     x.lineCap = "round"; x.lineJoin = "round";
-    // legs
-    const push = g ? 0 : Math.sin(ph) * 0.17 * h * (0.35 + 0.65 * run);
-    [[1, push], [-1, -push]].forEach(([side, pp]) => {
-      const footX = g ? fx + side * 0.2 * h : fx + d * pp + side * 0.035 * h;
-      const kneeX = g ? fx + side * 0.13 * h : (hipX + footX) / 2 + d * 0.09 * h, kneeY = lerp(hipY, fy, g ? 0.6 : 0.52);
+    // legs: the pushing skate drives out and back, the other glides under him
+    [[1, 0], [-1, Math.PI]].forEach(([side, off]) => {
+      const phi = ph + off, push = Math.sin(phi), kick = g ? 0 : (0.35 + 0.65 * run);
+      const footX = g ? fx + side * 0.2 * h : fx + d * 0.04 * h - d * Math.max(0, push) * 0.24 * h * kick + d * Math.min(0, push) * -0.05 * h * kick;
+      const up = g ? 0 : Math.max(0, -push) * 0.05 * h * kick;            // the recovering skate comes off the ice
+      const kneeX = g ? fx + side * 0.13 * h : lerp(hipX, footX, 0.5) + d * (0.1 + 0.04 * run) * h, kneeY = lerp(hipY, fy - up, g ? 0.6 : 0.5);
       x.strokeStyle = pants; x.lineWidth = lw * 1.6;
-      x.beginPath(); x.moveTo(hipX + side * 0.06 * h, hipY); x.lineTo(kneeX, kneeY); x.stroke();
+      x.beginPath(); x.moveTo(hipX + side * 0.05 * h, hipY); x.lineTo(kneeX, kneeY); x.stroke();
       x.strokeStyle = g ? "#EDEAE2" : sleeve; x.lineWidth = lw * (g ? 2.4 : 1.1);
-      x.beginPath(); x.moveTo(kneeX, kneeY - (g ? 0.06 * h : 0)); x.lineTo(footX, fy - 0.05 * h); x.stroke();
-      if (!g) { x.strokeStyle = trim; x.lineWidth = Math.max(0.6, lw * 0.35); x.beginPath(); x.moveTo(lerp(kneeX, footX, 0.35) - lw * 0.5, lerp(kneeY, fy, 0.35)); x.lineTo(lerp(kneeX, footX, 0.35) + lw * 0.5, lerp(kneeY, fy, 0.35)); x.stroke(); }
-      // skate boot and blade
-      x.strokeStyle = "#151515"; x.lineWidth = lw * 0.95;
-      x.beginPath(); x.moveTo(footX - d * 0.02 * h, fy - 0.035 * h); x.lineTo(footX + d * 0.08 * h, fy - 0.03 * h); x.stroke();
-      x.strokeStyle = "rgba(225,232,236,.95)"; x.lineWidth = Math.max(0.8, lw * 0.3);
-      x.beginPath(); x.moveTo(footX - d * 0.035 * h, fy); x.lineTo(footX + d * 0.1 * h, fy); x.stroke();
+      x.beginPath(); x.moveTo(kneeX, kneeY - (g ? 0.06 * h : 0)); x.lineTo(footX, fy - 0.05 * h - up); x.stroke();
+      if (!g) { x.strokeStyle = trim; x.lineWidth = Math.max(0.6, lw * 0.35); const sx = lerp(kneeX, footX, 0.35), sy = lerp(kneeY, fy - up, 0.35); x.beginPath(); x.moveTo(sx - lw * 0.5, sy); x.lineTo(sx + lw * 0.5, sy); x.stroke(); }
+      // skate: boot, holder and a steel runner
+      const by = fy - up;
+      x.fillStyle = "#151515"; x.beginPath();
+      x.moveTo(footX - d * 0.03 * h, by - 0.06 * h); x.lineTo(footX + d * 0.02 * h, by - 0.06 * h); x.lineTo(footX + d * 0.1 * h, by - 0.025 * h); x.lineTo(footX - d * 0.035 * h, by - 0.02 * h); x.closePath(); x.fill();
+      x.strokeStyle = "rgba(225,232,236,.95)"; x.lineWidth = Math.max(0.8, lw * 0.28);
+      x.beginPath(); x.moveTo(footX - d * 0.045 * h, by - 0.004 * h); x.lineTo(footX + d * 0.11 * h, by - 0.004 * h); x.stroke();
     });
     // hockey pants
     x.fillStyle = pants; x.beginPath();
     x.moveTo(hipX - 0.15 * h, hipY - 0.03 * h); x.lineTo(hipX + 0.15 * h, hipY - 0.03 * h); x.lineTo(hipX + 0.14 * h, hipY + 0.09 * h); x.lineTo(hipX - 0.14 * h, hipY + 0.09 * h); x.closePath(); x.fill();
-    // the stick, held across the body with both hands, blade on the ice
-    const top = [shX - d * 0.03 * h, shY + 0.15 * h];
-    const heel = [blade[0], blade[1] - 0.01 * h];
-    const bot = [lerp(top[0], heel[0], 0.42), lerp(top[1], heel[1], 0.42)];
-    x.strokeStyle = "#1A1A1A"; x.lineWidth = Math.max(1, lw * 0.42);
-    x.beginPath(); x.moveTo(top[0] - (heel[0] - top[0]) * 0.08, top[1] - (heel[1] - top[1]) * 0.08); x.lineTo(heel[0], heel[1]); x.stroke();
-    x.lineWidth = Math.max(1.2, lw * (g ? 0.9 : 0.6));
-    x.beginPath(); x.moveTo(heel[0], heel[1]); x.lineTo(heel[0] + d * (g ? 0.16 : 0.13) * h, heel[1] + 0.005 * h); x.stroke();
-    x.strokeStyle = "rgba(245,245,240,.9)"; x.lineWidth = Math.max(0.8, lw * 0.4);
-    x.beginPath(); x.moveTo(heel[0] + d * 0.03 * h, heel[1]); x.lineTo(heel[0] + d * 0.1 * h, heel[1] + 0.004 * h); x.stroke();
+    // the stick: where the blade is (on the ice in front; back and up on a wind-up; out front after the shot)
+    let heel = [blade[0], blade[1] - 0.01 * h];
+    if (!g && p.carry) heel = [heel[0] + Math.sin(ph * 1.7) * 0.07 * h, heel[1] + Math.cos(ph * 1.7) * 0.012 * h];
+    if (!g && sh0 != null) {
+      const back = [fx - d * 0.2 * h, fy - 0.3 * h], thru = [fx + d * 0.62 * h, fy - 0.34 * h];
+      heel = sh0 < 0 ? [lerp(heel[0], back[0], ease(-sh0)), lerp(heel[1], back[1], ease(-sh0))]
+        : [lerp(back[0], thru[0], ease(Math.min(1, sh0 * 1.6))), lerp(back[1], heel[1], Math.min(1, sh0 * 3)) - Math.max(0, sh0 - 0.3) * 0.45 * h];
+    }
+    const top = [shX - d * 0.02 * h, shY + 0.16 * h];
+    const len = Math.hypot(heel[0] - top[0], heel[1] - top[1]) || 1, ux = (heel[0] - top[0]) / len, uy = (heel[1] - top[1]) / len;
+    const knob = [top[0] - ux * 0.1 * h, top[1] - uy * 0.1 * h], bot = [lerp(top[0], heel[0], 0.4), lerp(top[1], heel[1], 0.4)];
+    // shaft: tapered, a sheen down one side, a graphic band and tape at the knob
+    const sw = Math.max(1.2, lw * 0.5), nx = -uy, ny = ux;
+    x.fillStyle = "#1B1B1D"; x.beginPath();
+    x.moveTo(knob[0] + nx * sw * 0.5, knob[1] + ny * sw * 0.5); x.lineTo(heel[0] + nx * sw * 0.3, heel[1] + ny * sw * 0.3);
+    x.lineTo(heel[0] - nx * sw * 0.3, heel[1] - ny * sw * 0.3); x.lineTo(knob[0] - nx * sw * 0.5, knob[1] - ny * sw * 0.5); x.closePath(); x.fill();
+    x.strokeStyle = "rgba(255,255,255,.22)"; x.lineWidth = Math.max(0.5, sw * 0.18);
+    x.beginPath(); x.moveTo(knob[0] + nx * sw * 0.2, knob[1] + ny * sw * 0.2); x.lineTo(heel[0] + nx * sw * 0.12, heel[1] + ny * sw * 0.12); x.stroke();
+    if (h > 26) { x.strokeStyle = trim; x.lineWidth = sw * 0.9; const b0 = 0.55, b1 = 0.66; x.beginPath(); x.moveTo(lerp(knob[0], heel[0], b0), lerp(knob[1], heel[1], b0)); x.lineTo(lerp(knob[0], heel[0], b1), lerp(knob[1], heel[1], b1)); x.stroke(); }
+    x.strokeStyle = "#F2F0EA"; x.lineWidth = sw * 1.15;
+    x.beginPath(); x.moveTo(knob[0], knob[1]); x.lineTo(knob[0] + ux * 0.05 * h, knob[1] + uy * 0.05 * h); x.stroke();
+    // blade: off the heel at the lie angle, curved up at the toe, white tape in the middle
+    const bl = (g ? 0.17 : 0.15) * h, bh = Math.max(1.2, (g ? 0.045 : 0.032) * h), tx = heel[0] + d * bl, ty = heel[1] + 0.004 * h;
+    x.fillStyle = "#1B1B1D"; x.beginPath();
+    x.moveTo(heel[0] - d * 0.01 * h, heel[1] - bh); x.quadraticCurveTo(heel[0] + d * bl * 0.6, ty - bh * 0.7, tx, ty - bh * 1.4);
+    x.quadraticCurveTo(tx + d * 0.012 * h, ty - bh * 0.2, tx - d * 0.01 * h, ty + bh * 0.15);
+    x.quadraticCurveTo(heel[0] + d * bl * 0.5, ty + bh * 0.35, heel[0] - d * 0.015 * h, heel[1] + bh * 0.2); x.closePath(); x.fill();
+    if (h > 18) {
+      x.fillStyle = "rgba(245,245,240,.92)"; x.beginPath();
+      const t0 = 0.25, t1 = 0.72, at = u => [heel[0] + d * bl * u, lerp(heel[1], ty, u) - bh * (0.5 + 0.6 * u * u)];
+      const a0 = at(t0), a1 = at(t1);
+      x.moveTo(a0[0], a0[1] - bh * 0.35); x.lineTo(a1[0], a1[1] - bh * 0.35); x.lineTo(a1[0], a1[1] + bh * 0.55); x.lineTo(a0[0], a0[1] + bh * 0.55); x.closePath(); x.fill();
+    }
     // jersey: bulky shoulders over the pads, stripes at the hem
     const bw = 0.17 * h;
     x.fillStyle = rgb(jersey); x.beginPath();
@@ -782,21 +1002,23 @@
     x.lineTo(shX + bw * 1.15, shY + 0.02 * h); x.quadraticCurveTo(shX, shY - 0.05 * h, shX - bw * 1.15, shY + 0.02 * h); x.closePath(); x.fill();
     x.strokeStyle = trim; x.lineWidth = Math.max(0.8, 0.025 * h);
     x.beginPath(); x.moveTo(lerp(hipX, shX, 0.15) - bw, lerp(hipY, shY, 0.15)); x.lineTo(lerp(hipX, shX, 0.15) + bw, lerp(hipY, shY, 0.15)); x.stroke();
-    if (kit && h > 20) {
+    x.beginPath(); x.moveTo(lerp(hipX, shX, 0.24) - bw * 1.02, lerp(hipY, shY, 0.24)); x.lineTo(lerp(hipX, shX, 0.24) + bw * 1.02, lerp(hipY, shY, 0.24)); x.stroke();
+    if (kit && kit[1] && h > 20) {
       x.fillStyle = trim; x.font = `700 ${Math.round(0.13 * h)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
-      x.fillText(String(kit[1]), lerp(hipX, shX, 0.55), lerp(hipY, shY, 0.55));
+      x.fillText(String(kit[1]), lerp(hipX, shX, 0.58), lerp(hipY, shY, 0.58));
     }
     // arms in sleeves, gloves on the stick (a goalie's glove and blocker)
     const glove = rgb(jersey.every(v => v > 225) ? [40, 40, 44] : jersey.map(v => v * 0.6));
     const hands = g
       ? [[shX - d * 0.16 * h, p.arms === "glove" ? shY - 0.08 * h : hipY - 0.02 * h], [lerp(top[0], heel[0], 0.3), lerp(top[1], heel[1], 0.3)]]
       : [top, bot];
-    [[shX - d * 0.1 * h, shY + 0.02 * h], [shX + d * 0.1 * h, shY + 0.02 * h]].forEach((sh, i) => {
+    [[shX - d * 0.1 * h, shY + 0.02 * h], [shX + d * 0.1 * h, shY + 0.02 * h]].forEach((shp, i) => {
       const hd = hands[i];
       x.strokeStyle = sleeve; x.lineWidth = lw * 1.05;
-      x.beginPath(); x.moveTo(sh[0], sh[1]); x.quadraticCurveTo((sh[0] + hd[0]) / 2 - d * 0.04 * h, (sh[1] + hd[1]) / 2 + 0.05 * h, hd[0], hd[1]); x.stroke();
+      x.beginPath(); x.moveTo(shp[0], shp[1]); x.quadraticCurveTo((shp[0] + hd[0]) / 2 - d * 0.04 * h, (shp[1] + hd[1]) / 2 + 0.05 * h, hd[0], hd[1]); x.stroke();
       x.fillStyle = g && i === 0 ? "#7A5A3A" : glove;
-      x.beginPath(); x.arc(hd[0], hd[1], (g ? 0.06 : 0.035) * h, 0, Math.PI * 2); x.fill();
+      x.beginPath(); x.arc(hd[0], hd[1], (g ? 0.06 : 0.038) * h, 0, Math.PI * 2); x.fill();
+      if (!g) { x.strokeStyle = trim; x.lineWidth = Math.max(0.5, 0.012 * h); x.beginPath(); x.arc(hd[0], hd[1], 0.038 * h, Math.PI * 0.2, Math.PI * 0.8); x.stroke(); }
       if (g && i === 1) { x.fillStyle = "#EDEAE2"; x.fillRect(hd[0] - 0.04 * h, hd[1] - 0.07 * h, 0.08 * h, 0.1 * h); }
     });
     // head in a helmet with a visor (a goalie's mask)
@@ -866,9 +1088,307 @@
     }
   }
 
+  // ---------- who's on the field: today's teams, a live game, or the classics ----------
+  // While a game is on, its real plays are acted out as they happen (from ESPN's
+  // game feed, the same one the game pages read). Before games start, the two
+  // teams in tonight's surest pick play, with their real players. With nothing
+  // on, the all-time greats play, mixed with famous plays.
+  const ESPN = "https://site.api.espn.com/apis/site/v2/sports/";
+  const PATHS = { nfl: "football/nfl", cfb: "football/college-football", mlb: "baseball/mlb", nhl: "hockey/nhl",
+    nba: "basketball/nba", cbb: "basketball/mens-college-basketball" };
+  const SOCCER_LEAGUE = { "Premier League": "eng.1", "La Liga": "esp.1", "LaLiga": "esp.1", "Champions League": "uefa.champions",
+    "Europa League": "uefa.europa", "Serie A": "ita.1", "Bundesliga": "ger.1", "Ligue 1": "fra.1", "MLS": "usa.1" };
+  const espnPath = (sp, g) => sp === "soccer" ? "soccer/" + (SOCCER_LEAGUE[(g && g.league) || ""] || "eng.1") : PATHS[sp];
+  function jget(url, ms = 8000) {
+    const ac = typeof AbortController === "function" ? new AbortController() : null;
+    const tm = ac && setTimeout(() => ac.abort(), ms);
+    return fetch(url, ac ? { signal: ac.signal } : {}).then(r => r.ok ? r.json() : null).catch(() => null).finally(() => tm && clearTimeout(tm));
+  }
+  const lum = c => (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255;
+  const near = (a, b) => Math.abs(lum(a) - lum(b)) < 0.22 && Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 120;
+  const hx6 = s => "#" + String(s || "333333").replace(/^#/, "").padStart(6, "0").slice(0, 6);
+  const SUFFIX = /\s+(Jr\.?|Sr\.?|II|III|IV)$/i;
+  function lastName(a) {
+    if (a.lastName) return a.lastName.replace(SUFFIX, "");
+    const s = String(a.shortName || a.displayName || "").replace(SUFFIX, "").trim();
+    const m = /^[A-Z][a-z]?\.\s*(.+)$/.exec(s);
+    if (m) return m[1];
+    const parts = s.split(/\s+/);
+    return parts.length > 1 ? parts.slice(1).join(" ") : s;
+  }
+  const person = (a, extra = {}) => ({ id: String(a.id || ""), name: lastName(a), full: a.displayName || a.fullName || "",
+    jersey: a.jersey != null && a.jersey !== "" ? String(a.jersey) : "", pos: ((a.position || {}).abbreviation || extra.pos || "").toUpperCase(),
+    grp: extra.grp || "", starter: !!(extra.starter || a.starter), rank: extra.rank || 0 });
+
+  // which pool a player belongs in, by position (or by the box score group he's listed in)
+  function roleOf(kind, p) {
+    const pos = p.pos, g = (p.grp || "").toLowerCase();
+    if (kind === "court") return "HOOPS";
+    if (kind === "ice") return pos === "G" || /goal/.test(g) ? "GOALIES" : "SKATERS";
+    if (kind === "pitch") return pos === "G" || pos === "GK" || /keeper/.test(g) ? "KEEPERS" : "FOOTY";
+    if (kind === "park") {
+      if (/^(SP|RP|P)$/.test(pos) || /pitch/.test(g)) return "PITCHERS";
+      if (pos === "C") return "CATCHERS";
+      if (/^(1B|2B|3B|SS|IF)$/.test(pos)) return "INFIELD";
+      if (/^(LF|CF|RF|OF)$/.test(pos)) return "OUTFIELD";
+      return "BATTERS";
+    }
+    if (pos === "QB" || (!pos && g === "passing")) return "QB";
+    if (/^(RB|FB|HB)$/.test(pos) || (!pos && g === "rushing")) return "RB";
+    if (pos === "WR" || (!pos && g === "receiving")) return "WR";
+    if (pos === "TE") return "TE";
+    if (/^(C|G|T|OT|OG|OL|LT|RT|LG|RG)$/.test(pos)) return "OL";
+    if (/^(DE|DT|NT|DL)$/.test(pos)) return "DL";
+    if (/^(LB|OLB|ILB|MLB)$/.test(pos)) return "LB";
+    if (/^(CB|DB)$/.test(pos)) return "CB";
+    if (/^(S|FS|SS)$/.test(pos)) return "SAF";
+    if (!pos && /defens|intercept/.test(g)) return "LB";
+    return "";
+  }
+  // baseball batters come from the whole lineup, not just the bench
+  const fitsRole = (kind, role, p) => role === "BATTERS" ? roleOf(kind, p) !== "PITCHERS" : roleOf(kind, p) === role;
+
+  // every player ESPN lists for each team in a game summary: box score, leaders, lineups
+  function summaryPlayers(d) {
+    const by = {};
+    const add = (tid, a, extra) => {
+      if (!tid || !a || !(a.displayName || a.shortName)) return;
+      const list = by[tid] || (by[tid] = []), q = person(a, extra);
+      const old = list.find(o => (q.id && o.id === q.id) || o.full === q.full);
+      if (old) { if (!old.pos) old.pos = q.pos; if (!old.jersey) old.jersey = q.jersey; old.starter = old.starter || q.starter; old.rank = Math.max(old.rank, q.rank); }
+      else list.push(q);
+    };
+    ((d.boxscore || {}).players || []).forEach(tp => {
+      const tid = String((tp.team || {}).id || "");
+      (tp.statistics || []).forEach(st => (st.athletes || []).forEach(a => add(tid, a.athlete, { grp: st.name || st.type || "", starter: a.starter, rank: a.starter ? 2 : 1 })));
+    });
+    (d.leaders || []).forEach(tl => {
+      const tid = String((tl.team || {}).id || "");
+      (tl.leaders || []).forEach(cat => (cat.leaders || []).forEach(l => add(tid, l.athlete, { grp: cat.name || "", rank: 3 })));
+    });
+    (d.rosters || []).forEach(tr => {
+      const tid = String((tr.team || {}).id || "");
+      (tr.roster || []).forEach(a => add(tid, { ...(a.athlete || {}), jersey: a.jersey || (a.athlete || {}).jersey, position: a.position || (a.athlete || {}).position }, { starter: a.starter, rank: a.starter ? 2 : 0 }));
+    });
+    return by;
+  }
+  function rosterPlayers(d) {
+    const out = [];
+    ((d && d.athletes) || []).forEach(e => (e.items ? e.items : [e]).forEach(a => a && a.displayName && out.push(person(a))));
+    return out;
+  }
+
+  // One side of a game: colors and players. The home team wears its color, the
+  // road team white (in baseball: home whites, road grays), trimmed in its color.
+  function side(t, home, kind) {
+    const c = hex(hx6(t.color)), a = hex(hx6(t.alt));
+    let jersey, num;
+    if (kind === "park") { jersey = home ? [244, 244, 244] : [162, 170, 173]; num = lum(c) > 0.8 ? a : c; }
+    else if (home) { jersey = c; num = near(a, c) ? (lum(c) > 0.55 ? [17, 17, 17] : [255, 255, 255]) : a; }
+    else { jersey = [244, 244, 244]; num = lum(c) > 0.8 ? (lum(a) > 0.8 ? [17, 17, 17] : a) : c; }
+    const toHex = v => "#" + v.map(n => Math.round(n).toString(16).padStart(2, "0")).join("");
+    return { abbr: t.abbr || "", short: t.short || t.abbr || "", jersey: toHex(jersey), num: toHex(num), home, players: [], id: "" };
+  }
+  // fix two clashing kits: the road side switches to its own color
+  function unclash(h, a, t) {
+    if (near(hex(h.jersey), hex(a.jersey))) {
+      const c = hex(hx6(t.color)), alt = hex(hx6(t.alt));
+      const pick = near(c, hex(h.jersey)) ? alt : c;
+      a.jersey = "#" + pick.map(n => n.toString(16).padStart(2, "0")).join("");
+      a.num = lum(pick) > 0.55 ? "#111111" : "#FFFFFF";
+    }
+  }
+  // a kit for one player: [name, number, jersey, number color, stripe]; .anon when we don't know who
+  function kitFor(s, p) {
+    const k = [p ? p.name : "", p ? p.jersey : "", s.jersey, s.num];
+    k.anon = !p; k.side = s; return k;
+  }
+  // pools for one team, named players first (starters and leaders ahead of the bench)
+  function teamKits(kind, s, role, n, r, used) {
+    const fits = s.players.filter(p => !used.has(p.full) && fitsRole(kind, role, p));
+    const top = fits.filter(p => p.rank >= 2), rest = fits.filter(p => p.rank < 2);
+    const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const order = [...shuffle(top), ...shuffle(rest)], out = [];
+    for (let i = 0; i < n; i++) { const p = order[i]; if (p) used.add(p.full); out.push(kitFor(s, p)); }
+    return out;
+  }
+  // the lineup builders the sports call: T.kits([[role, "o" | "d", n], ...], r)
+  const POOLS = { HOOPS, QB, RB, WR, TE, OL, DL, LB, CB, SAF, PITCHERS, CATCHERS, INFIELD, OUTFIELD, BATTERS, SKATERS, GOALIES, FOOTY, KEEPERS };
+  const CLASSIC = { mode: "classic", kits: (spec, r) => lineup(spec.map(([role, , n]) => [POOLS[role], n]), r) };
+  function teamsT(kind, m, off) {
+    const o = off === "home" ? m.home : m.away, d = off === "home" ? m.away : m.home;
+    return { mode: m.mode, m, o, d, kits(spec, r) {
+      const used = new Set(), out = [];
+      spec.forEach(([role, sd, n]) => teamKits(kind, sd === "o" ? o : d, role, n, r, used).forEach(k => { k.role = role; out.push(k); }));
+      return out;
+    } };
+  }
+  // put named players in the spots the caption talks about
+  function feature(kits, idx) {
+    idx.forEach(i => {
+      const k = kits[i];
+      if (!k || !k.anon) return;
+      const j = kits.findIndex((q, jj) => !q.anon && q.side === k.side && q.role === k.role && !idx.includes(jj));
+      if (j >= 0) [kits[i], kits[j]] = [kits[j], kits[i]];
+    });
+  }
+  // the name a caption uses for kit i: the player, or his team when we don't know who
+  const nameOf = k => k ? (k[0] || (k.side ? k.side.short : "")) : "";
+
+  // a player named in a play's text, matched against both teams
+  function namesIn(text, m) {
+    const found = [];
+    [m.home, m.away].forEach(s => s.players.forEach(p => {
+      const at = p.full && text.indexOf(p.full) >= 0 ? text.indexOf(p.full) : p.name && p.name.length > 2 ? text.search(new RegExp(`\\b${p.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`)) : -1;
+      if (at >= 0) found.push({ at, p, s });
+    }));
+    found.sort((a, b) => a.at - b.at);
+    return found.filter((f, i) => found.findIndex(g => g.p === f.p) === i);
+  }
+
+  const director = (() => {
+    const state = {}, plays = {}, seen = {};
+    // the game to show for a sport: a live one first, then tonight's surest pick
+    async function pick(sp, force) {
+      const d = await games(sp), list = (d && d.games) || [], now = Date.now();
+      if (force === "replay") {                       // test mode: act out a finished game's plays as if live
+        const done = list.filter(g => g.state === "post").sort((a, b) => Date.parse(b.start) - Date.parse(a.start));
+        for (const g of done.slice(0, 3)) {
+          const sum = await jget(`${ESPN}${espnPath(sp, g)}/summary?event=${g.id}`);
+          if (sum) return { g, sum, live: true, replay: true };
+        }
+      }
+      const best = surest(d);
+      const startsIn = g => (Date.parse(g.start) || 0) - now;
+      const maybeLive = list.filter(g => g.state === "in" || (g.state === "pre" && startsIn(g) < 0 && startsIn(g) > -5 * 3600e3));
+      maybeLive.sort((a, b) => (best && a.id === best.g.id ? -1 : 0) - (best && b.id === best.g.id ? -1 : 0));
+      for (const g of maybeLive.slice(0, 4)) {
+        const sum = await jget(`${ESPN}${espnPath(sp, g)}/summary?event=${g.id}`);
+        const st = ((((sum || {}).header || {}).competitions || [])[0] || {}).status;
+        if (st && st.type && st.type.state === "in") return { g, sum, live: true };
+      }
+      const pre = best ? best.g : list.find(g => g.state === "pre" && startsIn(g) > -15 * 60e3);
+      return pre ? { g: pre, live: false } : null;
+    }
+    async function load(sp, kind, force) {
+      const got = await pick(sp, force);
+      if (!got) return { mode: "classic" };
+      const { g } = got, m = { mode: got.live ? "live" : "teams", replay: !!got.replay, sp, kind, g, path: espnPath(sp, g) };
+      m.home = side(g.home, true, kind); m.away = side(g.away, false, kind); unclash(m.home, m.away, g.away);
+      const sum = got.sum || await jget(`${ESPN}${m.path}/summary?event=${g.id}`);
+      const comps = ((((sum || {}).header || {}).competitions || [])[0] || {}).competitors || [];
+      comps.forEach(c => { const s = c.homeAway === "home" ? m.home : m.away; s.id = String((c.team || {}).id || ""); });
+      const by = sum ? summaryPlayers(sum) : {};
+      [m.home, m.away].forEach(s => { s.players = by[s.id] || []; });
+      // fill out thin lists (before a game, ESPN lists only a few leaders) from the team roster
+      await Promise.all([[m.home, g.home], [m.away, g.away]].map(async ([s, t]) => {
+        if (s.players.length >= 9) return;
+        const key = (/\/(\d+)\.png/.exec(t.logo || "") || [])[1] || s.id || String(t.abbr || "").toLowerCase();
+        const ro = rosterPlayers(await jget(`${ESPN}${m.path}/teams/${key}/roster`));
+        ro.forEach(p => { if (!s.players.some(q => q.full === p.full)) s.players.push(p); });
+      }));
+      // probable pitchers and goalies from our own slate
+      [[m.home, g.home], [m.away, g.away]].forEach(([s, t]) => {
+        if (!t.probable) return;
+        const nm = lastName({ shortName: t.probable });
+        const p = s.players.find(q => q.name === nm) || (s.players.push({ name: nm, full: t.probable, jersey: "", pos: kind === "ice" ? "G" : "SP", rank: 3 }), s.players[s.players.length - 1]);
+        p.rank = 4; if (!p.pos) p.pos = kind === "ice" ? "G" : "SP"; p.probable = true;
+      });
+      if (m.mode === "live" && sum) { m.status = liveStatus(sum, m); m.sum = m.replay ? sum : null; queuePlays(sp, kind, sum, m, !m.replay); }
+      return m;
+    }
+    function liveStatus(sum, m) {
+      const comp = ((sum.header || {}).competitions || [])[0] || {}, st = comp.status || {};
+      const score = {};
+      (comp.competitors || []).forEach(c => { score[c.homeAway] = c.score; });
+      return { state: (st.type || {}).state, detail: (st.type || {}).shortDetail || (st.type || {}).detail || "", away: score.away, home: score.home };
+    }
+    // the latest plays from ESPN, normalized: {id, text, team ("home" | "away"), type, scoring}
+    function feedPlays(sum, m) {
+      const teamOf = id => String(id) === m.home.id ? "home" : String(id) === m.away.id ? "away" : "";
+      if (m.kind === "gridiron") {
+        const dr = sum.drives || {}, list = [...(dr.previous || []).slice(-2), dr.current].filter(Boolean);
+        const out = [];
+        list.forEach(d => (d.plays || []).forEach(p => out.push({ id: String(p.id || p.sequenceNumber || p.text), text: p.text || "", team: teamOf((d.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay })));
+        return out;
+      }
+      if (m.kind === "pitch") return (sum.keyEvents || []).map(e => ({ id: String(e.id || e.text), text: e.text || "", team: teamOf((e.team || {}).id), type: (e.type || {}).text || (e.type || {}).type || "", scoring: !!e.scoringPlay }));
+      return (sum.plays || []).map(p => ({ id: String(p.id || p.sequenceNumber || p.text), text: String(p.text || "").trim(), team: teamOf((p.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay }));
+    }
+    function queuePlays(sp, kind, sum, m, first) {
+      const all = feedPlays(sum, m).filter(p => p.text), q = plays[sp] || (plays[sp] = []), s = seen[sp] || (seen[sp] = new Set());
+      // the first time, act out only the most recent play we can draw
+      const fresh = all.filter(p => !s.has(p.id));
+      fresh.forEach(p => s.add(p.id));
+      const drawable = fresh.filter(p => p.team && SPORT[kind].live && SPORT[kind].live(p, () => 0.5));
+      if (m.replay) { q.push(...drawable); return; }
+      if (first) { if (drawable.length) q.push(drawable[drawable.length - 1]); }
+      else q.push(...drawable.slice(-3));
+      while (q.length > 3) q.shift();
+    }
+    async function refresh(sp, kind, force) {
+      const m = state[sp];
+      if (m && m.replay) { if (!(plays[sp] || []).length) { seen[sp] = new Set(); queuePlays(sp, kind, m.sum, m, false); } return; }
+      if (m && m.mode === "live") {
+        const sum = await jget(`${ESPN}${m.path}/summary?event=${m.g.id}`);
+        if (sum) {
+          m.status = liveStatus(sum, m);
+          if (m.status.state !== "in") { state[sp] = await load(sp, kind, force); return; }
+          queuePlays(sp, kind, sum, m, false);
+        }
+        return;
+      }
+      state[sp] = await load(sp, kind, force);
+    }
+    const timers = {}, ready = {};
+    return {
+      // resolves once the first look at the slate is done (the field waits a moment for it)
+      watch(sp, kind) {
+        if (timers[sp]) return ready[sp];
+        const force = (new URLSearchParams(location.search).get("labmode") || store.get("lab-mode") || "").toLowerCase();
+        if (force === "classic") { state[sp] = { mode: "classic" }; timers[sp] = 1; return (ready[sp] = Promise.resolve()); }
+        let done; ready[sp] = new Promise(res => { done = res; });
+        const tick = () => refresh(sp, kind, force).catch(() => {}).finally(() => {
+          done();
+          timers[sp] = setTimeout(tick, state[sp] && state[sp].mode === "live" ? (state[sp].replay ? 6000 : 20000) : 5 * 60e3);
+        });
+        tick();
+        return ready[sp];
+      },
+      now(sp) { return state[sp] || null; },
+      take(sp) { const q = plays[sp]; return q && q.length ? q.shift() : null; },
+    };
+  })();
+
+  // put the players a live play names into the spots that act it out
+  function placeNames(v, actors, text, T) {
+    const found = namesIn(text, T.m), used = new Set();
+    actors.forEach(([i, sd], n) => {
+      const team = sd === "o" ? T.o : T.d;
+      let f = found.find(x => x.s === team && !used.has(x));
+      if (!f && n === 0) {                                   // no roster match: the name the play starts with
+        const lead = /^([A-Z][\w'’.-]*(?:\s+[A-Z][\w'’.-]*){0,2})\s+[a-z(]/.exec(text);
+        if (lead) f = { p: { name: lastName({ displayName: lead[1] }), full: lead[1], jersey: "" }, s: team };
+      }
+      if (!f) return;
+      used.add(f);
+      const j = v.kits.findIndex(k => k.side === team && k[0] === f.p.name);
+      if (j >= 0 && j !== i) [v.kits[i], v.kits[j]] = [v.kits[j], v.kits[i]];
+      else if (j < 0) { const k = kitFor(team, f.p); k.role = v.kits[i].role; v.kits[i] = k; }
+    });
+  }
+  function shortText(t) {
+    t = String(t).replace(/\s+/g, " ").replace(/^\(\d+:\d+\)\s*/, "").trim();
+    return t.length <= 96 ? t : t.slice(0, 94).replace(/\s+\S*$/, "") + "…";
+  }
+  function liveLine(m) {
+    const st = m.status || {};
+    return `${m.away.abbr} ${st.away ?? ""}, ${m.home.abbr} ${st.home ?? ""}${st.detail ? " · " + st.detail : ""}`;
+  }
+
   // ---------- running a scene on a canvas ----------
   // kinds: one kind, or a list to rotate through (one play each).
-  function runField(c, kinds, onKind) {
+  function runField(c, kinds, onKind, dataOf) {
     const list = Array.isArray(kinds) ? kinds : [kinds];
     let W = 0, H = 0, dpr = 1, cache = {}, raf = 0, startAt = performance.now(), lastPlay = -2, v = null;
     const salt = parseInt(new URLSearchParams(location.search).get("labseed"), 10) || Math.floor(Math.random() * 1e6);                     // a different run of plays on every visit
@@ -879,7 +1399,9 @@
       c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
       cache = {};
     }
-    function bgFor(k) { return cache[k] || (cache[k] = background(k, W, H, dpr)); }
+    const margin = k => SPORT[k].centered ? 0 : Math.round(W * (W < 760 ? 0.5 : 0.1));
+    function bgFor(k) { return cache[k] || (cache[k] = background(k, W, H, dpr, margin(k))); }
+    let pan = 0, lastNow = 0;
     function frame(now) {
       raf = 0;
       if (!W || !H) { size(); if (!W || !H) return; }
@@ -897,18 +1419,43 @@
         let seed = (salt + play * 7919) % 2147483646 + 1;
         const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
         r(); r();
-        v = sp.variant(r);
+        // today's teams (a real play when a game is live), or the greats and their famous plays
+        const key = dataOf ? dataOf(kind) : null, m = key ? director.now(key) : null;
+        let said;
+        if (m && m.home) {
+          const lp = m.mode === "live" ? director.take(key) : null;
+          const T = teamsT(kind, m, lp ? lp.team : r() < 0.5 ? "home" : "away");
+          v = sp.variant(r, T, (lp ? sp.live(lp, r) : m.mode === "live" ? sp.quiet : null) || {});
+          if (lp) placeNames(v, sp.actors(v), lp.text, T);
+          feature(v.kits, sp.actors(v).map(a => a[0]));
+          const tag = m.replay ? "Replay" : "Live";
+          const named = sp.actors(v).every(([i]) => v.kits[i] && !v.kits[i].anon);
+          const when = new Date(m.g.start).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+          said = lp ? `${tag} · ${shortText(lp.text)}` : m.mode === "live" ? `${tag} · ${liveLine(m)}`
+            : `${m.away.abbr} @ ${m.home.abbr} · ${named ? sp.caption(v) : `${m.away.short} at ${m.home.short}, ${when} ET`}`;
+        } else if (sp.classics && r() < 0.5) {
+          v = famous(sp, sp.classics[Math.floor(r() * sp.classics.length)], r); said = v.cap;
+        } else { v = sp.variant(r, CLASSIC); said = sp.caption(v); }
         v.skins = Array.from({ length: 24 }, () => SKIN[Math.floor(r() * SKIN.length)]);
-        if (onKind) onKind(kind, sp.caption(v));
+        if (onKind) onKind(kind, said);
       }
       const bg = bgFor(kind), cam = bg.cam;
-      x.setTransform(dpr, 0, 0, dpr, 0, 0);
-      x.globalAlpha = 1;
-      x.drawImage(bg.canvas, 0, 0, W, H);
-      const fade = still ? 1 : clamp(t / 0.35) * clamp((sp.D - t) / 0.45);
-      x.globalAlpha = fade;
       const cast = tt => sp.cast(clamp(tt, 0, sp.D), v);
       const now0 = cast(t);
+      // the camera pans to keep the ball in view, a little left of center on wide screens (clear of the pick card)
+      if (bg.M) {
+        const b = now0.ball, bx = cam.P(b.X, b.Y || 0, b.Z)[0] - bg.M, focus = W * (W >= 980 ? 0.55 : 0.5);
+        const want = clamp(focus - bx, -bg.M, bg.M), dt = clamp((now - lastNow) / 1000, 0, 0.1);
+        pan = t < 0.05 || still ? want : pan + (want - pan) * Math.min(1, dt * 1.8);
+      } else pan = 0;
+      lastNow = now;
+      const ox = pan - bg.M;
+      x.setTransform(dpr, 0, 0, dpr, 0, 0);
+      x.globalAlpha = 1;
+      x.drawImage(bg.canvas, ox, 0, bg.W, H);
+      x.setTransform(dpr, 0, 0, dpr, dpr * ox, 0);
+      const fade = still ? 1 : clamp(t / 0.35) * clamp((sp.D - t) / 0.45);
+      x.globalAlpha = fade;
       now0.players.forEach((p, j) => { p.kit = v.kits[j]; p.skin = v.skins[j]; });
       now0.players.slice().sort((a, b) => b.Z - a.Z).forEach(p => figure(x, cam, p, t, sp));
       if (sp.goal && sp.goal.Y) drawRim(x, cam, sp.goal, now0.ball.swish);
@@ -918,7 +1465,7 @@
       if (now0.hitFlash) glow(x, cam, now0.hitAt, now0.hitFlash, "255,236,200");
       if (now0.lamp) glow(x, cam, { X: 27.8, Y: 2.6, Z: 22.5 }, (Math.sin(t * 18) > 0 ? 1 : 0.6) * now0.lamp, "230,40,40");
       x.globalAlpha = 1;
-      if (!still) flashes(x, bg, W, el);
+      if (!still) flashes(x, bg, bg.W, el);
       if (!still) raf = requestAnimationFrame(frame);
     }
     size();
@@ -953,11 +1500,15 @@
     let cap = head.querySelector(".lab-caption");
     if (!cap) { cap = document.createElement("div"); cap.className = "lab-caption"; cap.setAttribute("aria-hidden", "true"); head.append(cap); }
     let lastKind = null;
-    field = runField(c, kinds, (k, said) => {
+    const dataOf = k => pageSport && NAME[pageSport.toLowerCase()] ? pageSport.toLowerCase() : SPORT_OF_KIND[k];
+    const first = (Array.isArray(kinds) ? kinds : [kinds]).map(k => director.watch(dataOf(k), k))[0];
+    const go = () => { if (!field.c) field.c = runField(c, kinds, (k, said) => {
       cap.textContent = said || ""; cap.classList.remove("in"); void cap.offsetWidth; cap.classList.add("in");
       if (Array.isArray(kinds) && k !== lastKind) card.show(SPORT_OF_KIND[k]);
       lastKind = k;
-    });
+    }, dataOf); };
+    field = {};
+    Promise.race([first, new Promise(res => setTimeout(res, 2500))]).then(go);
   }
   function stopField() { location.reload(); }
 
@@ -1030,9 +1581,12 @@
     box.innerHTML = `<button type="button" class="lab-panel-btn" aria-expanded="false">Test</button>
       <div class="lab-panel-body" hidden><p>Test build. The live site is unchanged.</p>
       ${OPTS.map(([k, label]) => `<label><input type="checkbox" data-k="${k}" ${on[k] ? "checked" : ""}> ${label}</label>`).join("")}
+      <label class="lab-mode">Players <select>${[["", "Today's teams (live when on)"], ["classic", "All-time greats"], ["replay", "Replay a finished game"]]
+        .map(([k, l]) => `<option value="${k}"${(store.get("lab-mode") || "") === k ? " selected" : ""}>${l}</option>`).join("")}</select></label>
       <a href="https://ant56-arch.github.io${location.pathname.replace(/^\/lab/, "")}${location.search}">Open the live version</a></div>`;
     const btn = box.querySelector("button"), body = box.querySelector(".lab-panel-body");
     btn.addEventListener("click", () => { body.hidden = !body.hidden; btn.setAttribute("aria-expanded", String(!body.hidden)); });
+    box.querySelector("select").addEventListener("change", e => { store.set("lab-mode", e.target.value); location.reload(); });
     box.querySelectorAll("input").forEach(i => i.addEventListener("change", () => {
       on[i.dataset.k] = i.checked; store.set("lab-" + i.dataset.k, i.checked ? "1" : "0");
       apply(i.dataset.k);
