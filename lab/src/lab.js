@@ -1015,6 +1015,7 @@
         el.innerHTML = `<div class="lab-pick-top"><span>${esc(NAME[sp])}</span><span>Surest pick</span></div><b class="lab-pick-name">${(gs && (gs.games || []).length) ? "No picks left to play today." : "No games today."}</b>`;
       }
       tab.innerHTML = `<div><b>${esc(rec.value || "")}</b><span>${esc(NAME[sp])} record</span></div><div><b>${esc(rec.sub || "")}</b><span>Right</span></div><div><b>${esc((rec.since || "").replace(/, \d{4}$/, ""))}</b><span>Graded since</span></div>`;
+      head.style.setProperty("--lab-tab-w", tab.offsetWidth + "px");
       el.classList.remove("in"); void el.offsetWidth; el.classList.add("in");
       const sheet = document.querySelector(".edge-sheet, .sheet, main");
       if (sheet) { const cs = getComputedStyle(sheet); head.style.setProperty("--lab-sheet", cs.backgroundColor); head.style.setProperty("--lab-sheet-ink", cs.color); }

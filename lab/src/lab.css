@@ -71,14 +71,15 @@ body.lab-touches .lab-tab::after { right: -22px; background: radial-gradient(cir
 @media (max-width: 979px) {
   body.lab-touches .lab-pick { display: none; }
 }
-@media (max-width: 640px) {
+@media (max-width: 979px) {
   body.lab-touches .lab-tab { left: var(--gutter, 16px); right: var(--gutter, 16px); justify-content: space-between; gap: 12px; padding: 12px 16px 10px; }
   body.lab-touches .lab-tab::before, body.lab-touches .lab-tab::after { display: none; }
   .lab-tab b { font-size: 22px; }
   body.lab-touches .hero-bar, body.lab-touches .edge-hero-bar { padding-bottom: 92px; }
 }
-@media (min-width: 641px) {
-  body.lab-touches .hero-bar, body.lab-touches .edge-hero-bar { margin-right: 360px; }
+@media (min-width: 980px) {
+  /* keep the bar's text (tagline, "Est. 2026") clear of the record tab and its curved corner */
+  body.lab-touches .hero-bar, body.lab-touches .edge-hero-bar { margin-right: calc(var(--lab-tab-w, 380px) + 40px); }
 }
 
 /* Test panel */
