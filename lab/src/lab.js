@@ -28,15 +28,35 @@
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
   const ease = v => v * v * (3 - 2 * v);
   const lerp = (a, b, u) => a + (b - a) * u;
-  // keyframed path: keys [[t, X, Z], ...], smooth between keys, held outside them
+  // keyframed path: keys [[t, X, Z], ...], held outside them. Between keys a
+  // smooth curve that keeps its speed through each key (players carry their
+  // momentum through a cut instead of stopping dead), easing in from a standing
+  // start and out to a stop.
   function path(keys, t) {
+    const n = keys.length;
     if (t <= keys[0][0]) return { X: keys[0][1], Z: keys[0][2] };
-    for (let i = 1; i < keys.length; i++) {
-      const [t1, x1, z1] = keys[i], [t0, x0, z0] = keys[i - 1];
-      if (t <= t1) { const u = ease((t - t0) / (t1 - t0 || 1)); return { X: lerp(x0, x1, u), Z: lerp(z0, z1, u) }; }
-    }
-    const k = keys[keys.length - 1];
-    return { X: k[1], Z: k[2] };
+    if (t >= keys[n - 1][0]) return { X: keys[n - 1][1], Z: keys[n - 1][2] };
+    let i = 1;
+    while (keys[i][0] < t) i++;
+    const tan = j => {
+      if (j === 0 || j === n - 1) return [0, 0];
+      const a = keys[j - 1], b = keys[j], c = keys[j + 1];
+      if ((a[1] === b[1] && a[2] === b[2]) || (c[1] === b[1] && c[2] === b[2])) return [0, 0];   // a hold: stop there
+      const dt = c[0] - a[0] || 1;
+      return [(c[1] - a[1]) / dt, (c[2] - a[2]) / dt];
+    };
+    const [t0, x0, z0] = keys[i - 1], [t1, x1, z1] = keys[i], dt = t1 - t0 || 1, u = (t - t0) / dt;
+    const m0 = tan(i - 1), m1 = tan(i), u2 = u * u, u3 = u2 * u;
+    const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+    return { X: h00 * x0 + h10 * dt * m0[0] + h01 * x1 + h11 * dt * m1[0], Z: h00 * z0 + h10 * dt * m0[1] + h01 * z1 + h11 * dt * m1[1] };
+  }
+  // how far a player has run along his path by time t (so his feet keep pace with the ground)
+  function travel(keys, t) {
+    let d = 0, prev = path(keys, keys[0][0]);
+    const t0 = keys[0][0], t1 = Math.min(t, keys[keys.length - 1][0]);
+    if (t1 <= t0) return 0;
+    for (let k = 1; k <= 18; k++) { const q = path(keys, lerp(t0, t1, k / 18)); d += Math.hypot(q.X - prev.X, q.Z - prev.Z); prev = q; }
+    return d;
   }
   // a ball in flight between two points, with a parabola on top
   function arc(a, b, peak, u) {
@@ -165,7 +185,7 @@
       goal: B,
       variant(r, T, F = {}) {
         const kits = T.kits([["HOOPS", "o", 5], ["HOOPS", "d", 5]], r);
-        return { kits, shooter: F.shooter ?? 1 + Math.floor(r() * 4), make: F.make ?? r() < 0.7 };
+        return { kits, shooter: F.shooter ?? 1 + Math.floor(r() * 4), make: F.make ?? r() < 0.7, spot: F.spot };
       },
       actors(v) { return [[v.shooter, "o"], [0, "o"], [v.shooter + 5, "d"], [v.shooter === 3 ? 9 : 8, "d"]]; },
       // a real play from a live game: which shot, and did it go in
@@ -173,7 +193,15 @@
         const t = p.text;
         if (!/\b(makes|misses)\b/.test(t) || /free throw/i.test(t)) return null;
         const three = /three point|three-point|3-pt|3pt/i.test(t), inside = /layup|dunk|tip|hook|driving|alley|putback|finger roll/i.test(t);
-        return { make: /\bmakes\b/.test(t), shooter: three ? (r() < 0.5 ? 2 : 4) : inside ? 3 : 1 };
+        const F = { make: /\bmakes\b/.test(t), shooter: three ? (r() < 0.5 ? 2 : 4) : inside ? 3 : 1 };
+        // where he shot it from: the distance in the play, the side from ESPN's shot chart when it has one
+        const ft = Number((/(\d+)-foot/.exec(t) || [])[1]) || (inside ? 2 : 0);
+        if (ft && F.shooter !== 2) {
+          const c = p.xy && Number.isFinite(+p.xy.x) ? clamp((+p.xy.x - 25) / 25, -1, 1) : r() * 2 - 1;
+          const d = Math.max(0.8, ft * 0.3048), th = c * 1.15;
+          F.spot = { X: Math.max(1, 12.7 - Math.cos(th) * d), Z: zc + Math.sin(th) * d };
+        }
+        return F;
       },
       quiet: { make: false },
       caption(v) {
@@ -184,14 +212,16 @@
         return `${N(sh)} pulls up over ${N(d)}. Splash.`;
       },
       cast(t, v) {
-        const sh = v.shooter, reb = sh === 3 ? 9 : 8, P = [];
-        O.forEach((k, i) => {
+        const sh = v.shooter, reb = sh === 3 ? 9 : 8, P = [], S = v.spot;
+        // the shooter's route ends where the real shot came from
+        const K = O.map((k, i) => i === sh && S ? [k[0], [2.2, lerp(k[0][1], S.X, 0.7), lerp(k[0][2], S.Z, 0.7) + 0.8], [2.95, S.X, S.Z], [3.6, S.X, S.Z]] : k);
+        K.forEach((k, i) => {
           const p = path(k, t);
           if (i === sh && t > 2.95 && t < 3.85) { p.Y = t > 3.2 ? 0.5 * Math.sin(Math.PI * span(t, 3.2, 3.85)) : 0; p.arms = "shoot"; }
           if (i === 0 && t < 2.4) p.arms = "dribble";
           P.push({ ...p, keys: k, face: 1 });
         });
-        O.forEach((k, i) => {
+        K.forEach((k, i) => {
           const p = mark(k, t, B, i === sh ? 1.1 : 1.5);
           if (i === sh && t > 3.3 && t < 3.9) { p.Y = 0.35 * Math.sin(Math.PI * span(t, 3.3, 3.9)); p.arms = "up"; }
           if (i + 5 === reb && t > 4.75 && t < 5.3) { p.Y = 0.45 * Math.sin(Math.PI * span(t, 4.75, 5.3)); p.arms = "up"; }
@@ -199,15 +229,15 @@
           P.push({ ...p, keys: k, lag: 0.28, face: -1 });
         });
         const pg = P[0], w = P[sh], rb = P[reb];
-        const w0 = path(O[sh], 2.95), w1 = path(O[sh], 3.55);
+        const w0 = path(K[sh], 2.95), w1 = path(K[sh], 3.55);
         let ball;
         if (t < 2.4) ball = { X: pg.X + 0.35, Y: 0.15 + Math.abs(Math.sin(t * 6.5)) * 0.85, Z: pg.Z - 0.35 };
-        else if (t < 2.95) { const p0 = path(O[0], 2.4); ball = arc({ X: p0.X + 0.3, Y: 1.2, Z: p0.Z - 0.3 }, { X: w0.X - 0.2, Y: 1.3, Z: w0.Z - 0.3 }, 0.25, span(t, 2.4, 2.95)); }
+        else if (t < 2.95) { const p0 = path(K[0], 2.4); ball = arc({ X: p0.X + 0.3, Y: 1.2, Z: p0.Z - 0.3 }, { X: w0.X - 0.2, Y: 1.3, Z: w0.Z - 0.3 }, 0.25, span(t, 2.4, 2.95)); }
         else if (t < 3.55) ball = { X: w.X, Y: lerp(1.3, 2.5, span(t, 2.95, 3.55)) + (w.Y || 0), Z: w.Z - 0.25 };
         else if (t < 4.6) { const d = Math.hypot(B.X - w1.X, B.Z - w1.Z); ball = arc({ X: w1.X, Y: 2.9, Z: w1.Z - 0.25 }, B, 0.9 + 0.2 * d, span(t, 3.55, 4.6)); }
         else if (v.make && t < 4.9) ball = { X: B.X, Y: lerp(B.Y, 1.7, span(t, 4.6, 4.9)), Z: B.Z, swish: span(t, 4.6, 4.9) };
         else if (v.make) { const u = span(t, 4.9, 6.2); ball = { X: B.X - 1.5 * u, Y: 0.12 + Math.abs(Math.cos(u * 7)) * 1.5 * (1 - u), Z: B.Z - 0.6 * u }; }
-        else if (t < 5.2) { const r1 = path(O[reb - 5], 5.2 - 0.28); ball = arc({ X: B.X - 0.25, Y: B.Y + 0.1, Z: B.Z }, { X: r1.X - 0.6, Y: 2.7, Z: r1.Z - 0.3 }, 1.3, span(t, 4.6, 5.2)); }
+        else if (t < 5.2) { const r1 = path(K[reb - 5], 5.2 - 0.28); ball = arc({ X: B.X - 0.25, Y: B.Y + 0.1, Z: B.Z }, { X: r1.X - 0.6, Y: 2.7, Z: r1.Z - 0.3 }, 1.3, span(t, 4.6, 5.2)); }
         else ball = { X: rb.X + 0.25, Y: 1.4 + (rb.Y || 0), Z: rb.Z - 0.3 };
         ball.r = 0.12; ball.color = [214, 106, 44]; ball.lines = true;
         return { players: P, ball, flash: v.make && t > 4.6 && t < 5.6 ? 1 - span(t, 4.6, 5.6) : 0 };
@@ -254,6 +284,7 @@
         const kits = T.kits([["OL", "o", 5], ["QB", "o", 1], ["RB", "o", 1], ["WR", "o", 2], ["TE", "o", 1], ["DL", "d", 4], ["LB", "d", 2], ["CB", "d", 2], ["SAF", "d", 2]], r);
         const v = { kits, run: F.run ?? r() < 0.3, target: F.target ?? [7, 8, 9][Math.floor(r() * 3)], caught: F.caught ?? r() < 0.78 };
         v.yards = F.yards ?? Math.round(-2 + r() * r() * 24);
+        v.shift = clamp(F.shift ?? (T.mode === "classic" ? 0 : -30 + r() * 38) * yd, -38 * yd, 8 * yd);   // where the ball is snapped, from midfield
         v.cut = (r() * 2 - 1) * 2.5;
         return v;
       },
@@ -262,8 +293,9 @@
         const t = p.text;
         if (/punt|kicks|kickoff|field goal|extra point|penalty|timeout|two-minute|end of|kneels|spiked|sacked|two-point/i.test(t + " " + p.type)) return null;
         const y = /for (-?\d+) yards?/.exec(t), yards = y ? Number(y[1]) : 0;
-        if (/\bpass\b/i.test(t)) { const caught = !/incomplete|intercept/i.test(t); return { run: false, caught, target: caught && yards >= 20 ? 7 : /middle/i.test(t) ? 9 : 8 }; }
-        if (/rush|left end|right end|up the middle|left tackle|right tackle|left guard|right guard|scrambles|for no gain/i.test(t + " " + p.type)) return { run: true, yards };
+        const at = Number.isFinite(p.ytez) ? { shift: 50 - p.ytez } : {};
+        if (/\bpass\b/i.test(t)) { const caught = !/incomplete|intercept/i.test(t); return { ...at, run: false, caught, target: caught && yards >= 20 ? 7 : /middle/i.test(t) ? 9 : 8 }; }
+        if (/rush|left end|right end|up the middle|left tackle|right tackle|left guard|right guard|scrambles|for no gain/i.test(t + " " + p.type)) return { ...at, run: true, yards };
         return null;
       },
       quiet: {},
@@ -315,6 +347,7 @@
           ball = u < 1 ? arc({ X: c.X + 0.3, Y: 1.6, Z: c.Z - 0.2 }, rest, 1.1, u) : rest;
         }
         ball.r = 0.14; ball.color = [124, 70, 40]; ball.oval = true;
+        if (v.shift) { P.forEach(p => { p.X += v.shift; }); ball.X += v.shift; }
         return { players: P, ball };
       },
     };
@@ -376,9 +409,13 @@
       live(p) {
         const t = p.text;
         const a = /left[- ]center/i.test(t) ? -0.2 : /right[- ]center/i.test(t) ? 0.2 : /\bleft\b/i.test(t) ? -0.45 : /\bright\b/i.test(t) ? 0.45 : 0;
-        if (/homered|home run|grand slam/i.test(t)) return { type: "hr", a };
-        if (/singled|doubled|tripled/i.test(t)) return { type: "hit", a };
-        if (/flied out|lined out|popped out|fouled out|sacrifice fly|flied into/i.test(t)) return { type: "fly", a };
+        // where it landed, from the hit chart (home plate at 125, 198; about 2.5 ft a unit) when ESPN has it
+        const h = p.hit, ok = h && Number.isFinite(+h.x) && Number.isFinite(+h.y) && (+h.x || +h.y);
+        const ca = ok ? clamp(Math.atan2(+h.x - 125.42, 198.27 - +h.y), -0.75, 0.75) : a;
+        const R = ok ? clamp(2.5 * Math.hypot(+h.x - 125.42, 198.27 - +h.y) * 0.3048, 30, 120) : undefined;
+        if (/homered|home run|grand slam/i.test(t)) return { type: "hr", a: ca };
+        if (/singled|doubled|tripled/i.test(t)) return { type: "hit", a: ca, R: R && Math.min(R, 70) };
+        if (/flied out|lined out|popped out|fouled out|sacrifice fly|flied into/i.test(t)) return { type: "fly", a: ca, R: R && clamp(R, 50, 110) };
         if (/grounded|ground ball|double play|forced out|fielder's choice/i.test(t)) return { type: "ground", f: /third/i.test(t) ? 5 : /second/i.test(t) ? 3 : 4 };
         return null;
       },
@@ -468,13 +505,17 @@
       },
       variant(r, T, F = {}) {
         const kits = T.kits([["SKATERS", "o", 5], ["SKATERS", "d", 5], ["GOALIES", "d", 1]], r);
-        return { kits, solo: F.solo ?? r() < 0.35, goal: F.goal ?? r() < 0.65, high: F.high ?? r() < 0.5 };
+        return { kits, solo: F.solo ?? r() < 0.35, goal: F.goal ?? r() < 0.65, high: F.high ?? r() < 0.5, spot: F.spot };
       },
       actors(v) { return v.solo ? [[0, "o"], [10, "d"]] : [[1, "o"], [0, "o"], [10, "d"]]; },
       live(p, r) {
         const goal = p.scoring || /^goal/i.test(p.type);
         if (!goal && !(/shot/i.test(p.type) && !/miss|block|wide/i.test(p.type + " " + p.text))) return null;
-        return { goal, solo: goal ? !/assist/i.test(p.text) : r() < 0.5 };
+        const F = { goal, solo: goal ? !/assist/i.test(p.text) : r() < 0.5 };
+        if (p.xy && Number.isFinite(+p.xy.x) && Number.isFinite(+p.xy.y) && (+p.xy.x || +p.xy.y)) {       // feet from center ice
+          F.spot = { X: clamp(Math.abs(+p.xy.x) * 0.3048, 9, 24.5), Z: clamp(mid + +p.xy.y * 0.3048, mid - 10, mid + 10) };
+        }
+        return F;
       },
       quiet: { goal: false },
       caption(v) {
@@ -483,10 +524,13 @@
         return v.goal ? `${a} feeds ${b} for the one-timer. Goal.` : `${g} robs ${b} on the one-timer.`;
       },
       cast(t, v) {
-        const P = [], K1 = v.solo ? O1SOLO : O1, ks = [K1, O2, O3, O4, O5];
+        const S = v.spot;
+        const K1 = v.solo ? (S ? [O1SOLO[0], O1SOLO[1], [3.3, S.X, S.Z], [5.5, S.X + 2.5, lerp(S.Z, mid, 0.4)]] : O1SOLO) : O1;
+        const K2 = !v.solo && S ? [O2[0], [3.1, S.X - 2.1, S.Z - 0.6], [3.6, S.X, S.Z], [5.5, S.X + 1.6, lerp(S.Z, mid, 0.5)]] : O2;
+        const P = [], ks = [K1, K2, O3, O4, O5];
         ks.forEach(k => P.push({ ...path(k, t), keys: k, face: 1, stick: 1 }));
         ks.forEach(k => { const m = mark(k, t, G, 2.6, 0.32); P.push({ ...m, Z: m.Z + 1.7, keys: k, lag: 0.32, face: -1, stick: 1 }); });
-        const shK = v.solo ? K1 : O2, tShot = v.solo ? 3.35 : 3.65, tIn = tShot + 0.3, s0 = path(shK, tShot);
+        const shK = v.solo ? K1 : K2, tShot = v.solo ? 3.35 : 3.65, tIn = tShot + 0.3, s0 = path(shK, tShot);
         const track = t < tShot ? path(shK, t).Z : s0.Z;
         const gz = clamp(lerp(mid - 1.1, mid + 1.1, (track - (mid - 7)) / 14), mid - 1.1, mid + 1.1);
         const save = !v.goal && t > tShot;
@@ -503,7 +547,7 @@
         const glove = { X: 25.9, Y: v.high ? 1.05 : 0.3, Z: gz - 0.55 };
         let ball;
         if (t < (v.solo ? tShot : 2.95)) ball = blade(P[0]);
-        else if (!v.solo && t < 3.35) ball = arc(blade(path(O1, 2.95)), blade(path(O2, 3.35)), 0, span(t, 2.95, 3.35));
+        else if (!v.solo && t < 3.35) ball = arc(blade(path(O1, 2.95)), blade(path(K2, 3.35)), 0, span(t, 2.95, 3.35));
         else if (!v.solo && t < tShot) ball = blade(P[1]);
         else if (t < tIn) ball = arc(blade(s0), v.goal ? net : glove, v.high ? 0.35 : 0.05, span(t, tShot, tIn));
         else if (v.goal) ball = { X: 27.5, Y: 0.04, Z: net.Z };
@@ -543,14 +587,19 @@
       variant(r, T, F = {}) {
         const roll = r(), kits = T.kits([["FOOTY", "o", 5], ["FOOTY", "d", 7], ["KEEPERS", "d", 1]], r);
         return { kits, type: F.type ?? (roll < 0.45 ? "header" : roll < 0.75 ? "volley" : "long"),
-          goal: F.goal ?? r() < 0.62, gz: F.gz ?? mid + (r() * 2 - 1) * 2.8, gy: F.gy ?? 0.4 + r() * 1.6 };
+          goal: F.goal ?? r() < 0.62, gz: F.gz ?? mid + (r() * 2 - 1) * 2.8, gy: F.gy ?? 0.4 + r() * 1.6, spot: F.spot };
       },
       actors(v) { const sh = v.type === "header" ? 2 : v.type === "volley" ? 3 : 1; return sh === 1 ? [[1, "o"], [12, "d"]] : [[sh, "o"], [1, "o"], [12, "d"]]; },
       live(p) {
         const t = p.text, goal = p.scoring || /^goal/i.test(p.type) || /^goal!/i.test(t);
         if (!goal && !/saved/i.test(t)) return null;
         if (/own goal|penalty/i.test(t)) return null;
-        return { goal, type: /header|headed/i.test(t) ? "header" : /outside the box|long range|from distance/i.test(t) ? "long" : "volley" };
+        const F = { goal, type: /header|headed/i.test(t) ? "header" : /outside the box|long range|from distance/i.test(t) ? "long" : "volley" };
+        if (Number.isFinite(+p.fx) && Number.isFinite(+p.fy) && (+p.fx || +p.fy)) {   // ESPN's field position, 0 to 1 along and across
+          const along = Math.max(+p.fx, 1 - +p.fx);
+          F.spot = { X: clamp(52.5 - (1 - along) * 105, 28, 49), Z: clamp(n + +p.fy * w, mid - 18, mid + 18) };
+        }
+        return F;
       },
       quiet: { goal: false },
       caption(v) {
@@ -560,14 +609,19 @@
         return v.goal ? `${N(1)} curls one in from distance.` : `${k} tips ${N(1)}'s strike wide.`;
       },
       cast(t, v) {
-        const P = [], ks = [O1, O2, O3, v.type === "volley" ? O4V : O4, O5];
+        // the shooter gets to the spot the real shot came from
+        const S0 = v.spot, ty = v.type;
+        const K2 = S0 && ty === "long" ? [O2[0], O2[1], [3.3, S0.X - 1.5, S0.Z], [5.5, S0.X + 2, S0.Z]] : O2;
+        const K3 = S0 && ty === "header" ? [O3[0], [3.3, S0.X - 4, lerp(O3[1][2], S0.Z, 0.6)], [4.3, S0.X, S0.Z]] : O3;
+        const K4 = S0 && ty === "volley" ? [O4V[0], [4.0, S0.X, S0.Z], [5, S0.X + 2, S0.Z + 1]] : O4V;
+        const P = [], ks = [O1, K2, K3, ty === "volley" ? K4 : O4, O5];
         ks.forEach(k => P.push({ ...path(k, t), keys: k, face: 1 }));
         ks.forEach(k => P.push({ ...mark(k, t, G, 2.4, 0.34), keys: k, lag: 0.34, face: -1 }));
         P.push({ ...path([[0, 38, mid + 14], [4, 40, mid + 6]], t), face: -1 });
         P.push({ ...path([[0, 31, mid - 10], [4, 37, mid - 13]], t), face: -1 });
-        const S = v.type === "header" ? { t0: 4.3, t1: 4.7, from: () => { const c = path(O3, 4.3); return { X: c.X + 0.2, Y: 2.1, Z: c.Z }; }, peak: 0.3 }
-          : v.type === "volley" ? { t0: 4.0, t1: 4.4, from: () => { const c = path(O4V, 4.0); return { X: c.X + 0.5, Y: 0.3, Z: c.Z }; }, peak: 0.6 }
-          : { t0: 3.3, t1: 3.95, from: () => { const c = path(O2, 3.3); return { X: c.X + 0.7, Y: 0.15, Z: c.Z - 0.3 }; }, peak: 2.2 };
+        const S = v.type === "header" ? { t0: 4.3, t1: 4.7, from: () => { const c = path(K3, 4.3); return { X: c.X + 0.2, Y: 2.1, Z: c.Z }; }, peak: 0.3 }
+          : v.type === "volley" ? { t0: 4.0, t1: 4.4, from: () => { const c = path(K4, 4.0); return { X: c.X + 0.5, Y: 0.3, Z: c.Z }; }, peak: 0.6 }
+          : { t0: 3.3, t1: 3.95, from: () => { const c = path(K2, 3.3); return { X: c.X + 0.7, Y: 0.15, Z: c.Z - 0.3 }; }, peak: 2.2 };
         const T = { X: 52.5, Y: v.gy, Z: v.gz };
         const dive = !v.goal && t > S.t1 - 0.4 && t < S.t1 + 0.7;
         const kz = t < S.t1 - 0.4 ? lerp(mid - 1, mid, span(t, 0, S.t0)) : !v.goal ? lerp(mid, T.Z - 0.4, span(t, S.t1 - 0.4, S.t1)) : mid + 0.3 * (T.Z - mid) * span(t, S.t1 - 0.4, S.t1);
@@ -579,10 +633,10 @@
         if (v.type === "volley") kick(3, S.t0);
         let ball;
         if (t < 1.4) ball = { X: a.X + 0.6, Y: 0.11, Z: a.Z - 0.3 };
-        else if (t < 1.9) ball = arc({ X: path(O1, 1.4).X + 0.6, Y: 0.11, Z: path(O1, 1.4).Z - 0.3 }, { X: path(O2, 1.9).X + 0.5, Y: 0.11, Z: path(O2, 1.9).Z - 0.3 }, 0, span(t, 1.4, 1.9));
+        else if (t < 1.9) ball = arc({ X: path(O1, 1.4).X + 0.6, Y: 0.11, Z: path(O1, 1.4).Z - 0.3 }, { X: path(K2, 1.9).X + 0.5, Y: 0.11, Z: path(K2, 1.9).Z - 0.3 }, 0, span(t, 1.4, 1.9));
         else if (t < 3.3) ball = { X: b.X + 0.7, Y: 0.11 + Math.abs(Math.sin(t * 5)) * 0.15, Z: b.Z - 0.3 };
         else if (t < S.t0) {
-          const b0 = path(O2, 3.3), from = { X: b0.X + 0.7, Y: 0.11, Z: b0.Z - 0.3 };
+          const b0 = path(K2, 3.3), from = { X: b0.X + 0.7, Y: 0.11, Z: b0.Z - 0.3 };
           ball = v.type === "header" ? arc(from, S.from(), 6, span(t, 3.3, S.t0)) : arc(from, { ...S.from(), Y: 0.11 }, 0, span(t, 3.3, S.t0));
         } else if (t < S.t1) ball = arc(S.from(), T, S.peak, span(t, S.t0, S.t1));
         else if (v.goal) { const u = span(t, S.t1, S.t1 + 0.5); ball = { X: 53.4, Y: lerp(T.Y, 0.11, u), Z: T.Z }; }
@@ -653,6 +707,34 @@
       o: kitC("#002F6C", "#F1BF00", "Spain"), d: kitC("#F36C21", "#111111", "Netherlands"),
       names: [[1, "Fàbregas", "10"], [3, "Iniesta", "6"], [12, "Stekelenburg", "1"]] },
   ];
+  // college pages get college moments
+  const CLASSICS_BY = {
+    cbb: [
+      { cap: "1992 East final. Hill's long pass, Laettner's turnaround at the buzzer.", F: { shooter: 1, make: true },
+        o: kitC("#F4F4F4", "#001A57", "Duke"), d: kitC("#0033A0", "#FFFFFF", "Kentucky"),
+        names: [[1, "Laettner", "32"], [0, "Hill", "33"], [6, "Pelphrey", "34"]] },
+      { cap: "2016 title game. Arcidiacono drops it back, Jenkins wins it at the horn.", F: { shooter: 4, make: true },
+        o: kitC("#13294B", "#FFFFFF", "Villanova"), d: kitC("#F4F4F4", "#7BAFD4", "North Carolina"),
+        names: [[4, "Jenkins", "2"], [0, "Arcidiacono", "15"], [9, "Jackson", "44"]] },
+      { cap: "1983 title game. Whittenburg's long shot falls short, Charles dunks it home.", F: { shooter: 3, make: true },
+        o: kitC("#F4F4F4", "#CC0000", "NC State"), d: kitC("#C8102E", "#FFFFFF", "Houston"),
+        names: [[3, "Charles", "43"], [0, "Whittenburg", "25"], [8, "Olajuwon", "34"]] },
+      { cap: "1982 title game. A freshman named Jordan hits the winner from the wing.", F: { shooter: 1, make: true },
+        o: kitC("#F4F4F4", "#7BAFD4", "North Carolina"), d: kitC("#041E42", "#FFFFFF", "Georgetown"),
+        names: [[1, "Jordan", "23"], [0, "Black", "21"], [2, "Worthy", "52"], [8, "Ewing", "33"]] },
+    ],
+    cfb: [
+      { cap: "1984. Flutie scrambles and heaves it, Phelan catches the Hail Mary.", F: { run: false, target: 7, caught: true },
+        o: kitC("#F4F4F4", "#98002E", "Boston College"), d: kitC("#F47321", "#005030", "Miami"),
+        names: [[5, "Flutie", "22"], [7, "Phelan", "80"]] },
+      { cap: "2006 Rose Bowl. Fourth and five, Vince Young runs it in for the title.", F: { run: true, yards: 8 },
+        o: kitC("#F4F4F4", "#BF5700", "Texas"), d: kitC("#990000", "#FFC72C", "USC"),
+        names: [[6, "Young", "10"]] },
+      { cap: "2018 title game. Second and 26 in overtime, Tua finds Smith for the win.", F: { run: false, target: 7, caught: true },
+        o: kitC("#9E1B32", "#FFFFFF", "Alabama"), d: kitC("#F4F4F4", "#BA0C2F", "Georgia"),
+        names: [[5, "Tagovailoa", "13"], [7, "Smith", "6"]] },
+    ],
+  };
   // a famous play: its teams in their colors, the named players in their spots
   function famous(sp, f, r) {
     const o = { ...f.o, players: [] }, d = { ...f.d, players: [] };
@@ -846,9 +928,14 @@
       if (Math.abs(r.X - q.X) > 0.02) dir = r.X > q.X ? 1 : -1;
     }
     if (p.run) speed = 5;
-    const run = clamp(speed / 3), ph = t * (sp.skate ? 5 : 11) + p.X;
-    const stride = (p.Y ? 0.08 : (sp.skate ? 0.2 : 0.16) * run) * hgt;
-    const hip = fy - 0.5 * hgt, sh = fy - 0.8 * hgt, hr = 0.072 * hgt, lean = (sp.skate ? 0.12 : 0.05) * run * hgt;
+    // the stride follows the ground covered: one step per 1.2 m running, one push per 2.4 m skating
+    const run = clamp(speed / 3.5);
+    const ph = p.keys ? travel(p.keys, t - (p.lag || 0)) / (sp.skate ? 2.4 : 1.2) * Math.PI + (p.X * 7 % 3) : t * (sp.skate ? 5 : 10) + p.X;
+    const stride = (p.Y ? 0.08 : (sp.skate ? 0.2 : 0.2) * run) * hgt;
+    // running: the body rises off each step and leans into the run; standing: a little weight shift
+    const bob = sp.skate || p.Y ? 0 : Math.abs(Math.cos(ph)) * 0.035 * hgt * run;
+    const hip = fy - 0.5 * hgt - bob, sh = fy - 0.8 * hgt - bob, hr = 0.072 * hgt;
+    const lean = dir * (sp.skate ? 0.12 : 0.07) * run * hgt + (1 - run) * Math.sin(t * 1.7 + p.X) * 0.012 * hgt;
     const lw = Math.max(1.2, 0.085 * hgt);
     x.lineCap = "round";
     if (sp.skate) {
@@ -1309,11 +1396,15 @@
       if (m.kind === "gridiron") {
         const dr = sum.drives || {}, list = [...(dr.previous || []).slice(-2), dr.current].filter(Boolean);
         const out = [];
-        list.forEach(d => (d.plays || []).forEach(p => out.push({ id: String(p.id || p.sequenceNumber || p.text), text: p.text || "", team: teamOf((d.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay })));
+        list.forEach(d => (d.plays || []).forEach(p => out.push({ id: String(p.id || p.sequenceNumber || p.text), text: p.text || "", team: teamOf((d.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay,
+          ytez: Number.isFinite(+((p.start || {}).yardsToEndzone)) && (p.start || {}).yardsToEndzone !== "" ? +p.start.yardsToEndzone : NaN })));
         return out;
       }
-      if (m.kind === "pitch") return (sum.keyEvents || []).map(e => ({ id: String(e.id || e.text), text: e.text || "", team: teamOf((e.team || {}).id), type: (e.type || {}).text || (e.type || {}).type || "", scoring: !!e.scoringPlay }));
-      return (sum.plays || []).map(p => ({ id: String(p.id || p.sequenceNumber || p.text), text: String(p.text || "").trim(), team: teamOf((p.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay }));
+      if (m.kind === "pitch") return (sum.keyEvents || []).map(e => ({ id: String(e.id || e.text), text: e.text || "", team: teamOf((e.team || {}).id), type: (e.type || {}).text || (e.type || {}).type || "", scoring: !!e.scoringPlay,
+        fx: e.fieldPositionX, fy: e.fieldPositionY }));
+      // basketball and hockey plays can carry a shot location; baseball a hit location
+      return (sum.plays || []).map(p => ({ id: String(p.id || p.sequenceNumber || p.text), text: String(p.text || "").trim(), team: teamOf((p.team || {}).id), type: (p.type || {}).text || "", scoring: !!p.scoringPlay,
+        xy: p.coordinate || null, hit: p.hitCoordinate || null }));
     }
     function queuePlays(sp, kind, sum, m, first) {
       const all = feedPlays(sum, m).filter(p => p.text), q = plays[sp] || (plays[sp] = []), s = seen[sp] || (seen[sp] = new Set());
@@ -1388,9 +1479,10 @@
 
   // ---------- running a scene on a canvas ----------
   // kinds: one kind, or a list to rotate through (one play each).
-  function runField(c, kinds, onKind, dataOf) {
-    const list = Array.isArray(kinds) ? kinds : [kinds];
-    let W = 0, H = 0, dpr = 1, cache = {}, raf = 0, startAt = performance.now(), lastPlay = -2, v = null;
+  // next(n): which sport plays the nth play, {kind, key}
+  function runField(c, next, onKind) {
+    let W = 0, H = 0, dpr = 1, cache = {}, raf = 0, startAt = performance.now(), v = null;
+    let play = -1, playStart = 0, kind = null, key = null;
     const salt = parseInt(new URLSearchParams(location.search).get("labseed"), 10) || Math.floor(Math.random() * 1e6);                     // a different run of plays on every visit
     const x = c.getContext("2d");
     function size() {
@@ -1405,22 +1497,19 @@
     function frame(now) {
       raf = 0;
       if (!W || !H) { size(); if (!W || !H) return; }
-      let el = still ? 3.4 : Math.max(0, (now - startAt) / 1000), i = 0;   // the first frame can stamp a hair before startAt
-      // walk through the list, one play per sport
-      const total = list.reduce((a, k) => a + SPORT[k].D, 0), loop = el % total;
-      let acc = 0;
-      for (i = 0; i < list.length; i++) { if (loop < acc + SPORT[list[i]].D) break; acc += SPORT[list[i]].D; }
-      if (still) i = 0;
-      const kind = list[i], sp = SPORT[kind], t = still ? 3.4 : loop - acc;
-      // a new play: fresh lineup, fresh skin tones, fresh outcome
-      const play = still ? 0 : Math.floor(el / total) * list.length + i;
-      if (play !== lastPlay) {
-        lastPlay = play;
+      const el = still ? 3.4 : Math.max(0, (now - startAt) / 1000);   // the first frame can stamp a hair before startAt
+      // a new play: the next sport in line, a fresh lineup, fresh skin tones, a fresh outcome
+      if (play < 0 || (!still && el - playStart >= SPORT[kind].D)) {
+        playStart = play < 0 ? 0 : playStart + SPORT[kind].D;
+        if (el - playStart > 1) playStart = el;                         // back from a hidden tab: start fresh
+        play++;
+        ({ kind, key } = next(play));
+        const sp = SPORT[kind];
         let seed = (salt + play * 7919) % 2147483646 + 1;
         const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
         r(); r();
         // today's teams (a real play when a game is live), or the greats and their famous plays
-        const key = dataOf ? dataOf(kind) : null, m = key ? director.now(key) : null;
+        const m = key ? director.now(key) : null, classics = CLASSICS_BY[key] || sp.classics;
         let said;
         if (m && m.home) {
           const lp = m.mode === "live" ? director.take(key) : null;
@@ -1433,12 +1522,13 @@
           const when = new Date(m.g.start).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
           said = lp ? `${tag} · ${shortText(lp.text)}` : m.mode === "live" ? `${tag} · ${liveLine(m)}`
             : `${m.away.abbr} @ ${m.home.abbr} · ${named ? sp.caption(v) : `${m.away.short} at ${m.home.short}, ${when} ET`}`;
-        } else if (sp.classics && r() < 0.5) {
-          v = famous(sp, sp.classics[Math.floor(r() * sp.classics.length)], r); said = v.cap;
+        } else if (classics && r() < 0.5) {
+          v = famous(sp, classics[Math.floor(r() * classics.length)], r); said = v.cap;
         } else { v = sp.variant(r, CLASSIC); said = sp.caption(v); }
         v.skins = Array.from({ length: 24 }, () => SKIN[Math.floor(r() * SKIN.length)]);
-        if (onKind) onKind(kind, said);
+        if (onKind) onKind(kind, said, key);
       }
+      const sp = SPORT[kind], t = still ? 3.4 : el - playStart;
       const bg = bgFor(kind), cam = bg.cam;
       const cast = tt => sp.cast(clamp(tt, 0, sp.D), v);
       const now0 = cast(t);
@@ -1496,19 +1586,33 @@
     if (!c) return;
     // a fresh canvas, so the page's own drawing can't paint over ours
     const n = c.cloneNode(false); n.classList.add("lab-field"); c.replaceWith(n); c = n;
-    const kinds = KIND_OF[pageSport] || (isHome ? ROTATION : "park");
     let cap = head.querySelector(".lab-caption");
     if (!cap) { cap = document.createElement("div"); cap.className = "lab-caption"; cap.setAttribute("aria-hidden", "true"); head.append(cap); }
-    let lastKind = null;
-    const dataOf = k => pageSport && NAME[pageSport.toLowerCase()] ? pageSport.toLowerCase() : SPORT_OF_KIND[k];
-    const first = (Array.isArray(kinds) ? kinds : [kinds]).map(k => director.watch(dataOf(k), k))[0];
-    const go = () => { if (!field.c) field.c = runField(c, kinds, (k, said) => {
+    const pageKey = pageSport && NAME[pageSport.toLowerCase()] ? pageSport.toLowerCase() : null;
+    const keys = pageKey ? [pageKey] : HOME_SPORTS;
+    const waits = keys.map(k => director.watch(k, KIND_OF[k.toUpperCase()]));
+    let lastKey = null;
+    const go = () => { if (!field.c) field.c = runField(c, pageKey ? () => ({ kind: KIND_OF[pageSport], key: pageKey }) : homeNext, (k, said, key) => {
       cap.textContent = said || ""; cap.classList.remove("in"); void cap.offsetWidth; cap.classList.add("in");
-      if (Array.isArray(kinds) && k !== lastKind) card.show(SPORT_OF_KIND[k]);
-      lastKind = k;
-    }, dataOf); };
+      if (!pageKey && key !== lastKey) card.show(key);
+      lastKey = key;
+    }); };
     field = {};
-    Promise.race([first, new Promise(res => setTimeout(res, 2500))]).then(go);
+    Promise.race([Promise.all(waits), new Promise(res => setTimeout(res, 3000))]).then(go);
+  }
+  // The home page's order: sports with a game on right now come first (a
+  // today's game slips in every third play); then sports with games later
+  // today; the greats and their famous plays only when no game is on today.
+  const HOME_SPORTS = ["nfl", "cfb", "mlb", "nhl", "nba", "cbb", "soccer"];
+  let homeTurn = 0;
+  function homeNext() {
+    const tier = k => { const m = director.now(k); return m && m.mode === "live" ? 2 : m && m.home ? 1 : 0; };
+    const live = HOME_SPORTS.filter(k => tier(k) === 2), today = HOME_SPORTS.filter(k => tier(k) === 1);
+    const n = homeTurn++;
+    let pool = live.length ? live : today.length ? today : ["nba", "nfl", "mlb", "nhl", "soccer"];
+    if (live.length && today.length && n % 3 === 2) pool = today;
+    const key = pool[n % pool.length];
+    return { kind: KIND_OF[key.toUpperCase()], key };
   }
   function stopField() { location.reload(); }
 
