@@ -2412,7 +2412,7 @@
     document.body.classList.toggle("lab-touches", on.touches);
     document.body.classList.toggle("lab-serif", on.serif);
     if (k === "three") { location.reload(); return; }
-    if (k == null && new URLSearchParams(location.search).get("labvenue") === "1") {
+    if (k == null && new URLSearchParams(location.search).get("labvenue") !== "0") {      // stadium headers are the lab default
       if (pageSport) drawStadium([pageSport.toLowerCase()]); else venueOrder().then(drawStadium);
       if (on.touches && pageSport) card.show(pageSport.toLowerCase());
       return;
