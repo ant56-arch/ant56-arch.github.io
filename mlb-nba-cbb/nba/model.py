@@ -17,6 +17,9 @@ Two optional features follow published rating methods (game_methods.py), and
 only recipes that list them in "extras" use them:
   massey     - Massey / Simple Rating System point margin, opponent-adjusted
   pyth       - Pythagorean expectation from points for and against (log-odds)
+  lineup     - (2026-11-05) strength of who is actually available: the summed
+               value of the best LINEUP_PLAYERS rotation players playing,
+               home minus away, from ESPN box scores (player-based rating)
 The model predicts the home team's margin; the win chance is the normal CDF of
 margin / sigma.
 """
@@ -48,7 +51,8 @@ PLAYER_PRIOR_GAMES = 8  # last season's average fades out over this many games t
 DEFAULT_PARAMS = {"elo_k": ELO_K, "elo_carry": ELO_CARRY, "net_shrink": NET_SHRINK, "recent_shrink": RECENT_SHRINK}
 
 FEATURES = ["home_court", "elo", "net", "recent", "rest", "b2b_home", "b2b_away", "missing_home", "missing_away"]
-EXTRAS = {"massey": ["massey"], "pyth": ["pyth"], "travel": ["travel"]}
+EXTRAS = {"massey": ["massey"], "pyth": ["pyth"], "travel": ["travel"], "lineup": ["lineup"]}
+LINEUP_PLAYERS = 8  # a normal rotation
 # Each team's home time zone (hours from UTC, standard time), for the travel tryout.
 TEAM_TZ = {**{t: -5 for t in ("ATL", "BKN", "BOS", "CHA", "CLE", "DET", "IND", "MIA", "NY", "ORL", "PHI", "TOR", "WSH")},
            **{t: -6 for t in ("CHI", "DAL", "HOU", "MEM", "MIL", "MIN", "NO", "OKC", "SA")},
@@ -113,13 +117,18 @@ class League(WalkBase):
         """Summed value of rotation players who aren't in playing_ids."""
         return sum(max(self.player_value(pid), 0.0) for pid in self.rotation(team) - set(playing_ids))
 
+    def available_value(self, team, playing_ids):
+        """Summed value of the best LINEUP_PLAYERS rotation players who are playing."""
+        vals = sorted((max(self.player_value(pid), 0.0) for pid in self.rotation(team) & set(playing_ids)), reverse=True)
+        return sum(vals[:LINEUP_PLAYERS])
+
     def missing_players(self, team, playing_ids, top=4):
         out = [(self.player_value(pid), pid) for pid in self.rotation(team) - set(playing_ids)]
         out.sort(reverse=True)
         return [(self.player_name.get(pid, ""), round(v, 1)) for v, pid in out[:top] if v >= 5]
 
     # ── features ──
-    def features(self, g, home_missing=0.0, away_missing=0.0):
+    def features(self, g, home_missing=0.0, away_missing=0.0, home_avail=None, away_avail=None):
         self._check_season(g["season"])
         self._methods_through(g["date"])
         h, a = g["home"], g["away"]
@@ -141,6 +150,9 @@ class League(WalkBase):
             # Time zones crossed since each team's last game, road team minus home
             # team; 0 at a neutral site, where the home team's zone isn't the venue's.
             "travel": 0.0 if g.get("neutral") else float(self.tz_moved(a, h) - self.tz_moved(h, h)),
+            # None (no box score or no report) counts as a full rotation.
+            "lineup": ((self.available_value(h, self.rotation(h)) if home_avail is None else home_avail)
+                       - (self.available_value(a, self.rotation(a)) if away_avail is None else away_avail)) / 10,
         }
 
     def tz_moved(self, team, host):
@@ -158,7 +170,9 @@ class League(WalkBase):
 
         hm = self.missing_value(g["home"], played(g["home"])) if g["home"] in box else 0.0
         am = self.missing_value(g["away"], played(g["away"])) if g["away"] in box else 0.0
-        return self.features(g, hm, am)
+        ha = self.available_value(g["home"], played(g["home"])) if g["home"] in box else None
+        aa = self.available_value(g["away"], played(g["away"])) if g["away"] in box else None
+        return self.features(g, hm, am, ha, aa)
 
     # ── learning from a result ──
     def update(self, g, box=None):

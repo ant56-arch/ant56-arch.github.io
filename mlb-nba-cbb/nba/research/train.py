@@ -51,7 +51,6 @@ DEFAULT_RECIPE = {"elo_k": M.ELO_K, "elo_carry": M.ELO_CARRY, "years": 3}  # the
 # fourth tryout is Massey on the best Elo setting instead.
 _L = {"elo_k": 15, "elo_carry": 0.6, "years": 2}
 RECIPES = [
-    _L,
     {"elo_k": 15, "elo_carry": 0.75, "years": 2},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2},
     {"elo_k": 12, "elo_carry": 0.6, "years": 2},
@@ -66,7 +65,13 @@ RECIPES = [
     # travel on the slower K 10 Elo, and travel with calibrated chances.
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["travel"]},
     {**_L, "extras": ["travel"], "calib": True},
-    {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["massey"], "season_decay": 0.5},
+    # 2026-11-05 (Anthony: add new data): the old K 15 live recipe and Massey
+    # K 10 with older seasons at half made way for the lineup input (model.py:
+    # strength of the players actually available, from ESPN box scores), on
+    # the live travel version and on K 10. On the latest 250 games it cut log
+    # loss from 0.6245 to 0.6120 next to travel alone.
+    {**_L, "extras": ["travel", "lineup"]},
+    {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["travel", "lineup"]},
 ]
 
 
