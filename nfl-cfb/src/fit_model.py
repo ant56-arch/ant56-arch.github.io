@@ -91,10 +91,13 @@ DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES,
 # 2026-10-26 (Anthony: use the best free data): Elo alone and injuries + Elo +
 # Pythagorean, last on the recent games, made way for kickoff weather from
 # Open-Meteo (weather.py), alone and with injuries.
+# 2026-11-05: Pythagorean and this-season home field on their own, last on
+# the recent games, made way for injuries + weather + home field and
+# injuries + rest + weather (the best inputs so far, stacked).
 RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": n} for n in ("all", 8)]
            + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": "all", "extras": extras}
-              for extras in (["injuries"], ["injuries", "rest"], ["pyth"], ["injuries", "elo"],
-                             ["home"], ["injuries", "home"], ["weather"], ["injuries", "weather"])])
+              for extras in (["injuries"], ["injuries", "rest"], ["injuries", "weather", "home"], ["injuries", "elo"],
+                             ["injuries", "rest", "weather"], ["injuries", "home"], ["weather"], ["injuries", "weather"])])
 EXTRA_FEATURES = [c for cols in game_context.FEATURES.values() for c in cols]
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 

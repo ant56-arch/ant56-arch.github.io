@@ -58,6 +58,9 @@ BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 # On 2026-10-19 the bottom two (pull 3 and half-life 270) made way for two
 # "stretch" versions that sharpen the three chances toward the likeliest
 # result (the pick never changes), after live favorites won more than rated.
+# On 2026-11-05 half-life 400 and promoted + heavier shots, last on the
+# holdout, made way for a sharper stretch (1.3) and the live stretch on the
+# lighter pull (reg 5), the best of the fade / pull settings.
 # Ten versions (Anthony, 2026-10-17: ten per sport): the live recipe, the
 # five next-best fade / pull / shots settings, and four tryouts on the live
 # recipe - short rest, a heavier shots-on-target blend, and the promoted-club
@@ -66,10 +69,10 @@ BANDS = [(0.0, 0.45), (0.45, 0.55), (0.55, 0.65), (0.65, 1.01)]
 # Every version has per-competition home edges.
 _LIVE = {"half_life": 550, "reg": 10.0, "years": 3, "xg": 0.3, "home_reg": 100.0}
 RECIPES = ([_LIVE]
-           + [{**_LIVE, "half_life": h, "reg": r} for h, r in ((550, 5.0), (400, 10.0), (400, 5.0))]
+           + [{**_LIVE, "half_life": h, "reg": r} for h, r in ((550, 5.0), (400, 5.0))]
            + [{**_LIVE, "rest": True}, {**_LIVE, "xg": 0.5}, {**_LIVE, "promoted": 0.15},
-              {**_LIVE, "xg": 0.5, "promoted": 0.15},
-              {**_LIVE, "stretch": 1.1}, {**_LIVE, "stretch": 1.2}])
+              {**_LIVE, "stretch": 1.1}, {**_LIVE, "stretch": 1.2},
+              {**_LIVE, "stretch": 1.3}, {**_LIVE, "reg": 5.0, "stretch": 1.2}])
 
 
 def comp_of(m):
