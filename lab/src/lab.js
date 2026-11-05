@@ -16,14 +16,14 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } },
   };
   const OPTS = [
-    ["field", "Moving field"],
     ["touches", "Pick card + record tab"],
     ["serif", "Serif headline"],
   ];
   const on = {};
   OPTS.forEach(([k]) => { on[k] = store.get("lab-" + k) !== "0"; });
+  on.field = false;                                                   // the moving field is scrapped (Anthony, Nov 5)
   // 3D players: shelved (glitchy, no basketball motions); only with ?lab3d=1
-  on.three = new URLSearchParams(location.search).get("lab3d") === "1";
+  on.three = false;
   let three = null;
   function loadThree() {
     if (three || !on.three) return;
