@@ -1086,7 +1086,10 @@ def game_range(sport, p):
 def bb_game_pages(games, shell):
     cutoff = (NOW.date() - timedelta(days=GAME_PAGE_DAYS)).isoformat()
     games = with_moves([g for g in games if g["date"] >= cutoff])
-    return {g["file"]: shell(f"{g['away']['abbr']} {'vs' if g.get('neutral') else '@'} {g['home']['abbr']}", None,
+    # College and soccer name each team in full (extras.matchup_title); NBA and NHL keep "BOS @ NYK".
+    title = lambda g: extras.matchup_title(g) if extras.names_teams(g) else \
+        f"{g['away']['abbr']} {'vs' if g.get('neutral') else '@'} {g['home']['abbr']}"
+    return {g["file"]: shell(title(g), None,
                              extras.game_page_body(g, "index.html", "All of today's games"))
             for g in games if g["date"] >= cutoff}
 

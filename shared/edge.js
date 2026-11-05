@@ -77,6 +77,60 @@ function edgeTeamAbbr(t) {
   return (logo.includes("/soccer/") && EDGE_SOCCER_ABBR[t.id]) || t.abbreviation || "";
 }
 
+// How a team is shown: NFL, NBA, NHL and MLB by abbreviation ("KC"); college
+// and soccer by the school or club ("Ohio State", "Bayern Munich"). The
+// abbreviation stays the key everything matches on (picks, favorites, ESPN).
+// t: {abbr, short, name}; short is ESPN's shortDisplayName, name is the
+// display name (games.json) or the short name (the slate picker's games).
+const EDGE_NAME_SPORTS = ["CFB", "CBB", "SOCCER"];
+function edgeNamesTeams(sport) {
+  return EDGE_NAME_SPORTS.includes(String(sport || "").toUpperCase());
+}
+function edgeTeamLabel(sport, t) {
+  if (!t) return "";
+  if (!edgeNamesTeams(sport)) return t.abbr || t.short || t.name || "";
+  // Soccer clubs: the full club name ("Coventry City", not "Coventry").
+  const name = /^soccer$/i.test(sport) ? (t.name || t.short) : (t.short || t.name);
+  return String(name || t.abbr || "").replace(/^#\d+\s+/, "");
+}
+// Text that names teams by abbreviation ("ARIZ to win, 72%", "MIZ +2.5"),
+// with each of this game's abbreviations swapped for the team's name.
+function edgeNameText(sport, g, text) {
+  if (!text || !g || !edgeNamesTeams(sport)) return text;
+  const map = {};
+  [g.away, g.home].forEach(t => { if (t && t.abbr) { const n = edgeTeamLabel(sport, t); if (n && n !== t.abbr) map[t.abbr] = n; } });
+  const keys = Object.keys(map).sort((a, b) => b.length - a.length);
+  if (!keys.length) return text;
+  const alts = keys.map(k => k.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&")).join("|");
+  const re = new RegExp("(^|[^A-Za-z0-9&])(" + alts + ")(?![A-Za-z0-9&])", "g");
+  return String(text).replace(re, (m, pre, k) => pre + map[k]);
+}
+// One team's name, given its abbreviation in this game (anything else, like
+// "Draw", as is).
+function edgeTeamOf(sport, g, abbr) {
+  const t = g && (abbr === g.away.abbr ? g.away : abbr === g.home.abbr ? g.home : null);
+  return t ? edgeTeamLabel(sport, t) : abbr;
+}
+// SVG text for a team name inside a small circle (the logo's stand-in): up
+// to two lines, shrunk so the longest fits the circle's width.
+function edgeSvgName(name, x, cy, width, size, cls) {
+  const words = String(name || "").split(/\s+/).filter(Boolean);
+  let lines = [words.join(" ")];
+  if (words.length > 1 && lines[0].length > 7) {
+    let best = null;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(" "), b = words.slice(i).join(" ");
+      if (!best || Math.max(a.length, b.length) < Math.max(best[0].length, best[1].length)) best = [a, b];
+    }
+    lines = best;
+  }
+  const longest = Math.max(...lines.map(l => l.length), 1);
+  const fs = Math.max(6, Math.min(size, width / (longest * 0.62)));
+  const top = cy - (lines.length - 1) * fs * 0.55 + fs * 0.35;
+  return `<text class="${cls}" x="${x}" y="${top.toFixed(1)}" text-anchor="middle" style="font-size:${fs.toFixed(1)}px;letter-spacing:0">` +
+    lines.map((l, i) => `<tspan x="${x}" dy="${i ? (fs * 1.1).toFixed(1) : 0}">${edgeEsc(l)}</tspan>`).join("") + "</text>";
+}
+
 // ESPN scoreboard event -> the same shape games.py publishes.
 function edgeParseEspn(ev) {
   const comp = (ev.competitions || [])[0] || {};
@@ -790,7 +844,7 @@ function edgeTickerItem(site, g, mine) {
         team.append(img);
       }
       if (t.rank) team.append(edgeNode("span", "crawl-rank", String(t.rank)));
-      team.append(edgeNode("span", null, t.abbr || t.short));
+      team.append(edgeNode("span", null, edgeTeamLabel(site.sport, t)));
       if (g.state !== "pre" && t.score != null) team.append(edgeNode("b", null, String(t.score)));
       a.append(team);
     });
@@ -798,11 +852,11 @@ function edgeTickerItem(site, g, mine) {
     const liveNow = edgeLiveChance(g);
     if (edgeSettings().picks && liveNow) {
       const pick = edgeNode("span", "crawl-pick is-live");
-      pick.append(edgeNode("span", null, `Our win chance: ${liveNow.team} ${liveNow.pct}%`), edgeNode("span", "crawl-live", "LIVE"));
+      pick.append(edgeNode("span", null, `Our win chance: ${edgeTeamOf(site.sport, g, liveNow.team)} ${liveNow.pct}%`), edgeNode("span", "crawl-live", "LIVE"));
       a.append(pick);
     } else if (edgeSettings().picks && g.pick && g.pick.text) {
       const pick = edgeNode("span", "crawl-pick");
-      pick.append(edgeNode("span", null, "Pick: " + g.pick.text));
+      pick.append(edgeNode("span", null, "Pick: " + edgeNameText(site.sport, g, g.pick.text)));
       const pill = edgeResultPill(g.pick.result, g.pick.labels);
       if (pill) pick.append(pill);
       a.append(pick);
@@ -1065,14 +1119,15 @@ function edgeStandout(site, g) {
   const notes = [];
   if (/OT/.test(g.detail || "")) notes.push(g.detail.replace(/^Final\/?/i, "").trim() || "OT");
   if (win.score - lose.score >= 20) notes.push(`Won by ${win.score - lose.score}`);
-  [win, lose].filter(t => t.score >= 130).forEach(t => notes.push(`${t.abbr} scored ${t.score}`));
+  const nm = t => edgeTeamLabel(site.sport, t);
+  [win, lose].filter(t => t.score >= 130).forEach(t => notes.push(`${nm(t)} scored ${t.score}`));
   const stars = [g.away, g.home].map(t => t.leader).filter(l => l && l.pts >= 40);
   stars.forEach(l => notes.push(`${l.name} ${l.pts} pts`));
   if (!notes.length) return null;
   const what = stars.length ? `${stars[0].pts}-point night` : /OT/.test(g.detail || "") ? "Overtime final" : win.score - lose.score >= 20 ? "Blowout" : "Big final";
   return { id: `${site.sport}:${g.id}:final`, sport: site.sport, href: edgeGameHref(site, g), t: Date.now(),
            teams: [g.away.abbr, g.home.abbr], what, team: win.short || win.abbr, logo: win.logo, color: win.color,
-           text: notes.join(" \u00b7 "), score: `${win.abbr} ${win.score}, ${lose.abbr} ${lose.score}`, clock: "Final" };
+           text: notes.join(" \u00b7 "), score: `${nm(win)} ${win.score}, ${nm(lose)} ${lose.score}`, clock: "Final" };
 }
 
 async function initScoreboard() {
@@ -1117,7 +1172,7 @@ async function initScoreboard() {
                      teams: [g.away.abbr, g.home.abbr],
                      what: edgeScoreWord(site.sport, now - before), team: team.short || team.abbr,
                      logo: team.logo, color: team.color, text: EDGE_SCORING_TEXT.test(g.lastPlay || "") ? g.lastPlay : "",
-                     score: `${team.abbr} ${now}, ${other.abbr} ${other.score}`,
+                     score: `${edgeTeamLabel(site.sport, team)} ${now}, ${edgeTeamLabel(site.sport, other)} ${other.score}`,
                      clock: g.state === "post" ? "Final" : g.detail });
       });
     });
@@ -1359,8 +1414,9 @@ function edgeSpDay(g) {
 // What the text under the numbers says, from the numbers alone.
 function edgePickNote(g) {
   const name = abbr => abbr === g.away.abbr ? g.away.name : abbr === g.home.abbr ? g.home.name : abbr;
+  const lab = t => edgeTeamLabel(g.sport, t);
   const scored = g.away.score != null && g.home.score != null;
-  const line = scored ? `${g.away.abbr} ${g.away.score}, ${g.home.abbr} ${g.home.score}` : "";
+  const line = scored ? `${lab(g.away)} ${g.away.score}, ${lab(g.home)} ${g.home.score}` : "";
   if (!g.pick) return g.state === "pre" ? "No pick yet. Our pick posts once the model has this game's lineups and prices." : "We didn't post a pick for this game.";
   const pk = g.pick === "Draw" ? "a draw" : name(g.pick);
   if (g.hit === true) return `Final${line ? ": " + line : ""}. Our pick, ${pk}, hit.`;
@@ -1430,9 +1486,11 @@ function edgeSpField(sport) {
 function edgeSpMarker(g, t, x, side) {
   const isPick = g.pick === t.abbr;
   const id = "spc" + Math.random().toString(36).slice(2, 8);
-  // The abbreviation sits under the logo, so it shows if the logo can't load.
+  // The abbreviation (college and soccer: the name, fitted to the circle)
+  // sits under the logo, so it shows if the logo can't load.
   const short = t.abbr.length > 4 ? t.abbr.slice(0, 4).toUpperCase() : t.abbr;
-  const art = `<text class="sp-abbr" x="${x}" y="261" text-anchor="middle">${edgeEsc(short)}</text>` + (t.logo
+  const art = (edgeNamesTeams(g.sport) ? edgeSvgName(edgeTeamLabel(g.sport, t), x, 255, 56, 15, "sp-abbr")
+    : `<text class="sp-abbr" x="${x}" y="261" text-anchor="middle">${edgeEsc(short)}</text>`) + (t.logo
     ? `<clipPath id="${id}"><circle cx="${x}" cy="255" r="25"/></clipPath><image href="${edgeEsc(t.logo)}" x="${x - 25}" y="230" width="50" height="50" clip-path="url(#${id})" preserveAspectRatio="xMidYMid meet" onerror="this.remove()"/>`
     : "");
   const score = t.score != null ? `<text class="sp-score" x="${x}" y="345" text-anchor="middle">${edgeEsc(t.score)}</text>` : "";
@@ -1468,7 +1526,7 @@ function edgeMatchup(g, cls, big) {
       img.onerror = () => img.remove();
       box.append(img);
     }
-    box.append(document.createTextNode(t.abbr));
+    box.append(document.createTextNode(edgeTeamLabel(g.sport, t)));
   };
   side(g.away);
   box.append(edgeNode("span", "mt-at", g.at === "vs" ? " vs " : " @ "));
@@ -1520,7 +1578,7 @@ function edgeSlatePicker(opts) {
         const tag = stateTag(g);
         const sm = edgeNode("small", tag ? "is-" + tag.toLowerCase() : null, tag || (opts.multiSport ? g.sport : edgeSpTime(g).replace(/ \S+$/, "")));
         b.append(sm);
-        b.setAttribute("aria-label", `${g.away.abbr} at ${g.home.abbr}${tag ? ", " + tag.toLowerCase() : ""}`);
+        b.setAttribute("aria-label", `${edgeTeamLabel(g.sport, g.away)} at ${edgeTeamLabel(g.sport, g.home)}${tag ? ", " + tag.toLowerCase() : ""}`);
         return b;
       }));
       return;
@@ -1542,7 +1600,7 @@ function edgeSlatePicker(opts) {
       b.dataset.i = i;
       const tag = stateTag(g);
       b.append(edgeNode("span", "sp-lg", opts.multiSport ? g.sport : (tag || "")), edgeMatchup(g, "sp-mt"));
-      const pk = edgeNode("span", "sp-pk", g.pick ? `${g.pick} ${Math.round(g.prob)}%` : "No pick yet");
+      const pk = edgeNode("span", "sp-pk", g.pick ? `${edgeTeamOf(g.sport, g, g.pick)} ${Math.round(g.prob)}%` : "No pick yet");
       if (opts.multiSport && tag) pk.prepend(edgeNode("b", "is-" + tag.toLowerCase(), tag + " "));
       b.append(pk);
       nodes.push(b);
@@ -1561,10 +1619,12 @@ function edgeSlatePicker(opts) {
     $(".sp-num").textContent = n;
     const tag = stateTag(g);
     $(".sp-of").textContent = [`Game ${st.cur + 1} of ${L.length}`, g.sport, tag ? tag[0] + tag.slice(1).toLowerCase() : ""].filter(Boolean).join(" · ");
-    const title = `${g.away.abbr} ${g.at === "vs" ? "vs" : "@"} ${g.home.abbr}`;
+    const title = `${edgeTeamLabel(g.sport, g.away)} ${g.at === "vs" ? "vs" : "@"} ${edgeTeamLabel(g.sport, g.home)}`;
     $(".sp-title").replaceChildren(...edgeMatchup(g, "x", 1).childNodes);
     $(".sp-title").classList.toggle("is-long", title.length > 13);
-    $(".sp-pick").textContent = !g.pick ? "None yet" : g.pick === "Draw" ? "Draw" : g.pick;
+    $(".sp-title").classList.toggle("is-longer", title.length > 24);
+    $(".sp-pick").textContent = !g.pick ? "None yet" : g.pick === "Draw" ? "Draw" : edgeTeamOf(g.sport, g, g.pick);
+    $(".sp-pick").classList.toggle("is-name", edgeNamesTeams(g.sport) && $(".sp-pick").textContent.length > 8);
     $(".sp-prob").textContent = g.pick && g.prob != null ? Math.round(g.prob) + "%" : "–";
     $(".sp-price").textContent = g.price != null ? (typeof edgePrice === "function" ? edgePrice(g.price) : (g.price > 0 ? "+" : "") + g.price) : "–";
     $(".sp-note").textContent = edgePickNote(g);
@@ -1585,7 +1645,7 @@ function edgeSlatePicker(opts) {
     }
     const svg = $(".sp-svg");
     const draw = () => {
-      svg.querySelector("title").textContent = `${g.sport}: ${g.away.name} ${g.at === "vs" ? "vs" : "at"} ${g.home.name}${g.pick ? ", our pick " + g.pick : ""}`;
+      svg.querySelector("title").textContent = `${g.sport}: ${g.away.name} ${g.at === "vs" ? "vs" : "at"} ${g.home.name}${g.pick ? ", our pick " + edgeTeamOf(g.sport, g, g.pick) : ""}`;
       svg.querySelector("g").innerHTML = edgeSpDrawing(g);
     };
     if (animate && !EDGE_REDUCE.matches) {

@@ -181,6 +181,11 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 .guide-show.is-final .guide-team { color: var(--text-muted); }
 .guide-show.is-final .guide-team.is-winner { color: var(--text); }
 .guide-team-name { display: inline-flex; align-items: center; gap: 5px; }
+/* College and soccer names are longer than abbreviations: they cut off with
+   an ellipsis inside the block instead of spilling out. */
+.guide-team, .guide-team-name { max-width: 100%; min-width: 0; }
+.guide-team-name > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.guide-pick > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .guide-logo { width: 20px; height: 20px; object-fit: contain; }
 .guide-rank { font-size: 11px; color: var(--text-faint); }
 .guide-score { font-family: var(--font-head); font-stretch: 100%; font-size: 18px; }
