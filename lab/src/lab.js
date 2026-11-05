@@ -1230,7 +1230,7 @@
   const VENUES = {
     // Madison Square Garden: a round building, a bowl that rises steeply, the
     // two bridges hung over the upper level and the famous cable ceiling.
-    nba: { kind: "court", name: "Madison Square Garden", city: "New York", cam: [0, 9, -10], hz: 0.42, fov: 2.6, vs: 0.55,
+    nba: { kind: "court", name: "Madison Square Garden", city: "New York", cam: [0, 11, -22], hz: 0.33, fov: 1.85, vs: 0.68,
       sky: [[0, "#05070C"], [0.7, "#0D1220"], [1, "#151B2A"]],
       draw(T) {
         const { x, P } = T;
@@ -1254,7 +1254,7 @@
     },
     // Cameron Indoor: a small gothic gym; students on bleachers at the floor's edge,
     // stone walls with tall windows, banners, a low balcony.
-    cbb: { kind: "court", name: "Cameron Indoor Stadium", city: "Durham", cam: [0, 7, -9], hz: 0.42, fov: 2.6, vs: 0.6,
+    cbb: { kind: "court", name: "Cameron Indoor Stadium", city: "Durham", cam: [0, 8, -17], hz: 0.3, fov: 1.85, vs: 0.68,
       sky: [[0, "#1C1813"], [0.6, "#2E271E"], [1, "#3B3226"]],
       draw(T) {
         const { x } = T, box = T.rrect(26, 18, 2);
@@ -1277,7 +1277,7 @@
       },
     },
     // Bell Centre: steep red bowls, a ring of suites, banners in the rafters.
-    nhl: { kind: "ice", name: "Bell Centre", city: "Montreal", cam: [0, 10, -12], hz: 0.42, fov: 2.6, vs: 0.55,
+    nhl: { kind: "ice", name: "Bell Centre", city: "Montreal", cam: [0, 12, -26], hz: 0.33, fov: 1.85, vs: 0.68,
       sky: [[0, "#05060A"], [0.7, "#100F14"], [1, "#1C1A1F"]],
       draw(T) {
         const red = FANS("rgba(200,30,45,.6)", "rgba(245,240,235,.42)", "rgba(25,33,104,.45)", "rgba(230,190,160,.3)");
@@ -1295,7 +1295,7 @@
     // Lambeau: one continuous bowl of bench seats, ringed by the tall green
     // sideline buildings (suites, glass, the gold rim), giant boards over both
     // end zones, lights all along the rim. Cold, clear night.
-    nfl: { kind: "gridiron", name: "Lambeau Field", city: "Green Bay", cam: [0, 10, -24], hz: 0.48,
+    nfl: { kind: "gridiron", name: "Lambeau Field", city: "Green Bay", cam: [0, 24, -55], hz: 0.252, fov: 1.85, vs: 0.68,
       sky: [[0, "#0B1322"], [0.6, "#24344C"], [0.88, "#6E6070"], [1, "#B48C78"]],
       draw(T) {
         const bowl = T.rrect(68, 38, 26), gb = FANS("rgba(255,182,18,.55)", "rgba(32,85,60,.65)", "rgba(240,236,228,.45)", "rgba(230,190,160,.3)");
@@ -1322,7 +1322,7 @@
     // Michigan Stadium: the biggest bowl in America, dug into the ground, so it's
     // low and enormous; almost no roof line, just endless rows of maize; the
     // press box tower on one side; boards at both ends; the block M.
-    cfb: { kind: "gridiron", name: "Michigan Stadium", city: "Ann Arbor", cam: [0, 10, -24], hz: 0.44,
+    cfb: { kind: "gridiron", name: "Michigan Stadium", city: "Ann Arbor", cam: [0, 24, -55], hz: 0.25, fov: 1.85, vs: 0.68,
       sky: [[0, "#2B4A78"], [0.55, "#5C7FAE"], [0.85, "#C9A27E"], [1, "#EBC08C"]],
       draw(T) {
         // trees and the town beyond the rim
@@ -1350,7 +1350,7 @@
     // Wrigley: from the mound. Ivy on the brick wall, the bleachers, the green
     // scoreboard with its clock and flags, the rooftops across the street, and
     // the old double-deck grandstand running down both lines.
-    mlb: { kind: "park", name: "Wrigley Field", city: "Chicago", cam: [0, 8, 14], hz: 0.47, fov: 3.0,
+    mlb: { kind: "park", name: "Wrigley Field", city: "Chicago", cam: [0, 20, -34], hz: 0.3, fov: 1.85,
       sky: [[0, "#14223E"], [0.5, "#3C4E73"], [0.82, "#C98262"], [1, "#F2B278"]],
       draw(T) {
         const { x, rnd } = T, R = a => 109 + 13 * Math.cos(a * 2) - 1.5 * Math.sin(a);
@@ -1382,7 +1382,7 @@
         T.line(wall.map(p => [p.x, 3.5, p.z]), 1.4, "rgba(240,236,224,.85)", 1);
         // the grandstand down both lines: lower deck, upper deck, roof, lights on top
         [-1, 1].forEach(s => {
-          const line = []; for (let d = 104; d >= 30; d -= 2) line.push({ x: s * d * Math.SQRT1_2 + s * 16 * Math.SQRT1_2, z: d * Math.SQRT1_2 - 16 * Math.SQRT1_2, nx: s * Math.SQRT1_2, nz: -Math.SQRT1_2 });
+          const line = []; for (let d = 104; d >= 6; d -= 2) line.push({ x: s * d * Math.SQRT1_2 + s * 16 * Math.SQRT1_2, z: d * Math.SQRT1_2 - 16 * Math.SQRT1_2, nx: s * Math.SQRT1_2, nz: -Math.SQRT1_2 });
           T.tier(line, 0, 1, 20, 9, "#1D3D2A", cubs, 1.5, () => true, 10);
           T.tier(line, 20, 9, 20, 12, "#6A3A2A", null, 1, () => true, 1);
           T.tier(line, 14, 12, 32, 22, "#1D3D2A", cubs, 1.3, () => true, 8);
@@ -1391,24 +1391,25 @@
           const pole = [s * 76.3, 76.3]; T.line([[pole[0], 0, pole[1]], [pole[0], 20, pole[1]]], 2.5, "rgba(238,206,96,.95)", 2);
         });
         // the field: grass, the warning track, the infield dirt and the bases
-        const inDia = (X, Z) => Math.abs(X) + Math.abs(Z - 19.4) < 15.6;
-        const cell = (X, Z) => {
-          const a = Math.atan2(X, Z), r = Math.hypot(X, Z);
-          if (Math.abs(a) > Math.PI / 4 + 0.03 || r > R(a)) return null;
-          if (r > R(a) - 4.6) return "#7A5236";
-          if (Math.hypot(X, Z - 18.4) < 2.8) return "#A56B44";
-          if (r < 29 && !inDia(X, Z)) return "#9A6440";
-          return Math.floor((X + 200) / 7) % 2 ? "#2F6A37" : "#2A6132";
-        };
-        T.ground(-40, 40, 0, 50, 1, 1, (X, Z) => cell(X + 0.5, Z + 0.5));
-        T.ground(-120, 120, 0, 140, 4, 4, (X, Z) => Math.abs(X + 2) < 40 && Z + 2 < 50 ? null : cell(X + 2, Z + 2));
+        // grass everywhere inside the park (fair and foul), the track by the wall
+        T.ground(-110, 110, -30, 140, 4, 4, (X, Z) => {
+          X += 2; Z += 2; const a = Math.atan2(X, Z), r = Math.hypot(X, Z);
+          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a)) return null;
+          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a) - 4.6) return "#7A5236";
+          return Math.floor((X + 200) / 8) % 2 ? "#2F6A37" : "#2A6132";
+        });
+        const dirt = []; for (let i = 0; i <= 40; i++) { const a = -Math.PI / 4 - 0.12 + i / 40 * (Math.PI / 2 + 0.24); dirt.push([Math.sin(a) * 29, Math.cos(a) * 29]); }
+        T.gpoly([[-5, -4], [5, -4], ...dirt.slice().reverse()].reverse(), "#9A6440", 6);
+        T.gpoly([[0, 3.6], [16, 19.4], [0, 35.2], [-16, 19.4]], "#2C6534", 6);
+        T.gdisc(0, 18.4, 2.7, "#A56B44"); T.gdisc(0, 0, 4, "#9A6440");
+        T.gpoly([[-0.22, -0.2], [0.22, -0.2], [0.22, 0.1], [0, 0.32], [-0.22, 0.1]], "rgba(250,250,248,.95)", 1);
         T.gline([[0, 0], [-80, 80]], 0.12, "rgba(246,244,236,.9)"); T.gline([[0, 0], [80, 80]], 0.12, "rgba(246,244,236,.9)");
         [[19.4, 19.4], [0, 38.8], [-19.4, 19.4]].forEach(([X, Z]) => T.gpoly([[X - 0.25, Z - 0.25], [X + 0.25, Z - 0.25], [X + 0.25, Z + 0.25], [X - 0.25, Z + 0.25]], "rgba(250,250,248,.95)", 1));
       },
     },
     // Anfield: from the center circle. The Main Stand's three tiers under a deep
     // roof straight ahead, the Kop rising on the left, the Anfield Road end on the right.
-    soccer: { kind: "pitch", name: "Anfield", city: "Liverpool", cam: [0, 10, -12], hz: 0.48,
+    soccer: { kind: "pitch", name: "Anfield", city: "Liverpool", cam: [0, 26, -62], hz: 0.25, fov: 1.85, vs: 0.68,
       sky: [[0, "#0E1624"], [0.55, "#25314A"], [0.86, "#6E4E44"], [1, "#B88258"]],
       draw(T) {
         const red = FANS("rgba(200,16,46,.65)", "rgba(200,16,46,.55)", "rgba(245,240,235,.42)", "rgba(230,190,160,.3)");
