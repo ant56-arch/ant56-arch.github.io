@@ -25,22 +25,32 @@ of the site and the model behind it, and to recommend adjustments.
   banner that no longer fits, anything a visitor would trip on.
 - Read the per-sport history and logs listed below before judging.
 
-## Report format (Markdown, under 500 words)
-```
-## {LABEL}: <one-line status, e.g. "Healthy", "Cold stretch", "Needs a look">
+## Writing style
+Write for Anthony, a sharp site owner who is not an engineer. Plain words, short
+sentences, no jargon (say "the model's confidence" not "calibration drift" unless
+you explain it in a few words). Lead with the point. Give numbers, with the
+sample size. Keep each field to one or two sentences.
 
-**Checked:** <files and data you read, newest date seen>
+## Report format (Markdown, under 450 words, exactly this shape)
+```
+## {LABEL}: <status in 1-4 words: Healthy, Cold stretch, Needs a look, Off-season>
+
+Two sentences: how the tab and model are doing, and what matters most.
 
 ### Findings
 - <finding, with numbers and sample size>
 
 ### Recommended adjustments
-1. **{SLUG}-1: <short title>.** What to change and where (file and rough
-   location). Why, with evidence. Expected effect. Risk. Confidence: low,
-   medium or high. Needs your approval.
+1. **{SLUG}-1: <short title>.**
+   - What: <what to change and where, file and rough location>
+   - Why: <the evidence, with numbers>
+   - Effect: <what it should improve>
+   - Risk: <what could go wrong>
+   - Confidence: <Low, Medium or High>
 
 ### Not worth changing
-- <things you looked at and left alone, one line each>
+- <thing you looked at and left alone, one line each>
 ```
 If there are no recommendations, write "None this run." under that heading.
+Do not add a "Checked" section; end "Findings" with the newest date of data you saw.
 Output only the report.
