@@ -21,8 +21,8 @@ only, no recommendations from tiny samples, the report format).
 
 ## How it runs
 
-`.github/workflows/league-agents.yml`, once a day after the morning picks and
-Model Room runs, and on demand (Actions tab, "League Agents", Run workflow).
+`.github/workflows/league-agents.yml`, Tuesdays and Fridays at 9:40 AM ET after the
+morning picks and Model Room runs, and on demand (Actions tab, "League Agents", Run workflow).
 
 1. `plan` picks the agents to run. A league whose season is over
    (`python shared/seasons.py idle LEAGUE`) is skipped, so it costs nothing.
