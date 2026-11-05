@@ -1722,6 +1722,8 @@ function render(sums) {
   else {
     $("slate").hidden = true;
   }
+  // No games to jump to (an off-season tab): drop the nav button rather than leave it dead.
+  document.querySelector("nav .pill").hidden = !start;
 
   updateStatus();
   fetchLive(all);
