@@ -133,8 +133,9 @@ def make_picks(history, league, weights):
             team, team_id = g[side], str(g[f"{side}_id"])
             injured = {pid for pid, status in report.get(team_id, {}).items() if status in OUT_STATUSES}
             playing = league.rotation(team) - injured
-            out[side] = (league.missing_value(team, playing), league.missing_players(team, playing))
-        feats = league.features(g, out["home"][0], out["away"][0])
+            out[side] = (league.missing_value(team, playing), league.missing_players(team, playing),
+                         league.available_value(team, playing))
+        feats = league.features(g, out["home"][0], out["away"][0], out["home"][2], out["away"][2])
         model_home, model_margin = M.win_prob(weights, feats)
         odds = (events.get(g["id"]) or {}).get("odds")
         odds = kept_price(odds, old)  # ESPN has no price right now: keep the last one
