@@ -22,9 +22,10 @@
   ];
   const on = {};
   OPTS.forEach(([k]) => { on[k] = store.get("lab-" + k) !== "0"; });
-  // 3D players: a test inside the test, off unless picked in the panel (or ?lab3d=1)
-  OPTS.push(["three", "3D players (basketball, test)"]);
-  on.three = store.get("lab-three") === "1" || new URLSearchParams(location.search).get("lab3d") === "1";
+  // 3D players: on by default in the lab (basketball); turn off in the panel or with ?lab3d=0
+  OPTS.push(["three", "3D players (basketball)"]);
+  const q3d = new URLSearchParams(location.search).get("lab3d");
+  on.three = q3d ? q3d === "1" : store.get("lab-three") !== "0";
   let three = null;
   function loadThree() {
     if (three || !on.three) return;
