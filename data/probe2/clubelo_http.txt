@@ -1,0 +1,2 @@
+FAIL [Mozilla/5.0 ] <HTTPError 502: 'Bad Gateway'>
+FAIL [sports-edge ] <HTTPError 502: 'Bad Gateway'>
