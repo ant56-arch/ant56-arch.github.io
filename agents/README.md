@@ -26,12 +26,23 @@ morning picks and Model Room runs, and on demand (Actions tab, "League Agents", 
 
 1. `plan` picks the agents to run. A league whose season is over
    (`python shared/seasons.py idle LEAGUE`) is skipped, so it costs nothing.
-2. Each `agent` job runs the Claude Code CLI with only the `Read`, `Grep` and
+2. Each league `agent` job runs the Claude Code CLI with only the `Read`, `Grep` and
    `Glob` tools and a token that can only read the repo. It can't edit files,
    run commands or reach the web.
-3. `publish` collects the reports, builds one page, encrypts it with the Model
+3. `model-agent` (the Model Room agent) runs next, with the league reports in `inbox/`.
+4. `publish` collects the reports, builds one page, encrypts it with the Model
    Room password, and publishes it at `/agents/`. The repo is public, so
    reports never go in issues, logs or comments.
+
+## Stat scouting
+
+Each league agent also scouts stats its model could use ("Stat ideas", up to 3,
+backed by evidence from the logs). The Model Room agent runs after them, reads
+every league's report, merges duplicates across sports, checks each idea against
+the models and tryouts already in the Model Room, and gives a verdict on its own
+tab: Worth adding, Worth testing first, or Skip. Agents can't run code, so a
+verdict says how to test an idea; "test NBA-S1" tells Claude to build and
+backtest it before anything goes into a model.
 
 ## One-time setup
 

@@ -26,7 +26,7 @@ LABELS = {"modelroom": "Model Room", "nfl": "NFL", "cfb": "CFB", "mlb": "MLB",
 UL = re.compile(r"^(\s*)[-*]\s+(.*)")
 OL = re.compile(r"^(\s*)\d+[.)]\s+(.*)")
 ITEM = re.compile(r"^\s*\d+[.)]\s+\*\*")
-FIELD = re.compile(r"^\s*[-*]?\s*\*{0,2}(What|Why|Effect|Expected effect|Risk|Confidence|Where|Evidence|Change)\*{0,2}\s*[:.]\s*\*{0,2}\s*(.*)$", re.I)
+FIELD = re.compile(r"^\s*[-*]\s+\*{0,2}([A-Z][A-Za-z ]{1,22}?)\*{0,2}\s*:\s*\*{0,2}\s*(.*)$")
 
 HOME_ICON = ('<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" '
              'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
@@ -170,35 +170,47 @@ def split_recs(lines):
     return [tuple(i) for i in items]
 
 
-def rec_card(rid, title, body):
+def rec_card(rid, title, body, kind="rec"):
     fields, loose = [], []
     for line in body:
         m = FIELD.match(line)
         if m:
-            fields.append([m.group(1).capitalize(), m.group(2).strip()])
+            fields.append([m.group(1).strip().capitalize(), m.group(2).strip()])
         elif fields and line.strip():
             fields[-1][1] += " " + line.strip()  # wrapped line
         elif line.strip():
             loose.append(line.strip())
-    conf = ""
+    chip_text, chip_tone = "", "warn"
     rows = []
     for k, v in fields:
-        if k.lower() == "confidence":
-            conf = v
+        kl = k.lower()
+        if kl == "confidence":
+            chip_text, chip_tone = v.split(".")[0].split(",")[0][:24] + " confidence", (
+                "good" if v.lower().startswith("high") else "bad" if v.lower().startswith("low") else "warn")
             continue  # shown as the chip instead
+        if kl == "verdict":
+            vl = v.lower()
+            chip_text = v.split(".")[0][:30]
+            chip_tone = "good" if vl.startswith("worth adding") else "bad" if vl.startswith("skip") else "warn"
+            continue
         rows.append(f"<div class='row'><dt>{esc(k)}</dt><dd>{inline(v)}</dd></div>")
     text = " ".join(loose)
-    # one-paragraph recommendations (no labelled fields): show the text as is
+    # one-paragraph items (no labelled fields): show the text as is
     if not fields and text:
         rows.append(f"<div class='row full'><dd>{inline(text)}</dd></div>")
     elif text:
         rows.insert(0, f"<div class='row full'><dd>{inline(text)}</dd></div>")
-    cl = conf.lower()
-    ctone = "good" if cl.startswith("high") else ("bad" if cl.startswith("low") else "warn")
-    badge = f"<span class='chip {ctone}'>{esc(conf.split('.')[0].split(',')[0][:24])} confidence</span>" if conf else ""
-    return (f"<article class='rec'><header>{('<span class=id>' + esc(rid) + '</span>') if rid else ''}"
+    badge = f"<span class='chip {chip_tone}'>{esc(chip_text)}</span>" if chip_text else ""
+    cls = "rec" if kind == "rec" else "rec idea"
+    if kind == "rec":
+        ask = (f"Needs your approval. Reply &ldquo;do {esc(rid) or 'this'}&rdquo; to Claude to make it happen.")
+    elif kind == "idea":
+        ask = "Handed to the Model Room agent for review. Its verdict is on the Model Room tab."
+    else:
+        ask = (f"Needs your approval. Reply &ldquo;test {esc(rid) or 'this'}&rdquo; to Claude to build and test it.")
+    return (f"<article class='{cls}'><header>{('<span class=id>' + esc(rid) + '</span>') if rid else ''}"
             f"<h4>{inline(title)}</h4>{badge}</header><dl>{''.join(rows)}</dl>"
-            f"<p class='ask'>Needs your approval. Reply &ldquo;do {esc(rid) or 'this'}&rdquo; to Claude to make it happen.</p></article>")
+            f"<p class='ask'>{ask}</p></article>")
 
 
 def panel(slug, md):
@@ -224,15 +236,27 @@ def panel(slug, md):
     else:
         parts.append("<p class='none'>Nothing to change this run.</p>")
 
+    n_extra = 0
     for key, lines in sec.items():
         if key in ("intro",) or key.startswith("recommend"):
+            continue
+        if key.startswith("stat ideas"):
+            review = "review" in key
+            ideas = split_recs(lines)
+            heading = "Stat ideas review" if review else "Stat ideas"
+            if ideas:
+                n_extra += len(ideas) if review else 0
+                parts.append(f"<h3 class='sec'>{heading}</h3><div class='recs'>"
+                             + "".join(rec_card(*i, kind="review" if review else "idea") for i in ideas) + "</div>")
+            elif any(l.strip() for l in lines):
+                parts.append(f"<h3 class='sec'>{heading}</h3><p class='none'>None this run.</p>")
             continue
         body = render(lines)
         if not body.strip():
             continue
         name = key[:1].upper() + key[1:]
         parts.append(f"<h3 class='sec'>{esc(name)}</h3><div class='prose'>{body}</div>")
-    return title, status, len(recs), "\n".join(parts)
+    return title, status, len(recs) + n_extra, "\n".join(parts)
 
 
 CSS = r"""
@@ -277,6 +301,7 @@ h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transfor
 code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
 .none{color:var(--muted);background:var(--surface);border:1px dashed var(--rule);border-radius:10px;padding:14px 16px;margin:0}
 .recs{display:grid;gap:14px}
+.rec.idea{border-left-color:var(--faint)}
 .rec{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--ours);border-radius:10px;padding:14px 16px}
 .rec header{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 10px}
 .rec h4{margin:0;font-size:1.05rem;flex:1 1 220px}

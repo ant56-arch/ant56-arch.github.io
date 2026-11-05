@@ -1,8 +1,10 @@
 name: League Agents
 
 # One read-only Claude agent per league tab plus one for the Model Room. Each
-# reads its own tab's code and data and its own model, and writes a report of
-# what it sees and what it would change. They only report: the agent jobs have
+# league agent reads its own tab's code and data and its own model, writes a
+# report of what it would change, and scouts stats its model might use. The
+# Model Room agent then reads those reports and weighs the stat ideas against
+# the models already in the Model Room. They only report: the agent jobs have
 # a read-only token and the Read/Grep/Glob tools, nothing else. Reports are
 # encrypted with the Model Room password and published at /agents/ (the repo
 # is public, so they never go in issues or logs). See agents/README.md.
@@ -30,6 +32,8 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
+      has_sports: ${{ steps.plan.outputs.has_sports }}
+      has_model: ${{ steps.plan.outputs.has_model }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,10 +41,13 @@ jobs:
       - id: plan
         env:
           AGENTS: ${{ github.event.inputs.agents || 'all' }}
-        run: echo "matrix=$(python3 agents/plan.py)" >> "$GITHUB_OUTPUT"
+        run: python3 agents/plan.py >> "$GITHUB_OUTPUT"
 
+  # Stage 1: one agent per league. Each reports on its tab and model and
+  # scouts stats its model might use ("Stat ideas").
   agent:
     needs: plan
+    if: ${{ needs.plan.outputs.has_sports == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
@@ -57,44 +64,13 @@ jobs:
         with:
           node-version: 22
 
-      - name: Build the prompt
-        env:
-          SLUG: ${{ matrix.slug }}
-          LABEL: ${{ matrix.label }}
-          PROMPT_FILE: ${{ matrix.prompt }}
-        run: |
-          python3 - <<'PY'
-          import os
-          common = open("agents/prompts/_common.md").read()
-          common = common.replace("{LABEL}", os.environ["LABEL"]).replace("{SLUG}", os.environ["SLUG"].upper())
-          own = open("agents/prompts/" + os.environ["PROMPT_FILE"]).read()
-          open("prompt.txt", "w").write(common + "\n## Your tab\n\n" + own)
-          PY
-
       - name: Run the agent (read-only)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SLUG: ${{ matrix.slug }}
           LABEL: ${{ matrix.label }}
-        run: |
-          mkdir -p reports
-          out="reports/$SLUG.md"
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            printf '## %s: not set up\n\nThe ANTHROPIC_API_KEY secret is not set, so this agent did not run. Add it under Settings, Secrets and variables, Actions.\n' "$LABEL" > "$out"
-            exit 0
-          fi
-          npm install -g @anthropic-ai/claude-code
-          if ! claude -p \
-              --model claude-sonnet-5-5 \
-              --allowedTools "Read,Grep,Glob" \
-              --disallowedTools "Bash,Edit,Write,NotebookEdit,WebFetch,WebSearch" \
-              --max-turns 40 \
-              --output-format text < prompt.txt > "$out.tmp"; then
-            printf '## %s: agent failed\n\nThe agent did not finish this run. See the League Agents run in the Actions tab.\n' "$LABEL" > "$out"
-          else
-            mv "$out.tmp" "$out"
-          fi
-          test -s "$out" || printf '## %s: no report\n\nThe agent returned nothing this run.\n' "$LABEL" > "$out"
+          PROMPT_FILE: ${{ matrix.prompt }}
+        run: agents/run_agent.sh
 
       - uses: actions/upload-artifact@v4
         with:
@@ -102,9 +78,52 @@ jobs:
           path: reports/${{ matrix.slug }}.md
           retention-days: 7
 
+  # Stage 2: the Model Room agent reads the league agents' reports, compares
+  # their stat ideas with the models already in the Model Room, and says which
+  # are worth adding. Same read-only rules.
+  model-agent:
+    needs: [plan, agent]
+    if: ${{ !cancelled() && needs.plan.outputs.has_model == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true   # none if no league ran
+        with:
+          pattern: report-*
+          path: inbox
+          merge-multiple: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run the Model Room agent (read-only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLUG: modelroom
+          LABEL: Model Room
+          PROMPT_FILE: model-room.md
+          MAX_TURNS: 60
+        run: |
+          mkdir -p inbox
+          agents/run_agent.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report-modelroom
+          path: reports/modelroom.md
+          retention-days: 7
+
   publish:
-    needs: agent
-    if: ${{ !cancelled() && needs.agent.result != 'skipped' }}
+    needs: [agent, model-agent]
+    if: ${{ !cancelled() && (needs.agent.result == 'success' || needs.model-agent.result == 'success') }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write   # to publish to the site branch; this job never runs an agent
