@@ -987,236 +987,452 @@
     return { canvas: c, cam, back, rise, M, W };
   }
 
-  // ---------- famous venues: the same art style, drawn after the real places ----------
-  function venueKit(x, W, H, back, rise, rnd, cam) {
-    const N = 48;
-    const K = {
-      x, W, H, back, rise, rnd, cam,
-      arch: (t, a, b) => a + (b - a) * Math.sin(Math.PI * t),
-      // a seating band between two curves (y as a function of t = 0..1 across), rows, then people
-      band(top, bot, seat, fans, density = 1, t0 = 0, t1 = 1) {
-        x.fillStyle = seat; x.beginPath();
-        for (let i = 0; i <= N; i++) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, top(t)); }
-        for (let i = N; i >= 0; i--) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, bot(t)); }
-        x.closePath(); x.fill();
-        const shadeTop = Math.min(...[0, 0.5, 1].map(t => top(lerp(t0, t1, t)))), shadeBot = Math.max(...[0, 0.5, 1].map(t => bot(lerp(t0, t1, t))));
-        x.strokeStyle = "rgba(0,0,0,.25)"; x.lineWidth = 0.7;
-        for (let r = 1; r < 10; r++) { x.beginPath(); for (let i = 0; i <= N; i++) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, lerp(top(t), bot(t), r / 10)); } x.stroke(); }
-        const n = Math.min(7000, (t1 - t0) * W * 2.4 * density);
-        for (let i = 0; i < n; i++) {
-          const t = lerp(t0, t1, rnd()), y0 = top(t), y1 = bot(t), u = rnd(), py = lerp(y0, y1, u), s = 0.9 + u * 0.7;
-          x.fillStyle = fans[Math.floor(rnd() * fans.length)]; x.fillRect(t * W, py, 1.3 * s, 1.6 * s);
-        }
-        // deeper in shadow toward the back rows
-        const sg = x.createLinearGradient(0, shadeTop, 0, shadeBot); sg.addColorStop(0, "rgba(0,0,0,.42)"); sg.addColorStop(1, "rgba(0,0,0,0)");
-        x.fillStyle = sg; x.beginPath();
-        for (let i = 0; i <= N; i++) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, top(t)); }
-        for (let i = N; i >= 0; i--) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, bot(t)); }
-        x.closePath(); x.fill();
-      },
-      // a solid strip between two curves
-      strip(top, bot, color, t0 = 0, t1 = 1) {
-        x.fillStyle = color; x.beginPath();
-        for (let i = 0; i <= N; i++) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, top(t)); }
-        for (let i = N; i >= 0; i--) { const t = lerp(t0, t1, i / N); x.lineTo(t * W, bot(t)); }
-        x.closePath(); x.fill();
-      },
-      // lit windows along a curve
-      lights(yf, h, color, t0 = 0, t1 = 1, gap = 7, on = 0.8) {
-        x.fillStyle = color;
-        for (let px = t0 * W; px < t1 * W; px += gap) if (rnd() < on) x.fillRect(px, yf(px / W), gap * 0.55, h);
-      },
-      glow(px, py, r, a, c = "255,232,190") {
-        const g = x.createRadialGradient(px, py, 0, px, py, r);
-        g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`);
-        x.fillStyle = g; x.fillRect(px - r, py - r, r * 2, r * 2);
-      },
-      board(cx, by, w, h, frame = "#0C100E", screen = "rgba(120,170,220,.55)") {   // a scoreboard on legs
-        x.fillStyle = frame; x.fillRect(cx - w / 2, by - h, w, h);
-        const g = x.createLinearGradient(0, by - h, 0, by);
-        g.addColorStop(0, screen); g.addColorStop(1, "rgba(20,30,40,.6)");
-        x.fillStyle = g; x.fillRect(cx - w / 2 + 3, by - h + 3, w - 6, h - 6);
-        K.glow(cx, by - h / 2, w * 0.9, 0.12, "170,200,240");
-      },
+  // ---------- famous venues, seen from the middle of the field ----------
+  // A wide panorama (a cylinder around the camera): the far stands straight
+  // ahead, the ends wrapping round to the edges. Each venue is built from its
+  // real shape: the outline of the seating bowl, its tiers (how far back and how
+  // high they go), roofs, boards and the buildings around it.
+  function pano(V, W, H, dpr) {
+    const c = document.createElement("canvas");
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    const x = c.getContext("2d"); x.scale(dpr, dpr);
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const phone = W < 760, FOV = (V.fov || 2.8) * (phone ? 0.6 : 1), f = W / FOV, fy = f * (V.vs || 1);
+    const hz = H * (phone ? 0.47 : (V.hz || 0.5)), cam = V.cam, LIM = FOV / 2 + 0.45;
+    const P = (X, Y, Z) => {
+      const dx = X - cam[0], dz = Z - cam[2], th = Math.atan2(dx, dz), d = Math.max(0.6, Math.hypot(dx, dz));
+      return [W / 2 + th * f, hz - (Y - cam[1]) / d * fy, d, th];
     };
-    return K;
-  }
-  const FANS = (...c) => c;
-  const VENUES = {
-    nba: { kind: "court", name: "Madison Square Garden", city: "New York",
-      sky: [[0, "#04060A"], [0.6, "#0C1220"], [1, "#171C28"]],
-      key: "rgba(29,66,138,.82)", center: "rgba(245,132,38,.8)", apron: [26, 52, 104], lamps: [],
-      stands(k) {
-        const { x, W, back, rise } = k;
-        // the round ceiling, hung from cables: a ring of spokes and lights
-        const cy = back - rise * 2.05, rx = W * 0.7, ry = rise * 0.9;
-        x.fillStyle = "#0A0E16"; x.beginPath(); x.ellipse(W / 2, cy, rx, ry, 0, 0, Math.PI * 2); x.fill();
-        x.strokeStyle = "rgba(190,200,220,.3)"; x.lineWidth = 1.2;
-        for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2; x.beginPath(); x.moveTo(W / 2 + Math.cos(a) * rx * 0.22, cy + Math.sin(a) * ry * 0.22); x.lineTo(W / 2 + Math.cos(a) * rx, cy + Math.sin(a) * ry); x.stroke(); }
-        [0.22, 0.55, 0.98].forEach(f => { x.beginPath(); x.ellipse(W / 2, cy, rx * f, ry * f, 0, 0, Math.PI * 2); x.stroke(); });
-        for (let i = 0; i < 64; i++) { const a = i / 64 * Math.PI * 2, px = W / 2 + Math.cos(a) * rx * 0.98, py = cy + Math.sin(a) * ry * 0.98; if (py > 0) { x.fillStyle = "rgba(255,240,210,.9)"; x.fillRect(px - 1.5, py - 1, 3, 2); } }
-        // the bridges hung across the upper level
-        [1.22, 1.32].forEach((f, i) => { k.strip(t => back - rise * f, t => back - rise * f + 5, "#121826", 0.12, 0.88); k.lights(() => back - rise * f + 1, 2, "rgba(255,226,170,.6)", 0.13, 0.87, 9, 0.6); });
-        // upper bowl, suites, lower bowl
-        k.band(t => back - rise * k.arch(t, 0.9, 1.15), t => back - rise * 0.6, "#151C30", FANS("rgba(240,220,200,.35)", "rgba(245,132,38,.35)", "rgba(80,120,220,.4)", "rgba(255,255,255,.25)"), 1.2);
-        k.strip(t => back - rise * 0.6, t => back - rise * 0.52, "#0B0F18");
-        k.lights(() => back - rise * 0.58, 3, "rgba(255,214,150,.75)", 0, 1, 8, 0.85);
-        k.band(t => back - rise * 0.52, t => back, "#1A2340", FANS("rgba(240,220,200,.45)", "rgba(245,132,38,.4)", "rgba(80,120,220,.45)", "rgba(255,255,255,.35)"), 1.6);
-        // the scoreboard hung over center court
-        const sw = Math.min(200, W * 0.15); k.board(W / 2, back - rise * 1.45, sw, sw * 0.45);
-        x.fillStyle = "rgba(245,132,38,.85)"; x.fillRect(W / 2 - sw / 2, back - rise * 1.45 - 3, sw, 3);
-        k.glow(W / 2, back - rise * 0.2, W * 0.5, 0.1);
+    const ok = p => Math.abs(p[3]) < LIM;
+    const sub = (a, b, n) => { const o = []; for (let i = 0; i <= n; i++) o.push([lerp(a[0], b[0], i / n), lerp(a[1], b[1], i / n), lerp(a[2], b[2], i / n)]); return o; };
+    const trace = pts => { x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); };
+    const area = q => { let s = 0; for (let i = 0; i < q.length; i++) { const a = q[i], b = q[(i + 1) % q.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
+    const T = {
+      x, W, H, rnd, P, ok, hz, f, cam, phone,
+      // a flat piece of the world, edges bent by the lens
+      quad(q, color, n = 4) {
+        const pts = [];
+        for (let i = 0; i < q.length; i++) sub(q[i], q[(i + 1) % q.length], n).slice(0, -1).forEach(w => pts.push(P(...w)));
+        if (!pts.every(ok)) return null;
+        trace(pts); x.closePath(); x.fillStyle = color; x.fill(); return pts;
       },
-    },
-    cbb: { kind: "court", name: "Cameron Indoor Stadium", city: "Durham",
-      sky: [[0, "#17140F"], [0.55, "#2C251C"], [1, "#3B3024"]],
-      key: "rgba(0,32,91,.85)", center: "rgba(0,32,91,.85)", apron: [120, 84, 52], lamps: [[0.3, 0.1], [0.5, 0.08], [0.7, 0.1]],
-      stands(k) {
-        const { x, W, back, rise } = k;
-        // stone walls with tall gothic windows, banners between them
-        for (let i = 0; i < 7; i++) {
-          const cx = W * (0.12 + i * 0.127), ww = Math.min(46, W * 0.034), top = back - rise * 2.05, bot = back - rise * 1.05;
-          x.fillStyle = "rgba(240,228,196,.28)"; x.beginPath();
-          x.moveTo(cx - ww / 2, bot); x.lineTo(cx - ww / 2, top + ww * 0.6); x.quadraticCurveTo(cx - ww / 2, top, cx, top - ww * 0.35);
-          x.quadraticCurveTo(cx + ww / 2, top, cx + ww / 2, top + ww * 0.6); x.lineTo(cx + ww / 2, bot); x.closePath(); x.fill();
-          x.strokeStyle = "rgba(30,24,18,.7)"; x.lineWidth = 1.4; x.beginPath(); x.moveTo(cx, top - ww * 0.3); x.lineTo(cx, bot);
-          for (let r = 1; r < 5; r++) { const y = lerp(top + ww * 0.6, bot, r / 5); x.moveTo(cx - ww / 2, y); x.lineTo(cx + ww / 2, y); } x.stroke();
-          k.glow(cx, lerp(top, bot, 0.5), ww * 2.2, 0.12, "250,236,200");
-          if (i < 6) {                                                   // banners between the windows
-            const bx = cx + W * 0.0635, bw = Math.min(26, W * 0.02);
-            x.fillStyle = "#0B2A6B"; x.fillRect(bx - bw / 2, back - rise * 2.1, bw, rise * 0.62);
-            x.fillStyle = "rgba(245,245,240,.85)"; x.fillRect(bx - bw / 2, back - rise * 2.1 + rise * 0.48, bw, rise * 0.05);
-            x.beginPath(); x.moveTo(bx - bw / 2, back - rise * 1.48); x.lineTo(bx, back - rise * 1.42); x.lineTo(bx + bw / 2, back - rise * 1.48); x.fillStyle = "#0B2A6B"; x.fill();
+      // a line in the world, px wide
+      line(pts3, wd, color, n = 10) {
+        x.strokeStyle = color; x.lineWidth = wd; x.lineJoin = "round"; x.lineCap = "round"; x.beginPath();
+        let open = false;
+        for (let i = 0; i < pts3.length - 1; i++) sub(pts3[i], pts3[i + 1], n).forEach(w => { const p = P(...w); if (!ok(p)) { open = false; return; } if (open) x.lineTo(p[0], p[1]); else { x.moveTo(p[0], p[1]); open = true; } });
+        x.stroke();
+      },
+      // a painted line on the ground, meters wide, thinner with distance
+      gline(pts, wm, color, n = 14) {
+        x.strokeStyle = color; x.lineCap = "round";
+        for (let i = 0; i < pts.length - 1; i++) {
+          const s = sub([pts[i][0], 0, pts[i][1]], [pts[i + 1][0], 0, pts[i + 1][1]], n).map(w => P(...w));
+          for (let j = 0; j < s.length - 1; j++) {
+            if (!ok(s[j]) || !ok(s[j + 1])) continue;
+            const d = (s[j][2] + s[j + 1][2]) / 2;
+            x.lineWidth = clamp(wm * f * cam[1] / (d * d) * 2.2, 0.5, 3.2);
+            x.beginPath(); x.moveTo(s[j][0], s[j][1]); x.lineTo(s[j + 1][0], s[j + 1][1]); x.stroke();
           }
         }
-        // a wooden balcony rail, then bleachers packed right to the floor
-        k.band(t => back - rise * 1.0, t => back - rise * 0.66, "#2A2219", FANS("rgba(40,90,210,.55)", "rgba(245,245,240,.45)", "rgba(220,170,130,.35)", "rgba(20,50,140,.6)"), 1.6);
-        k.strip(t => back - rise * 0.66, t => back - rise * 0.6, "#5A3E26");
-        k.band(t => back - rise * 0.6, t => back, "#2A2219", FANS("rgba(40,90,210,.6)", "rgba(245,245,240,.5)", "rgba(220,170,130,.4)", "rgba(20,50,140,.65)"), 2.4);
       },
-    },
-    nhl: { kind: "ice", name: "Bell Centre", city: "Montreal",
-      sky: [[0, "#05060A"], [0.6, "#100F14"], [1, "#1C1A1F"]], lamps: [],
-      stands(k) {
-        const { x, W, back, rise } = k;
-        // banners in the rafters
-        for (let i = 0; i < 12; i++) {
-          const bx = W * (0.14 + i * 0.065), bw = Math.min(30, W * 0.024), by = back - rise * 2.15;
-          x.fillStyle = "rgba(242,240,236,.9)"; x.fillRect(bx, by, bw, rise * 0.42);
-          x.fillStyle = "#AF1E2D"; x.fillRect(bx, by + rise * 0.06, bw, rise * 0.05);
-          x.fillStyle = "#192168"; x.fillRect(bx, by + rise * 0.12, bw, rise * 0.03);
+      gcircle(cx, cz, r, wm, color, a0 = 0, a1 = Math.PI * 2) {
+        const pts = []; for (let i = 0; i <= 48; i++) { const a = lerp(a0, a1, i / 48); pts.push([cx + Math.sin(a) * r, cz + Math.cos(a) * r]); }
+        T.gline(pts, wm, color, 3);
+      },
+      gpoly(pts, color, n = 6) { return T.quad(pts.map(([X, Z]) => [X, 0, Z]), color, n); },
+      gdisc(cx, cz, r, color) { const pts = []; for (let i = 0; i < 40; i++) { const a = i / 40 * Math.PI * 2; pts.push([cx + Math.sin(a) * r, cz + Math.cos(a) * r]); } return T.gpoly(pts, color, 2); },
+      // the ground in cells, so it bends with the lens (and can be mown or planked)
+      ground(x0, x1, z0, z1, sx, sz, color) {
+        for (let X = x0; X < x1 - 1e-6; X += sx) for (let Z = z0; Z < z1 - 1e-6; Z += sz) {
+          const c0 = color(X, Z); if (!c0) continue;
+          x.strokeStyle = c0; x.lineWidth = 0.8;
+          if (T.quad([[X, 0, Z], [Math.min(x1, X + sx), 0, Z], [Math.min(x1, X + sx), 0, Math.min(z1, Z + sz)], [X, 0, Math.min(z1, Z + sz)]], c0, 2)) x.stroke();
         }
-        // upper bowl in red, a ring of suites, lower bowl in red
-        k.band(t => back - rise * k.arch(t, 0.95, 1.25), t => back - rise * 0.62, "#5E1018", FANS("rgba(200,30,45,.55)", "rgba(245,240,235,.4)", "rgba(25,33,104,.45)", "rgba(230,190,160,.3)"), 1.3);
-        k.strip(t => back - rise * 0.62, t => back - rise * 0.54, "#0B0B0E");
-        k.lights(() => back - rise * 0.6, 3, "rgba(255,214,150,.7)", 0, 1, 8, 0.8);
-        k.band(t => back - rise * 0.54, t => back, "#6E1420", FANS("rgba(200,30,45,.6)", "rgba(245,240,235,.45)", "rgba(25,33,104,.5)", "rgba(230,190,160,.35)"), 1.7);
-        // the scoreboard hung over center ice, with a red ring of light
-        const sw = Math.min(190, W * 0.14); k.board(W / 2, back - rise * 1.5, sw, sw * 0.55);
-        x.fillStyle = "rgba(220,40,50,.9)"; x.fillRect(W / 2 - sw / 2, back - rise * 1.5, sw, 3);
-        k.glow(W / 2, back - rise * 0.25, W * 0.5, 0.08);
       },
-      floor(g) { g.ellipseW(0, 22, 2.2, "rgba(175,30,45,.6)"); g.circle(0, 22, 2.2, 1.6, "rgba(25,33,104,.7)"); },
-    },
-    nfl: { kind: "gridiron", name: "Lambeau Field", city: "Green Bay",
-      sky: [[0, "#0D1524"], [0.55, "#2A3A50"], [0.86, "#7E6658"], [1, "#CFA27A"]], lamps: [],
-      ez: ["rgba(32,55,49,.96)", "rgba(32,55,49,.96)"], ezLine: "rgba(255,182,18,.9)",
-      stands(k) {
-        const { x, W, back, rise } = k, top = t => back - rise * k.arch(t, 0.62, 1.15);
-        // one big bowl of bleachers, green and gold in the seats
-        k.band(top, t => back, "#3A4048", FANS("rgba(255,182,18,.5)", "rgba(32,85,60,.6)", "rgba(240,236,228,.45)", "rgba(230,190,160,.3)"), 2);
-        // gold rim, then the green facade with the suites and the lights along the top
-        k.strip(t => top(t) - 3, t => top(t), "#FFB612");
-        k.strip(t => top(t) - rise * 0.32, t => top(t) - 3, "#1C3029", 0.08, 0.92);
-        k.lights(px => top(px / W) - rise * 0.22, 3, "rgba(255,226,170,.75)", 0.09, 0.91, 7, 0.8);
-        for (let px = W * 0.1; px < W * 0.9; px += 14) { const py = top(px / W) - rise * 0.32; x.fillStyle = "#FFF6E2"; x.fillRect(px, py - 3, 6, 3); k.glow(px + 3, py, 18, 0.1); }
-        // the big boards over each end zone
-        [0.1, 0.9].forEach(t => { const bw = Math.min(150, W * 0.11); k.board(t * W, top(t) - rise * 0.05, bw, bw * 0.42, "#13201B", "rgba(255,190,80,.45)"); });
-      },
-      floor(g, k) {                                                     // snow along the sidelines, and a few flakes
-        const n = 14, f = n + 48.77;
-        for (let i = 0; i < 40; i++) { const X = -62 + i * 3.2; g.ellipseW(X, n - 1.5 + k.rnd(), 1.5 + k.rnd() * 1.5, "rgba(236,240,245,.55)"); g.ellipseW(X, f + 1.6 + k.rnd(), 1.4 + k.rnd() * 1.5, "rgba(236,240,245,.5)"); }
-        for (let i = 0; i < 260; i++) { k.x.fillStyle = `rgba(255,255,255,${0.25 + k.rnd() * 0.45})`; k.x.beginPath(); k.x.arc(k.rnd() * k.W, k.rnd() * k.H, 0.6 + k.rnd() * 1.3, 0, Math.PI * 2); k.x.fill(); }
-      },
-    },
-    cfb: { kind: "gridiron", name: "Michigan Stadium", city: "Ann Arbor",
-      sky: [[0, "#0F1828"], [0.55, "#24324A"], [0.87, "#A0704C"], [1, "#E2A664"]], lamps: [],
-      ez: ["rgba(0,39,76,.96)", "rgba(0,39,76,.96)"], ezLine: "rgba(255,203,5,.9)",
-      stands(k) {
-        const { x, W, back, rise } = k, top = t => back - rise * k.arch(t, 0.5, 0.95);
-        // the biggest bowl in the country, low and wide, a sea of maize
-        k.band(top, t => back, "#232C3E", FANS("rgba(255,203,5,.6)", "rgba(255,203,5,.5)", "rgba(0,39,76,.6)", "rgba(240,236,228,.35)"), 2.6);
-        k.strip(t => top(t) - 5, t => top(t), "#00274C");
-        k.strip(t => top(t) - 6, t => top(t) - 4, "#FFCB05");
-        // the press box tower over the far sideline, glass all the way up
-        const pw = W * 0.34, ph = rise * 0.62, py = top(0.5) - 5;
-        x.fillStyle = "#14223A"; x.fillRect(W / 2 - pw / 2, py - ph, pw, ph);
-        for (let r = 0; r < 3; r++) { x.fillStyle = r === 1 ? "rgba(255,214,150,.65)" : "rgba(150,190,230,.4)"; x.fillRect(W / 2 - pw / 2 + 6, py - ph + 6 + r * ph * 0.31, pw - 12, ph * 0.18); }
-        x.fillStyle = "#FFCB05"; x.fillRect(W / 2 - pw / 2, py - ph, pw, 3);
-        [0.09, 0.91].forEach(t => { const bw = Math.min(170, W * 0.12); k.board(t * W, top(t) - 6, bw, bw * 0.42, "#0E1626", "rgba(255,203,5,.4)"); });
-        [0.18, 0.36, 0.64, 0.82].forEach(t => { const px = t * W, py2 = top(t) - 6; x.fillStyle = "#FFF6E2"; x.fillRect(px - 10, py2 - 4, 20, 4); k.glow(px, py2, W * 0.12, 0.14); });
-      },
-      floor(g) {                                                        // the block M at midfield
-        const mid = 14 + 48.77 / 2, M = [[0, 0], [0.28, 0], [0.28, 0.52], [0.5, 0.22], [0.72, 0.52], [0.72, 0], [1, 0], [1, 1], [0.74, 1], [0.5, 0.62], [0.26, 1], [0, 1]];
-        const pts = M.map(([u, v]) => [(u - 0.5) * 10, mid - 6 + v * 12]);
-        g.fillPoly(pts, "rgba(255,203,5,.92)"); g.line([...pts, pts[0]], 2.2, "rgba(0,39,76,.95)");
-      },
-    },
-    mlb: { kind: "park", name: "Wrigley Field", city: "Chicago", ivy: true,
-      sky: [[0, "#13203A"], [0.5, "#3C4E73"], [0.82, "#C98262"], [1, "#F2B278"]],
-      stands(k) {
-        const { x, W, back, rise, rnd } = k;
-        // the rooftops across the street, with their own little bleachers on top
-        let px = -10;
-        while (px < W + 10) {
-          const bw = W * (0.055 + rnd() * 0.06), bh = rise * (0.75 + rnd() * 0.55), base = back - rise * 0.5;
-          x.fillStyle = ["#4E2C24", "#5E3A2C", "#463630", "#3B2B26"][Math.floor(rnd() * 4)]; x.fillRect(px, base - bh, bw, bh);
-          for (let r = 0; r < 4; r++) for (let c = 0; c < bw / 9 - 1; c++) if (rnd() < 0.55) { x.fillStyle = "rgba(255,214,150,.6)"; x.fillRect(px + 5 + c * 9, base - bh + 8 + r * bh * 0.2, 4, 5); }
-          // rooftop bleachers: a steel frame with people in it
-          const rh = rise * 0.22, ry = base - bh;
-          x.strokeStyle = "rgba(30,30,32,.95)"; x.lineWidth = 1.2; x.beginPath(); x.moveTo(px + 2, ry); x.lineTo(px + 2, ry - rh); x.lineTo(px + bw - 2, ry - rh * 0.4); x.lineTo(px + bw - 2, ry); x.stroke();
-          for (let i = 0; i < bw * 1.2; i++) { const u = rnd(); x.fillStyle = ["rgba(14,51,134,.8)", "rgba(240,236,228,.7)", "rgba(204,52,51,.7)"][Math.floor(rnd() * 3)]; x.fillRect(px + 3 + u * (bw - 6), ry - rh * (1 - u * 0.6) * rnd(), 1.4, 1.6); }
-          px += bw + 2;
+      // people in a patch of seats
+      crowd(q, fans, dens) {
+        const pq = q.map(w => P(...w)); if (!pq.every(ok)) return;
+        const n = Math.min(900, area(pq) * 0.09 * dens);
+        for (let i = 0; i < n; i++) {
+          const u = rnd(), v = rnd(), a = q[0], b = q[1], cc = q[2], d = q[3];
+          const w = [0, 1, 2].map(k => lerp(lerp(a[k], b[k], u), lerp(d[k], cc[k], u), v)), p = P(...w), s = clamp(f * 0.5 / p[2], 0.7, 2.4);
+          x.fillStyle = fans[Math.floor(rnd() * fans.length)]; x.fillRect(p[0], p[1], s, s * 1.2);
         }
-        // the bleachers behind the ivy
-        k.band(t => back - rise * k.arch(t, 0.4, 0.62), t => back, "#1F4A2C", FANS("rgba(14,51,134,.6)", "rgba(240,236,228,.5)", "rgba(204,52,51,.45)", "rgba(230,190,160,.35)"), 2);
-        // the old green scoreboard in center, the clock on top, flags above
-        const sw = W * 0.17, sh2 = rise * 0.9, sb = back - rise * 0.5;
-        x.fillStyle = "#1E4D2B"; x.fillRect(W / 2 - sw / 2, sb - sh2, sw, sh2);
-        x.fillStyle = "#183F23"; x.fillRect(W / 2 - sw / 2, sb - sh2, sw, sh2 * 0.14);
-        for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) { x.fillStyle = rnd() < 0.7 ? "rgba(236,230,212,.92)" : "rgba(20,40,26,.9)"; x.fillRect(W / 2 - sw / 2 + 8 + c * (sw - 16) / 12, sb - sh2 + sh2 * 0.22 + r * sh2 * 0.19, (sw - 16) / 12 - 3, sh2 * 0.12); }
-        const cr = Math.min(14, sw * 0.08), cy = sb - sh2 - cr * 0.9;
-        x.fillStyle = "#1E4D2B"; x.fillRect(W / 2 - cr * 1.3, cy - cr * 1.1, cr * 2.6, cr * 2.2);
-        x.fillStyle = "#F2EEE2"; x.beginPath(); x.arc(W / 2, cy, cr * 0.85, 0, Math.PI * 2); x.fill();
-        x.strokeStyle = "#1A1A1A"; x.lineWidth = 1.3; x.beginPath(); x.moveTo(W / 2, cy); x.lineTo(W / 2, cy - cr * 0.6); x.moveTo(W / 2, cy); x.lineTo(W / 2 + cr * 0.45, cy + cr * 0.15); x.stroke();
-        [-0.42, -0.14, 0.14, 0.42].forEach((f, i) => {
-          const fx = W / 2 + f * sw, fy = sb - sh2;
-          x.strokeStyle = "#D8D8D0"; x.lineWidth = 1; x.beginPath(); x.moveTo(fx, fy); x.lineTo(fx, fy - rise * 0.5); x.stroke();
-          x.fillStyle = ["#0E3386", "#CC3433", "#F2EEE2", "#0E3386"][i]; x.beginPath(); x.moveTo(fx, fy - rise * 0.5); x.lineTo(fx + rise * 0.16, fy - rise * 0.44); x.lineTo(fx, fy - rise * 0.38); x.fill();
+      },
+      // a tier of seats (or any sloped or upright band) along an outline
+      tier(per, o0, h0, o1, h1, seat, fans = null, dens = 1, where = () => true, rows = 8) {
+        const at = (p, o, h) => [p.x + p.nx * o, h, p.z + p.nz * o];
+        for (let i = 0; i < per.length - 1; i++) {
+          const a = per[i], b = per[i + 1]; if (!where(a) || !where(b)) continue;
+          const q = [at(a, o0, h0), at(b, o0, h0), at(b, o1, h1), at(a, o1, h1)];
+          if (!T.quad(q, typeof seat === "function" ? seat(a) : seat, 2)) continue;
+          if (fans) T.crowd(q, typeof fans === "function" ? fans(a) : fans, dens);
+        }
+        for (let r = 1; r < rows; r++) {                                 // rows of seats
+          let run = [];
+          const flush = () => { if (run.length > 1) T.line(run, 0.6, "rgba(0,0,0,.22)", 1); run = []; };
+          per.forEach(p => { if (where(p)) run.push(at(p, lerp(o0, o1, r / rows), lerp(h0, h1, r / rows))); else flush(); });
+          flush();
+        }
+        // the back rows sit in shadow
+        for (let i = 0; i < per.length - 1; i++) {
+          const a = per[i], b = per[i + 1]; if (!where(a) || !where(b)) continue;
+          const q = [at(a, lerp(o0, o1, 0.55), lerp(h0, h1, 0.55)), at(b, lerp(o0, o1, 0.55), lerp(h0, h1, 0.55)), at(b, o1, h1), at(a, o1, h1)];
+          T.quad(q, "rgba(0,0,0,.16)", 1);
+        }
+      },
+      // lights in a row along an outline (suite windows, roof lights)
+      lights(per, o, h, color, every = 2.2, sz = 1.4, where = () => true) {
+        per.forEach((p, i) => { if (!where(p) || i % Math.max(1, Math.round(every)) ) return; const q = P(p.x + p.nx * o, h, p.z + p.nz * o); if (!ok(q)) return; const s = clamp(f * sz / q[2], 1, 6); x.fillStyle = color; x.fillRect(q[0] - s / 2, q[1] - s * 0.3, s, s * 0.6); });
+      },
+      glow(px, py, r, a, col = "255,232,190") {
+        const g = x.createRadialGradient(px, py, 0, px, py, r);
+        g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
+        x.fillStyle = g; x.fillRect(px - r, py - r, r * 2, r * 2);
+      },
+      lamp(X, Y, Z, r = 1, a = 0.5) { const p = P(X, Y, Z); if (!ok(p)) return; const s = clamp(f * 2.5 * r / p[2], 2, 14); T.glow(p[0], p[1], s * 6, a); x.fillStyle = "#FFF6E2"; x.fillRect(p[0] - s / 2, p[1] - s / 4, s, s / 2); },
+      // an upright panel facing the middle (boards, screens, facades): from a to b at heights y0..y1
+      panel(a, b, y0, y1, color) { return T.quad([[a[0], y0, a[1]], [b[0], y0, b[1]], [b[0], y1, b[1]], [a[0], y1, a[1]]], color, 6); },
+      screen(a, b, y0, y1, frame, glowc) {
+        T.panel(a, b, y0, y1, frame);
+        const k = 0.06, a2 = [lerp(a[0], b[0], k), lerp(a[1], b[1], k)], b2 = [lerp(a[0], b[0], 1 - k), lerp(a[1], b[1], 1 - k)];
+        const q = T.panel(a2, b2, y0 + (y1 - y0) * 0.1, y1 - (y1 - y0) * 0.1, glowc);
+        if (q) { const m = q.reduce((s, p) => [s[0] + p[0] / q.length, s[1] + p[1] / q.length], [0, 0]); T.glow(m[0], m[1], Math.abs(q[0][0] - q[Math.floor(q.length / 2)][0]) * 0.9, 0.12, "180,210,240"); }
+      },
+    };
+    // outlines of seating bowls, with outward normals
+    T.rrect = (hw, hd, r, n = 220) => {
+      const out = [], L = 4 * (hw - r) + 4 * (hd - r) + 2 * Math.PI * r;
+      for (let i = 0; i <= n; i++) {
+        let s = i / n * L, X, Z, nx, nz;
+        const segs = [
+          [2 * (hw - r), u => [-hw + r + u, hd, 0, 1]],
+          [Math.PI * r / 2, u => { const a = u / r; return [hw - r + Math.sin(a) * r, hd - r + Math.cos(a) * r, Math.sin(a), Math.cos(a)]; }],
+          [2 * (hd - r), u => [hw, hd - r - u, 1, 0]],
+          [Math.PI * r / 2, u => { const a = Math.PI / 2 + u / r; return [hw - r + Math.sin(a) * r, -hd + r + Math.cos(a) * r, Math.sin(a), Math.cos(a)]; }],
+          [2 * (hw - r), u => [hw - r - u, -hd, 0, -1]],
+          [Math.PI * r / 2, u => { const a = Math.PI + u / r; return [-hw + r + Math.sin(a) * r, -hd + r + Math.cos(a) * r, Math.sin(a), Math.cos(a)]; }],
+          [2 * (hd - r), u => [-hw, -hd + r + u, -1, 0]],
+          [Math.PI * r / 2, u => { const a = 1.5 * Math.PI + u / r; return [-hw + r + Math.sin(a) * r, hd - r + Math.cos(a) * r, Math.sin(a), Math.cos(a)]; }],
+        ];
+        for (const [len, fn] of segs) { if (s <= len + 1e-9) { [X, Z, nx, nz] = fn(s); break; } s -= len; }
+        out.push({ x: X, z: Z, nx, nz });
+      }
+      // start at the near middle so the far side is one unbroken run
+      let k = 0; out.forEach((p, i) => { if (p.nz < -0.99 && Math.abs(p.x) < Math.abs(out[k].x) + (out[k].nz < -0.99 ? 0 : 1e9)) k = i; });
+      return out.slice(k).concat(out.slice(1, k + 1));
+    };
+    T.oval = (rx, rz, n = 200) => {
+      const out = []; for (let i = 0; i <= n; i++) { const a = Math.PI + i / n * Math.PI * 2, X = Math.sin(a) * rx, Z = Math.cos(a) * rz, nx = Math.sin(a) / rx, nz = Math.cos(a) / rz, m = Math.hypot(nx, nz); out.push({ x: X, z: Z, nx: nx / m, nz: nz / m }); } return out;
+    };
+    T.side = p => p.nz > 0.75 ? "far" : p.nz < -0.75 ? "near" : p.nx > 0.75 ? "right" : p.nx < -0.75 ? "left" : "corner";
+    // sky or roof
+    const g = x.createLinearGradient(0, 0, 0, hz);
+    V.sky.forEach(([o, col]) => g.addColorStop(o, col));
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    V.draw(T);
+    const grain = Math.min(30000, W * H / 90);
+    for (let i = 0; i < grain; i++) { x.fillStyle = `rgba(255,255,255,${rnd() * 0.03})`; x.fillRect(rnd() * W, rnd() * H, 1, 1); }
+    // a soft darkening at the bottom so the headline reads
+    const v = x.createLinearGradient(0, H * 0.55, 0, H); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.35)");
+    x.fillStyle = v; x.fillRect(0, H * 0.55, W, H * 0.45);
+    return { canvas: c };
+  }
+
+  // fields, courts and rinks laid on the ground (centered on 0,0; length along X)
+  const FIELD = {
+    gridiron(T, o = {}) {
+      const yd = 0.9144, G = 50 * yd, E = 60 * yd, hw = 53.33 * yd / 2;
+      T.ground(-E - 14, E + 14, -hw - 12, hw + 14, 4, 4, () => o.apron || "#22482A");
+      T.ground(-E, E, -hw, hw, 5 * yd, 4.4, (X) => {
+        if (X < -G) return o.ez ? o.ez[0] : "#1E3A2C";
+        if (X >= G) return o.ez ? o.ez[1] : "#1E3A2C";
+        return Math.floor((X + G) / (5 * yd)) % 2 ? "#2F6A37" : "#2A6132";
+      });
+      const L = "rgba(246,244,236,.9)";
+      T.gline([[-E, -hw], [E, -hw], [E, hw], [-E, hw], [-E, -hw]], 0.3, L);
+      for (let i = -10; i <= 10; i++) T.gline([[i * 5 * yd, -hw], [i * 5 * yd, hw]], i % 2 ? 0.12 : 0.2, L, 6);
+      for (let i = -49; i <= 49; i++) if (i % 5) [-hw + 0.3, -2.8, 2.8, hw - 0.9].forEach(z => T.gline([[i * yd, z], [i * yd, z + 0.6]], 0.1, L, 1));
+      if (o.ezLine) [-1, 1].forEach(s => T.gline([[s * (G + 0.7), -hw + 0.7], [s * (E - 0.7), -hw + 0.7], [s * (E - 0.7), hw - 0.7], [s * (G + 0.7), hw - 0.7], [s * (G + 0.7), -hw + 0.7]], 0.4, o.ezLine));
+      [-1, 1].forEach(s => {                                           // goal posts
+        const X = s * (E + 0.2), c = "rgba(238,206,96,.95)";
+        T.line([[X, 0, 0], [X, 3.05, 0]], 3, c, 2); T.line([[X, 3.05, -2.82], [X, 3.05, 2.82]], 3, c, 4);
+        T.line([[X, 3.05, -2.82], [X, 10, -2.82]], 2.5, c, 3); T.line([[X, 3.05, 2.82], [X, 10, 2.82]], 2.5, c, 3);
+      });
+    },
+    pitch(T, o = {}) {
+      const L = 52.5, D = 34;
+      T.ground(-L - 12, L + 12, -D - 10, D + 10, 4, 4, () => "#24502C");
+      T.ground(-L, L, -D, D, 105 / 18, 4.25, X => Math.floor((X + L) / (105 / 18)) % 2 ? "#2F6A37" : "#29602F");
+      const C = "rgba(246,244,236,.88)";
+      T.gline([[-L, -D], [L, -D], [L, D], [-L, D], [-L, -D]], 0.25, C); T.gline([[0, -D], [0, D]], 0.2, C);
+      T.gcircle(0, 0, 9.15, 0.18, C); T.gdisc(0, 0, 0.3, C);
+      [-1, 1].forEach(s => {
+        T.gline([[s * L, -20.16], [s * (L - 16.5), -20.16], [s * (L - 16.5), 20.16], [s * L, 20.16]], 0.18, C);
+        T.gline([[s * L, -9.16], [s * (L - 5.5), -9.16], [s * (L - 5.5), 9.16], [s * L, 9.16]], 0.16, C);
+        T.gcircle(s * (L - 11), 0, 9.15, 0.16, C, s > 0 ? -2.21 : 0.93, s > 0 ? -0.93 : 2.21);
+        const X = s * L, w = "rgba(250,250,248,.95)";
+        T.line([[X, 0, -3.66], [X, 2.44, -3.66], [X, 2.44, 3.66], [X, 0, 3.66]], 3, w, 3);
+        for (let i = 0; i <= 8; i++) T.line([[X, 2.44, -3.66 + i * 0.915], [X + s * 2, 0, -3.66 + i * 0.915]], 0.6, "rgba(240,240,236,.35)", 2);
+      });
+    },
+    court(T, o = {}) {
+      const L = 14.33, D = 7.62;
+      T.ground(-L - 4, L + 4, -D - 4, D + 3, 2.4, 0.5, (X, Z) => { const k = 0.9 + T.rnd() * 0.16, inn = Math.abs(X) < L && Math.abs(Z) < D; const b = inn ? [158, 112, 70] : o.apron || [92, 62, 40]; return rgb(b.map(v => v * k)); });
+      [-1, 1].forEach(s => T.gpoly([[s * L, -2.45], [s * (L - 5.8), -2.45], [s * (L - 5.8), 2.45], [s * L, 2.45]], o.key || "rgba(190,84,38,.8)"));
+      T.gdisc(0, 0, 1.83, o.center || "rgba(190,84,38,.8)");
+      const C = "rgba(250,246,238,.85)";
+      T.gline([[-L, -D], [L, -D], [L, D], [-L, D], [-L, -D]], 0.12, C); T.gline([[0, -D], [0, D]], 0.1, C); T.gcircle(0, 0, 1.83, 0.08, C);
+      [-1, 1].forEach(s => {
+        T.gline([[s * L, -2.45], [s * (L - 5.8), -2.45], [s * (L - 5.8), 2.45], [s * L, 2.45]], 0.08, C);
+        T.gcircle(s * (L - 5.8), 0, 1.83, 0.08, C);
+        const k3 = Math.asin(6.7 / 7.24); T.gcircle(s * 12.7, 0, 7.24, 0.08, C, s > 0 ? -Math.PI / 2 - k3 : Math.PI / 2 - k3, s > 0 ? -Math.PI / 2 + k3 : Math.PI / 2 + k3);
+        const c3 = 12.7 - 7.24 * Math.cos(k3); T.gline([[s * L, -6.7], [s * c3, -6.7]], 0.08, C); T.gline([[s * L, 6.7], [s * c3, 6.7]], 0.08, C);
+        // the basket: stanchion, arm, backboard, rim and net
+        const dk = "#15191B", bx = s * 13.1;
+        T.quad([[s * 15.6, 0, -0.7], [s * 15.6, 0, 0.7], [s * 15.6, 1.0, 0.7], [s * 15.6, 1.0, -0.7]], "#1B2226", 2);
+        T.line([[s * 15.4, 1, 0], [s * 15.2, 3.7, 0], [bx, 3.5, 0]], 4, dk, 4);
+        T.quad([[bx, 2.9, -0.915], [bx, 2.9, 0.915], [bx, 4.0, 0.915], [bx, 4.0, -0.915]], "rgba(220,232,236,.22)", 3);
+        T.line([[bx, 2.9, -0.915], [bx, 2.9, 0.915], [bx, 4.0, 0.915], [bx, 4.0, -0.915], [bx, 2.9, -0.915]], 2, "rgba(250,248,242,.95)", 3);
+        const rim = []; for (let i = 0; i <= 24; i++) { const a = i / 24 * Math.PI * 2; rim.push([s * 12.7 + Math.cos(a) * 0.23, 3.05, Math.sin(a) * 0.23]); }
+        T.line(rim, 2, "#E5793B", 1);
+        for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; T.line([[s * 12.7 + Math.cos(a) * 0.23, 3.05, Math.sin(a) * 0.23], [s * 12.7 + Math.cos(a) * 0.12, 2.65, Math.sin(a) * 0.12]], 0.8, "rgba(240,238,230,.75)", 2); }
+      });
+      if (o.table !== false) { T.panel([-5, D + 1.8], [5, D + 1.8], 0, 0.8, "#111614"); T.panel([-5, D + 1.79], [5, D + 1.79], 0.42, 0.62, "rgba(229,121,59,.8)"); }
+    },
+    ice(T, o = {}) {
+      const L = 30.5, D = 13;
+      T.ground(-L - 6, L + 6, -D - 5, D + 4, 3, 3, () => "#22282C");
+      const rr = T.rrect(L, D, 8.5, 160);
+      const inRink = (X, Z) => { const ax = Math.max(0, Math.abs(X) - (L - 8.5)), az = Math.max(0, Math.abs(Z) - (D - 8.5)); return Math.hypot(ax, az) <= 8.5; };
+      T.ground(-L, L, -D, D, 1.5, 1.3, (X, Z) => inRink(X + 0.75, Z + 0.65) ? "#D2DEE3" : null);
+      const R = "rgba(196,40,46,.85)", B = "rgba(40,80,176,.85)";
+      T.gline([[0, -D], [0, D]], 0.3, R); [-7.6, 7.6].forEach(X => T.gline([[X, -D], [X, D]], 0.3, B));
+      [-26.6, 26.6].forEach(X => T.gline([[X, -D + 1.7], [X, D - 1.7]], 0.08, R));
+      T.gcircle(0, 0, 4.5, 0.08, B); T.gdisc(0, 0, 0.3, B);
+      if (o.dot) T.gdisc(0, 0, 2.4, o.dot);
+      [[-22, -6.7], [-22, 6.7], [22, -6.7], [22, 6.7]].forEach(([X, Z]) => { T.gcircle(X, Z, 4.5, 0.08, R); T.gdisc(X, Z, 0.3, R); });
+      [-1, 1].forEach(s => {                                            // nets
+        const X = s * 26.6, c = "rgba(200,40,40,.95)";
+        T.line([[X, 0, -0.91], [X, 1.22, -0.91], [X, 1.22, 0.91], [X, 0, 0.91]], 2.5, c, 3);
+        for (let i = 0; i <= 6; i++) T.line([[X, 1.22, -0.91 + i * 0.3], [X + s * 1.1, 0, -0.91 + i * 0.3]], 0.6, "rgba(240,240,236,.5)", 2);
+      });
+      // the boards: white with a yellow kick plate and red rail, glass above
+      T.tier(rr, 0, 0, 0, 1.07, "rgba(238,240,242,.97)", null, 1, () => true, 1);
+      T.tier(rr, 0, 0, 0, 0.2, "rgba(226,190,60,.95)", null, 1, () => true, 1);
+      T.tier(rr, 0, 1.0, 0, 1.07, "rgba(186,46,46,.95)", null, 1, () => true, 1);
+      T.tier(rr, 0, 1.07, 0, 2.5, "rgba(190,215,228,.10)", null, 1, () => true, 1);
+    },
+  };
+
+  const FANS = (...c) => c;
+  const VENUES = {
+    // Madison Square Garden: a round building, a bowl that rises steeply, the
+    // two bridges hung over the upper level and the famous cable ceiling.
+    nba: { kind: "court", name: "Madison Square Garden", city: "New York", cam: [0, 9, -10], hz: 0.42, fov: 2.6, vs: 0.55,
+      sky: [[0, "#05070C"], [0.7, "#0D1220"], [1, "#151B2A"]],
+      draw(T) {
+        const { x, P } = T;
+        // the ceiling: a ring of cables from the outer wall to a hub over center court
+        const ring = T.oval(64, 58), hub = [0, 44, 0];
+        ring.forEach((p, i) => { if (i % 4) return; T.line([[p.x, 36, p.z], hub], 1, "rgba(190,200,220,.22)", 12); });
+        [1, 0.75, 0.5].forEach(k => T.line(ring.map(p => [p.x * k, 36 + (1 - k) * 8, p.z * k]), 1.2, "rgba(190,200,220,.25)", 1));
+        T.lights(ring, 0, 36, "rgba(255,238,205,.95)", 2, 1.2);
+        const bowl = T.oval(40, 34), fans = FANS("rgba(240,220,200,.4)", "rgba(245,132,38,.45)", "rgba(80,120,220,.45)", "rgba(255,255,255,.3)");
+        T.tier(bowl, 4, 15, 22, 31, "#141B30", fans, 1.3, p => T.side(p) !== "near", 10);           // upper bowl
+        // the bridges, hung over the upper bowl along both sides
+        [[-26, 33, 22], [26, 33, 22]].forEach(([X, Y, L]) => { T.quad([[X - L / 2, Y, 28], [X + L / 2, Y, 28], [X + L / 2, Y + 1.6, 28], [X - L / 2, Y + 1.6, 28]], "#0F1422", 6); T.line([[X - L / 2, Y + 0.3, 27.9], [X + L / 2, Y + 0.3, 27.9]], 2, "rgba(255,214,150,.55)", 8); });
+        T.tier(bowl, 0, 12, 2, 15, "#0A0E18", null, 1, p => T.side(p) !== "near", 1);              // suites
+        T.lights(bowl, 1, 13.4, "rgba(255,214,150,.8)", 2, 1.2, p => T.side(p) !== "near");
+        const low = T.rrect(21, 13, 5);
+        T.tier(low, 0, 0.6, 19, 12, "#1A2340", fans, 1.6, p => T.side(p) !== "near", 12);           // lower bowl
+        FIELD.court(T, { key: "rgba(29,66,138,.85)", center: "rgba(245,132,38,.85)", apron: [26, 52, 104] });
+        // the scoreboard hung over center court, just above the view
+        T.screen([-6, 4], [6, 4], 22, 27, "#0B0F18", "rgba(120,170,230,.5)");
+      },
+    },
+    // Cameron Indoor: a small gothic gym; students on bleachers at the floor's edge,
+    // stone walls with tall windows, banners, a low balcony.
+    cbb: { kind: "court", name: "Cameron Indoor Stadium", city: "Durham", cam: [0, 7, -9], hz: 0.42, fov: 2.6, vs: 0.6,
+      sky: [[0, "#1C1813"], [0.6, "#2E271E"], [1, "#3B3226"]],
+      draw(T) {
+        const { x } = T, box = T.rrect(26, 18, 2);
+        // stone walls with gothic windows
+        T.tier(box, 0, 0, 0, 22, "#3A3027", null, 1, () => true, 1);
+        box.forEach((p, i) => {
+          if (i % 9 || T.side(p) === "corner") return;
+          const tx = -p.nz, tz = p.nx, w = 1.1, at = (u, Y) => [p.x + tx * u - p.nx * 0.05, Y, p.z + tz * u - p.nz * 0.05];
+          const pts = [at(-w, 12.5), at(-w, 17.5), at(0, 19.5), at(w, 17.5), at(w, 12.5)];
+          if (T.quad(pts, "rgba(240,228,196,.32)", 3)) { T.line([at(0, 12.5), at(0, 19.2)], 1.2, "rgba(30,24,18,.7)", 2); [14.5, 16.5].forEach(Y => T.line([at(-w, Y), at(w, Y)], 1, "rgba(30,24,18,.6)", 2)); }
         });
+        // banners
+        box.forEach((p, i) => { if ((i + 4) % 9 || T.side(p) !== "far") return; T.quad([[p.x - 1, 20, p.z - 0.2], [p.x + 1, 20, p.z - 0.2], [p.x + 1, 14.5, p.z - 0.2], [p.x - 1, 14.5, p.z - 0.2]], "#0B2A6B", 2); T.quad([[p.x - 1, 15.6, p.z - 0.25], [p.x + 1, 15.6, p.z - 0.25], [p.x + 1, 15.2, p.z - 0.25], [p.x - 1, 15.2, p.z - 0.25]], "rgba(245,245,240,.9)", 1); });
+        const blue = FANS("rgba(40,90,210,.65)", "rgba(245,245,240,.55)", "rgba(220,170,130,.4)", "rgba(20,50,140,.7)");
+        T.tier(T.rrect(25, 17, 2), -6, 7, 0, 9.5, "#2A2219", blue, 1.6, p => T.side(p) !== "near", 6);      // balcony
+        T.tier(T.rrect(25, 17, 2), -6, 6.8, 0, 7.2, "#5A3E26", null, 1, p => T.side(p) !== "near", 1);
+        T.tier(T.rrect(16.5, 9.5, 1), 0, 0.3, 7, 5.5, "#2A2219", blue, 2.6, p => T.side(p) !== "near", 10);
+        FIELD.court(T, { key: "rgba(0,32,91,.88)", center: "rgba(0,32,91,.88)", apron: [140, 98, 60], table: false });
+        [[-14, 22], [0, 22], [14, 22]].forEach(([X, Y]) => T.lamp(X, Y, 8, 1, 0.35));
       },
     },
-    soccer: { kind: "pitch", name: "Anfield", city: "Liverpool",
-      sky: [[0, "#0F1724"], [0.55, "#27324A"], [0.86, "#7A5444"], [1, "#C88A5A"]], lamps: [],
-      stands(k) {
-        const { x, W, back, rise } = k;
-        const red = FANS("rgba(200,16,46,.65)", "rgba(200,16,46,.55)", "rgba(245,240,235,.4)", "rgba(230,190,160,.3)");
-        // the Kop, one huge tier behind the goal on the left
-        k.band(t => back - rise * 1.25, t => back, "#7A0E1C", red, 2.2, 0, 0.13);
-        k.strip(t => back - rise * 1.42, t => back - rise * 1.25, "#1A1C20", 0, 0.13);
-        // the Main Stand: two tiers with boxes between, under a deep roof lit along its edge
-        k.band(t => back - rise * 1.45, t => back - rise * 0.72, "#6E0C18", red, 1.6, 0.13, 0.86);
-        k.strip(t => back - rise * 0.72, t => back - rise * 0.6, "#101216", 0.13, 0.86);
-        k.lights(() => back - rise * 0.69, 3, "rgba(255,214,150,.7)", 0.14, 0.85, 8, 0.8);
-        k.band(t => back - rise * 0.6, t => back, "#8A1020", red, 2, 0.13, 0.86);
-        k.strip(t => back - rise * 1.68, t => back - rise * 1.45, "#16181C", 0.11, 0.88);
-        x.strokeStyle = "rgba(235,235,230,.55)"; x.lineWidth = 1;
-        for (let px = W * 0.11; px < W * 0.88; px += 22) { x.beginPath(); x.moveTo(px, back - rise * 1.68); x.lineTo(px + 11, back - rise * 1.45); x.lineTo(px + 22, back - rise * 1.68); x.stroke(); }
-        x.fillStyle = "rgba(255,248,230,.95)"; x.fillRect(W * 0.11, back - rise * 1.46, W * 0.77, 2.5);
-        k.glow(W * 0.5, back - rise * 1.4, W * 0.45, 0.16); k.glow(W * 0.07, back - rise * 1.3, W * 0.15, 0.12);
-        // the Anfield Road end, lower, on the right
-        k.band(t => back - rise * 0.95, t => back, "#7A0E1C", red, 2, 0.86, 1);
-        k.strip(t => back - rise * 1.1, t => back - rise * 0.95, "#1A1C20", 0.86, 1);
+    // Bell Centre: steep red bowls, a ring of suites, banners in the rafters.
+    nhl: { kind: "ice", name: "Bell Centre", city: "Montreal", cam: [0, 10, -12], hz: 0.42, fov: 2.6, vs: 0.55,
+      sky: [[0, "#05060A"], [0.7, "#100F14"], [1, "#1C1A1F"]],
+      draw(T) {
+        const red = FANS("rgba(200,30,45,.6)", "rgba(245,240,235,.42)", "rgba(25,33,104,.45)", "rgba(230,190,160,.3)");
+        const up = T.rrect(54, 38, 14), mid = T.rrect(42, 26, 10), low = T.rrect(33.5, 16, 8.5);
+        // banners hung over the far side
+        for (let i = -6; i <= 6; i++) { const X = i * 4.5; T.quad([[X - 1.3, 40, 30], [X + 1.3, 40, 30], [X + 1.3, 34, 30], [X - 1.3, 34, 30]], "rgba(242,240,236,.92)", 2); T.quad([[X - 1.3, 38.8, 29.9], [X + 1.3, 38.8, 29.9], [X + 1.3, 38.1, 29.9], [X - 1.3, 38.1, 29.9]], "#AF1E2D", 1); T.quad([[X - 1.3, 37.6, 29.9], [X + 1.3, 37.6, 29.9], [X + 1.3, 37.2, 29.9], [X - 1.3, 37.2, 29.9]], "#192168", 1); }
+        T.tier(up, 0, 21, 16, 36, "#5A0F17", red, 1.3, p => T.side(p) !== "near", 12);
+        T.tier(mid, 0, 15, 12, 21, "#0B0B0E", null, 1, p => T.side(p) !== "near", 1);
+        T.lights(mid, 6, 18, "rgba(255,214,150,.8)", 2, 1.4, p => T.side(p) !== "near");
+        T.tier(low, 0, 1.2, 10, 14, "#6E1420", red, 1.6, p => T.side(p) !== "near", 12);
+        FIELD.ice(T, { dot: "rgba(175,30,45,.5)" });
+        T.screen([-5, 2], [5, 2], 20, 25, "#0B0B0E", "rgba(120,170,230,.45)");
+      },
+    },
+    // Lambeau: one continuous bowl of bench seats, ringed by the tall green
+    // sideline buildings (suites, glass, the gold rim), giant boards over both
+    // end zones, lights all along the rim. Cold, clear night.
+    nfl: { kind: "gridiron", name: "Lambeau Field", city: "Green Bay", cam: [0, 10, -24], hz: 0.48,
+      sky: [[0, "#0B1322"], [0.6, "#24344C"], [0.88, "#6E6070"], [1, "#B48C78"]],
+      draw(T) {
+        const bowl = T.rrect(68, 38, 26), gb = FANS("rgba(255,182,18,.55)", "rgba(32,85,60,.65)", "rgba(240,236,228,.45)", "rgba(230,190,160,.3)");
+        // the sideline buildings: green, glass, suites, the gold band, lights on top
+        const out = T.rrect(68 + 38, 38 + 38, 40), sides = p => T.side(p) === "far";
+        T.tier(out, 0, 26, 0, 46, "#1C3029", null, 1, sides, 1);
+        T.tier(out, -0.1, 30, -0.1, 34, "rgba(150,190,220,.35)", null, 1, sides, 1);
+        T.tier(out, -0.1, 38, -0.1, 42, "rgba(150,190,220,.3)", null, 1, sides, 1);
+        T.lights(out, -0.2, 32, "rgba(255,224,170,.85)", 1, 1.4, sides);
+        T.lights(out, -0.2, 40, "rgba(255,224,170,.7)", 1, 1.4, sides);
+        T.tier(out, -0.15, 45, -0.15, 46, "#FFB612", null, 1, sides, 1);
+        // the bowl itself, rows of aluminum bleachers full of green and gold
+        T.tier(bowl, 0, 0, 0, 1.5, "#1C3029", null, 1, p => T.side(p) !== "near", 1);
+        T.tier(bowl, 0, 1.5, 38, 26, "#4A5058", gb, 1.5, p => T.side(p) !== "near", 14);
+        T.tier(bowl, 37.5, 25.6, 38.5, 27.2, "#FFB612", null, 1, p => T.side(p) !== "near", 1);
+        T.tier(bowl, 38.5, 27.2, 38.5, 29, "#1C3029", null, 1, p => T.side(p) !== "near" && T.side(p) !== "far", 1);
+        // the giant boards over each end zone
+        [-1, 1].forEach(s => { const X = s * 104; T.screen([X, -20], [X, 20], 30, 46, "#13201B", "rgba(255,196,90,.5)"); T.line([[X, 0, -12], [X, 30, -12]], 3, "#13201B", 2); T.line([[X, 0, 12], [X, 30, 12]], 3, "#13201B", 2); });
+        T.lights(T.rrect(106, 76, 40), 0, 47, "rgba(255,248,226,1)", 2, 2.2, sides);
+        FIELD.gridiron(T, { ez: ["#203731", "#203731"], ezLine: "rgba(255,182,18,.95)", apron: "#24472C" });
+        for (let i = 0; i < 220; i++) { T.x.fillStyle = `rgba(255,255,255,${0.2 + T.rnd() * 0.45})`; T.x.beginPath(); T.x.arc(T.rnd() * T.W, T.rnd() * T.H, 0.6 + T.rnd() * 1.2, 0, Math.PI * 2); T.x.fill(); }
+      },
+    },
+    // Michigan Stadium: the biggest bowl in America, dug into the ground, so it's
+    // low and enormous; almost no roof line, just endless rows of maize; the
+    // press box tower on one side; boards at both ends; the block M.
+    cfb: { kind: "gridiron", name: "Michigan Stadium", city: "Ann Arbor", cam: [0, 10, -24], hz: 0.44,
+      sky: [[0, "#2B4A78"], [0.55, "#5C7FAE"], [0.85, "#C9A27E"], [1, "#EBC08C"]],
+      draw(T) {
+        // trees and the town beyond the rim
+        const far = T.rrect(200, 160, 60);
+        T.tier(far, 0, 0, 0, 14, "#2F4A34", null, 1, () => true, 1);
+        T.tier(far, 0, 10, 0, 18, "rgba(60,90,64,.7)", null, 1, p => Math.sin(p.x * 0.3) > 0, 1);
+        const bowl = T.rrect(62, 34, 24), maize = FANS("rgba(255,203,5,.7)", "rgba(255,203,5,.62)", "rgba(255,214,60,.55)", "rgba(0,39,76,.55)", "rgba(245,240,230,.35)");
+        // the press box: three glass decks on a tower over the far side
+        T.quad([[-60, 18, 106], [60, 18, 106], [60, 44, 106], [-60, 44, 106]], "#16243C", 8);
+        [[22, 27], [30, 35], [37.5, 42]].forEach(([y0, y1], i) => T.quad([[-58, y0, 105.8], [58, y0, 105.8], [58, y1, 105.8], [-58, y1, 105.8]], i === 1 ? "rgba(255,214,150,.6)" : "rgba(150,190,230,.45)", 8));
+        T.quad([[-60, 44, 105.7], [60, 44, 105.7], [60, 45.4, 105.7], [-60, 45.4, 105.7]], "#FFCB05", 8);
+        // the bowl: shallow and huge, every row full
+        T.tier(bowl, 0, 0, 0, 0.6, "#00274C", null, 1, p => T.side(p) !== "near", 1);
+        T.tier(bowl, 0, 0.6, 70, 18, "#2B3448", maize, 1.8, p => T.side(p) !== "near", 18);
+        T.tier(bowl, 70, 18, 71, 19.5, "#00274C", null, 1, p => T.side(p) !== "near", 1);
+        T.tier(bowl, 71, 19.5, 71.4, 20.1, "#FFCB05", null, 1, p => T.side(p) !== "near", 1);
+        // boards at both ends, standing on the rim
+        [-1, 1].forEach(s => { const X = s * 134; T.screen([X, -24], [X, 24], 24, 40, "#0E1626", "rgba(255,203,5,.42)"); T.line([[X, 18, -16], [X, 24, -16]], 3, "#0E1626", 1); T.line([[X, 18, 16], [X, 24, 16]], 3, "#0E1626", 1); });
+        FIELD.gridiron(T, { ez: ["#00274C", "#00274C"], ezLine: "rgba(255,203,5,.95)", apron: "#22482A" });
+        const M = [[0, 0], [0.28, 0], [0.28, 0.52], [0.5, 0.22], [0.72, 0.52], [0.72, 0], [1, 0], [1, 1], [0.74, 1], [0.5, 0.62], [0.26, 1], [0, 1]];
+        const pts = M.map(([u, v]) => [(u - 0.5) * 9, -4 + v * 8]);
+        T.gpoly(pts, "rgba(255,203,5,.95)"); T.gline([...pts, pts[0]], 0.25, "rgba(0,39,76,.95)", 3);
+      },
+    },
+    // Wrigley: from the mound. Ivy on the brick wall, the bleachers, the green
+    // scoreboard with its clock and flags, the rooftops across the street, and
+    // the old double-deck grandstand running down both lines.
+    mlb: { kind: "park", name: "Wrigley Field", city: "Chicago", cam: [0, 8, 14], hz: 0.47, fov: 3.0,
+      sky: [[0, "#14223E"], [0.5, "#3C4E73"], [0.82, "#C98262"], [1, "#F2B278"]],
+      draw(T) {
+        const { x, rnd } = T, R = a => 109 + 13 * Math.cos(a * 2) - 1.5 * Math.sin(a);
+        const wall = []; for (let i = 0; i <= 90; i++) { const a = -Math.PI / 4 + i / 90 * Math.PI / 2; wall.push({ x: Math.sin(a) * R(a), z: Math.cos(a) * R(a), nx: Math.sin(a), nz: Math.cos(a) }); }
+        // rooftops across Waveland and Sheffield, with their own bleachers on top
+        [[-1, -0.62, -0.18], [1, 0.18, 0.62]].forEach(([s, a0, a1]) => {
+          for (let a = a0; a < a1; a += 0.055 + rnd() * 0.03) {
+            const r = 162, hgt = 19 + rnd() * 9, b = a + 0.045, p0 = [Math.sin(a) * r, Math.cos(a) * r], p1 = [Math.sin(b) * r, Math.cos(b) * r];
+            T.panel(p0, p1, 0, hgt, ["#4E2C24", "#5E3A2C", "#463630", "#3B2B26"][Math.floor(rnd() * 4)]);
+            for (let w = 0; w < 6; w++) if (rnd() < 0.6) { const u = 0.1 + w * 0.14, q0 = [lerp(p0[0], p1[0], u), lerp(p0[1], p1[1], u)], q1 = [lerp(p0[0], p1[0], u + 0.07), lerp(p0[1], p1[1], u + 0.07)]; T.panel(q0, q1, hgt * 0.4, hgt * 0.55, "rgba(255,214,150,.6)"); }
+            T.line([[p0[0], hgt, p0[1]], [p0[0], hgt + 5, p0[1]], [p1[0], hgt + 2, p1[1]], [p1[0], hgt, p1[1]]], 1.2, "rgba(25,25,28,.95)", 2);
+            T.crowd([[p0[0], hgt, p0[1]], [p1[0], hgt, p1[1]], [p1[0], hgt + 2, p1[1]], [p0[0], hgt + 5, p0[1]]], FANS("rgba(14,51,134,.8)", "rgba(240,236,228,.7)", "rgba(204,52,51,.7)"), 1.2);
+          }
+        });
+        // the bleachers behind the ivy, and the scoreboard on top of center field
+        const cubs = FANS("rgba(14,51,134,.65)", "rgba(240,236,228,.55)", "rgba(204,52,51,.5)", "rgba(230,190,160,.35)");
+        T.tier(wall, 0.3, 3.5, 26, 15, "#1F4A2C", cubs, 1.8, () => true, 12);
+        const sbA = [-12, 152], sbB = [12, 152];
+        T.panel(sbA, sbB, 13, 27, "#1E4D2B"); T.panel(sbA, sbB, 25, 27, "#183F23");
+        for (let r = 0; r < 4; r++) for (let k = 0; k < 12; k++) { const u0 = 0.05 + k * 0.075, y0 = 15 + r * 2.4; T.panel([lerp(-12, 12, u0), 151.8], [lerp(-12, 12, u0 + 0.055), 151.8], y0, y0 + 1.7, rnd() < 0.7 ? "rgba(236,230,212,.95)" : "rgba(20,40,26,.95)"); }
+        T.panel([-2.4, 152], [2.4, 152], 27, 31.5, "#1E4D2B");
+        const ck = T.P(0, 29.3, 151.7), cr = clamp(T.f * 1.8 / ck[2], 3, 30);
+        x.fillStyle = "#F2EEE2"; x.beginPath(); x.arc(ck[0], ck[1], cr, 0, Math.PI * 2); x.fill();
+        x.strokeStyle = "#1A1A1A"; x.lineWidth = Math.max(1, cr * 0.12); x.beginPath(); x.moveTo(ck[0], ck[1]); x.lineTo(ck[0], ck[1] - cr * 0.7); x.moveTo(ck[0], ck[1]); x.lineTo(ck[0] + cr * 0.5, ck[1] + cr * 0.15); x.stroke();
+        [-9, -3, 3, 9].forEach((X, i) => { T.line([[X, 27, 152], [X, 36, 152]], 1, "#D8D8D0", 2); T.quad([[X, 36, 151.9], [X + 3, 35, 151.9], [X, 34, 151.9]], ["#0E3386", "#CC3433", "#F2EEE2", "#0E3386"][i], 2); });
+        // the ivy wall, brick showing through, white line on top
+        T.tier(wall, 0, 0, 0, 3.5, "#24461F", null, 1, () => true, 1);
+        for (let i = 0; i < 2600; i++) { const k = Math.floor(rnd() * (wall.length - 1)), p = wall[k], a = rnd(), q = T.P(p.x + (wall[k + 1].x - p.x) * a, rnd() * 3.5, p.z + (wall[k + 1].z - p.z) * a); if (!T.ok(q)) continue; const s = clamp(T.f * 0.35 / q[2], 0.7, 2.5), c0 = rnd(); x.fillStyle = c0 < 0.4 ? "#3E6B2E" : c0 < 0.75 ? "#2F5A26" : c0 < 0.93 ? "#56853A" : "#7A3B26"; x.fillRect(q[0], q[1], s, s); }
+        T.line(wall.map(p => [p.x, 3.5, p.z]), 1.4, "rgba(240,236,224,.85)", 1);
+        // the grandstand down both lines: lower deck, upper deck, roof, lights on top
+        [-1, 1].forEach(s => {
+          const line = []; for (let d = 104; d >= 30; d -= 2) line.push({ x: s * d * Math.SQRT1_2 + s * 16 * Math.SQRT1_2, z: d * Math.SQRT1_2 - 16 * Math.SQRT1_2, nx: s * Math.SQRT1_2, nz: -Math.SQRT1_2 });
+          T.tier(line, 0, 1, 20, 9, "#1D3D2A", cubs, 1.5, () => true, 10);
+          T.tier(line, 20, 9, 20, 12, "#6A3A2A", null, 1, () => true, 1);
+          T.tier(line, 14, 12, 32, 22, "#1D3D2A", cubs, 1.3, () => true, 8);
+          T.tier(line, 8, 26, 34, 27, "#1B1E22", null, 1, () => true, 1);
+          T.lights(line, 10, 26, "rgba(255,248,226,.95)", 6, 2.4);
+          const pole = [s * 76.3, 76.3]; T.line([[pole[0], 0, pole[1]], [pole[0], 20, pole[1]]], 2.5, "rgba(238,206,96,.95)", 2);
+        });
+        // the field: grass, the warning track, the infield dirt and the bases
+        const inDia = (X, Z) => Math.abs(X) + Math.abs(Z - 19.4) < 15.6;
+        const cell = (X, Z) => {
+          const a = Math.atan2(X, Z), r = Math.hypot(X, Z);
+          if (Math.abs(a) > Math.PI / 4 + 0.03 || r > R(a)) return null;
+          if (r > R(a) - 4.6) return "#7A5236";
+          if (Math.hypot(X, Z - 18.4) < 2.8) return "#A56B44";
+          if (r < 29 && !inDia(X, Z)) return "#9A6440";
+          return Math.floor((X + 200) / 7) % 2 ? "#2F6A37" : "#2A6132";
+        };
+        T.ground(-40, 40, 0, 50, 1, 1, (X, Z) => cell(X + 0.5, Z + 0.5));
+        T.ground(-120, 120, 0, 140, 4, 4, (X, Z) => Math.abs(X + 2) < 40 && Z + 2 < 50 ? null : cell(X + 2, Z + 2));
+        T.gline([[0, 0], [-80, 80]], 0.12, "rgba(246,244,236,.9)"); T.gline([[0, 0], [80, 80]], 0.12, "rgba(246,244,236,.9)");
+        [[19.4, 19.4], [0, 38.8], [-19.4, 19.4]].forEach(([X, Z]) => T.gpoly([[X - 0.25, Z - 0.25], [X + 0.25, Z - 0.25], [X + 0.25, Z + 0.25], [X - 0.25, Z + 0.25]], "rgba(250,250,248,.95)", 1));
+      },
+    },
+    // Anfield: from the center circle. The Main Stand's three tiers under a deep
+    // roof straight ahead, the Kop rising on the left, the Anfield Road end on the right.
+    soccer: { kind: "pitch", name: "Anfield", city: "Liverpool", cam: [0, 10, -12], hz: 0.48,
+      sky: [[0, "#0E1624"], [0.55, "#25314A"], [0.86, "#6E4E44"], [1, "#B88258"]],
+      draw(T) {
+        const red = FANS("rgba(200,16,46,.65)", "rgba(200,16,46,.55)", "rgba(245,240,235,.42)", "rgba(230,190,160,.3)");
+        const st = T.rrect(62, 41, 3), side = T.side;
+        // the Kop: one huge tier behind the goal on the left, roof over it
+        T.tier(st, 0, 1, 42, 26, "#7A0E1C", red, 1.8, p => side(p) === "left", 16);
+        T.tier(st, 36, 31, 48, 30, "#1A1C20", null, 1, p => side(p) === "left", 1);
+        T.lights(st, 37, 30.6, "rgba(255,248,226,.95)", 3, 1.6, p => side(p) === "left");
+        // the Main Stand: lower tier, boxes, upper tier, a third tier, a deep roof lit along its edge
+        const ms = p => side(p) === "far";
+        T.tier(st, 0, 1, 18, 9, "#8A1020", red, 1.6, ms, 10);
+        T.tier(st, 18, 9, 18, 12, "#101216", null, 1, ms, 1); T.lights(st, 17.9, 10.5, "rgba(255,214,150,.75)", 1, 1.2, ms);
+        T.tier(st, 14, 12, 32, 22, "#7A0E1C", red, 1.4, ms, 10);
+        T.tier(st, 28, 24, 44, 34, "#6E0C18", red, 1.2, ms, 8);
+        T.tier(st, 20, 39, 48, 40, "#16181C", null, 1, ms, 1);
+        T.lights(st, 21, 38.6, "rgba(255,248,226,1)", 1, 2, ms);
+        // the Anfield Road end on the right: two tiers, a lower roof
+        const ar = p => side(p) === "right";
+        T.tier(st, 0, 1, 16, 8, "#8A1020", red, 1.6, ar, 8); T.tier(st, 12, 10, 30, 20, "#7A0E1C", red, 1.3, ar, 8);
+        T.tier(st, 8, 24, 32, 25, "#1A1C20", null, 1, ar, 1); T.lights(st, 9, 23.6, "rgba(255,248,226,.95)", 3, 1.6, ar);
+        // corners filled in, lower
+        T.tier(st, 0, 1, 14, 7, "#6A0C16", red, 1.2, p => side(p) === "corner" && p.nz > 0, 6);
+        FIELD.pitch(T);
+        T.lamp(-20, 38.6, 61, 1.4, 0.25); T.lamp(20, 38.6, 61, 1.4, 0.25);
       },
     },
   };
@@ -2080,7 +2296,7 @@
     if (!cap) { cap = document.createElement("div"); cap.className = "lab-caption"; cap.setAttribute("aria-hidden", "true"); head.append(cap); }
     const x = c.getContext("2d");
     let cache = {}, W = 0, H = 0, dpr = 1, i = 0, from = null, at = 0, raf = 0;
-    const bg = k => cache[k] || (cache[k] = background(VENUES[k].kind, W, H, dpr, 0, VENUES[k]).canvas);
+    const bg = k => cache[k] || (cache[k] = pano(VENUES[k], W, H, dpr).canvas);
     const size = () => { const r = c.getBoundingClientRect(); W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1); c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); cache = {}; };
     const paint = () => {
       const u = from == null || still ? 1 : clamp((performance.now() - at) / 1200);
