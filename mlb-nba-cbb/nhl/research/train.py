@@ -54,10 +54,8 @@ _L = {"elo_k": 8, "elo_carry": 0.7, "years": 3}
 # Elo-only, last on the holdout, made way for two with MoneyPuck expected
 # goals (xg.py): one on the live version, one on the full model.
 RECIPES = [
-    {**_L, "extras": ["shots", "goalies"]},
     {**_L, "extras": ["shots"]},
     {**_L, "extras": ["xg", "shots", "goalies"]},
-    {**_L, "extras": ["shots", "goalies"], "calib": True},
     {**_L, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
     {**_L, "elo_only": True, "extras": ["xg", "shots", "goalies"], "calib": True},
     {**_L, "elo_only": True, "extras": ["shots", "goalies"]},
@@ -67,6 +65,11 @@ RECIPES = [
     # counts each older season half as much (season_decay).
     {**_L, "elo_only": True, "extras": ["shots", "goalies"], "calib": True, "season_decay": 0.5},
     {**_L, "elo_only": True, "extras": ["xg", "shots", "goalies"], "calib": True, "season_decay": 0.5},
+    # 2026-11-05: the full model with shots and goalies, with and without
+    # calib, last on the holdout, made way for the live version with a slower
+    # (K 6) and a faster (K 10) Elo.
+    {**_L, "elo_k": 6, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
+    {**_L, "elo_k": 10, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
 ]
 
 

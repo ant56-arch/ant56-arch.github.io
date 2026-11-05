@@ -55,14 +55,17 @@ RECIPES = [
     {"elo_k": 15, "elo_carry": 0.75, "years": 2},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2},
     {"elo_k": 12, "elo_carry": 0.6, "years": 2},
-    {**_L, "extras": ["massey"]},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["massey"]},
     {**_L, "calib": True},
     {**_L, "extras": ["travel"]},
     # 2026-10-27 (Anthony: keep each version learning from this season): 3
     # years and Pythagorean, last on the holdout, made way for two whose fit
     # counts each older season half as much (season_decay).
-    {**_L, "calib": True, "season_decay": 0.5},
+    # 2026-11-05: Massey on K 15 and calib with older seasons at half, last on
+    # the holdout, made way for two built on the new live travel version:
+    # travel on the slower K 10 Elo, and travel with calibrated chances.
+    {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["travel"]},
+    {**_L, "extras": ["travel"], "calib": True},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["massey"], "season_decay": 0.5},
 ]
 
