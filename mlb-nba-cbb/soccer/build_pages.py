@@ -508,9 +508,10 @@ def build_model(model, runs, ratings):
 def recap(g):
     a, h = g["away"], g["home"]
     if g["pick"] == "Draw":
-        return f"Draw {a['score']}-{h['score']}" if g.get("hit") else f"No draw, {a['abbr']} {a['score']}-{h['score']} {h['abbr']}"
+        return (f"Draw {a['score']}-{h['score']}" if g.get("hit")
+                else f"No draw, {extras.team_label(g, a)} {a['score']}-{h['score']} {extras.team_label(g, h)}")
     if a["score"] == h["score"]:
-        return f"{g['pick']} drew {a['score']}-{h['score']}"
+        return f"{extras.label_of(g, g['pick'])} drew {a['score']}-{h['score']}"
     return extras.recap_text(g)
 
 

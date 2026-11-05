@@ -1813,6 +1813,9 @@ a.gc.is-top { border-top-color: var(--ours); }
   border-radius: 6px;
 }
 .gc-logo em { font-style: normal; }
+/* College and soccer: the team's name stands in for its logo, wrapped small. */
+.gc-logo em.is-name { display: -webkit-box; max-width: 100%; padding: 0 2px; overflow: hidden; font-size: 7.5px; line-height: 1.1;
+  text-align: center; overflow-wrap: anywhere; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 .gc-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--surface); }
 .gc-name { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .gc-name b { overflow: hidden; font-size: 16px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
@@ -1938,6 +1941,8 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
 /* Slate picker (edgeSlatePicker in edge.js): one game at a time beside a
    drawing of its field, on the home page and every sport's game board */
 .sp { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 28px; align-items: start; }
+/* Hidden in the Cards view (sport-pages.js), and its own hidden parts: display: grid would show them. */
+.sp[hidden], .sp [hidden] { display: none !important; }
 .sp-left { display: grid; gap: 18px; min-width: 0; }
 .sp-head { display: flex; align-items: flex-end; gap: 14px; min-width: 0; }
 .sp-num { font: 400 84px/0.8 var(--font-serif); color: var(--ours); font-variant-numeric: tabular-nums; }
@@ -1945,11 +1950,13 @@ footer.site-footer.slim .footer-links { margin-top: 10px; padding-top: 0; border
 .sp-of { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
 .sp-title { margin: 0; font: 700 30px/1 var(--font-head); letter-spacing: 0.02em; text-transform: uppercase; text-wrap: balance; overflow-wrap: break-word; }
 .sp-title.is-long { font-size: 22px; }
+.sp-title.is-longer { font-size: 18px; line-height: 1.1; }
 .sp-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-block: 1px solid var(--rule); }
 .sp-facts div { padding: 10px 0; min-width: 0; }
 .sp-facts div + div { padding-left: 12px; }
 .sp-facts dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
 .sp-facts dd { margin: 4px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 24px/1 var(--font-head); font-variant-numeric: tabular-nums; }
+.sp-facts dd.is-name { font-size: 17px; line-height: 1.1; white-space: normal; overflow-wrap: anywhere; }
 .sp-note { margin: 0; min-height: 4.5em; color: var(--text-muted); line-height: 1.5; }
 .sp-choose-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
 .sp-arrows { display: flex; gap: 8px; }
@@ -2055,7 +2062,7 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .mr-bar { display: block; border-radius: 3px 3px 0 0; background: var(--rule-strong); opacity: .6; min-height: 3px; }
 .mr-col.is-pick .mr-bar { background: var(--ours); }
 .mr-col.is-real .mr-bar { opacity: 1; outline: 2px solid var(--text); outline-offset: 1px; }
-.mr-lab { font-size: 10px; line-height: 1.2; text-align: center; color: var(--text-muted); border-top: 1px solid var(--rule); padding-top: 4px; margin-top: 2px; min-height: 26px; overflow-wrap: anywhere; }
+.mr-lab { font-size: 10px; line-height: 1.2; text-align: center; color: var(--text-muted); border-top: 1px solid var(--rule); padding-top: 4px; margin-top: 2px; min-height: 26px; overflow-wrap: anywhere; hyphens: auto; }
 .mr-note { margin: 4px 0; font-size: 14px; }
 
 /* Game page: likely yards for key players (extras.players_html) */
@@ -2085,6 +2092,10 @@ circle.sp-red { fill: var(--miss); stroke: none; }
 .gl-team::before { content: ""; width: 5px; height: 30px; border-radius: 2px; background: var(--tc); }
 .gl-home { flex-direction: row-reverse; }
 .gl-team b { font-family: var(--font-mono); font-size: 24px; font-weight: 500; letter-spacing: 1px; }
+/* College and soccer show the team's name: it wraps instead of pushing the score off. */
+.gl-team.is-named { flex: 1 1 0; min-width: 0; }
+.gl-team.is-named b { min-width: 0; font-size: 17px; letter-spacing: 0; line-height: 1.15; overflow-wrap: anywhere; }
+.gl-home.is-named b { text-align: right; }
 .gl-score { font-family: var(--font-mono); font-size: 34px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; }
 .gl-team.has-ball .gl-score::before { content: "\2022"; color: var(--ours); margin-right: 8px; font-size: 22px; vertical-align: middle; }
 .gl-home.has-ball .gl-score::before { content: none; }

@@ -2011,7 +2011,9 @@ def ml_units(sport, log):
 
 
 def build_game_pages(sport, ngames):
-    return {g["file"]: page_shell(sport, f"{g['away']['abbr']} @ {g['home']['abbr']}", None,
+    # College names each team in full (extras.matchup_title); NFL keeps "BUF @ KC".
+    title = lambda g: extras.matchup_title(g) if extras.names_teams(g) else f"{g['away']['abbr']} @ {g['home']['abbr']}"
+    return {g["file"]: page_shell(sport, title(g), None,
                                   extras.game_page_body(g, "index.html", "All of this week's games"))
             for g in ngames}
 

@@ -56,7 +56,7 @@ function schedNetwork(g) {
   return (g.tv || "").split(",")[0].trim() || "TV TBA";
 }
 
-function schedSide(t, showScore) {
+function schedSide(t, showScore, sport) {
   const side = edgeNode("div", "sched-team");
   if (t.logo) {
     const img = edgeNode("img", "sched-logo");
@@ -69,7 +69,8 @@ function schedSide(t, showScore) {
   }
   const name = edgeNode("div", "sched-name");
   if (t.rank) name.append(edgeNode("span", "sched-rank", String(t.rank)));
-  name.append(edgeNode("span", null, t.short || t.abbr));
+  // College and soccer: the school or club (edgeTeamLabel); the rest as before.
+  name.append(edgeNode("span", null, edgeNamesTeams(sport) ? edgeTeamLabel(sport, t) : t.short || t.abbr));
   const sub = t.probable || t.record;
   if (sub) name.append(edgeNode("small", null, sub));
   side.append(name);
@@ -77,23 +78,23 @@ function schedSide(t, showScore) {
   return side;
 }
 
-function schedGame(g, pickLabel) {
+function schedGame(g, pickLabel, sport) {
   const card = edgeNode("article", "sched-game" + (g.state === "in" ? " is-live" : ""));
   const top = edgeNode("div", "sched-top");
   top.append(edgeNode("span", "sched-status", g.state === "pre" ? (g.neutral ? "Neutral site" : "") : g.detail || "Final"));
   if (g.tv) top.append(edgeNode("span", "sched-tv", g.tv));
-  card.append(top, schedSide(g.away, g.state !== "pre"), edgeNode("div", "sched-sep", g.neutral ? "vs" : "@"),
-              schedSide(g.home, g.state !== "pre"));
+  card.append(top, schedSide(g.away, g.state !== "pre", sport), edgeNode("div", "sched-sep", g.neutral ? "vs" : "@"),
+              schedSide(g.home, g.state !== "pre", sport));
   if (g.pick) {
     const pick = edgeNode("div", "sched-pick");
-    pick.append(edgeNode("span", "sched-pick-label", pickLabel), edgeNode("span", "sched-pick-text", g.pick.text));
+    pick.append(edgeNode("span", "sched-pick-label", pickLabel), edgeNode("span", "sched-pick-text", edgeNameText(sport, g, g.pick.text)));
     const pill = edgeResultPill(g.pick.result, g.pick.labels);
     if (pill) pick.append(pill);
     card.append(pick);
     const sp = g.pick.spread;  // NFL/CFB: our pick against the Vegas spread
     if (sp) {
       const row = edgeNode("div", "sched-pick sched-pick-more");
-      row.append(edgeNode("span", "sched-pick-label", "Spread"), edgeNode("span", "sched-pick-text", sp.text));
+      row.append(edgeNode("span", "sched-pick-label", "Spread"), edgeNode("span", "sched-pick-text", edgeNameText(sport, g, sp.text)));
       const spPill = edgeResultPill(sp.result, sp.labels);
       if (spPill) row.append(spPill);
       card.append(row);
@@ -134,7 +135,7 @@ function schedDay(day, games, cfg, subtitle) {
     (byNetwork ? networks : [null]).forEach(n => {
       const inCell = slotGames.filter(g => n === null || schedNetwork(g) === n);
       const cell = edgeNode("div", "tv-cell" + (inCell.length ? "" : " tv-empty"));
-      inCell.forEach(g => cell.append(schedGame(g, cfg.pickLabel)));
+      inCell.forEach(g => cell.append(schedGame(g, cfg.pickLabel, cfg.sport)));
       row.append(cell);
     });
     grid.append(row);
@@ -150,7 +151,7 @@ function guideClock(minutes) {
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 
-function guideTeam(t, showScore) {
+function guideTeam(t, showScore, sport) {
   const row = edgeNode("span", "guide-team" + (showScore && t.winner ? " is-winner" : ""));
   const name = edgeNode("span", "guide-team-name");
   if (t.logo) {
@@ -161,7 +162,7 @@ function guideTeam(t, showScore) {
     name.append(img);
   }
   if (t.rank) name.append(edgeNode("span", "guide-rank", String(t.rank)));
-  name.append(edgeNode("span", null, t.abbr || t.short));
+  name.append(edgeNode("span", null, edgeTeamLabel(sport, t)));
   row.append(name);
   if (showScore && t.score != null) row.append(edgeNode("span", "guide-score", String(t.score)));
   return row;
@@ -172,27 +173,28 @@ function guideBlock(g, cfg) {
   const status = g.state === "pre" ? g._et.slot : g.detail || "Final";
   block.append(edgeNode("span", "guide-status", status));
   const matchup = edgeNode("span", "guide-matchup");
-  matchup.append(guideTeam(g.away, g.state !== "pre"), edgeNode("span", "guide-at", g.neutral ? "vs" : "@"),
-                 guideTeam(g.home, g.state !== "pre"));
+  matchup.append(guideTeam(g.away, g.state !== "pre", cfg.sport), edgeNode("span", "guide-at", g.neutral ? "vs" : "@"),
+                 guideTeam(g.home, g.state !== "pre", cfg.sport));
   block.append(matchup);
   if (g.pick) {
     const pick = edgeNode("span", "guide-pick");
-    pick.append(edgeNode("span", null, g.pick.text));
+    pick.append(edgeNode("span", null, edgeNameText(cfg.sport, g, g.pick.text)));
     const pill = edgeResultPill(g.pick.result, g.pick.labels);
     if (pill) pick.append(pill);
     block.append(pick);
     const sp = g.pick.spread;
     if (sp) {
       const row = edgeNode("span", "guide-pick");
-      row.append(edgeNode("span", null, "Spread " + (sp.short || sp.text)));  // guide blocks are narrow
+      row.append(edgeNode("span", null, "Spread " + edgeNameText(cfg.sport, g, sp.short || sp.text)));  // guide blocks are narrow
       const spPill = edgeResultPill(sp.result, sp.labels);
       if (spPill) row.append(spPill);
       block.append(row);
     }
   }
-  block.title = `${g.away.short || g.away.abbr} ${g.neutral ? "vs" : "at"} ${g.home.short || g.home.abbr}, ${status}` +
-                (g.tv ? `, ${g.tv}` : "") + (g.pick ? `. ${cfg.pickLabel}: ${g.pick.text}` : "") +
-                (g.pick && g.pick.spread ? `. Spread: ${g.pick.spread.text}` : "");
+  const nm = t => (edgeNamesTeams(cfg.sport) ? edgeTeamLabel(cfg.sport, t) : t.short || t.abbr);
+  block.title = `${nm(g.away)} ${g.neutral ? "vs" : "at"} ${nm(g.home)}, ${status}` +
+                (g.tv ? `, ${g.tv}` : "") + (g.pick ? `. ${cfg.pickLabel}: ${edgeNameText(cfg.sport, g, g.pick.text)}` : "") +
+                (g.pick && g.pick.spread ? `. Spread: ${edgeNameText(cfg.sport, g, g.pick.spread.text)}` : "");
   return block;
 }
 
@@ -280,7 +282,7 @@ function schedGuideDay(day, games, cfg, subtitle, isToday) {
   if (tba.length) {
     card.append(edgeNode("div", "section-label", "Time TBA"));
     const list = edgeNode("div", "sched-grid");
-    tba.forEach(g => list.append(schedGame(g, cfg.pickLabel)));
+    tba.forEach(g => list.append(schedGame(g, cfg.pickLabel, cfg.sport)));
     card.append(list);
   }
   return card;

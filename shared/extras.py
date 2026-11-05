@@ -35,6 +35,7 @@ locked at, so dollars are units times 10. Live picks only.
 """
 import json
 import math
+import re
 from datetime import date, datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
@@ -50,6 +51,82 @@ def price_text(price):
 def payout_text(price):
     """What a price pays: '$100 wins $135' / 'Bet $150 to win $100'."""
     return f"$100 wins ${price:,.0f}" if price >= 100 else f"Bet ${-price:,.0f} to win $100"
+
+
+# ── How teams are named ──────────────────────────────────────────────────────
+# NFL, NBA, NHL and MLB show a team by its abbreviation ("KC"); college and
+# soccer by the school or club ("Ohio State", "Bayern Munich"), the same rule
+# as edgeTeamLabel in shared/edge.js. The abbreviation stays the key: picks,
+# data-away / data-home and the live matching all compare on it.
+NAME_SPORTS = {"CFB", "CBB", "SOCCER"}
+
+
+def names_teams(g):
+    return str(g.get("sport") or "").upper() in NAME_SPORTS
+
+
+def team_label(g, t):
+    """How this game's page and card name team t (g["away"] or g["home"])."""
+    if not names_teams(g):
+        return t["abbr"]
+    return re.sub(r"^#\d+\s+", "", t.get("name") or t["abbr"]) or t["abbr"]
+
+
+def label_of(g, abbr):
+    """A team's label given its abbreviation in this game; anything else ("Draw") as is."""
+    for side in ("away", "home"):
+        if abbr == g[side]["abbr"]:
+            return team_label(g, g[side])
+    return abbr
+
+
+def matchup_title(g):
+    """'NYY @ BOS', or 'Ohio State @ Michigan' for college and soccer."""
+    at = "vs" if g.get("neutral") else "@"
+    return f"{team_label(g, g['away'])} {at} {team_label(g, g['home'])}"
+
+
+def named(g, text, html=False):
+    """Text that names this game's teams by abbreviation ("MIZ +2.5", "for
+    MCN, we say 65%") with each name swapped in, for college and soccer.
+    html: text is markup (escaped names, tags and pills left alone)."""
+    if not text or not names_teams(g):
+        return text
+    m = {}
+    for side in ("away", "home"):
+        a, n = g[side]["abbr"], team_label(g, g[side])
+        if a and n != a:
+            m[escape(a) if html else a] = escape(n) if html else n
+    if not m:
+        return text
+    pat = re.compile(r"(?<![A-Za-z0-9&])(" + "|".join(re.escape(k) for k in sorted(m, key=len, reverse=True))
+                     + r")(?![A-Za-z0-9&])")
+    if not html:
+        return pat.sub(lambda x: m[x.group(1)], text)
+    out, pill = [], False
+    for part in re.split(r"(<[^>]*>)", text):
+        if part.startswith("<"):
+            if 'class="pill' in part:
+                pill = True  # HIT / MISS / COVERED: never a team, even when it reads like one (Ole Miss is MISS)
+            elif pill and part.startswith("</"):
+                pill = False
+            out.append(part)
+        else:
+            out.append(part if pill else pat.sub(lambda x: m[x.group(1)], part))
+    return "".join(out)
+
+
+def _shown(g):
+    """g for the parts of a game page that print team abbreviations: for
+    college and soccer, the same game with each team's name in their place
+    (pick, other and why too), so comparisons between them still hold."""
+    if not names_teams(g):
+        return g
+    out = dict(g)
+    out["away"] = dict(g["away"], abbr=team_label(g, g["away"]))
+    out["home"] = dict(g["home"], abbr=team_label(g, g["home"]))
+    out["pick"], out["other"] = label_of(g, g["pick"]), named(g, g.get("other") or "")
+    return out
 
 
 # ── Units, for the home site's Betting tab ──────────────────────────────────
@@ -98,13 +175,15 @@ def result_line(g):
     if not g.get("final") or a.get("score") is None:
         return ""
     verdict = {True: "Our pick hit.", False: "Our pick missed."}.get(g.get("hit"), "No decision.")
-    return f"Final: {a['abbr']} {a['score']}, {h['abbr']} {h['score']}. {verdict}"
+    return f"Final: {team_label(g, a)} {a['score']}, {team_label(g, h)} {h['score']}. {verdict}"
 
 
-def _team(t, is_pick):
+def _team(t, is_pick, names=False):
     img = (f'<img class="gh-logo" src="{escape(t["logo"])}" alt="" loading="lazy" '
            f'onerror="this.style.display=\'none\'">' if t.get("logo") else "")
-    sub = " · ".join(x for x in (t.get("abbr") if t.get("name") != t.get("abbr") else "", t.get("record")) if x)
+    # The abbreviation under the name, except where the name is all a team goes by (college, soccer).
+    abbr = t.get("abbr") if t.get("name") != t.get("abbr") and not names else ""
+    sub = " · ".join(x for x in (abbr, t.get("record")) if x)
     score = f'<span class="gh-score">{t["score"]}</span>' if t.get("score") is not None else ""
     name = t.get("name") or t["abbr"]
     longest = max(len(w) for w in name.split()) if name.split() else 1  # CSS shrinks long words to fit
@@ -121,7 +200,7 @@ def why_html(g):
     rows = ""
     for label, v in sorted(items, key=lambda it: -abs(it[1])):
         share = abs(v) / total
-        helps = g["pick"] if v > 0 else g["other"]
+        helps = named(g, g["pick"] if v > 0 else g["other"])
         rows += (f'<li class="{"" if v > 0 else "is-against"}"><span class="why-label">{escape(label)}'
                  f'<small>helps {escape(helps)}</small></span><span class="why-bar" aria-hidden="true">'
                  f'<span style="width:{share * 100:.0f}%"></span></span><span class="why-pct">{share:.0%}</span></li>')
@@ -142,6 +221,7 @@ def range_html(g):
         return goals_range_html(g)
     if not rg or not rg.get("sd"):
         return ""
+    g = _shown(g)
     a, h, mu, sd, step = g["away"]["abbr"], g["home"]["abbr"], rg["margin"], rg["sd"], rg.get("step", 7)
     cuts = [-3 * step - 0.5, -2 * step - 0.5, -step - 0.5, 0, step + 0.5, 2 * step + 0.5, 3 * step + 0.5]
     edges = [-math.inf] + cuts + [math.inf]
@@ -163,14 +243,14 @@ def range_html(g):
     best = max(range(1, 7), key=lambda i: shares[i])  # the open-ended end bars are wider, so not 'most likely'
     close = _cdf((step + 0.5 - mu) / sd) - _cdf((-step - 0.5 - mu) / sd)
     big_h, big_a = 1 - _cdf((2 * step + 0.5 - mu) / sd), _cdf((-2 * step - 0.5 - mu) / sd)
-    lines = [f"Most likely: {labels[best].replace(' ', ' by ', 1)} points ({shares[best]:.0%}).",
+    lines = [f"Most likely: {' by '.join(labels[best].rsplit(' ', 1))} points ({shares[best]:.0%}).",
              f"Decided by {step} or fewer: {close:.0%}. {h} wins by {2 * step + 1}+: {big_h:.0%}. "
              f"{a} wins by {2 * step + 1}+: {big_a:.0%}."]
     if rg.get("total") and rg.get("total_sd"):
         lo, hi = rg["total"] - 1.28 * rg["total_sd"], rg["total"] + 1.28 * rg["total_sd"]
         lines.append(f"Total points: {max(lo, 0):.0f} to {hi:.0f} in 8 of 10 games like this (our total {rg['total']:.1f}).")
     if real is not None:
-        lines.append(f"Final landed in the marked bar: {labels[real].replace(' ', ' by ', 1)}.")
+        lines.append(f"Final landed in the marked bar: {' by '.join(labels[real].rsplit(' ', 1))}.")
     return (f'<ol class="margin-range" aria-label="How often each final margin comes up">{bars}</ol>'
             + "".join(f'<p class="mr-note">{escape(x)}</p>' for x in lines)
             + '<div class="table-footnote">From our line and how far real results usually land from it '
@@ -212,7 +292,7 @@ def goals_range_html(g):
     """How it could end for NHL, MLB and soccer: how often each final margin
     comes up (a draw for soccer; NHL and MLB ties go to overtime or extra
     innings, decided by one), the likeliest exact scores, and the total."""
-    rg = g["range"]
+    rg, g = g["range"], _shown(g)
     a, h, unit = g["away"]["abbr"], g["home"]["abbr"], rg.get("unit", "goals")
     grid = score_grid(rg["home_rate"], rg["away_rate"])
     draw = rg.get("ties") == "draw"
@@ -282,7 +362,7 @@ def players_html(g):
         for p in group:
             tag = f' <span class="pill pill-primary">{escape(p["status"].upper())}</span>' if p.get("status") else ""
             items += (f'<li data-name="{escape(p["name"])}" data-team="{escape(p["team"])}" data-stat="{escape(stat)}" data-top="{top:.1f}">'
-                      f'<span class="pr-name"><b>{escape(p["name"])}</b>{tag}<small>{escape(p["team"])} · '
+                      f'<span class="pr-name"><b>{escape(p["name"])}</b>{tag}<small>{escape(label_of(g, p["team"]))} · '
                       f'projected {p["proj"]:.0f}</small></span>'
                       f'<span class="pr-track" aria-hidden="true"><span class="pr-span" style="left:{p["lo"] / top * 100:.1f}%;'
                       f'width:{max(p["hi"] - p["lo"], 1) / top * 100:.1f}%"></span>'
@@ -331,8 +411,12 @@ def moves_chart(g, moves, start, end):
     X = lambda t: L + (t - start).total_seconds() / span * (W - L - R)
     Y = lambda v: T + (hi - v) / (hi - lo) * (H - T - B)
     other = g["away"]["abbr"] if home else g["home"]["abbr"]
-    fmt = ((lambda v: "PK" if abs(v) < 0.05 else f"{pick if v > 0 else other} {MINUS}{abs(v):g}") if unit == "points"
-           else (lambda v: f"{v:.0f}%"))
+    if names_teams(g):  # a school or club name won't fit the axis: points from the pick's side, "−3" / "+3"
+        fmt = ((lambda v: "PK" if abs(v) < 0.05 else f"{MINUS if v > 0 else '+'}{abs(v):g}") if unit == "points"
+               else (lambda v: f"{v:.0f}%"))
+    else:
+        fmt = ((lambda v: "PK" if abs(v) < 0.05 else f"{pick if v > 0 else other} {MINUS}{abs(v):g}") if unit == "points"
+               else (lambda v: f"{v:.0f}%"))
     step = next(st for st in (0.5, 1, 2, 2.5, 5, 10, 20, 25) if (hi - lo) / st <= 4)
     lo, hi = math.floor(lo / step) * step, math.ceil(hi / step) * step
     grid = ""
@@ -366,7 +450,8 @@ def moves_chart(g, moves, start, end):
             prev = v
         d += f" H{X(end):.1f}"
         lines += f'<path d="{d}" class="{cls}"/><circle cx="{X(end):.1f}" cy="{Y(prev):.1f}" r="3.5" class="{cls}-dot"/>'
-    what = "Spread" if unit == "points" else f"{pick} chance to win"
+    what = ((f"{label_of(g, pick)} spread" if names_teams(g) else "Spread") if unit == "points"
+            else f"{label_of(g, pick)} chance to win")
     legend = ('<div class="pmc-legend"><span class="pmc-k pmc-k-ours">Our line</span>'
               + ('<span class="pmc-k pmc-k-vegas">Vegas</span>' if "h_vegas" in series else "")
               + f'<span class="pmc-what">{escape(what)}</span></div>')
@@ -403,10 +488,10 @@ def moves_html(g):
                 else f"{t:%a} {t.month}/{t.day}<small>{t:%-I:%M %p}</small>")
         flip = '<small class="pm-flip">Switched</small>' if prev and prev != m["pick"] else ""
         cls = ' class="is-flip"' if flip else ""
-        vegas = escape(m.get("vegas") or "") or '<span class="faint">None yet</span>'
+        vegas = escape(named(g, m.get("vegas") or "")) or '<span class="faint">None yet</span>'
         rows.append(f'<tr{cls}><td class="pm-when">{when}</td>'
-                    f'<td><b>{escape(str(m["pick"]))} {m["prob"]:.0f}%</b>{flip}</td>'
-                    + (f'<td>{escape(m.get("ours") or "")}</td>' if has_ours else "") +
+                    f'<td><b>{escape(str(label_of(g, m["pick"])))} {m["prob"]:.0f}%</b>{flip}</td>'
+                    + (f'<td>{escape(named(g, m.get("ours") or ""))}</td>' if has_ours else "") +
                     f'<td>{vegas}</td></tr>')
         prev = m["pick"]
     head = f'<tr><th>When</th><th>Our pick</th>{"<th>Our line</th>" if has_ours else ""}<th>Vegas</th></tr>'
@@ -466,11 +551,11 @@ def ml_fact(g):
     if not ml:
         return ("Moneyline", '<span class="faint">No price posted</span>', "")
     sub = f"{payout_text(ml['price'])}. We say {g['prob']:.0f}%, the price says {ml['book']:.0f}%."
-    return ("Moneyline", f"{escape(g['pick'])} {price_text(ml['price'])}", sub)
+    return ("Moneyline", f"{escape(label_of(g, g['pick']))} {price_text(ml['price'])}", sub)
 
 
 def game_page_body(g, back_href="index.html", back_text="All picks"):
-    a, h = g["away"], g["home"]
+    a, h, names = g["away"], g["home"], names_teams(g)
     at = "vs" if g.get("neutral") else "@"
     result = result_line(g)
     res_pill = ""
@@ -482,20 +567,21 @@ def game_page_body(g, back_href="index.html", back_text="All picks"):
         note += f'<div class="gh-lock">{g["note"]}</div>'
     hero = f"""<section class="card game-hero">
     <div class="gh-when">{escape(g.get("label") or "")}</div>
-    <div class="gh-teams">{_team(a, g["pick"] == a["abbr"])}<div class="gh-at">{at}</div>{_team(h, g["pick"] == h["abbr"])}</div>
+    <div class="gh-teams">{_team(a, g["pick"] == a["abbr"], names)}<div class="gh-at">{at}</div>{_team(h, g["pick"] == h["abbr"], names)}</div>
     <div class="gh-verdict"><span class="rb-eyebrow">Our pick</span>
-      <span class="gh-big">{escape(g["pick"])} {g["prob"]:.0f}<small>%</small></span>
-      <span class="gh-sub">{escape(g.get("pick_sub") or f"chance to beat {g['other']}")}</span>{note}</div>
+      <span class="gh-big">{escape(label_of(g, g["pick"]))} {g["prob"]:.0f}<small>%</small></span>
+      <span class="gh-sub">{escape(named(g, g.get("pick_sub") or "") or f"chance to beat {named(g, g['other'])}")}</span>{note}</div>
   </section>"""
     facts = [ml_fact(g)] + list(g.get("facts") or [])
     if g.get("version") and not g.get("final"):  # the version making this pick, named for the day it was added
         facts.append(("Model version", escape(g["version"]), g.get("version_note") or "named for the day it was added"))
-    dl = "".join(f'<div><dt>{escape(label)}</dt><dd>{value}{f"<small>{escape(sub)}</small>" if sub else ""}</dd></div>'
+    dl = "".join(f'<div><dt>{escape(label)}</dt><dd>{named(g, value, html=True)}'
+                 f'{f"<small>{escape(named(g, sub))}</small>" if sub else ""}</dd></div>'
                  for label, value, sub in facts)
     panels = ""
     why = why_html(g)
     if why:
-        panels += _card(f"Why the model likes {escape(g['pick'])}", why)
+        panels += _card(f"Why the model likes {escape(label_of(g, g['pick']))}", why)
     panels += _card("The matchup", f'<dl class="gh-facts">{dl}</dl>')
     rng = range_html(g)
     if rng:
@@ -535,11 +621,13 @@ def _when(g):
             return ""
 
 
-def _logo(t):
-    """The team's logo over its abbreviation, which shows if the image can't load."""
+def _logo(t, name=None):
+    """The team's logo over its abbreviation (college and soccer: its name,
+    wrapped small), which shows if the image can't load."""
     img = (f'<img src="{escape(t["logo"])}" alt="" loading="lazy" onerror="this.remove()">'
            if t.get("logo") else "")
-    return f'<span class="gc-logo" aria-hidden="true"><em>{escape(t["abbr"][:4])}</em>{img}</span>'
+    under = f'<em class="is-name">{escape(name)}</em>' if name else f'<em>{escape(t["abbr"][:4])}</em>'
+    return f'<span class="gc-logo" aria-hidden="true">{under}{img}</span>'
 
 
 def _side_number(g, side):
@@ -581,16 +669,18 @@ def game_card(g, top=False):
     for side in ("away", "home"):
         t = g[side]
         rec = f"<small>{escape(t['record'])}</small>" if t.get("record") else ""
-        rows += (f'<div class="gc-team{" is-lead" if _leads(g, side) else ""}">{_logo(t)}'
+        rows += (f'<div class="gc-team{" is-lead" if _leads(g, side) else ""}">{_logo(t, team_label(g, t) if names_teams(g) else None)}'
                  f'<span class="gc-name"><b>{escape(t.get("name") or t["abbr"])}</b>{rec}</span>'
                  f'<span class="gc-num">{_side_number(g, side)}</span></div>')
     lines = ""
     if g.get("lines"):
-        cells = "".join(f'<div><dt>{escape(label)}</dt><dd class="{cls}">{value}'
-                        f'{f"<small>{sub}</small>" if sub else ""}</dd></div>'
+        cells = "".join(f'<div><dt>{escape(label)}</dt><dd class="{cls}">{named(g, value, html=True)}'
+                        f'{f"<small>{named(g, sub, html=True)}</small>" if sub else ""}</dd></div>'
                         for label, value, cls, sub in g["lines"])
         lines = f'<dl class="gc-lines" style="--cols:{len(g["lines"])}">{cells}</dl>'
     pick_name = g.get("pick_name") or (g["home"]["name"] if g["pick"] == g["home"]["abbr"] else g["away"]["name"])
+    if names_teams(g) and g.get("pick_name") != "Draw":
+        pick_name = label_of(g, g["pick"])
     ml = g.get("ml") or {}
     odds = f'<span class="gc-odds">{price_text(ml["price"])}</span>' if ml.get("price") is not None else ""
     res = ""
@@ -618,7 +708,7 @@ def _day_name(iso):
 
 def _slate_side(g, side):
     t = g[side]
-    return {"abbr": t["abbr"], "name": t.get("name") or t["abbr"], "logo": t.get("logo") or "",
+    return {"abbr": t["abbr"], "name": team_label(g, t) if names_teams(g) else t.get("name") or t["abbr"], "logo": t.get("logo") or "",
             "score": t.get("score") if g.get("final") else None}
 
 
@@ -707,6 +797,8 @@ def slate_entry(g):
     ml = g.get("ml") or {}
     return {"sport": g["sport"], "id": g["id"], "url": g["url"], "start": g.get("start"), "date": g["date"],
             "away": g["away"]["abbr"], "home": g["home"]["abbr"], "at": "vs" if g.get("neutral") else "@",
+            # College and soccer: how the home page names each team (index.html teamName).
+            **({"away_name": team_label(g, g["away"]), "home_name": team_label(g, g["home"])} if names_teams(g) else {}),
             "pick": g["pick"], "other": g["other"], "prob": round(g["prob"], 1),
             "price": int(round(ml["price"])) if ml.get("price") is not None else None,
             "book": round(ml["book"], 1) if ml.get("book") is not None else None, "value": bool(ml.get("value")),
@@ -727,7 +819,8 @@ def recap_text(g):
     """'NYY 9-0' when our pick won, 'HOU lost 6-3' when it lost."""
     a, h = g["away"], g["home"]
     mine, theirs = (a["score"], h["score"]) if g["pick"] == a["abbr"] else (h["score"], a["score"])
-    return f"{g['pick']} {mine}-{theirs}" if g.get("hit") else f"{g['pick']} lost {theirs}-{mine}"
+    pick = label_of(g, g["pick"])
+    return f"{pick} {mine}-{theirs}" if g.get("hit") else f"{pick} lost {theirs}-{mine}"
 
 
 def last_day(games, hitters=None):
