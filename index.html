@@ -1681,10 +1681,15 @@ function render(sums) {
     board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
                  streak: seasonOver(lg) ? "Final" : streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
   });
-  // MLB hitters sit under the game picks: top hitters who got a hit (no streak).
+  // MLB hitters sit right under the MLB game picks: top hitters who got a hit (no streak).
   const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
   const rows = board.slice();
-  if (hits && hits[0] + hits[1]) rows.push({ lg: "MLB hitters", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: seasonOver("MLB") ? "Final" : "" });
+  if (hits && hits[0] + hits[1]) {
+    const at = rows.findIndex(b => b.lg === "MLB");
+    rows.splice(at < 0 ? rows.length : at + 1, 0, { lg: "MLB hitters", sp: "MLB", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: seasonOver("MLB") ? "Final" : "" });
+  }
+  // Sports whose season is over drop to the bottom, keeping their order.
+  rows.sort((a, b) => !!seasonOver(a.sp || a.lg) - !!seasonOver(b.sp || b.lg));
   $("boardRows").innerHTML = rows.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td>${b.streak ? `<span class="streak">${b.streak}</span>` : ""}</td></tr>`).join("");
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
   $("boardYear").textContent = "Picks to win · " + today.slice(0, 4);
