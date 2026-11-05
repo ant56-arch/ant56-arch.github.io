@@ -22,10 +22,8 @@
   ];
   const on = {};
   OPTS.forEach(([k]) => { on[k] = store.get("lab-" + k) !== "0"; });
-  // 3D players: on by default in the lab (basketball); turn off in the panel or with ?lab3d=0
-  OPTS.push(["three", "3D players (basketball)"]);
-  const q3d = new URLSearchParams(location.search).get("lab3d");
-  on.three = q3d ? q3d === "1" : store.get("lab-three") !== "0";
+  // 3D players: shelved (glitchy, no basketball motions); only with ?lab3d=1
+  on.three = new URLSearchParams(location.search).get("lab3d") === "1";
   let three = null;
   function loadThree() {
     if (three || !on.three) return;
@@ -173,23 +171,36 @@
     SPORT.court = {
       indoor: true, zn: 7, zf: zc + 7.62, h: 7.5, ax: 8, az: zc, D: 6.8, surface: [138, 100, 64],
       marks(g) {
-        const L = 14.33, n = 7, f = zc + 7.62;
-        g.fillPoly([[-L, n], [L, n], [L, f], [-L, f]], "rgba(160,116,72,1)");
-        g.stripes(-L, L, n, f, 32, "rgba(255,255,255,.035)", "rgba(0,0,0,.05)");
+        const L = 14.33, n = 7, f = zc + 7.62, A = 2.4;
+        g.fillPoly([[-L - 9, n - 3], [L + 9, n - 3], [L + 9, f + 3.2], [-L - 9, f + 3.2]], "#1C2622");      // the apron, stained dark
+        g.planks(-L, L, n - 3, f, 0.36, [158, 112, 70]);                                          // the playing floor
+        g.planks(-L - A, -L, n - 3, f + 1.2, 0.36, [92, 62, 40]); g.planks(L, L + A, n - 3, f + 1.2, 0.36, [92, 62, 40]);
+        g.planks(-L, L, f, f + 1.2, 0.36, [92, 62, 40]);
         [-1, 1].forEach(s => {                                                   // painted keys
-          g.fillPoly([[s * L, zc - 2.45], [s * (L - 5.8), zc - 2.45], [s * (L - 5.8), zc + 2.45], [s * L, zc + 2.45]], "rgba(229,121,59,.34)");
+          g.fillPoly([[s * L, zc - 2.45], [s * (L - 5.8), zc - 2.45], [s * (L - 5.8), zc + 2.45], [s * L, zc + 2.45]], "rgba(190,84,38,.78)");
         });
-        g.line([[-L, n], [L, n], [L, f], [-L, f], [-L, n]], 2.2);
-        g.line([[0, n], [0, f]], 2);
-        g.circle(0, zc, 1.83, 2);
+        g.ellipseW(0, zc, 1.83, "rgba(190,84,38,.78)");                            // center circle
+        g.ellipseW(0, zc, 0.61, "rgba(28,38,34,.85)");
+        // the lamps shine in the finish
+        [-9.5, -3.2, 3.2, 9.5].forEach((X, i) => g.sheen(X, f - 2.2 - (i % 2) * 1.5, 3.4, 9, 0.16));
+        const C = "rgba(250,246,238,.82)";
+        g.line([[-L, n], [L, n], [L, f], [-L, f], [-L, n]], 2.4, C);
+        g.line([[0, n], [0, f]], 2, C);
+        g.circle(0, zc, 1.83, 2, C); g.circle(0, zc, 0.61, 1.6, C);
         [-1, 1].forEach(s => {
-          g.line([[s * L, zc - 2.45], [s * (L - 5.8), zc - 2.45], [s * (L - 5.8), zc + 2.45], [s * L, zc + 2.45]], 1.8);
-          g.circle(s * (L - 5.8), zc, 1.83, 1.8);
+          g.line([[s * L, zc - 2.45], [s * (L - 5.8), zc - 2.45], [s * (L - 5.8), zc + 2.45], [s * L, zc + 2.45]], 1.9, C);
+          g.circle(s * (L - 5.8), zc, 1.83, 1.8, C);
+          g.arcLine(s * 12.7, zc, 1.22, s > 0 ? -Math.PI : 0, s > 0 ? 0 : Math.PI, 1.4, C);         // restricted area
+          [1, 2, 3].forEach(i => { const X = s * (L - 2.1 - i * 0.95); g.line([[X, zc - 2.45], [X, zc - 2.75]], 1.6, C); g.line([[X, zc + 2.45], [X, zc + 2.75]], 1.6, C); });
           const k3 = Math.asin(6.7 / 7.24), mid3 = s > 0 ? -Math.PI / 2 : Math.PI / 2;   // the arc meets the corner lines
-          g.arcLine(s * 12.7, zc, 7.24, mid3 - k3, mid3 + k3, 1.8);
-          const c3 = 12.7 - 7.24 * Math.cos(k3); g.line([[s * L, zc - 6.7], [s * c3, zc - 6.7]], 1.8); g.line([[s * L, zc + 6.7], [s * c3, zc + 6.7]], 1.8);
+          g.arcLine(s * 12.7, zc, 7.24, mid3 - k3, mid3 + k3, 1.9, C);
+          const c3 = 12.7 - 7.24 * Math.cos(k3); g.line([[s * L, zc - 6.7], [s * c3, zc - 6.7]], 1.9, C); g.line([[s * L, zc + 6.7], [s * c3, zc + 6.7]], 1.9, C);
         });
-        g.ellipseW(0, zc, 1.83, "rgba(229,121,59,.28)");
+        g.text("EDGE", 0, zc, 0.7);
+        // courtside: the scorer's table across the far sideline, a glowing strip on its face
+        g.panel(-5.2, 5.2, f + 1.9, 0, 0.78, "#121816");
+        g.panel(-5.2, 5.2, f + 1.9, 0.42, 0.62, "rgba(229,121,59,.75)");
+        [-1, 1].forEach(s => { for (let i = 0; i < 7; i++) g.panel(s * (6.6 + i * 0.75), s * (6.6 + i * 0.75) + 0.5 * s, f + 2.2, 0, 0.9, "#0E1412"); });   // bench seats
         [-1, 1].forEach(s => g.hoop(s, zc));
       },
       goal: B,
@@ -842,16 +853,48 @@
         x.save(); x.fillStyle = "rgba(242,238,230,.5)"; x.font = `700 ${px.toFixed(1)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
         x.translate(p[0], p[1]); x.scale(1, 0.45); x.fillText(v, 0, 0); x.restore();
       },
+      // hardwood: boards running the length of the floor, each plank its own shade
+      planks(x0, x1, z0, z1, w, base) {
+        for (let z = z0; z < z1; z += w) {
+          let X = x0 - rnd() * 3;
+          while (X < x1) {
+            const len = 1.8 + rnd() * 3.4, k = 0.9 + rnd() * 0.16, X1 = Math.min(x1, X + len);
+            gfx.fillPoly([[Math.max(x0, X), z], [X1, z], [X1, Math.min(z1, z + w)], [Math.max(x0, X), Math.min(z1, z + w)]], rgb(base.map(v => v * k)));
+            X = X1;
+          }
+          gfx.line([[x0, z], [x1, z]], 0.5, "rgba(40,22,10,.22)");
+        }
+      },
+      // the shine of a lamp on a polished floor, stretched toward the camera
+      sheen(X, Z, rx, rz, a) {
+        const p = P(X, Z), sx = rx * cam.s(Z), sz = rz * cam.s(Z) * 0.6;
+        x.save(); x.globalCompositeOperation = "screen"; x.translate(p[0], p[1]); x.scale(1, sz / sx);
+        const g = x.createRadialGradient(0, 0, 0, 0, 0, sx);
+        g.addColorStop(0, `rgba(255,226,180,${a})`); g.addColorStop(0.5, `rgba(255,214,160,${a * 0.35})`); g.addColorStop(1, "rgba(255,210,150,0)");
+        x.fillStyle = g; x.beginPath(); x.arc(0, 0, sx, 0, Math.PI * 2); x.fill(); x.restore();
+      },
+      // an upright panel facing the camera (tables, boards, padding)
+      panel(X0, X1, Z, Y0, Y1, color) {
+        const a = cam.P(X0, Y1, Z), b = cam.P(X1, Y0, Z);
+        x.fillStyle = color; x.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]);
+      },
       // things that stand up off the field
       post(X, Z, Y0, Y1, wd, color) { const a = P(X, Z, Y0), b = P(X, Z, Y1); x.strokeStyle = color; x.lineWidth = wd; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); },
       seg3(a, b, wd, color) { const p = cam.P(...a), q = cam.P(...b); x.strokeStyle = color; x.lineWidth = wd; x.beginPath(); x.moveTo(p[0], p[1]); x.lineTo(q[0], q[1]); x.stroke(); },
       hoop(s, zc) {
-        const bx = s * 13.1, s0 = cam.s(zc);
-        gfx.post(s * 14.4, zc, 0, 3.3, Math.max(2, 0.14 * s0), "#14181A");
-        gfx.seg3([s * 14.4, 3.3, zc], [bx, 3.3, zc], Math.max(2, 0.1 * s0), "#14181A");
-        const tl = cam.P(bx, 4.0, zc - 0.9), br = cam.P(bx, 2.95, zc + 0.9), tr = cam.P(bx, 4.0, zc + 0.9), bl = cam.P(bx, 2.95, zc - 0.9);
-        x.fillStyle = "rgba(242,238,230,.16)"; x.strokeStyle = "rgba(242,238,230,.85)"; x.lineWidth = Math.max(1.2, 0.04 * s0);
-        x.beginPath(); x.moveTo(tl[0], tl[1]); x.lineTo(tr[0], tr[1]); x.lineTo(br[0], br[1]); x.lineTo(bl[0], bl[1]); x.closePath(); x.fill(); x.stroke();
+        const bx = s * 13.1, s0 = cam.s(zc), dark = "#15191B";
+        // padded base off the baseline, the pole up and over, the arm out to the board
+        const bz = zc + 0.5;
+        gfx.panel(s * 15.2 - 0.6, s * 15.2 + 0.6, bz, 0, 0.9, "#1B2226");
+        gfx.panel(s * 15.2 - 0.6, s * 15.2 + 0.6, bz, 0.78, 0.9, "rgba(229,121,59,.85)");
+        gfx.seg3([s * 15.2, 0.9, bz], [s * 15.0, 3.6, zc], Math.max(2, 0.16 * s0), dark);
+        gfx.seg3([s * 15.0, 3.6, zc], [bx, 3.45, zc], Math.max(2, 0.12 * s0), dark);
+        gfx.seg3([s * 15.05, 2.4, zc], [bx, 3.2, zc], Math.max(1, 0.06 * s0), dark);
+        const q = (Y, Z) => cam.P(bx, Y, Z), quad = (y0, y1, z0, z1) => { const pts = [q(y1, z0), q(y1, z1), q(y0, z1), q(y0, z0)]; x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); };
+        quad(2.95, 4.02, zc - 0.915, zc + 0.915); x.fillStyle = "rgba(220,232,236,.18)"; x.fill();
+        x.strokeStyle = "rgba(250,248,242,.95)"; x.lineWidth = Math.max(1.4, 0.05 * s0); x.stroke();
+        quad(3.1, 3.55, zc - 0.3, zc + 0.3); x.lineWidth = Math.max(1, 0.035 * s0); x.stroke();      // the shooter's square
+        quad(2.9, 2.98, zc - 0.915, zc + 0.915); x.fillStyle = "rgba(229,121,59,.9)"; x.fill();      // padding along the bottom
       },
       goalpost(X, Z) {
         const s0 = cam.s(Z), c = "rgba(238,206,96,.95)", wd = Math.max(1.5, 0.12 * s0);
@@ -923,13 +966,37 @@
 
   // ---------- players and the ball ----------
   const kind0 = sp => Object.keys(SPORT).find(k => SPORT[k] === sp);
+  // A player, drawn as an illustration: tapered limbs with real knees and
+  // elbows (two-bone, fixed lengths), the far arm and leg in shadow behind the
+  // body, a shaded jersey with the number printed on it, shorts or pants and
+  // socks for the sport, shoes with soles, a neck, hair, caps and helmets.
+  // Running plants one foot and swings the other; arms pump against the legs.
+  const shade = (c, k) => c.map(v => Math.max(0, Math.min(255, v * k)));
+  const lum8 = c => 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+  function limb(x, a, b, w0, w1, col) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1e-3, nx = -dy / L, ny = dx / L;
+    x.fillStyle = col; x.beginPath();
+    x.moveTo(a[0] + nx * w0 / 2, a[1] + ny * w0 / 2); x.lineTo(b[0] + nx * w1 / 2, b[1] + ny * w1 / 2);
+    x.lineTo(b[0] - nx * w1 / 2, b[1] - ny * w1 / 2); x.lineTo(a[0] - nx * w0 / 2, a[1] - ny * w0 / 2); x.closePath(); x.fill();
+    x.beginPath(); x.arc(a[0], a[1], w0 / 2, 0, Math.PI * 2); x.arc(b[0], b[1], w1 / 2, 0, Math.PI * 2); x.fill();
+  }
+  // knee or elbow for a two-bone limb from a to b, bent toward side (+1 forward)
+  function joint(a, b, l1, l2, dir, side) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], D = Math.min(Math.hypot(dx, dy), (l1 + l2) * 0.999) || 1e-3;
+    const u = (l1 * l1 - l2 * l2 + D * D) / (2 * D), h = Math.sqrt(Math.max(0, l1 * l1 - u * u));
+    const ux = dx / (Math.hypot(dx, dy) || 1), uy = dy / (Math.hypot(dx, dy) || 1);
+    let px = -uy, py = ux; if (px * dir * side < 0) { px = -px; py = -py; }
+    return [a[0] + ux * u + px * h, a[1] + uy * u + py * h];
+  }
   function figure(x, cam, p, t, sp) {
-    const s = cam.s(p.Z), hgt = 1.9 * s * (p.crouch || 1);
+    const s = cam.s(p.Z), K = kind0(sp), hgt = 1.9 * s * (p.crouch || 1);
     const foot = cam.P(p.X, 0, p.Z), lift = (p.Y || 0) * s;
     const fx = foot[0], fy = foot[1] - lift;
-    x.fillStyle = "rgba(0,0,0,.32)";
-    x.beginPath(); x.ellipse(fx, foot[1], 0.42 * s, 0.11 * s, 0, 0, Math.PI * 2); x.fill();
     const kit = p.kit, jersey = kit ? hex(kit[2]) : p.team, skin = p.skin || "#B07A4E";
+    // contact shadow, smaller and softer while in the air
+    const air = clamp((p.Y || 0) / 0.6);
+    x.fillStyle = `rgba(0,0,0,${0.34 - 0.18 * air})`;
+    x.beginPath(); x.ellipse(fx, foot[1], (0.42 - 0.12 * air) * s, (0.11 - 0.03 * air) * s, 0, 0, Math.PI * 2); x.fill();
     if (hgt < 5) { x.fillStyle = rgb(jersey); x.fillRect(fx - 1, fy - hgt, 2, hgt); return; }
     // moving? compare with where this player was a moment ago
     let speed = 0, dir = p.face || 1;
@@ -939,90 +1006,181 @@
       if (Math.abs(r.X - q.X) > 0.02) dir = r.X > q.X ? 1 : -1;
     }
     if (p.run) speed = 5;
-    // the stride follows the ground covered: one step per 1.2 m running, one push per 2.4 m skating
     const run = clamp(speed / 3.5);
     const ph = p.keys ? travel(p.keys, t - (p.lag || 0)) / (sp.skate ? 2.4 : 1.2) * Math.PI + (p.X * 7 % 3) : t * (sp.skate ? 5 : 10) + p.X;
-    const stride = (p.Y ? 0.08 : (sp.skate ? 0.2 : 0.2) * run) * hgt;
-    // running: the body rises off each step and leans into the run; standing: a little weight shift
-    const bob = sp.skate || p.Y ? 0 : Math.abs(Math.cos(ph)) * 0.035 * hgt * run;
-    const hip = fy - 0.5 * hgt - bob, sh = fy - 0.8 * hgt - bob, hr = 0.072 * hgt;
-    const lean = dir * (sp.skate ? 0.12 : 0.07) * run * hgt + (1 - run) * Math.sin(t * 1.7 + p.X) * 0.012 * hgt;
-    const lw = Math.max(1.2, 0.085 * hgt);
-    x.lineCap = "round";
     if (sp.skate) {
       const d = p.face || 1, bl = cam.P(p.X + d * (p.goalie ? 0.55 : 0.95), 0, p.Z - 0.4);
       return skater(x, p, { fx, fy, hgt, jersey, skin, kit, run, ph, d, blade: [bl[0], bl[1] - lift] });
     }
-    [1, -1].forEach(d => {                                            // legs: thighs, bent knees, shins
+    const H = hgt, guard = p.arms === "guard" && !p.Y;
+    const seed = kit && kit[0] ? [...String(kit[0])].reduce((a, ch) => a + ch.charCodeAt(0), 0) : Math.round(p.X * 13);
+    // body proportions (fractions of standing height)
+    const TH = 0.245 * H, SH = 0.245 * H, UA = 0.165 * H, FA = 0.155 * H;
+    const bob = p.Y ? 0 : Math.abs(Math.cos(ph)) * 0.03 * H * run + (1 - run) * Math.sin(t * 1.9 + seed) * 0.004 * H;
+    const drop = guard ? 0.06 * H : 0.012 * H + 0.03 * H * run + (p.Y ? 0.05 * H : 0);
+    const hipY = fy - 0.485 * H + drop + bob;
+    const lean = dir * (0.1 * run + (guard ? 0.06 : 0)) * H + (1 - run) * Math.sin(t * 1.7 + p.X) * 0.008 * H;
+    const hip = [fx + lean * 0.15, hipY], shY = hipY - 0.29 * H, sh = [fx + lean, shY];
+    // sport kit pieces
+    const white = lum8(jersey) > 205, trim = kit ? hex(kit[3]) : [240, 240, 240];
+    let shorts, pantsTo, sock = null, sleeve = 0, sleeveCol = jersey, shoe = [24, 24, 26], sole = [235, 232, 225];
+    if (K === "court") { shorts = jersey; pantsTo = 0.82; sock = [238, 236, 232]; shoe = seed % 3 ? [24, 24, 26] : [236, 234, 228]; sole = seed % 3 ? [235, 232, 225] : [40, 40, 42]; }
+    else if (K === "pitch") { shorts = white ? trim : (lum8(trim) > 200 ? [242, 242, 240] : shade(jersey, 0.9)); pantsTo = 0.42; sock = shade(jersey, 0.95); sleeve = 0.55; }
+    else if (K === "park") { shorts = jersey; pantsTo = 1.55; sock = trim; sleeve = 1; sleeveCol = shade(trim, 0.9); }
+    else if (K === "gridiron") { shorts = white ? shade(trim, 0.95) : [233, 228, 214]; pantsTo = 1.15; sock = white ? trim : jersey; sleeve = 0.35; }
+    else { shorts = shade(jersey, 0.7); pantsTo = 1; }
+    const skinA = hex(skin);
+    // feet: running plants one foot and swings the other; standing spreads them; jumping tucks them
+    const stride = (p.Y ? 0.06 : 0.24 * run) * H;
+    const feet = [1, -1].map(d => {
       const phi = ph + (d > 0 ? 0 : Math.PI);
-      let ex = fx + Math.sin(phi) * stride * dir, ey = fy - (p.Y ? (d > 0 ? 0.05 : 0.08) * hgt : Math.max(0, Math.cos(phi)) * 0.07 * hgt * run);
-      if (p.kick != null && d > 0) {                                   // a shot or a header's jump: the kicking leg swings through
+      let ex = fx + Math.sin(phi) * stride * dir + (1 - run) * d * (guard ? 0.07 : 0.045) * H * dir;
+      let ey = fy - Math.max(0, Math.cos(phi)) * 0.11 * H * run;
+      if (p.Y) { ex = fx + d * 0.05 * H * dir; ey = fy - (d > 0 ? 0.07 : 0.11) * H; }
+      if (p.kick != null && d > 0) {                                    // a shot or a header's jump: the kicking leg swings through
         const u = Math.sin(Math.PI * clamp(p.kick));
-        ex = fx + dir * (lerp(-0.18, 0.34, clamp(p.kick)) * hgt); ey = fy - u * 0.24 * hgt;
+        ex = fx + dir * (lerp(-0.2, 0.36, clamp(p.kick)) * H); ey = fy - u * 0.26 * H;
       }
-      const bend = (0.05 + 0.06 * run) * hgt * (p.kick != null && d > 0 ? 0.4 : 1);
-      const kx = lerp(fx, ex, 0.5) + dir * bend, ky = lerp(hip, ey, 0.5);
-      x.strokeStyle = sp.skate || kind0(sp) === "park" ? rgb(jersey.map(v => v * 0.8)) : skin; x.lineWidth = lw * 0.9;
-      x.beginPath(); x.moveTo(kx, ky); x.lineTo(ex, ey); x.stroke();
-      x.strokeStyle = rgb(jersey.map(v => v * 0.72)); x.lineWidth = lw * 1.25;
-      x.beginPath(); x.moveTo(fx + d * 0.05 * hgt, hip); x.lineTo(kx, ky); x.stroke();
-      x.fillStyle = "#121314"; x.fillRect(ex - lw * 0.6, ey - lw * 0.4, lw * 1.4, lw * 0.6);
+      return { d, phi, e: [ex, ey] };
     });
-    // jersey
-    const bw = 0.27 * hgt;
-    x.fillStyle = rgb(jersey);
-    x.beginPath();
-    x.moveTo(fx - bw * 0.42, hip + 0.04 * hgt); x.lineTo(fx + bw * 0.42, hip + 0.04 * hgt);
-    x.lineTo(fx + bw * 0.5 + lean, sh); x.lineTo(fx - bw * 0.5 + lean, sh); x.closePath(); x.fill();
-    if (kit && kit[4] && hgt > 14) {                                     // striped kits
-      x.save(); x.clip();
-      x.strokeStyle = kit[4]; x.lineWidth = Math.max(1, bw * (kit[4] === kit[3] ? 0.04 : 0.14));
-      for (let k = -2; k <= 2; k++) { const sx0 = fx + lean * 0.5 + k * bw * 0.26; x.beginPath(); x.moveTo(sx0, sh); x.lineTo(sx0, hip + 0.04 * hgt); x.stroke(); }
-      x.restore();
+    // arms: angle from straight down, + is forward (toward dir); elbow bends forward
+    const swing = d => -Math.sin(ph + (d > 0 ? 0 : Math.PI)) * 0.75 * run;
+    let A = { 1: [swing(1), 0.35 + 1.15 * run], [-1]: [swing(-1), 0.35 + 1.15 * run] };
+    if (!run) A = { 1: [0.12 + Math.sin(t * 1.3 + seed) * 0.03, 0.25], [-1]: [-0.05, 0.3] };
+    if (p.arms === "up") A = { 1: [2.85, 0.1], [-1]: [2.7, 0.15] };
+    else if (p.arms === "shoot") A = { 1: [2.35, 0.75], [-1]: [2.0, 0.7] };
+    else if (p.arms === "dribble") { const b = Math.abs(Math.sin(t * 6.5)); A = { 1: [0.55 + 0.15 * b, 0.55 - 0.35 * b], [-1]: [1.25, 0.35] }; }
+    else if (guard) A = { 1: [1.35, 0.35], [-1]: [2.45, 0.2] };
+    else if (p.throw != null) { const u = ease(clamp(p.throw)); A = { 1: [lerp(-2.4, 2.1, u), lerp(1.4, 0.2, u)], [-1]: [1.2, 0.6] }; }
+    else if (p.bat != null) A = { 1: [1.1, 1.6], [-1]: [0.9, 1.7] };
+    const arm = d => {
+      const [a1, a2] = A[d], s0 = [sh[0] + d * dir * 0.105 * H * (K === "gridiron" ? 1.2 : 1), shY + 0.035 * H];
+      const e = [s0[0] + Math.sin(a1) * UA * dir, s0[1] + Math.cos(a1) * UA];
+      const h = [e[0] + Math.sin(a1 + a2) * FA * dir, e[1] + Math.cos(a1 + a2) * FA];
+      return { s0, e, h };
+    };
+    const W = 0.11 * H;                                                // a thigh's width
+    const drawLeg = (f, far) => {
+      const k = far ? 0.72 : 1, hp = [hip[0] - f.d * 0.012 * H * dir, hip[1]];
+      const kn = joint(hp, f.e, TH, SH, dir, 1);
+      const sk = shade(skinA, k);
+      limb(x, kn, f.e, 0.072 * H, 0.05 * H, rgb(sk));                  // shin
+      limb(x, hp, kn, W, 0.075 * H, rgb(sk));                          // thigh
+      if (sock) {                                                      // socks up the shin
+        const top = K === "court" ? 0.32 : K === "park" ? 0.55 : 0.82;
+        limb(x, [lerp(f.e[0], kn[0], top), lerp(f.e[1], kn[1], top)], f.e, 0.066 * H, 0.054 * H, rgb(shade(sock, k)));
+      }
+      // shorts or pants: down the thigh, past the knee for long pants
+      if (pantsTo <= 1) limb(x, hp, [lerp(hp[0], kn[0], pantsTo), lerp(hp[1], kn[1], pantsTo)], W * (K === "court" ? 1.35 : 1.15), W * (K === "court" ? 1.25 : 1.05), rgb(shade(shorts, k * 0.94)));
+      else {
+        limb(x, hp, kn, W * 1.12, W * 0.9, rgb(shade(shorts, k * 0.94)));
+        const u = pantsTo - 1; limb(x, kn, [lerp(kn[0], f.e[0], u), lerp(kn[1], f.e[1], u)], W * 0.86, W * 0.7, rgb(shade(shorts, k * 0.94)));
+      }
+      // shoe: heel to toe, with a sole
+      const L = 0.12 * H, hh = 0.04 * H, toe = [f.e[0] + dir * L * 0.7, f.e[1]], heel = [f.e[0] - dir * L * 0.3, f.e[1]];
+      x.fillStyle = rgb(shade(shoe, k)); x.beginPath();
+      x.moveTo(heel[0], heel[1]); x.lineTo(toe[0], toe[1]); x.quadraticCurveTo(toe[0] + dir * hh * 0.3, toe[1] - hh * 1.1, f.e[0] + dir * L * 0.1, f.e[1] - hh * 1.3);
+      x.lineTo(heel[0], heel[1] - hh * 1.2); x.closePath(); x.fill();
+      x.fillStyle = rgb(shade(sole, k)); x.fillRect(Math.min(heel[0], toe[0]), f.e[1] - hh * 0.3, Math.abs(toe[0] - heel[0]), Math.max(1, hh * 0.35));
+      return kn;
+    };
+    const drawArm = (d, far) => {
+      const k = far ? 0.72 : 1, { s0, e, h } = arm(d), sk = rgb(shade(skinA, k));
+      limb(x, e, h, 0.055 * H, 0.045 * H, sk);
+      limb(x, s0, e, 0.07 * H, 0.056 * H, sk);
+      if (sleeve) {
+        const u = Math.min(1, sleeve); limb(x, s0, [lerp(s0[0], e[0], u), lerp(s0[1], e[1], u)], 0.085 * H, 0.072 * H, rgb(shade(sleeveCol, k * 0.95)));
+        if (sleeve > 0.9) limb(x, e, [lerp(e[0], h[0], 0.6), lerp(e[1], h[1], 0.6)], 0.064 * H, 0.056 * H, rgb(shade(sleeveCol, k * 0.95)));
+      }
+      x.fillStyle = sk; x.beginPath(); x.arc(h[0], h[1], 0.03 * H, 0, Math.PI * 2); x.fill();   // hand
+      return h;
+    };
+    // far side first, in shadow
+    const farLeg = feet.find(f => f.d < 0), nearLeg = feet.find(f => f.d > 0);
+    drawArm(-1, true);
+    drawLeg(farLeg, true);
+    drawLeg(nearLeg, false);
+    // torso: hips to shoulders, rounded at the shoulders, shaded away from the lamps
+    const hw = 0.105 * H, sw = (K === "gridiron" ? 0.175 : 0.14) * H, top = shY - 0.01 * H;
+    const torso = () => {
+      x.beginPath();
+      x.moveTo(hip[0] - hw, hipY + 0.03 * H); x.lineTo(hip[0] + hw, hipY + 0.03 * H);
+      x.quadraticCurveTo(sh[0] + sw * 1.02, lerp(hipY, top, 0.55), sh[0] + sw, top + 0.035 * H);
+      x.quadraticCurveTo(sh[0] + sw * 0.9, top, sh[0] + sw * 0.55, top);
+      x.lineTo(sh[0] - sw * 0.55, top);
+      x.quadraticCurveTo(sh[0] - sw * 0.9, top, sh[0] - sw, top + 0.035 * H);
+      x.quadraticCurveTo(sh[0] - sw * 1.02, lerp(hipY, top, 0.55), hip[0] - hw, hipY + 0.03 * H);
+      x.closePath();
+    };
+    torso();
+    const g = x.createLinearGradient(sh[0] - sw, top, sh[0] + sw, hipY);
+    g.addColorStop(0, rgb(shade(jersey, 1.08))); g.addColorStop(0.55, rgb(jersey)); g.addColorStop(1, rgb(shade(jersey, 0.72)));
+    x.fillStyle = g; x.fill();
+    x.save(); torso(); x.clip();
+    if (kit && kit[4] && H > 14) {                                     // striped kits
+      x.strokeStyle = kit[4]; x.lineWidth = Math.max(1, sw * (kit[4] === kit[3] ? 0.05 : 0.18));
+      for (let k = -3; k <= 3; k++) { const sx0 = sh[0] + k * sw * 0.36; x.beginPath(); x.moveTo(sx0, top); x.lineTo(sx0 + (hip[0] - sh[0]), hipY + 0.04 * H); x.stroke(); }
     }
-    x.fillStyle = "rgba(255,240,210,.3)"; x.fillRect(fx - bw * 0.5 + lean, sh, bw, Math.max(1, 0.03 * hgt));
-    if (kit && kit[1] && hgt > 20) {                                     // the number
-      x.fillStyle = kit[3]; x.font = `700 ${Math.round(0.15 * hgt)}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
-      x.fillText(String(kit[1]), fx + lean * 0.6, lerp(sh, hip, 0.45));
+    if (K === "court" && H > 18) {                                     // tank-top trim at the neck and arms, side panel
+      x.strokeStyle = rgb(trim); x.lineWidth = Math.max(1, 0.014 * H);
+      x.beginPath(); x.arc(sh[0], top - 0.005 * H, 0.05 * H, 0.15 * Math.PI, 0.85 * Math.PI); x.stroke();
     }
-    // arms
-    x.strokeStyle = skin; x.lineWidth = lw * 0.75;
-    const sx = fx + lean, arm = 0.3 * hgt;
-    x.beginPath();
-    if (p.arms === "up") { x.moveTo(sx - bw * 0.4, sh + 2); x.lineTo(sx - bw * 0.25, sh - arm); x.moveTo(sx + bw * 0.4, sh + 2); x.lineTo(sx + bw * 0.3, sh - arm); }
-    else if (p.arms === "shoot") {                                     // set shot: elbow under the ball, ball over the head
-      x.moveTo(sx - bw * 0.35, sh + 2); x.quadraticCurveTo(sx - bw * 0.5, sh - arm * 0.3, sx - bw * 0.1, sh - arm * 0.85);
-      x.moveTo(sx + bw * 0.35, sh + 2); x.quadraticCurveTo(sx + bw * 0.6, sh - arm * 0.35, sx + bw * 0.15, sh - arm * 0.95);
-    } else if (p.arms === "dribble") {                                 // one hand on the ball, the other out to shield it
-      const b = Math.abs(Math.sin(t * 6.5));
-      x.moveTo(sx + dir * bw * 0.45, sh + 2); x.lineTo(sx + dir * bw * 0.75, sh + arm * (0.75 + 0.2 * b));
-      x.moveTo(sx - dir * bw * 0.45, sh + 2); x.lineTo(sx - dir * bw * 0.95, sh + arm * 0.55);
-    } else if (p.throw != null) {                                      // the throwing arm comes back, then over the top
-      const u = clamp(p.throw), a = lerp(Math.PI * 0.95, Math.PI * 0.2, ease(u));
-      x.moveTo(sx + bw * 0.4, sh + 2); x.lineTo(sx - dir * Math.cos(a) * arm, sh - Math.sin(a) * arm * 0.9);
-      x.moveTo(sx - bw * 0.4, sh + 2); x.lineTo(sx + dir * bw * 0.8, sh + arm * 0.45);
-    } else if (p.arms === "guard") {                                   // defense: arms out
-      x.moveTo(sx - bw * 0.45, sh + 2); x.lineTo(sx - bw * 1.25, sh + arm * 0.35); x.moveTo(sx + bw * 0.45, sh + 2); x.lineTo(sx + bw * 1.25, sh + arm * 0.35);
-    } else { const sw = Math.sin(ph) * 0.12 * hgt * run; x.moveTo(sx - bw * 0.45, sh + 2); x.lineTo(sx - bw * 0.55 - sw, sh + arm); x.moveTo(sx + bw * 0.45, sh + 2); x.lineTo(sx + bw * 0.55 + sw, sh + arm); }
-    x.stroke();
-    if (p.stick) { x.strokeStyle = "#2A2420"; x.lineWidth = Math.max(1, lw * 0.5); x.beginPath(); x.moveTo(sx + bw * 0.5, sh + arm * 0.9); x.lineTo(fx + 0.9 * s, foot[1] - 0.02 * s - lift); x.stroke(); }
+    if (kit && kit[1] && H > 20) {                                     // the number, printed on the jersey
+      const n = String(kit[1]), fs = Math.round((n.length > 1 ? 0.12 : 0.13) * H);
+      x.font = `800 ${fs}px Archivo, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+      const nx = lerp(sh[0], hip[0], 0.45) + dir * 0.01 * H, ny = lerp(top, hipY, 0.5);
+      x.lineJoin = "round"; x.lineWidth = Math.max(1, fs * 0.14); x.strokeStyle = rgb(lum8(trim) > 150 ? shade(jersey, 0.45) : [245, 242, 235], 0.8);
+      x.strokeText(n, nx, ny); x.fillStyle = rgb(trim); x.fillText(n, nx, ny);
+    }
+    // a soft shadow at the waist and light along the shoulders
+    x.fillStyle = "rgba(0,0,0,.16)"; x.fillRect(hip[0] - hw * 1.2, hipY - 0.02 * H, hw * 2.4, 0.06 * H);
+    x.restore();
+    if (K === "gridiron") {                                            // shoulder pads read as a ridge
+      x.strokeStyle = rgb(shade(jersey, 1.12)); x.lineWidth = Math.max(1, 0.02 * H); x.lineCap = "round";
+      x.beginPath(); x.moveTo(sh[0] - sw * 0.9, top + 0.03 * H); x.quadraticCurveTo(sh[0], top - 0.025 * H, sh[0] + sw * 0.9, top + 0.03 * H); x.stroke();
+    }
+    x.strokeStyle = "rgba(255,236,200,.32)"; x.lineWidth = Math.max(0.8, 0.012 * H); x.lineCap = "round";
+    x.beginPath(); x.moveTo(sh[0] - sw * 0.75, top + 0.01 * H); x.lineTo(sh[0] + sw * 0.4, top + 0.005 * H); x.stroke();
+    // neck and head
+    const hr = 0.066 * H, head = [sh[0] + dir * 0.012 * H + lean * 0.12, top - 0.035 * H - hr];
+    limb(x, [sh[0], top + 0.01 * H], [head[0], head[1] + hr * 0.6], 0.055 * H, 0.05 * H, rgb(shade(skinA, 0.85)));
+    const hg = x.createRadialGradient(head[0] - hr * 0.35, head[1] - hr * 0.4, hr * 0.1, head[0], head[1], hr * 1.1);
+    hg.addColorStop(0, rgb(shade(skinA, 1.12))); hg.addColorStop(1, rgb(shade(skinA, 0.78)));
+    x.fillStyle = hg; x.beginPath(); x.ellipse(head[0], head[1], hr * 0.92, hr, 0, 0, Math.PI * 2); x.fill();
+    if (K === "park") {                                                // batting helmet or cap, brim out front
+      x.fillStyle = rgb(white ? trim : shade(jersey, 0.85).map(v => Math.min(v, 120)));
+      x.beginPath(); x.arc(head[0], head[1] - hr * 0.1, hr * 1.02, Math.PI, 0); x.fill();
+      x.fillRect(Math.min(head[0], head[0] + dir * hr * 1.55), head[1] - hr * 0.2, hr * 1.55, hr * 0.22);
+    } else if (K === "gridiron") {                                     // helmet with a facemask
+      const hc = white ? trim : jersey;
+      x.fillStyle = rgb(hc); x.beginPath(); x.arc(head[0] - dir * hr * 0.08, head[1] - hr * 0.05, hr * 1.2, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = "rgba(255,255,255,.35)"; x.lineWidth = Math.max(0.8, hr * 0.18);
+      x.beginPath(); x.arc(head[0] - dir * hr * 0.08, head[1] - hr * 0.05, hr * 0.85, Math.PI * 1.15, Math.PI * 1.6); x.stroke();
+      x.strokeStyle = "rgba(220,220,220,.9)"; x.lineWidth = Math.max(0.7, hr * 0.14);
+      x.beginPath(); x.moveTo(head[0] + dir * hr * 0.75, head[1] - hr * 0.3); x.lineTo(head[0] + dir * hr * 1.3, head[1] - hr * 0.1);
+      x.lineTo(head[0] + dir * hr * 1.3, head[1] + hr * 0.55); x.lineTo(head[0] + dir * hr * 0.7, head[1] + hr * 0.75);
+      x.moveTo(head[0] + dir * hr * 0.8, head[1] + hr * 0.2); x.lineTo(head[0] + dir * hr * 1.3, head[1] + hr * 0.2); x.stroke();
+    } else {                                                           // hair, cut a few ways
+      x.fillStyle = seed % 5 === 0 ? "#3A2A1E" : "#16110E";
+      const style = seed % 9 === 3 ? 3 : seed % 3;
+      if (style !== 3) {                                               // from the back of the neck over the crown to the hairline
+        const r = hr * (style === 2 ? 1.12 : 1.02), a0 = style === 1 ? 0.8 : 0.7, a1 = style === 2 ? 1.95 : 1.85;
+        x.beginPath();
+        for (let i = 0; i <= 16; i++) { const a = Math.PI * lerp(a0, a1, i / 16), c = Math.cos(a) * (dir > 0 ? 1 : -1); x.lineTo(head[0] + c * r, head[1] + Math.sin(a) * r * 0.98); }
+        x.closePath(); x.fill();
+      }
+      if (K === "court" && seed % 6 === 1) { x.fillStyle = rgb(trim); x.fillRect(head[0] - hr, head[1] - hr * 0.45, hr * 2, hr * 0.25); }   // headband
+    }
+    x.strokeStyle = "rgba(255,236,200,.5)"; x.lineWidth = Math.max(0.8, hr * 0.22);
+    x.beginPath(); x.arc(head[0], head[1], hr * 0.95, Math.PI * 1.1, Math.PI * 1.55); x.stroke();
+    // near arm last, in front of the body
+    const hand = drawArm(1, false);
+    if (p.stick) { x.strokeStyle = "#2A2420"; x.lineWidth = Math.max(1, 0.03 * H); x.beginPath(); x.moveTo(hand[0], hand[1]); x.lineTo(fx + 0.9 * s, foot[1] - 0.02 * s - lift); x.stroke(); }
     if (p.bat != null) {
-      const a = -2.3 + p.bat * 3.4, hx = sx + bw * 0.3, hy = sh + arm * 0.5;
-      x.strokeStyle = "#D9B98C"; x.lineWidth = Math.max(1.4, lw * 0.7);
-      x.beginPath(); x.moveTo(hx, hy); x.lineTo(hx + Math.cos(a) * 0.45 * hgt, hy + Math.sin(a) * 0.45 * hgt); x.stroke();
+      const a = -2.3 + p.bat * 3.4;
+      x.strokeStyle = "#D9B98C"; x.lineWidth = Math.max(1.4, 0.04 * H); x.lineCap = "round";
+      x.beginPath(); x.moveTo(hand[0], hand[1]); x.lineTo(hand[0] + Math.cos(a) * 0.45 * H, hand[1] + Math.sin(a) * 0.45 * H); x.stroke();
     }
-    // head, lit from the lamps above
-    x.fillStyle = skin; x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, 0, Math.PI * 2); x.fill();
-    if (kind0(sp) === "park" || sp.skate) {                             // caps and helmets in the team color
-      x.fillStyle = rgb(jersey.every(v => v > 230) ? hex(kit ? kit[3] : "#333333") : jersey.map(v => v * 0.85));
-      x.beginPath(); x.arc(sx, sh - hr * 1.3, hr * 1.05, Math.PI, 0); x.fill();
-    } else if (sp.zn === 14 && sp.h === 9) {                            // football helmet
-      x.fillStyle = rgb(jersey.every(v => v > 230) ? hex(kit ? kit[3] : "#333333") : jersey);
-      x.beginPath(); x.arc(sx, sh - hr * 1.25, hr * 1.12, 0, Math.PI * 2); x.fill();
-      x.strokeStyle = "rgba(240,240,240,.8)"; x.lineWidth = Math.max(0.6, hr * 0.2); x.beginPath(); x.moveTo(sx, sh - hr * 1.1); x.lineTo(sx + hr * 1.1, sh - hr * 1.1); x.stroke();
-    }
-    x.strokeStyle = "rgba(255,236,200,.55)"; x.lineWidth = Math.max(0.8, hr * 0.3);
-    x.beginPath(); x.arc(sx, sh - hr * 1.25, hr, Math.PI * 1.1, Math.PI * 1.9); x.stroke();
   }
 
   // 3D players: shadows and numbers in 2D, bodies from the 3D renderer
