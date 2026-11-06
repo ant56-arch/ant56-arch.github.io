@@ -9431,7 +9431,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MASS",
     "side": "away",
@@ -9477,7 +9477,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -9509,7 +9509,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -9541,7 +9541,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ORE",
     "side": "home",
@@ -9587,7 +9587,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "OSU",
     "side": "home",
@@ -9633,7 +9633,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UPST",
     "side": "home",
@@ -9679,7 +9679,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "PUR",
     "side": "home",
@@ -9725,17 +9725,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UGA",
     "side": "home",
-    "price": -4500,
+    "price": -6500,
     "prob": 87.7,
-    "book_prob": 94.6,
-    "edge": -6.9,
+    "book_prob": 95.4,
+    "edge": -7.7,
     "value": false,
-    "home_ml": -4500,
-    "away_ml": 1700,
+    "home_ml": -6500,
+    "away_ml": 2000,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -9771,7 +9771,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "XAV",
     "side": "home",
@@ -9817,7 +9817,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "FSU",
     "side": "home",
@@ -9863,17 +9863,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "BALL",
     "side": "home",
-    "price": -155,
+    "price": -148,
     "prob": 71.2,
-    "book_prob": 58.3,
-    "edge": 12.9,
+    "book_prob": 57.2,
+    "edge": 14.0,
     "value": true,
-    "home_ml": -155,
-    "away_ml": 130,
+    "home_ml": -148,
+    "away_ml": 124,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -9909,17 +9909,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MIZ",
     "side": "home",
-    "price": -135,
+    "price": -130,
     "prob": 71.2,
-    "book_prob": 55.1,
-    "edge": 16.1,
+    "book_prob": 54.3,
+    "edge": 16.9,
     "value": true,
-    "home_ml": -135,
-    "away_ml": 114,
+    "home_ml": -130,
+    "away_ml": 110,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -9955,17 +9955,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "BU",
     "side": "away",
-    "price": 185,
+    "price": 164,
     "prob": 55.0,
-    "book_prob": 33.6,
-    "edge": 21.4,
+    "book_prob": 36.3,
+    "edge": 18.7,
     "value": true,
-    "home_ml": -225,
-    "away_ml": 185,
+    "home_ml": -198,
+    "away_ml": 164,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -10001,17 +10001,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "CLEM",
     "side": "home",
-    "price": -3200,
+    "price": -2800,
     "prob": 82.1,
-    "book_prob": 93.6,
-    "edge": -11.5,
+    "book_prob": 93.1,
+    "edge": -11.0,
     "value": false,
-    "home_ml": -3200,
-    "away_ml": 1400,
+    "home_ml": -2800,
+    "away_ml": 1300,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -10047,7 +10047,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UNC",
     "side": "home",
@@ -10093,7 +10093,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "KENN",
     "side": "home",
@@ -10139,7 +10139,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "NCSU",
     "side": "home",
@@ -10185,7 +10185,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "GMU",
     "side": "home",
@@ -10231,7 +10231,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "GT",
     "side": "home",
@@ -10277,7 +10277,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MSM",
     "side": "home",
@@ -10323,7 +10323,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ELON",
     "side": "home",
@@ -10369,7 +10369,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -10401,7 +10401,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "YALE",
     "side": "away",
@@ -10447,7 +10447,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "WVU",
     "side": "home",
@@ -10493,7 +10493,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UK",
     "side": "home",
@@ -10539,7 +10539,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "RUTG",
     "side": "home",
@@ -10585,7 +10585,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ALA",
     "side": "home",
@@ -10631,7 +10631,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UAB",
     "side": "home",
@@ -10677,7 +10677,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "WIS",
     "side": "home",
@@ -10723,7 +10723,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "WRST",
     "side": "home",
@@ -10769,7 +10769,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -10801,7 +10801,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MARQ",
     "side": "home",
@@ -10847,7 +10847,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ISU",
     "side": "home",
@@ -10893,7 +10893,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MINN",
     "side": "home",
@@ -10939,17 +10939,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "TCU",
     "side": "home",
-    "price": -6500,
+    "price": -8000,
     "prob": 90.8,
-    "book_prob": 95.4,
-    "edge": -4.6,
+    "book_prob": 95.8,
+    "edge": -5.0,
     "value": false,
-    "home_ml": -6500,
-    "away_ml": 2000,
+    "home_ml": -8000,
+    "away_ml": 2200,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -10985,17 +10985,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MICH",
     "side": "home",
-    "price": 245,
+    "price": 260,
     "prob": 50.2,
-    "book_prob": 27.8,
-    "edge": 22.4,
+    "book_prob": 26.6,
+    "edge": 23.6,
     "value": true,
-    "home_ml": 245,
-    "away_ml": -305,
+    "home_ml": 260,
+    "away_ml": -325,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11031,17 +11031,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "NU",
     "side": "home",
-    "price": -1350,
+    "price": -1050,
     "prob": 84.6,
-    "book_prob": 89.3,
-    "edge": -4.7,
+    "book_prob": 87.6,
+    "edge": -3.0,
     "value": false,
-    "home_ml": -1350,
-    "away_ml": 800,
+    "home_ml": -1050,
+    "away_ml": 675,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11077,7 +11077,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "TA&M",
     "side": "home",
@@ -11123,7 +11123,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "LSU",
     "side": "home",
@@ -11169,7 +11169,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "AMCC",
     "side": "away",
@@ -11215,17 +11215,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UIC",
     "side": "home",
-    "price": -700,
+    "price": -600,
     "prob": 78.8,
-    "book_prob": 84.0,
-    "edge": -5.2,
+    "book_prob": 82.2,
+    "edge": -3.4,
     "value": false,
-    "home_ml": -700,
-    "away_ml": 500,
+    "home_ml": -600,
+    "away_ml": 440,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11261,7 +11261,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "MISS",
     "side": "home",
@@ -11307,7 +11307,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -11339,17 +11339,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "SIU",
     "side": "away",
-    "price": -142,
+    "price": -110,
     "prob": 72.1,
-    "book_prob": 56.3,
-    "edge": 15.8,
+    "book_prob": 50.0,
+    "edge": 22.1,
     "value": true,
-    "home_ml": 120,
-    "away_ml": -142,
+    "home_ml": -110,
+    "away_ml": -110,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11385,17 +11385,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "WYO",
     "side": "home",
-    "price": -3600,
+    "price": -3200,
     "prob": 83.1,
-    "book_prob": 94.0,
-    "edge": -10.9,
+    "book_prob": 93.6,
+    "edge": -10.5,
     "value": false,
-    "home_ml": -3600,
-    "away_ml": 1500,
+    "home_ml": -3200,
+    "away_ml": 1400,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11431,17 +11431,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "KU",
     "side": "home",
-    "price": -50000,
+    "price": -20000,
     "prob": 86.9,
-    "book_prob": 97.6,
-    "edge": -10.7,
+    "book_prob": 97.3,
+    "edge": -10.4,
     "value": false,
-    "home_ml": -50000,
-    "away_ml": 4000,
+    "home_ml": -20000,
+    "away_ml": 3500,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11477,17 +11477,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "KSU",
     "side": "home",
-    "price": -650,
+    "price": -625,
     "prob": 50.1,
-    "book_prob": 83.2,
-    "edge": -33.1,
+    "book_prob": 82.7,
+    "edge": -32.6,
     "value": false,
-    "home_ml": -650,
-    "away_ml": 470,
+    "home_ml": -625,
+    "away_ml": 455,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11523,7 +11523,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "OKST",
     "side": "home",
@@ -11569,7 +11569,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -11601,17 +11601,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ASU",
     "side": "home",
-    "price": -3200,
+    "price": -3600,
     "prob": 68.1,
-    "book_prob": 93.6,
-    "edge": -25.5,
+    "book_prob": 94.0,
+    "edge": -25.9,
     "value": false,
-    "home_ml": -3200,
-    "away_ml": 1400,
+    "home_ml": -3600,
+    "away_ml": 1500,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11647,7 +11647,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "BYU",
     "side": "home",
@@ -11693,7 +11693,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "CSU",
     "side": "home",
@@ -11739,7 +11739,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "USD",
     "side": "home",
@@ -11785,7 +11785,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "ORST",
     "side": "home",
@@ -11831,7 +11831,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "UTA",
     "side": "away",
@@ -11877,7 +11877,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -11909,17 +11909,17 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "SF",
     "side": "home",
-    "price": -425,
+    "price": -455,
     "prob": 74.8,
-    "book_prob": 77.7,
-    "edge": -2.9,
+    "book_prob": 78.7,
+    "edge": -3.9,
     "value": false,
-    "home_ml": -425,
-    "away_ml": 330,
+    "home_ml": -455,
+    "away_ml": 350,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -11955,7 +11955,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z",
+   "set_at": "2026-11-06T14:06:30Z",
    "ml": {
     "team": "STAN",
     "side": "home",
@@ -12001,7 +12001,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   },
   {
    "date": "2026-11-06",
@@ -12033,7 +12033,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T10:54:18Z"
+   "set_at": "2026-11-06T14:06:30Z"
   }
  ]
 }
