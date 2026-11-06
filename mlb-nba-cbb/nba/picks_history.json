@@ -5619,7 +5619,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-06T00:55:43Z",
+   "set_at": "2026-11-06T02:39:27Z",
    "ml": {
     "team": "GS",
     "side": "home",
@@ -5630,7 +5630,7 @@
     "value": false,
     "home_ml": -167,
     "away_ml": 140,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }

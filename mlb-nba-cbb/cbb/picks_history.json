@@ -9212,7 +9212,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T00:56:06Z",
+   "set_at": "2026-11-06T02:39:51Z",
    "ml": {
     "team": "ARIZ",
     "side": "home",
@@ -9223,7 +9223,7 @@
     "value": false,
     "home_ml": -100000,
     "away_ml": 5000,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -9258,7 +9258,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-06T00:56:06Z"
+   "set_at": "2026-11-06T02:39:51Z"
   }
  ]
 }
