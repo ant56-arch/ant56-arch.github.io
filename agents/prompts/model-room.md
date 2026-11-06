@@ -20,9 +20,13 @@ Recommend adjustments to the Model Room page and to how models are compared, not
 ## Stat ideas from the league agents
 You run after the league agents. Their reports are in inbox/ (one file each,
 with a "Stat ideas" section). Read them all. For each idea:
-- check it against the models in the Model Room: the sport's current model and
-  its tryout versions (model_room/versions.json, each model_history.json). Say
-  which model it would go into, or that it is already there
+- check it against the sport's 10 models. In model_room/versions.json each
+  sport has a "current" list of 10 recipe numbers (the models the retrain tries
+  now); the recipes themselves are the RECIPES list in the sport's
+  research/train file (see model_room/number_versions.py for the paths).
+  Say which of the 10 it would join or replace (by number, e.g. "#14"), or that
+  one already uses it. Adding a stat changes the recipe pool, so say whether
+  it fits inside one recipe or needs a new one
 - compare across sports: the same stat may help several leagues, or two
   leagues may have proposed the same thing under different names. Merge those
 - weigh the cost (new data source, build effort, risk of making the model
@@ -36,7 +40,7 @@ Add this section to your report, after "Recommended adjustments":
 ### Stat ideas review
 1. **NFL-S1: <stat name>.** (use the league agent's ID; merge ideas under one ID and name the others)
    - Verdict: <Worth adding, Worth testing first, or Skip>
-   - Where: <which sport and model or tryout it would go into>
+   - Where: <which sport, and which of its 10 current models (by number) it would join or replace>
    - Why: <your reasoning in two sentences, including what the other agents said>
    - Also helps: <other sports it could help, or None>
    - Cost: <data and effort, in plain words>

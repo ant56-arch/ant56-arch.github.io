@@ -28,8 +28,10 @@ of the site and the model behind it, and to recommend adjustments.
 ## Stat scouting
 Besides reviewing what exists, look for stats your sport's model could use that
 it doesn't yet. Read the model's feature code first so you know what it already
-uses, and check the Model Room's versions (model_room/versions.json and the
-model_history.json files) in case a version already tries it. Prefer stats from
+uses. Each sport has a pool of model recipes (the RECIPES list in its
+research/train file, numbered in model_room/versions.json), and the 10 listed
+under "current" are the ones the retrain tries now. Check those 10 and the
+model_history.json files in case a recipe already uses the stat. Prefer stats from
 data the pipelines already fetch, or free public data (ESPN, official league
 sites); say when an idea needs a new source. A stat can be a new one or a
 combination of existing ones. Give at most 3 ideas, each with real support: a
