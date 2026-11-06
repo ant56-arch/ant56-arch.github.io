@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T02:40:14Z",
+ "updated": "2026-11-06T10:54:51Z",
  "z_alarm": -2.0,
  "sports": {
   "mlb_hits": {
@@ -33,11 +33,11 @@
   "nba": {
    "label": "NBA",
    "picks": 50,
-   "won": 33,
-   "expected": 33.3,
-   "z": -0.1,
+   "won": 34,
+   "expected": 33.1,
+   "z": 0.28,
    "from": "2026-10-30",
-   "through": "2026-11-04",
+   "through": "2026-11-05",
    "alarm": false,
    "last_retrain": "2026-11-03",
    "alarm_since": null,
@@ -47,11 +47,11 @@
   "nhl": {
    "label": "NHL",
    "picks": 50,
-   "won": 30,
-   "expected": 29.2,
-   "z": 0.23,
-   "from": "2026-10-28",
-   "through": "2026-11-04",
+   "won": 28,
+   "expected": 29.5,
+   "z": -0.43,
+   "from": "2026-10-29",
+   "through": "2026-11-05",
    "alarm": false,
    "last_retrain": "2026-11-03",
    "alarm_since": null,
@@ -61,11 +61,11 @@
   "cbb": {
    "label": "College basketball",
    "picks": 150,
-   "won": 128,
-   "expected": 115.8,
-   "z": 2.48,
+   "won": 123,
+   "expected": 117.1,
+   "z": 1.21,
    "from": "2026-11-02",
-   "through": "2026-11-04",
+   "through": "2026-11-05",
    "alarm": false,
    "last_retrain": "2026-10-17",
    "alarm_since": null,
@@ -95,7 +95,7 @@
    "from": "2026-10-18",
    "through": "2026-11-02",
    "alarm": false,
-   "last_retrain": null,
+   "last_retrain": "2026-11-03",
    "alarm_since": null,
    "cleared_on": null,
    "early_retrain": false
@@ -109,7 +109,7 @@
    "from": "2026-10-17",
    "through": "2026-10-31",
    "alarm": false,
-   "last_retrain": null,
+   "last_retrain": "2026-11-03",
    "alarm_since": null,
    "cleared_on": "2026-11-01",
    "early_retrain": false
