@@ -62,9 +62,7 @@ em, .it { font-family: var(--f-serif); font-style: italic; font-weight: 400; let
 .nav ul { display: flex; gap: 26px; list-style: none; margin: 0 auto; padding: 0; }
 .nav ul a { text-decoration: none; opacity: .82; }
 .nav ul a:hover { opacity: 1; }
-.pill { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; padding: 10px 16px; border-radius: 999px; background: var(--hero-ink); color: #1B1B19; white-space: nowrap; }
-.nav.solid .pill { background: var(--forest); color: var(--forest-ink); }
-@media (max-width: 860px) { .nav ul { display: none; } .nav .pill { margin-left: auto; } }
+@media (max-width: 860px) { .nav ul { display: none; } }
 
 /* --- Hero --- */
 .hero { position: relative; min-height: min(520px, 66vh); color: var(--hero-ink); display: grid; align-content: end; padding: 140px var(--gutter) 0; overflow: hidden; background: #0E1712; }
@@ -319,7 +317,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 .nav .ticker-settings { margin-left: 4px; }
 .nav .ticker-gear { color: inherit; }
 .nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); max-height: calc(100dvh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--ink); }
-@media (max-width: 860px) { .nav .ticker-settings { margin-left: 0; } }
+@media (max-width: 860px) { .nav .ticker-settings { margin-left: auto; } }
 /* Ticker settings: a gear at the right of the top bar. */
 .ticker-settings { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-left: -12px; }
 .ticker-gear {
@@ -600,7 +598,6 @@ a.crawl-item:hover { background: var(--paper); }
     <li><a href="/?l=cbb">CBB</a></li>
     <li><a href="/?l=soccer">Soccer</a></li>
   </ul>
-  <a class="pill" href="#slate">Today's picks</a>
 </nav>
 
 <header class="hero" id="top">
@@ -1765,8 +1762,6 @@ function render(sums) {
   else {
     $("slate").hidden = true;
   }
-  // No games to jump to (an off-season tab): drop the nav button rather than leave it dead.
-  document.querySelector("nav .pill").hidden = !start;
 
   updateStatus();
   fetchLive(all);

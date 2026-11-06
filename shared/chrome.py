@@ -1,6 +1,6 @@
 """The top of every sport page, in the home page's own layout.
 
-The score bars, then the home nav (EDGE, the league tabs, Today's picks and
+The score bars, then the home nav (EDGE, the league tabs and
 the gear), a stadium hero with the sport and page name in big type, then a
 paper sheet that opens with the page's links as pills. Every sport's
 page_shell calls page_top() and closes with page_bottom(), so every page of
@@ -34,12 +34,10 @@ def nav(slug):
     leagues = "".join(
         f'<li><a href="{href}"{" aria-current=page" if name.lower() == slug else ""}>{name}</a></li>'
         for name, href in LEAGUES)
-    cta = "/#slate" if slug == "all" else f"/?l={slug}#slate"
     return f"""<div id="tick" class="edge-tick"><span class="topbar" hidden></span></div>
 <nav class="nav edge-nav" aria-label="Leagues">
   <a class="edge-brand" href="/" aria-label="Sports Edge home">{BRAND_MARK}EDGE</a>
   <ul class="edge-tabs">{leagues}</ul>
-  <a class="edge-cta" href="{cta}">Today's picks</a>
 </nav>"""
 
 
