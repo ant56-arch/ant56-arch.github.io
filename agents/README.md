@@ -21,7 +21,7 @@ only, no recommendations from tiny samples, the report format).
 
 ## How it runs
 
-`.github/workflows/league-agents.yml`, Tuesdays and Fridays at 9:40 AM ET after the
+`.github/workflows/league-agents.yml`, Tuesdays at 9:40 AM ET after the
 morning picks and Model Room runs, and on demand (Actions tab, "League Agents", Run workflow).
 
 1. `plan` picks the agents to run. A league whose season is over
