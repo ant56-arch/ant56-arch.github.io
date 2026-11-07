@@ -33,6 +33,10 @@ morning picks and Model Room runs, and on demand (Actions tab, "League Agents", 
 4. `publish` collects the reports, builds one page, encrypts it with the Model
    Room password, and publishes it at `/agents/`. The repo is public, so
    reports never go in issues, logs or comments.
+5. Between jobs the reports travel as run files, which anyone can download on
+   a public repo, so each is locked with the same password first
+   (`agents/seal.sh`) and `cleanup` deletes them when the run ends. Run the
+   workflow by hand with agents `none` to delete old ones without running an agent.
 
 ## Stat scouting
 
