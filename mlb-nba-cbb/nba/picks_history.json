@@ -6001,7 +6001,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:01:52Z",
+   "set_at": "2026-11-07T02:07:47Z",
    "ml": {
     "team": "LAL",
     "side": "home",
@@ -6012,7 +6012,7 @@
     "value": false,
     "home_ml": -154,
     "away_ml": 130,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -6030,14 +6030,15 @@
    "away_record": "6-2",
    "neutral": false,
    "pick": "SA",
-   "prob": 84.7,
-   "home_prob": 15.3,
-   "model_home_prob": 23.0,
+   "prob": 85.7,
+   "home_prob": 14.3,
+   "model_home_prob": 20.3,
    "model_weight": 0.38,
    "blended": true,
-   "margin": 14.5,
+   "margin": 15.1,
    "home_out": [
-    "Keegan Murray"
+    "Keegan Murray",
+    "De'Andre Hunter"
    ],
    "away_out": [],
    "rest": {
@@ -6046,18 +6047,18 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:01:52Z",
+   "set_at": "2026-11-07T02:07:47Z",
    "ml": {
     "team": "SA",
     "side": "away",
     "price": -1340,
-    "prob": 84.7,
+    "prob": 85.7,
     "book_prob": 89.4,
-    "edge": -4.7,
+    "edge": -3.7,
     "value": false,
     "home_ml": 810,
     "away_ml": -1340,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }

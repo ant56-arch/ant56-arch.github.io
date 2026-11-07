@@ -11311,52 +11311,6 @@
   },
   {
    "date": "2026-11-06",
-   "game_id": "401920952",
-   "start": "2026-11-06T20:30:00-05:00",
-   "type": "regular",
-   "note": "",
-   "home": "KC",
-   "away": "SIU",
-   "home_id": "140",
-   "away_id": "79",
-   "home_name": "Kansas City",
-   "away_name": "Southern Illinois",
-   "home_rank": null,
-   "away_rank": null,
-   "home_em_rank": 348,
-   "away_em_rank": 140,
-   "home_record": "0-1",
-   "away_record": "1-0",
-   "neutral": false,
-   "pick": "SIU",
-   "prob": 72.1,
-   "home_prob": 27.9,
-   "margin": 7.2,
-   "proj": {
-    "home": 68,
-    "away": 75,
-    "tempo": 73
-   },
-   "model": "2026-10-17T15:00:23+00:00",
-   "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
-   "ml": {
-    "team": "SIU",
-    "side": "away",
-    "price": -108,
-    "prob": 72.1,
-    "book_prob": 49.6,
-    "edge": 22.5,
-    "value": true,
-    "home_ml": -112,
-    "away_ml": -108,
-    "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
-  },
-  {
-   "date": "2026-11-06",
    "game_id": "401922021",
    "start": "2026-11-06T20:30:00-05:00",
    "type": "regular",
@@ -11569,7 +11523,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z"
+   "set_at": "2026-11-07T02:08:05Z"
   },
   {
    "date": "2026-11-06",
@@ -11711,6 +11665,52 @@
   },
   {
    "date": "2026-11-06",
+   "game_id": "401920952",
+   "start": "2026-11-06T21:15:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "KC",
+   "away": "SIU",
+   "home_id": "140",
+   "away_id": "79",
+   "home_name": "Kansas City",
+   "away_name": "Southern Illinois",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 348,
+   "away_em_rank": 140,
+   "home_record": "0-1",
+   "away_record": "1-0",
+   "neutral": false,
+   "pick": "SIU",
+   "prob": 72.1,
+   "home_prob": 27.9,
+   "margin": 7.2,
+   "proj": {
+    "home": 68,
+    "away": 75,
+    "tempo": 73
+   },
+   "model": "2026-10-17T15:00:23+00:00",
+   "correct": null,
+   "set_at": "2026-11-07T02:08:05Z",
+   "ml": {
+    "team": "SIU",
+    "side": "away",
+    "price": -108,
+    "prob": 72.1,
+    "book_prob": 49.6,
+    "edge": 22.5,
+    "value": true,
+    "home_ml": -112,
+    "away_ml": -108,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-06",
    "game_id": "401917515",
    "start": "2026-11-06T21:30:00-05:00",
    "type": "regular",
@@ -11739,7 +11739,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
+   "set_at": "2026-11-07T02:08:05Z",
    "ml": {
     "team": "USD",
     "side": "home",
@@ -11750,7 +11750,7 @@
     "value": false,
     "home_ml": -305,
     "away_ml": 245,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -11785,7 +11785,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
+   "set_at": "2026-11-07T02:08:05Z",
    "ml": {
     "team": "ORST",
     "side": "home",
@@ -11796,7 +11796,7 @@
     "value": false,
     "home_ml": -4000,
     "away_ml": 1600,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -11831,7 +11831,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
+   "set_at": "2026-11-07T02:08:05Z",
    "ml": {
     "team": "UTA",
     "side": "away",
@@ -11842,7 +11842,7 @@
     "value": true,
     "home_ml": -125,
     "away_ml": 105,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -11877,7 +11877,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z"
+   "set_at": "2026-11-07T02:08:05Z"
   },
   {
    "date": "2026-11-06",
@@ -11909,7 +11909,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
+   "set_at": "2026-11-07T02:08:05Z",
    "ml": {
     "team": "SF",
     "side": "home",
@@ -11920,7 +11920,7 @@
     "value": false,
     "home_ml": -410,
     "away_ml": 320,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -11955,18 +11955,18 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z",
+   "set_at": "2026-11-07T02:08:05Z",
    "ml": {
     "team": "STAN",
     "side": "home",
-    "price": -1200,
+    "price": -1350,
     "prob": 58.7,
-    "book_prob": 88.7,
-    "edge": -30.0,
+    "book_prob": 89.3,
+    "edge": -30.6,
     "value": false,
-    "home_ml": -1200,
-    "away_ml": 750,
-    "book": "Draft Kings",
+    "home_ml": -1350,
+    "away_ml": 800,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -12001,7 +12001,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z"
+   "set_at": "2026-11-07T02:08:05Z"
   },
   {
    "date": "2026-11-06",
@@ -12033,7 +12033,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T00:02:11Z"
+   "set_at": "2026-11-07T02:08:05Z"
   }
  ]
 }
