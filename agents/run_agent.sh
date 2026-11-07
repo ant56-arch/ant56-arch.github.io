@@ -22,7 +22,8 @@ if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
   exit 0
 fi
 
-npm install -g @anthropic-ai/claude-code >/dev/null
+# Pinned so an unreviewed release never runs here; bump it on purpose.
+npm install -g @anthropic-ai/claude-code@2.1.319 >/dev/null
 if ! claude -p \
     --model claude-sonnet-5-5 \
     --allowedTools "Read,Grep,Glob" \

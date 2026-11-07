@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       agents:
-        description: 'Which agents: "all" (in-season leagues) or a list like "nba,modelroom"'
+        description: 'Which agents: "all" (in-season leagues), a list like "nba,modelroom", or "none" (only delete old report files)'
         default: all
 
 permissions:
@@ -72,11 +72,20 @@ jobs:
           PROMPT_FILE: ${{ matrix.prompt }}
         run: agents/run_agent.sh
 
+      # Run files of a public repo can be downloaded by anyone, so the report
+      # is locked with the Model Room password before it is kept, and the
+      # cleanup job deletes it once the page is published.
+      - name: Lock the report
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh lock reports
+
       - uses: actions/upload-artifact@v4
         with:
           name: report-${{ matrix.slug }}
-          path: reports/${{ matrix.slug }}.md
-          retention-days: 7
+          path: reports/${{ matrix.slug }}.md.enc
+          if-no-files-found: ignore
+          retention-days: 1
 
   # Stage 2: the Model Room agent reads the league agents' reports, compares
   # their stat ideas with the models already in the Model Room, and says which
@@ -100,6 +109,11 @@ jobs:
           path: inbox
           merge-multiple: true
 
+      - name: Open the league reports
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh open inbox
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -115,11 +129,17 @@ jobs:
           mkdir -p inbox
           agents/run_agent.sh
 
+      - name: Lock the report
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh lock reports
+
       - uses: actions/upload-artifact@v4
         with:
           name: report-modelroom
-          path: reports/modelroom.md
-          retention-days: 7
+          path: reports/modelroom.md.enc
+          if-no-files-found: ignore
+          retention-days: 1
 
   publish:
     needs: [agent, model-agent]
@@ -136,6 +156,11 @@ jobs:
           path: reports
           merge-multiple: true
 
+      - name: Open the reports
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh open reports
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -150,3 +175,24 @@ jobs:
 
       - name: Publish
         run: ./publish_site.sh dist/agents:agents
+
+  # Deletes the locked report files once the page is published (and any left
+  # from earlier runs), so nothing but the password-locked page remains.
+  # Run by hand with agents "none" to clean up without running an agent.
+  cleanup:
+    needs: [plan, agent, model-agent, publish]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write   # to delete run files; this job never runs an agent
+    steps:
+      - name: Delete report files
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            -q '.artifacts[] | select(.name | startswith("report-")) | .id' |
+          while read -r id; do
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/$id" && echo "Deleted run file $id"
+          done
