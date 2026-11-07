@@ -1,0 +1,138 @@
+{
+ "sport": "NHL",
+ "label": "Fri, Nov 6",
+ "updated": "2026-11-07T07:50:24.614985-05:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401892659",
+   "start": "2026-11-07T00:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN+, MSGB",
+   "venue": "KeyBank Center",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CBJ",
+    "name": "Columbus Blue Jackets",
+    "short": "Blue Jackets",
+    "location": "Columbus",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/cbj.png",
+    "color": "002d62",
+    "alt": "e31937",
+    "rank": null,
+    "score": 2,
+    "record": null,
+    "probable": "J. Greaves",
+    "winner": false
+   },
+   "home": {
+    "abbr": "BUF",
+    "name": "Buffalo Sabres",
+    "short": "Sabres",
+    "location": "Buffalo",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/buf.png",
+    "color": "00468b",
+    "alt": "fdb71a",
+    "rank": null,
+    "score": 5,
+    "record": null,
+    "probable": "U. Luukkonen",
+    "winner": true
+   },
+   "pick": {
+    "text": "BUF 61%",
+    "result": true
+   },
+   "url": "game-401892659.html"
+  },
+  {
+   "id": "401892660",
+   "start": "2026-11-07T01:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "NHL Net, NBC Sports BA",
+   "venue": "Grand Casino Arena",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "SJ",
+    "name": "San Jose Sharks",
+    "short": "Sharks",
+    "location": "San Jose",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/sj.png",
+    "color": "00788a",
+    "alt": "070707",
+    "rank": null,
+    "score": 1,
+    "record": null,
+    "probable": "Y. Askarov",
+    "winner": false
+   },
+   "home": {
+    "abbr": "MIN",
+    "name": "Minnesota Wild",
+    "short": "Wild",
+    "location": "Minnesota",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/min.png",
+    "color": "124734",
+    "alt": "ae122a",
+    "rank": null,
+    "score": 4,
+    "record": null,
+    "probable": "J. Wallstedt",
+    "winner": true
+   },
+   "pick": {
+    "text": "MIN 71%",
+    "result": true
+   },
+   "url": "game-401892660.html"
+  },
+  {
+   "id": "401892661",
+   "start": "2026-11-07T01:00Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "ESPN+, Prime Video (Local)",
+   "venue": "Scotiabank Saddledome",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "ANA",
+    "name": "Anaheim Ducks",
+    "short": "Ducks",
+    "location": "Anaheim",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/ana.png",
+    "color": "fc4c02",
+    "alt": "000000",
+    "rank": null,
+    "score": 5,
+    "record": null,
+    "probable": "L. Dostal",
+    "winner": true
+   },
+   "home": {
+    "abbr": "CGY",
+    "name": "Calgary Flames",
+    "short": "Flames",
+    "location": "Calgary",
+    "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/cgy.png",
+    "color": "dd1a32",
+    "alt": "000000",
+    "rank": null,
+    "score": 3,
+    "record": null,
+    "probable": "D. Wolf",
+    "winner": false
+   },
+   "pick": {
+    "text": "CGY 56%",
+    "result": false
+   },
+   "url": "game-401892661.html"
+  }
+ ]
+}

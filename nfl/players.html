@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Players | NFL Edge</title>
+<meta name="description" content="Model-driven NFL spreads, totals and player props, validated against the closing Vegas line every week.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M9 23V9h3.4l6.6 9.3V9H22v14h-3.4L12 13.6V23z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=978a681d6e">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div id="tick" class="edge-tick"><span class="topbar" hidden></span></div>
+<nav class="nav edge-nav" aria-label="Leagues">
+  <a class="edge-brand" href="/" aria-label="Sports Edge home"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".4"/><path d="M6 21.5 13 14l5 4.5 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="9.5" r="1.8" fill="currentColor"/></svg>EDGE</a>
+  <ul class="edge-tabs"><li><a href="/">All</a></li><li><a href="/?l=nfl" aria-current=page>NFL</a></li><li><a href="/?l=cfb">CFB</a></li><li><a href="/?l=mlb">MLB</a></li><li><a href="/?l=nhl">NHL</a></li><li><a href="/?l=nba">NBA</a></li><li><a href="/?l=cbb">CBB</a></li><li><a href="/?l=soccer">Soccer</a></li></ul>
+</nav>
+<header class="masthead edge-hero" data-sport="NFL">
+  <div class="edge-hero-row">
+    <div class="edge-eyebrow">Updated Nov 7, 5:12 AM ET</div>
+    <h1><span class="ln"><span>NFL</span></span><span class="ln"><span>Players.</span></span></h1>
+  </div>
+  <div class="edge-hero-bar">
+    <a class="edge-scroll" href="#main-content"><i aria-hidden="true">&darr;</i>Scroll to explore</a>
+    <span>NFL game picks, Vegas lines and touchdown scorers, graded every week.</span>
+    <span>Est. 2026</span>
+  </div>
+</header>
+<div class="wrap edge-sheet">
+  <nav class="edge-jump" aria-label="NFL pages"><a href="/?l=nfl#slate">Today's games</a><a href="index.html">Game board</a><a href="teams.html">Teams</a><a href="players.html" class="go" aria-current="page">Players</a><a href="td.html">TD Props</a><a href="accuracy.html">Accuracy</a><a href="model.html">Model</a></nav>
+  
+  <main id="main-content">
+  <section class="card">
+    <div class="card-header"><div class="sec-label"><span>01</span><b>Player Projections</b></div><h2 class="sec-h2">Player <em>projections.</em></h2><div class="subtitle">Top 10 per category by projected yards. Touchdown scorers are on the <a href="td.html">TD Props</a> tab.</div></div>
+    <div class="card-body"><div class="subtabs">
+      <button type="button" class="subtab active" aria-pressed="true" data-target="cat-passing">Passing</button>
+      <button type="button" class="subtab" aria-pressed="false" data-target="cat-rushing">Rushing</button>
+      <button type="button" class="subtab" aria-pressed="false" data-target="cat-receiving">Receiving</button>
+    </div><div class="cat-panel" id="cat-passing">
+        <table class="data responsive-stack" data-sortable>
+          <thead><tr><th data-sort-key="player">Player</th><th data-sort-key="proj_pass_attempts" class="num">Att</th><th data-sort-key="proj_completions" class="num">Comp</th><th data-sort-key="proj_pass_yards" class="num">Yds</th><th data-sort-key="proj_pass_tds" class="num">TDs</th></tr></thead>
+          <tbody><tr>
+              <td data-key="player" data-value="J.Goff"><b>J.Goff</b><div class="muted" style="font-size:13px;">DET vs MIA</div></td>
+              <td data-key="proj_pass_attempts" data-value="34.6" data-label="Att" class="num">34.6</td><td data-key="proj_completions" data-value="23.9" data-label="Comp" class="num">23.9</td><td data-key="proj_pass_yards" data-value="284.5" data-label="Yds" class="num">284.5</td><td data-key="proj_pass_tds" data-value="2.26" data-label="TDs" class="num">2.26</td>
+            </tr><tr>
+              <td data-key="player" data-value="M.Stafford"><b>M.Stafford</b><div class="muted" style="font-size:13px;">LA vs WAS</div></td>
+              <td data-key="proj_pass_attempts" data-value="36.1" data-label="Att" class="num">36.1</td><td data-key="proj_completions" data-value="23.7" data-label="Comp" class="num">23.7</td><td data-key="proj_pass_yards" data-value="263.4" data-label="Yds" class="num">263.4</td><td data-key="proj_pass_tds" data-value="2.24" data-label="TDs" class="num">2.24</td>
+            </tr><tr>
+              <td data-key="player" data-value="P.Mahomes"><b>P.Mahomes</b><div class="muted" style="font-size:13px;">KC vs NYJ</div></td>
+              <td data-key="proj_pass_attempts" data-value="34.9" data-label="Att" class="num">34.9</td><td data-key="proj_completions" data-value="22.5" data-label="Comp" class="num">22.5</td><td data-key="proj_pass_yards" data-value="258.1" data-label="Yds" class="num">258.1</td><td data-key="proj_pass_tds" data-value="1.71" data-label="TDs" class="num">1.71</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Burrow"><b>J.Burrow</b><div class="muted" style="font-size:13px;">CIN vs ATL</div></td>
+              <td data-key="proj_pass_attempts" data-value="37.2" data-label="Att" class="num">37.2</td><td data-key="proj_completions" data-value="26.2" data-label="Comp" class="num">26.2</td><td data-key="proj_pass_yards" data-value="256.8" data-label="Yds" class="num">256.8</td><td data-key="proj_pass_tds" data-value="2.58" data-label="TDs" class="num">2.58</td>
+            </tr><tr>
+              <td data-key="player" data-value="D.Prescott"><b>D.Prescott</b><div class="muted" style="font-size:13px;">DAL vs IND</div></td>
+              <td data-key="proj_pass_attempts" data-value="36.1" data-label="Att" class="num">36.1</td><td data-key="proj_completions" data-value="23.6" data-label="Comp" class="num">23.6</td><td data-key="proj_pass_yards" data-value="253.5" data-label="Yds" class="num">253.5</td><td data-key="proj_pass_tds" data-value="1.78" data-label="TDs" class="num">1.78</td>
+            </tr><tr>
+              <td data-key="player" data-value="B.Purdy"><b>B.Purdy</b><div class="muted" style="font-size:13px;">SF vs LV</div></td>
+              <td data-key="proj_pass_attempts" data-value="30.5" data-label="Att" class="num">30.5</td><td data-key="proj_completions" data-value="20.7" data-label="Comp" class="num">20.7</td><td data-key="proj_pass_yards" data-value="244.2" data-label="Yds" class="num">244.2</td><td data-key="proj_pass_tds" data-value="1.9" data-label="TDs" class="num">1.9</td>
+            </tr><tr>
+              <td data-key="player" data-value="T.Lawrence"><b>T.Lawrence</b><div class="muted" style="font-size:13px;">JAX vs TEN</div></td>
+              <td data-key="proj_pass_attempts" data-value="30.1" data-label="Att" class="num">30.1</td><td data-key="proj_completions" data-value="19.0" data-label="Comp" class="num">19.0</td><td data-key="proj_pass_yards" data-value="242.1" data-label="Yds" class="num">242.1</td><td data-key="proj_pass_tds" data-value="2.18" data-label="TDs" class="num">2.18</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Love"><b>J.Love</b><div class="muted" style="font-size:13px;">GB vs NE</div></td>
+              <td data-key="proj_pass_attempts" data-value="33.5" data-label="Att" class="num">33.5</td><td data-key="proj_completions" data-value="21.2" data-label="Comp" class="num">21.2</td><td data-key="proj_pass_yards" data-value="241.5" data-label="Yds" class="num">241.5</td><td data-key="proj_pass_tds" data-value="1.76" data-label="TDs" class="num">1.76</td>
+            </tr><tr>
+              <td data-key="player" data-value="D.Maye"><b>D.Maye</b><div class="muted" style="font-size:13px;">NE vs GB</div></td>
+              <td data-key="proj_pass_attempts" data-value="28.8" data-label="Att" class="num">28.8</td><td data-key="proj_completions" data-value="19.3" data-label="Comp" class="num">19.3</td><td data-key="proj_pass_yards" data-value="228.5" data-label="Yds" class="num">228.5</td><td data-key="proj_pass_tds" data-value="1.76" data-label="TDs" class="num">1.76</td>
+            </tr><tr>
+              <td data-key="player" data-value="C.Stroud"><b>C.Stroud</b><div class="muted" style="font-size:13px;">HOU vs LAC</div></td>
+              <td data-key="proj_pass_attempts" data-value="32.4" data-label="Att" class="num">32.4</td><td data-key="proj_completions" data-value="20.9" data-label="Comp" class="num">20.9</td><td data-key="proj_pass_yards" data-value="225.0" data-label="Yds" class="num">225.0</td><td data-key="proj_pass_tds" data-value="1.44" data-label="TDs" class="num">1.44</td>
+            </tr></tbody>
+        </table></div><div class="cat-panel" id="cat-rushing" hidden>
+        <table class="data responsive-stack" data-sortable>
+          <thead><tr><th data-sort-key="player">Player</th><th data-sort-key="proj_carries" class="num">Car</th><th data-sort-key="proj_rush_yards" class="num">Yds</th><th data-sort-key="proj_rush_tds" class="num">TDs</th></tr></thead>
+          <tbody><tr>
+              <td data-key="player" data-value="J.Taylor"><b>J.Taylor</b><div class="muted" style="font-size:13px;">IND vs DAL</div></td>
+              <td data-key="proj_carries" data-value="19.3" data-label="Car" class="num">19.3</td><td data-key="proj_rush_yards" data-value="86.1" data-label="Yds" class="num">86.1</td><td data-key="proj_rush_tds" data-value="0.79" data-label="TDs" class="num">0.79</td>
+            </tr><tr>
+              <td data-key="player" data-value="D.Henry"><b>D.Henry</b><div class="muted" style="font-size:13px;">BAL vs LAC</div></td>
+              <td data-key="proj_carries" data-value="19.1" data-label="Car" class="num">19.1</td><td data-key="proj_rush_yards" data-value="83.9" data-label="Yds" class="num">83.9</td><td data-key="proj_rush_tds" data-value="0.8" data-label="TDs" class="num">0.8</td>
+            </tr><tr>
+              <td data-key="player" data-value="Bi.Robinson"><b>Bi.Robinson</b><div class="muted" style="font-size:13px;">ATL vs CIN</div></td>
+              <td data-key="proj_carries" data-value="18.0" data-label="Car" class="num">18.0</td><td data-key="proj_rush_yards" data-value="83.3" data-label="Yds" class="num">83.3</td><td data-key="proj_rush_tds" data-value="0.47" data-label="TDs" class="num">0.47</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Gibbs"><b>J.Gibbs</b><div class="muted" style="font-size:13px;">DET vs MIA</div></td>
+              <td data-key="proj_carries" data-value="17.4" data-label="Car" class="num">17.4</td><td data-key="proj_rush_yards" data-value="80.6" data-label="Yds" class="num">80.6</td><td data-key="proj_rush_tds" data-value="0.95" data-label="TDs" class="num">0.95</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Cook"><b>J.Cook</b><div class="muted" style="font-size:13px;">BUF vs MIN</div></td>
+              <td data-key="proj_carries" data-value="18.0" data-label="Car" class="num">18.0</td><td data-key="proj_rush_yards" data-value="80.2" data-label="Yds" class="num">80.2</td><td data-key="proj_rush_tds" data-value="0.66" data-label="TDs" class="num">0.66</td>
+            </tr><tr>
+              <td data-key="player" data-value="S.Barkley"><b>S.Barkley</b><div class="muted" style="font-size:13px;">PHI vs NYG</div></td>
+              <td data-key="proj_carries" data-value="16.6" data-label="Car" class="num">16.6</td><td data-key="proj_rush_yards" data-value="73.9" data-label="Yds" class="num">73.9</td><td data-key="proj_rush_tds" data-value="0.33" data-label="TDs" class="num">0.33</td>
+            </tr><tr>
+              <td data-key="player" data-value="K.Walker"><b>K.Walker</b><div class="muted" style="font-size:13px;">KC vs NYJ</div></td>
+              <td data-key="proj_carries" data-value="16.6" data-label="Car" class="num">16.6</td><td data-key="proj_rush_yards" data-value="70.4" data-label="Yds" class="num">70.4</td><td data-key="proj_rush_tds" data-value="0.83" data-label="TDs" class="num">0.83</td>
+            </tr><tr>
+              <td data-key="player" data-value="B.Irving"><b>B.Irving</b><div class="muted" style="font-size:13px;">TB vs CHI</div></td>
+              <td data-key="proj_carries" data-value="16.9" data-label="Car" class="num">16.9</td><td data-key="proj_rush_yards" data-value="70.0" data-label="Yds" class="num">70.0</td><td data-key="proj_rush_tds" data-value="0.44" data-label="TDs" class="num">0.44</td>
+            </tr><tr>
+              <td data-key="player" data-value="K.Williams"><b>K.Williams</b><div class="muted" style="font-size:13px;">LA vs WAS</div></td>
+              <td data-key="proj_carries" data-value="15.3" data-label="Car" class="num">15.3</td><td data-key="proj_rush_yards" data-value="67.4" data-label="Yds" class="num">67.4</td><td data-key="proj_rush_tds" data-value="0.58" data-label="TDs" class="num">0.58</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Williams"><b>J.Williams</b><div class="muted" style="font-size:13px;">DAL vs IND</div></td>
+              <td data-key="proj_carries" data-value="14.9" data-label="Car" class="num">14.9</td><td data-key="proj_rush_yards" data-value="62.8" data-label="Yds" class="num">62.8</td><td data-key="proj_rush_tds" data-value="0.95" data-label="TDs" class="num">0.95</td>
+            </tr></tbody>
+        </table></div><div class="cat-panel" id="cat-receiving" hidden>
+        <table class="data responsive-stack" data-sortable>
+          <thead><tr><th data-sort-key="player">Player</th><th data-sort-key="proj_targets" class="num">Tgt</th><th data-sort-key="proj_receptions" class="num">Rec</th><th data-sort-key="proj_rec_yards" class="num">Yds</th><th data-sort-key="proj_rec_tds" class="num">TDs</th></tr></thead>
+          <tbody><tr>
+              <td data-key="player" data-value="J.Smith-Njigba"><b>J.Smith-Njigba</b><div class="muted" style="font-size:13px;">SEA vs ARI</div></td>
+              <td data-key="proj_targets" data-value="9.9" data-label="Tgt" class="num">9.9</td><td data-key="proj_receptions" data-value="7.1" data-label="Rec" class="num">7.1</td><td data-key="proj_rec_yards" data-value="94.7" data-label="Yds" class="num">94.7</td><td data-key="proj_rec_tds" data-value="0.6" data-label="TDs" class="num">0.6</td>
+            </tr><tr>
+              <td data-key="player" data-value="P.Nacua"><b>P.Nacua</b><div class="muted" style="font-size:13px;">LA vs WAS</div></td>
+              <td data-key="proj_targets" data-value="11.4" data-label="Tgt" class="num">11.4</td><td data-key="proj_receptions" data-value="8.3" data-label="Rec" class="num">8.3</td><td data-key="proj_rec_yards" data-value="91.6" data-label="Yds" class="num">91.6</td><td data-key="proj_rec_tds" data-value="0.64" data-label="TDs" class="num">0.64</td>
+            </tr><tr>
+              <td data-key="player" data-value="M.Nabers"><b>M.Nabers</b><div class="muted" style="font-size:13px;">NYG vs PHI</div></td>
+              <td data-key="proj_targets" data-value="10.5" data-label="Tgt" class="num">10.5</td><td data-key="proj_receptions" data-value="6.7" data-label="Rec" class="num">6.7</td><td data-key="proj_rec_yards" data-value="76.5" data-label="Yds" class="num">76.5</td><td data-key="proj_rec_tds" data-value="0.41" data-label="TDs" class="num">0.41</td>
+            </tr><tr>
+              <td data-key="player" data-value="C.Lamb"><b>C.Lamb</b><div class="muted" style="font-size:13px;">DAL vs IND</div></td>
+              <td data-key="proj_targets" data-value="10.3" data-label="Tgt" class="num">10.3</td><td data-key="proj_receptions" data-value="6.7" data-label="Rec" class="num">6.7</td><td data-key="proj_rec_yards" data-value="75.8" data-label="Yds" class="num">75.8</td><td data-key="proj_rec_tds" data-value="0.6" data-label="TDs" class="num">0.6</td>
+            </tr><tr>
+              <td data-key="player" data-value="J.Chase"><b>J.Chase</b><div class="muted" style="font-size:13px;">CIN vs ATL</div></td>
+              <td data-key="proj_targets" data-value="10.5" data-label="Tgt" class="num">10.5</td><td data-key="proj_receptions" data-value="7.4" data-label="Rec" class="num">7.4</td><td data-key="proj_rec_yards" data-value="73.0" data-label="Yds" class="num">73.0</td><td data-key="proj_rec_tds" data-value="0.65" data-label="TDs" class="num">0.65</td>
+            </tr><tr>
+              <td data-key="player" data-value="D.London"><b>D.London</b><div class="muted" style="font-size:13px;">ATL vs CIN</div></td>
+              <td data-key="proj_targets" data-value="8.8" data-label="Tgt" class="num">8.8</td><td data-key="proj_receptions" data-value="5.4" data-label="Rec" class="num">5.4</td><td data-key="proj_rec_yards" data-value="69.7" data-label="Yds" class="num">69.7</td><td data-key="proj_rec_tds" data-value="0.34" data-label="TDs" class="num">0.34</td>
+            </tr><tr>
+              <td data-key="player" data-value="R.Rice"><b>R.Rice</b><div class="muted" style="font-size:13px;">KC vs NYJ</div></td>
+              <td data-key="proj_targets" data-value="8.7" data-label="Tgt" class="num">8.7</td><td data-key="proj_receptions" data-value="6.5" data-label="Rec" class="num">6.5</td><td data-key="proj_rec_yards" data-value="68.7" data-label="Yds" class="num">68.7</td><td data-key="proj_rec_tds" data-value="0.51" data-label="TDs" class="num">0.51</td>
+            </tr><tr>
+              <td data-key="player" data-value="A.St. Brown"><b>A.St. Brown</b> <span class="pill pill-primary">QUESTIONABLE</span><div class="muted" style="font-size:13px;">DET vs MIA</div></td>
+              <td data-key="proj_targets" data-value="8.6" data-label="Tgt" class="num">8.6</td><td data-key="proj_receptions" data-value="6.0" data-label="Rec" class="num">6.0</td><td data-key="proj_rec_yards" data-value="68.7" data-label="Yds" class="num">68.7</td><td data-key="proj_rec_tds" data-value="0.6" data-label="TDs" class="num">0.6</td>
+            </tr><tr>
+              <td data-key="player" data-value="C.Olave"><b>C.Olave</b><div class="muted" style="font-size:13px;">NO vs CLE</div></td>
+              <td data-key="proj_targets" data-value="9.3" data-label="Tgt" class="num">9.3</td><td data-key="proj_receptions" data-value="6.3" data-label="Rec" class="num">6.3</td><td data-key="proj_rec_yards" data-value="67.6" data-label="Yds" class="num">67.6</td><td data-key="proj_rec_tds" data-value="0.37" data-label="TDs" class="num">0.37</td>
+            </tr><tr>
+              <td data-key="player" data-value="T.Higgins"><b>T.Higgins</b><div class="muted" style="font-size:13px;">CIN vs ATL</div></td>
+              <td data-key="proj_targets" data-value="8.0" data-label="Tgt" class="num">8.0</td><td data-key="proj_receptions" data-value="5.3" data-label="Rec" class="num">5.3</td><td data-key="proj_rec_yards" data-value="66.3" data-label="Yds" class="num">66.3</td><td data-key="proj_rec_tds" data-value="0.46" data-label="TDs" class="num">0.46</td>
+            </tr></tbody>
+        </table></div></div>
+  </section>
+  </main>
+  <footer class="site-footer slim">
+    <p class="footer-text">Play-by-play and schedules via nflverse. Vegas lines via DraftKings, through the-odds-api.com, where available. For entertainment only, not betting advice. Gambling problem?
+      Call 1-800-GAMBLER.</p>
+    <nav class="footer-links" aria-label="Site">
+      <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/terms.html">Terms</a>
+      <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
+      <a href="https://ant56-arch.github.io/">All sites</a>
+      <span>&copy; 2026 NFL Edge</span>
+    </nav>
+  </footer>
+</div>
+<script src="site.js?v=978a681d6e"></script>
+</body>
+</html>

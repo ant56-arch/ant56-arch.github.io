@@ -1,0 +1,111 @@
+{
+ "updated": "2026-11-07T07:50:44-05:00",
+ "leagues": {
+  "NFL": {
+   "league": "NFL",
+   "slug": "nfl",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026",
+   "last_day": "2027-01-10",
+   "next_start": "2027-09-08",
+   "next_label": "opening night, usually early September",
+   "final": "the Super Bowl"
+  },
+  "CFB": {
+   "league": "CFB",
+   "slug": "cfb",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026",
+   "last_day": "2026-11-28",
+   "next_start": "2027-08-29",
+   "next_label": "Week 1, usually late August",
+   "final": "the national title game"
+  },
+  "MLB": {
+   "league": "MLB",
+   "slug": "mlb",
+   "over": true,
+   "idle": true,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026",
+   "last_day": "2026-10-28",
+   "next_start": "2027-03-26",
+   "next_label": "Opening Day, usually late March",
+   "final": "the World Series",
+   "archive": "/archive.html#mlb-2026",
+   "records": [
+    {
+     "label": "Game picks",
+     "value": "73-39",
+     "pct": "65.2%"
+    },
+    {
+     "label": "Top hitters who got a hit",
+     "value": "441-236",
+     "pct": "65.1%",
+     "vs": "56.6% for all hitters"
+    }
+   ],
+   "archived": true
+  },
+  "NHL": {
+   "league": "NHL",
+   "slug": "nhl",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026-27",
+   "last_day": "2026-11-07",
+   "next_start": "2027-10-07",
+   "next_label": "opening night, usually early October",
+   "final": "the Stanley Cup Final"
+  },
+  "NBA": {
+   "league": "NBA",
+   "slug": "nba",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026-27",
+   "last_day": "2026-11-07",
+   "next_start": "2027-10-21",
+   "next_label": "opening night, usually late October",
+   "final": "the NBA Finals"
+  },
+  "CBB": {
+   "league": "CBB",
+   "slug": "cbb",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026-27",
+   "last_day": "2026-11-07",
+   "next_start": "2027-11-03",
+   "next_label": "opening night, usually early November",
+   "final": "the national title game"
+  },
+  "Soccer": {
+   "league": "Soccer",
+   "slug": "soccer",
+   "over": false,
+   "idle": false,
+   "override": "auto",
+   "season": 2026,
+   "label": "2026-27",
+   "last_day": "2026-11-08",
+   "next_start": "2027-08-14",
+   "next_label": "opening weekend, usually mid-August",
+   "final": "the last league and Champions League matches"
+  }
+ }
+}

@@ -1,0 +1,1003 @@
+{
+ "updated": "2026-11-07T07:50:23.229515-05:00",
+ "heading": "Today: Sat, Nov 7",
+ "picks": [
+  {
+   "label": "OKC over WSH",
+   "sub": "WSH @ OKC \u00b7 8:00 PM ET",
+   "value": "77%",
+   "result": null
+  },
+  {
+   "label": "GS over ORL",
+   "sub": "ORL @ GS \u00b7 8:30 PM ET",
+   "value": "73%",
+   "result": null
+  },
+  {
+   "label": "DEN over IND",
+   "sub": "DEN vs IND \u00b7 5:00 PM ET",
+   "value": "72%",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "89-43",
+  "label": "our picks to win",
+  "sub": "67.4%",
+  "since": "Oct 20, 2026"
+ },
+ "empty": "No NBA picks yet. They start on opening night in late October.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-11-03T10:54:04+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "89-43",
+  "sub": "67.4%",
+  "season": "2026-27"
+ },
+ "daily": [
+  [
+   "2026-10-20",
+   1,
+   2
+  ],
+  [
+   "2026-10-21",
+   8,
+   3
+  ],
+  [
+   "2026-10-22",
+   2,
+   0
+  ],
+  [
+   "2026-10-23",
+   6,
+   6
+  ],
+  [
+   "2026-10-24",
+   6,
+   2
+  ],
+  [
+   "2026-10-25",
+   6,
+   1
+  ],
+  [
+   "2026-10-26",
+   5,
+   4
+  ],
+  [
+   "2026-10-27",
+   3,
+   1
+  ],
+  [
+   "2026-10-28",
+   7,
+   5
+  ],
+  [
+   "2026-10-29",
+   2,
+   1
+  ],
+  [
+   "2026-10-30",
+   4,
+   6
+  ],
+  [
+   "2026-10-31",
+   5,
+   2
+  ],
+  [
+   "2026-11-01",
+   3,
+   1
+  ],
+  [
+   "2026-11-02",
+   11,
+   4
+  ],
+  [
+   "2026-11-04",
+   10,
+   4
+  ],
+  [
+   "2026-11-05",
+   2,
+   0
+  ],
+  [
+   "2026-11-06",
+   8,
+   1
+  ]
+ ],
+ "ml_streak": {
+  "kind": "W",
+  "n": 6,
+  "unit": "day"
+ },
+ "ml_record": {
+  "value": "89-43",
+  "label": "moneyline",
+  "sub": "132 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "NBA",
+   "id": "401909922",
+   "url": "/nba/game-401909922.html",
+   "start": "2026-11-04T19:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "PHI",
+   "home": "DET",
+   "at": "@",
+   "pick": "DET",
+   "other": "PHI",
+   "prob": 57.5,
+   "price": -142,
+   "book": 56.3,
+   "value": false,
+   "final": true,
+   "score": [
+    112,
+    106
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NBA",
+   "id": "401909923",
+   "url": "/nba/game-401909923.html",
+   "start": "2026-11-04T19:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "ATL",
+   "home": "WSH",
+   "at": "@",
+   "pick": "ATL",
+   "other": "WSH",
+   "prob": 56.8,
+   "price": -154,
+   "book": 58.2,
+   "value": false,
+   "final": true,
+   "score": [
+    120,
+    105
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909924",
+   "url": "/nba/game-401909924.html",
+   "start": "2026-11-04T19:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "MIL",
+   "home": "BOS",
+   "at": "@",
+   "pick": "BOS",
+   "other": "MIL",
+   "prob": 79.6,
+   "price": -518,
+   "book": 80.5,
+   "value": false,
+   "final": true,
+   "score": [
+    102,
+    109
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909925",
+   "url": "/nba/game-401909925.html",
+   "start": "2026-11-04T19:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "CHA",
+   "home": "BKN",
+   "at": "@",
+   "pick": "CHA",
+   "other": "BKN",
+   "prob": 57.6,
+   "price": -170,
+   "book": 60.5,
+   "value": false,
+   "final": true,
+   "score": [
+    104,
+    114
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NBA",
+   "id": "401909926",
+   "url": "/nba/game-401909926.html",
+   "start": "2026-11-04T19:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "CHI",
+   "home": "NY",
+   "at": "@",
+   "pick": "NY",
+   "other": "CHI",
+   "prob": 82.0,
+   "price": -597,
+   "book": 82.3,
+   "value": false,
+   "final": true,
+   "score": [
+    105,
+    135
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909927",
+   "url": "/nba/game-401909927.html",
+   "start": "2026-11-04T20:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "IND",
+   "home": "MEM",
+   "at": "@",
+   "pick": "MEM",
+   "other": "IND",
+   "prob": 72.9,
+   "price": -239,
+   "book": 67.8,
+   "value": false,
+   "final": true,
+   "score": [
+    107,
+    103
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NBA",
+   "id": "401909928",
+   "url": "/nba/game-401909928.html",
+   "start": "2026-11-04T20:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "UTAH",
+   "home": "NO",
+   "at": "@",
+   "pick": "NO",
+   "other": "UTAH",
+   "prob": 66.3,
+   "price": -201,
+   "book": 64.2,
+   "value": false,
+   "final": true,
+   "score": [
+    113,
+    120
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909929",
+   "url": "/nba/game-401909929.html",
+   "start": "2026-11-04T20:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "CLE",
+   "home": "OKC",
+   "at": "@",
+   "pick": "OKC",
+   "other": "CLE",
+   "prob": 55.6,
+   "price": -161,
+   "book": 59.3,
+   "value": false,
+   "final": true,
+   "score": [
+    116,
+    124
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909930",
+   "url": "/nba/game-401909930.html",
+   "start": "2026-11-04T20:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "MIN",
+   "home": "HOU",
+   "at": "@",
+   "pick": "HOU",
+   "other": "MIN",
+   "prob": 68.1,
+   "price": -278,
+   "book": 70.6,
+   "value": false,
+   "final": true,
+   "score": [
+    117,
+    107
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NBA",
+   "id": "401909931",
+   "url": "/nba/game-401909931.html",
+   "start": "2026-11-04T21:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "TOR",
+   "home": "DEN",
+   "at": "@",
+   "pick": "DEN",
+   "other": "TOR",
+   "prob": 62.3,
+   "price": -203,
+   "book": 64.3,
+   "value": false,
+   "final": true,
+   "score": [
+    109,
+    128
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909932",
+   "url": "/nba/game-401909932.html",
+   "start": "2026-11-04T21:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "POR",
+   "home": "PHX",
+   "at": "@",
+   "pick": "POR",
+   "other": "PHX",
+   "prob": 58.1,
+   "price": -148,
+   "book": 57.3,
+   "value": false,
+   "final": true,
+   "score": [
+    132,
+    119
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909933",
+   "url": "/nba/game-401909933.html",
+   "start": "2026-11-04T21:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "DAL",
+   "home": "SA",
+   "at": "@",
+   "pick": "SA",
+   "other": "DAL",
+   "prob": 81.6,
+   "price": -620,
+   "book": 82.8,
+   "value": false,
+   "final": true,
+   "score": [
+    111,
+    112
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909934",
+   "url": "/nba/game-401909934.html",
+   "start": "2026-11-04T22:00:00-05:00",
+   "date": "2026-11-04",
+   "away": "LAL",
+   "home": "SAC",
+   "at": "@",
+   "pick": "LAL",
+   "other": "SAC",
+   "prob": 81.8,
+   "price": -650,
+   "book": 83.2,
+   "value": false,
+   "final": true,
+   "score": [
+    116,
+    103
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909935",
+   "url": "/nba/game-401909935.html",
+   "start": "2026-11-04T22:30:00-05:00",
+   "date": "2026-11-04",
+   "away": "MIA",
+   "home": "LAC",
+   "at": "@",
+   "pick": "MIA",
+   "other": "LAC",
+   "prob": 57.4,
+   "price": -216,
+   "book": 65.7,
+   "value": false,
+   "final": true,
+   "score": [
+    117,
+    116
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909936",
+   "url": "/nba/game-401909936.html",
+   "start": "2026-11-05T21:00:00-05:00",
+   "date": "2026-11-05",
+   "away": "ORL",
+   "home": "PHX",
+   "at": "@",
+   "pick": "PHX",
+   "other": "ORL",
+   "prob": 53.9,
+   "price": -121,
+   "book": 52.5,
+   "value": false,
+   "final": true,
+   "score": [
+    104,
+    117
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909937",
+   "url": "/nba/game-401909937.html",
+   "start": "2026-11-05T22:00:00-05:00",
+   "date": "2026-11-05",
+   "away": "MIA",
+   "home": "GS",
+   "at": "@",
+   "pick": "GS",
+   "other": "MIA",
+   "prob": 63.1,
+   "price": -167,
+   "book": 60.0,
+   "value": false,
+   "final": true,
+   "score": [
+    100,
+    120
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909287",
+   "url": "/nba/game-401909287.html",
+   "start": "2026-11-06T19:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "WSH",
+   "home": "ATL",
+   "at": "@",
+   "pick": "ATL",
+   "other": "WSH",
+   "prob": 71.2,
+   "price": -309,
+   "book": 72.6,
+   "value": false,
+   "final": true,
+   "score": [
+    132,
+    139
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909288",
+   "url": "/nba/game-401909288.html",
+   "start": "2026-11-06T19:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "BOS",
+   "home": "CHA",
+   "at": "@",
+   "pick": "BOS",
+   "other": "CHA",
+   "prob": 76.9,
+   "price": -424,
+   "book": 77.7,
+   "value": false,
+   "final": true,
+   "score": [
+    119,
+    80
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909289",
+   "url": "/nba/game-401909289.html",
+   "start": "2026-11-06T19:30:00-05:00",
+   "date": "2026-11-06",
+   "away": "PHI",
+   "home": "CLE",
+   "at": "@",
+   "pick": "PHI",
+   "other": "CLE",
+   "prob": 54.7,
+   "price": -152,
+   "book": 57.9,
+   "value": false,
+   "final": true,
+   "score": [
+    95,
+    119
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NBA",
+   "id": "401909290",
+   "url": "/nba/game-401909290.html",
+   "start": "2026-11-06T20:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "UTAH",
+   "home": "DAL",
+   "at": "@",
+   "pick": "DAL",
+   "other": "UTAH",
+   "prob": 71.4,
+   "price": -257,
+   "book": 69.1,
+   "value": false,
+   "final": true,
+   "score": [
+    100,
+    112
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909291",
+   "url": "/nba/game-401909291.html",
+   "start": "2026-11-06T20:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "OKC",
+   "home": "MEM",
+   "at": "@",
+   "pick": "OKC",
+   "other": "MEM",
+   "prob": 54.8,
+   "price": -180,
+   "book": 61.7,
+   "value": false,
+   "final": true,
+   "score": [
+    128,
+    97
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909292",
+   "url": "/nba/game-401909292.html",
+   "start": "2026-11-06T20:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "TOR",
+   "home": "MIL",
+   "at": "@",
+   "pick": "TOR",
+   "other": "MIL",
+   "prob": 56.7,
+   "price": -162,
+   "book": 59.3,
+   "value": false,
+   "final": true,
+   "score": [
+    121,
+    107
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909293",
+   "url": "/nba/game-401909293.html",
+   "start": "2026-11-06T20:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "MIN",
+   "home": "NO",
+   "at": "@",
+   "pick": "MIN",
+   "other": "NO",
+   "prob": 58.1,
+   "price": -166,
+   "book": 60.0,
+   "value": false,
+   "final": true,
+   "score": [
+    115,
+    109
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909294",
+   "url": "/nba/game-401909294.html",
+   "start": "2026-11-06T22:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "POR",
+   "home": "LAL",
+   "at": "@",
+   "pick": "LAL",
+   "other": "POR",
+   "prob": 60.7,
+   "price": -154,
+   "book": 58.2,
+   "value": false,
+   "final": true,
+   "score": [
+    118,
+    124
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909295",
+   "url": "/nba/game-401909295.html",
+   "start": "2026-11-06T22:00:00-05:00",
+   "date": "2026-11-06",
+   "away": "SA",
+   "home": "SAC",
+   "at": "@",
+   "pick": "SA",
+   "other": "SAC",
+   "prob": 85.7,
+   "price": -1340,
+   "book": 89.4,
+   "value": false,
+   "final": true,
+   "score": [
+    124,
+    109
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NBA",
+   "id": "401909938",
+   "url": "/nba/game-401909938.html",
+   "start": "2026-11-07T17:00:00-05:00",
+   "date": "2026-11-07",
+   "away": "DEN",
+   "home": "IND",
+   "at": "vs",
+   "pick": "DEN",
+   "other": "IND",
+   "prob": 71.6,
+   "price": -268,
+   "book": 70.0,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909939",
+   "url": "/nba/game-401909939.html",
+   "start": "2026-11-07T19:30:00-05:00",
+   "date": "2026-11-07",
+   "away": "BKN",
+   "home": "ATL",
+   "at": "@",
+   "pick": "ATL",
+   "other": "BKN",
+   "prob": 66.4,
+   "price": -258,
+   "book": 69.2,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909940",
+   "url": "/nba/game-401909940.html",
+   "start": "2026-11-07T20:00:00-05:00",
+   "date": "2026-11-07",
+   "away": "NY",
+   "home": "CLE",
+   "at": "@",
+   "pick": "NY",
+   "other": "CLE",
+   "prob": 63.4,
+   "price": -191,
+   "book": 63.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909941",
+   "url": "/nba/game-401909941.html",
+   "start": "2026-11-07T20:00:00-05:00",
+   "date": "2026-11-07",
+   "away": "WSH",
+   "home": "OKC",
+   "at": "@",
+   "pick": "OKC",
+   "other": "WSH",
+   "prob": 77.1,
+   "price": -477,
+   "book": 79.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909942",
+   "url": "/nba/game-401909942.html",
+   "start": "2026-11-07T20:30:00-05:00",
+   "date": "2026-11-07",
+   "away": "ORL",
+   "home": "GS",
+   "at": "@",
+   "pick": "GS",
+   "other": "ORL",
+   "prob": 73.2,
+   "price": -258,
+   "book": 69.2,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909943",
+   "url": "/nba/game-401909943.html",
+   "start": "2026-11-07T21:00:00-05:00",
+   "date": "2026-11-07",
+   "away": "HOU",
+   "home": "PHX",
+   "at": "@",
+   "pick": "HOU",
+   "other": "PHX",
+   "prob": 67.2,
+   "price": -308,
+   "book": 72.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NBA",
+   "id": "401909944",
+   "url": "/nba/game-401909944.html",
+   "start": "2026-11-07T22:00:00-05:00",
+   "date": "2026-11-07",
+   "away": "SA",
+   "home": "POR",
+   "at": "@",
+   "pick": "SA",
+   "other": "POR",
+   "prob": 62.4,
+   "price": -204,
+   "book": 64.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  }
+ ],
+ "units": {
+  "picks": 132,
+  "wins": 89,
+  "losses": 43,
+  "units": -1.84,
+  "roi": -0.014,
+  "since": "2026-10-20",
+  "series": [
+   [
+    "2026-10-20",
+    -0.95
+   ],
+   [
+    "2026-10-21",
+    0.38
+   ],
+   [
+    "2026-10-22",
+    1.42
+   ],
+   [
+    "2026-10-23",
+    -1.31
+   ],
+   [
+    "2026-10-24",
+    -1.21
+   ],
+   [
+    "2026-10-25",
+    0.66
+   ],
+   [
+    "2026-10-26",
+    0.11
+   ],
+   [
+    "2026-10-27",
+    -0.13
+   ],
+   [
+    "2026-10-28",
+    -2.84
+   ],
+   [
+    "2026-10-29",
+    -2.57
+   ],
+   [
+    "2026-10-30",
+    -7.46
+   ],
+   [
+    "2026-10-31",
+    -7.66
+   ],
+   [
+    "2026-11-01",
+    -6.94
+   ],
+   [
+    "2026-11-02",
+    -5.79
+   ],
+   [
+    "2026-11-04",
+    -5.72
+   ],
+   [
+    "2026-11-05",
+    -4.29
+   ],
+   [
+    "2026-11-06",
+    -1.85
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 122,
+    "wins": 85,
+    "losses": 37,
+    "units": -0.8,
+    "roi": -0.0066
+   },
+   "underdogs": {
+    "picks": 10,
+    "wins": 4,
+    "losses": 6,
+    "units": -1.04,
+    "roi": -0.104
+   },
+   "value": {
+    "picks": 31,
+    "wins": 13,
+    "losses": 18,
+    "units": -7.4,
+    "roi": -0.2388
+   }
+  }
+ },
+ "last": {
+  "date": "2026-11-06",
+  "games": [
+   {
+    "pick": "ATL",
+    "other": "WSH",
+    "hit": true,
+    "text": "ATL 139-132",
+    "units": 0.324,
+    "url": "/nba/game-401909287.html"
+   },
+   {
+    "pick": "BOS",
+    "other": "CHA",
+    "hit": true,
+    "text": "BOS 119-80",
+    "units": 0.236,
+    "url": "/nba/game-401909288.html"
+   },
+   {
+    "pick": "PHI",
+    "other": "CLE",
+    "hit": false,
+    "text": "PHI lost 119-95",
+    "units": -1.0,
+    "url": "/nba/game-401909289.html"
+   },
+   {
+    "pick": "DAL",
+    "other": "UTAH",
+    "hit": true,
+    "text": "DAL 112-100",
+    "units": 0.389,
+    "url": "/nba/game-401909290.html"
+   },
+   {
+    "pick": "OKC",
+    "other": "MEM",
+    "hit": true,
+    "text": "OKC 128-97",
+    "units": 0.556,
+    "url": "/nba/game-401909291.html"
+   },
+   {
+    "pick": "TOR",
+    "other": "MIL",
+    "hit": true,
+    "text": "TOR 121-107",
+    "units": 0.617,
+    "url": "/nba/game-401909292.html"
+   },
+   {
+    "pick": "MIN",
+    "other": "NO",
+    "hit": true,
+    "text": "MIN 115-109",
+    "units": 0.602,
+    "url": "/nba/game-401909293.html"
+   },
+   {
+    "pick": "LAL",
+    "other": "POR",
+    "hit": true,
+    "text": "LAL 124-118",
+    "units": 0.649,
+    "url": "/nba/game-401909294.html"
+   },
+   {
+    "pick": "SA",
+    "other": "SAC",
+    "hit": true,
+    "text": "SA 124-109",
+    "units": 0.075,
+    "url": "/nba/game-401909295.html"
+   }
+  ],
+  "hits": []
+ }
+}
