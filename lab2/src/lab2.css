@@ -1,1 +1,36 @@
-/* Lab 2: UI tweaks being tested on a copy of the live site. Empty = same as live. */
+/* Lab 2: UI tweaks tested on a copy of the live site.
+   The type scale, tracking and fonts are applied to the site's own CSS by ds.py.
+   This file holds the rest of the design system and the tweaks. */
+
+/* ---------- design system tokens ---------- */
+:root {
+  --fs-11: 11px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
+  --fs-24: 24px; --fs-28: 28px; --fs-32: 32px; --fs-40: 40px; --fs-48: 48px; --fs-56: 56px;
+  --track-tight: -0.02em; --track-label: 0.06em;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px; --space-12: 48px;
+}
+body { font-variant-numeric: tabular-nums; }
+
+/* mono only where it earns it: the chart axes (drawn by the page's own scripts).
+   Number columns line up with Archivo's tabular figures, so they stay in Archivo. */
+:root { --font-data: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace; }
+
+/* ---------- no random italics ---------- */
+em, i, .it, em.it { font-style: normal; }
+h1 em, h2 em, h3 em, em.it, .it { font-family: inherit !important; font-style: normal !important; font-weight: inherit !important; letter-spacing: inherit !important; }
+
+/* ---------- filler badges ---------- */
+.crawl-live,                       /* LIVE pill: the clock already says it */
+.scroll-cue, .edge-scroll,         /* "Scroll to explore" */
+.compass,                          /* the N on the game field */
+.gc-logo,                          /* team chip that repeats the team name */
+.ds-hide { display: none !important; }
+.hero-bar, .edge-hero-bar { display: flex !important; justify-content: flex-start !important; gap: var(--space-6); }
+
+/* ---------- redundant labels ---------- */
+.sec-label,                        /* "01 —— Week 9 games" over "Week 9 games." */
+.sec-head .num,                    /* "01 —— Today's slate" over "67 games today." */
+#lgSub,                            /* "Seven sites, one record" */
+#gOf,                              /* "Game 11 of 67 · Soccer" beside the big 11 */
+.lt > span:first-child { display: none !important; }  /* "NFL" over the NFL card title */
+.chooser-top > span:first-child { visibility: hidden; }  /* "Choose a game" */
