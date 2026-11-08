@@ -8,21 +8,22 @@ report_status values (per nflverse's standard schema): "Out", "Doubtful",
 "Questionable". A player with no row in this data is presumed healthy.
 """
 
-import pandas as pd
 import os
-from fetch_data import current_nfl_season
+import sys
+
+import pandas as pd
+from fetch_data import SourceDown, current_nfl_season, read_csv_url
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 BASE = "https://github.com/nflverse/nflverse-data/releases/download"
 
 def fetch_injuries(season):
     url = f"{BASE}/injuries/injuries_{season}.csv"
-    try:
-        df = pd.read_csv(url, low_memory=False)
-        return df
-    except Exception as e:
-        print(f"  Could not fetch injuries for {season}: {e}")
+    df = read_csv_url(url)  # raises SourceDown if nflverse is erroring
+    if df is None:
+        print(f"  No injury report published for {season} yet")
         return pd.DataFrame()
+    return df
 
 def main():
     season = current_nfl_season()
@@ -47,4 +48,8 @@ def main():
     print(f"  Saved to {out_path}")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourceDown as e:
+        print(f"nflverse is down ({e}). Skipping this run's NFL picks; the site keeps the last ones.")
+        sys.exit(3)

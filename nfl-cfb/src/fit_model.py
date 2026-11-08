@@ -41,13 +41,12 @@ and unnecessary to redo twice a week.
 
 import pandas as pd
 import numpy as np
-import requests
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from fetch_data import download_csv_gz, current_nfl_season
+from fetch_data import SourceDown, download_csv_gz, current_nfl_season
 from build_features import build_team_game_stats, build_team_defense_game_stats
 from historical_features import compute_walkforward_features
 from build_features import RECENCY_HALF_LIFE_GAMES
@@ -91,10 +90,13 @@ DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES,
 # 2026-10-26 (Anthony: use the best free data): Elo alone and injuries + Elo +
 # Pythagorean, last on the recent games, made way for kickoff weather from
 # Open-Meteo (weather.py), alone and with injuries.
+# 2026-11-05: Pythagorean and this-season home field on their own, last on
+# the recent games, made way for injuries + weather + home field and
+# injuries + rest + weather (the best inputs so far, stacked).
 RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": n} for n in ("all", 8)]
            + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": "all", "extras": extras}
-              for extras in (["injuries"], ["injuries", "rest"], ["pyth"], ["injuries", "elo"],
-                             ["home"], ["injuries", "home"], ["weather"], ["injuries", "weather"])])
+              for extras in (["injuries"], ["injuries", "rest"], ["injuries", "weather", "home"], ["injuries", "elo"],
+                             ["injuries", "rest", "weather"], ["injuries", "home"], ["weather"], ["injuries", "weather"])])
 EXTRA_FEATURES = [c for cols in game_context.FEATURES.values() for c in cols]
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 
@@ -113,12 +115,11 @@ def fetch_historical_pbp(seasons):
         dest = os.path.join(HISTORICAL_RAW_DIR, f"pbp_{season}.csv.gz")
         if not os.path.exists(dest):
             url = f"{BASE}/pbp/play_by_play_{season}.csv.gz"
-            try:
-                download_csv_gz(url, dest)
-            except requests.exceptions.HTTPError as e:
-                # Between the Super Bowl and week 1 the new season's file
-                # doesn't exist yet - fit on the seasons that do.
-                print(f"  Skipping {season} (not published yet): {e}")
+            # Between the Super Bowl and week 1 the new season's file doesn't
+            # exist yet - fit on the seasons that do. A server error raises
+            # SourceDown instead, so a refit never runs on a partial pull.
+            if not download_csv_gz(url, dest):
+                print(f"  Skipping {season} (not published yet)")
                 continue
         df = pd.read_csv(dest, compression="gzip", low_memory=False)
         df["season"] = season
@@ -354,4 +355,9 @@ def run():
                    f"- Deployed: {'yes' if ok else 'no - ' + why}"])
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except SourceDown as e:
+        # nflverse is down: keep the current coefficients; the next refit retries.
+        guard.summary(["### NFL game model refit skipped", f"- nflverse is down ({e}); kept the current model"])
+        print(f"nflverse is down ({e}); kept the current model.")

@@ -97,16 +97,18 @@ document.querySelectorAll(".day-chips, .comp-chips").forEach(g => edgeSlide(g, "
 // --- Slate picker over the game cards (extras.game_board) ---
 // The board's games come as JSON in .sp-mount; Slate shows them one at a
 // time with edgeSlatePicker, Cards shows the cards. The day and competition
-// buttons filter both. The choice is saved for every sport site.
-const SP_VIEW_KEY = "edge-board-view";
+// buttons filter both. The choice is saved for every sport site. Cards is the
+// default (2026-11-05); the key changed from "edge-board-view" so
+// every visitor starts on Cards once, with Slate one tap away.
+const SP_VIEW_KEY = "edge-board-view-2";
 function initSlatePickers() {
   document.querySelectorAll(".sp-mount").forEach(mount => {
     let games = [];
     try { games = JSON.parse(mount.querySelector(".sp-data").textContent); } catch (e) { return; }
     if (!games.length) return;
     const scope = mount.parentElement;
-    let view = "slate";
-    try { if (localStorage.getItem(SP_VIEW_KEY) === "cards") view = "cards"; } catch (e) { /* storage blocked */ }
+    let view = "cards";
+    try { if (localStorage.getItem(SP_VIEW_KEY) === "slate") view = "slate"; } catch (e) { /* storage blocked */ }
     const picker = edgeSlatePicker({ withDay: new Set(games.map(g => g.date)).size > 1 });
     const bar = edgeNode("div", "sp-view");
     bar.setAttribute("role", "group");
@@ -458,6 +460,13 @@ function glSamePlayer(ours, a) {
   return !rest.length || String(a.firstName || a.displayName || "").toLowerCase().startsWith(first.toLowerCase());
 }
 
+// A team on the Live card, from ESPN's competitor: its abbreviation, or for
+// college and soccer its name (edgeTeamLabel).
+function glLabel(sport, c) {
+  const t = c.team || {};
+  return edgeTeamLabel(sport, { abbr: edgeTeamAbbr(t), short: t.shortDisplayName, name: t.displayName });
+}
+
 function glRender(card, data, sport) {
   const ds = card.dataset;
   const comp = ((data.header || {}).competitions || [])[0] || {};
@@ -470,6 +479,7 @@ function glRender(card, data, sport) {
   const away = flip ? sides.home : sides.away, home = flip ? sides.away : sides.home;
   const homeId = String(home.team.id), mu = Number(ds.margin), sd = Number(ds.sd);
   const abbr = c => edgeTeamAbbr(c.team || {});
+  const lab = c => glLabel(sport, c), named = edgeNamesTeams(sport) ? " is-named" : "";
   const pickHome = edgeFavKey(sport, ds.pick) === edgeFavKey(sport, ds.home);
   const live = status.state === "in";
 
@@ -505,8 +515,8 @@ function glRender(card, data, sport) {
 
   // Board: score, clock, down and distance.
   const poss = last && last.end && last.end.team ? String(last.end.team.id) : String((comp.situation || {}).possession || "");
-  const team = (c, side) => `<div class="gl-team gl-${side}${String(c.team.id) === poss && live ? " has-ball" : ""}" style="--tc:${color(c)}">` +
-    `<b>${edgeEsc(abbr(c))}</b><span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
+  const team = (c, side) => `<div class="gl-team gl-${side}${named}${String(c.team.id) === poss && live ? " has-ball" : ""}" style="--tc:${color(c)}">` +
+    `<b>${edgeEsc(lab(c))}</b><span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
   const clock = status.state === "post" ? "Final" : (status.shortDetail || status.detail || "Live");
   const down = live && last && last.end && last.end.downDistanceText ? last.end.downDistanceText : "";
   const lastText = live && last ? String(last.text || "").trim() : "";
@@ -547,7 +557,7 @@ function glRender(card, data, sport) {
   const xy = (v, i) => [(times[i] / span * W).toFixed(1), (H - v * H).toFixed(1)];
   const pts = series.map((v, i) => xy(v, i).join(",")).join(" ");
   const [ex, ey] = xy(series[series.length - 1], series.length - 1);
-  const pick = pickHome ? abbr(home) : abbr(away), other = pickHome ? abbr(away) : abbr(home);
+  const pick = pickHome ? lab(home) : lab(away), other = pickHome ? lab(away) : lab(home);
   const quarters = [1, 2, 3, 4].map(q => `<line x1="${q * 900 / span * W}" x2="${q * 900 / span * W}" y1="0" y2="${H}" class="q"/>`).join("");
   const chart = `<div class="gl-plot"><span class="gl-up">${edgeEsc(pick)} wins &uarr;</span><span class="gl-down">${edgeEsc(other)} wins &darr;</span>` +
     `<div class="gl-svg"><svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${quarters}` +
@@ -734,6 +744,7 @@ function glRenderOther(card, data, sport) {
   (comp.competitors || []).forEach(c => { sides[c.homeAway] = c; });
   if (!sides.home || !sides.away) return false;
   const abbr = c => edgeTeamAbbr(c.team || {});
+  const lab = c => glLabel(sport, c), named = edgeNamesTeams(sport) ? " is-named" : "";
   const flip = edgeFavKey(sport, ds.away) === edgeFavKey(sport, abbr(sides.home));
   const away = flip ? sides.home : sides.away, home = flip ? sides.away : sides.home;
   const live = status.state === "in", post = status.state === "post";
@@ -771,7 +782,7 @@ function glRenderOther(card, data, sport) {
   const chanceNow = series[series.length - 1];
 
   const color = c => /^[0-9a-f]{6}$/i.test((c.team || {}).color || "") ? "#" + c.team.color : "var(--text-faint)";
-  const team = (c, side) => `<div class="gl-team gl-${side}" style="--tc:${color(c)}"><b>${edgeEsc(abbr(c))}</b>` +
+  const team = (c, side) => `<div class="gl-team gl-${side}${named}" style="--tc:${color(c)}"><b>${edgeEsc(lab(c))}</b>` +
     `<span class="gl-score">${edgeEsc(String(c.score ?? 0))}</span></div>`;
   const clock = post ? "Final" : (status.shortDetail || status.detail || "Live");
   const last = live && events.length ? events[events.length - 1].text : "";
@@ -786,8 +797,8 @@ function glRenderOther(card, data, sport) {
     if (q < cfg.n || span > cfg.len) marks.push(`<line x1="${q * cfg.per / span * W}" x2="${q * cfg.per / span * W}" y1="0" y2="${H}" class="q"/>`);
     labs.push(`<span style="left:${(q - 0.5) * cfg.per / span * 100}%">${edgeEsc(cfg.lab(q))}</span>`);
   }
-  const pickName = pickDraw ? "Draw" : pickHome ? abbr(home) : abbr(away);
-  const up = pickDraw ? "Draw" : `${pickName} wins`, down = pickDraw ? "No draw" : `${pickHome ? abbr(away) : abbr(home)} wins`;
+  const pickName = pickDraw ? "Draw" : pickHome ? lab(home) : lab(away);
+  const up = pickDraw ? "Draw" : `${pickName} wins`, down = pickDraw ? "No draw" : `${pickHome ? lab(away) : lab(home)} wins`;
   const chart = `<div class="gl-plot"><span class="gl-up">${edgeEsc(up)} &uarr;</span><span class="gl-down">${edgeEsc(down)} &darr;</span>` +
     `<div class="gl-svg"><svg class="gl-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${marks.join("")}` +
     `<line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" class="mid"></line><polyline points="${pts}"></polyline></svg>` +
@@ -814,7 +825,7 @@ function glRenderOther(card, data, sport) {
         `<span class="gl-text">${e.team && colorOf[String(e.team)] ? `<i class="gl-dot-team" style="background:${colorOf[String(e.team)]}"></i>` : ""}${edgeEsc(e.text)}</span></li>`;
     }).join("");
     const end = list[list.length - 1];
-    const res = `${edgeEsc(abbr(away))} ${end.as}, ${edgeEsc(abbr(home))} ${end.hs}` + (pts ? ` · ${pts} scoring play${pts === 1 ? "" : "s"}` : "");
+    const res = `${edgeEsc(lab(away))} ${end.as}, ${edgeEsc(lab(home))} ${end.hs}` + (pts ? ` · ${pts} scoring play${pts === 1 ? "" : "s"}` : "");
     const key = "p" + per;
     const open = card.glOpen && key in card.glOpen ? card.glOpen[key] : per === lastPer && live;
     return `<details class="gl-drive${pts ? " is-score" : ""}" data-drive="${key}"${open ? " open" : ""}><summary>` +

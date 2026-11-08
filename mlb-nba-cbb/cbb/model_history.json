@@ -407,6 +407,167 @@
     "recent": 0.0559,
     "rest": 0.2172
    }
+  },
+  {
+   "run_at": "2026-11-08T10:26:00+00:00",
+   "data_through": "2026-11-07",
+   "holdout": {
+    "from": "2026-03-08",
+    "games": 600,
+    "home_rate_log_loss": 0.594
+   },
+   "live_model": {
+    "trained_at": "2026-10-17T15:00:23+00:00",
+    "recipe": {
+     "half_life": 60,
+     "carry": 0.6,
+     "years": 3
+    },
+    "holdout_log_loss": 0.4832
+   },
+   "current_recipe_log_loss": 0.4835,
+   "best_recipe": {
+    "recipe": {
+     "half_life": null,
+     "carry": 0.6,
+     "years": 3
+    },
+    "log_loss": 0.4601
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "half_life": 60,
+      "carry": 0.6,
+      "years": 3
+     },
+     "log_loss": 0.4835,
+     "accuracy": 0.7583
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.4,
+      "years": 3
+     },
+     "log_loss": 0.4756,
+     "accuracy": 0.7667
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.4,
+      "years": 2
+     },
+     "log_loss": 0.4738,
+     "accuracy": 0.7667
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.6,
+      "years": 3
+     },
+     "log_loss": 0.4601,
+     "accuracy": 0.765
+    },
+    {
+     "recipe": {
+      "half_life": 60,
+      "carry": 0.6,
+      "years": 3,
+      "extras": [
+       "pyth"
+      ]
+     },
+     "log_loss": 0.4834,
+     "accuracy": 0.755
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.4,
+      "years": 3,
+      "extras": [
+       "pyth"
+      ]
+     },
+     "log_loss": 0.4757,
+     "accuracy": 0.77
+    },
+    {
+     "recipe": {
+      "half_life": 60,
+      "carry": 0.6,
+      "years": 3,
+      "calib": true
+     },
+     "log_loss": 0.482,
+     "accuracy": 0.7583
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.4,
+      "years": 3,
+      "calib": true
+     },
+     "log_loss": 0.4747,
+     "accuracy": 0.7667
+    },
+    {
+     "recipe": {
+      "half_life": 60,
+      "carry": 0.6,
+      "years": 3,
+      "season_decay": 0.5
+     },
+     "log_loss": 0.4823,
+     "accuracy": 0.755
+    },
+    {
+     "recipe": {
+      "half_life": null,
+      "carry": 0.4,
+      "years": 3,
+      "season_decay": 0.5
+     },
+     "log_loss": 0.4739,
+     "accuracy": 0.77
+    }
+   ],
+   "switched_recipe": true,
+   "deployed": true,
+   "reason": "new recipe beat the current one on held-out games",
+   "trigger": "weekly",
+   "live_picks_last_14_days": {
+    "days": 14,
+    "picks": 310,
+    "accuracy": 0.8258,
+    "predicted": 0.7653
+   },
+   "weights_before": {
+    "home_court": 3.9168,
+    "em": 1.406,
+    "elo": -1.0055,
+    "efg": -0.2495,
+    "tov": 0.0861,
+    "orb": 0.1091,
+    "ftr": 0.054,
+    "recent": 0.0559,
+    "rest": 0.2172
+   },
+   "weights_after": {
+    "home_court": 3.6531,
+    "em": 1.5481,
+    "elo": -1.5451,
+    "efg": -0.5283,
+    "tov": -0.139,
+    "orb": -0.0091,
+    "ftr": 0.024,
+    "recent": 0.1366,
+    "rest": 0.1839
+   }
   }
  ]
 }

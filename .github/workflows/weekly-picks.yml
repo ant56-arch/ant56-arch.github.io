@@ -89,20 +89,33 @@ jobs:
           for lg in nfl cfb; do echo "$lg=$(python ../shared/seasons.py idle $lg)" >> "$GITHUB_OUTPUT"; done
           python ../shared/seasons.py
 
+      # If nflverse (GitHub releases) is erroring, the fetch scripts retry,
+      # then stop (exit 3) rather than predict from a partial pull. The NFL
+      # steps below are then skipped, and the site is rebuilt from the last
+      # tracking data, so an outage never posts wrong picks or a red run.
       - name: Fetch data
         id: fetch_data
+        continue-on-error: true
         run: python src/fetch_data.py
 
       - name: Fetch injury report
         id: fetch_injuries
+        if: steps.fetch_data.outcome == 'success'
+        continue-on-error: true
         run: python src/fetch_injuries.py
+
+      - name: Note a data outage
+        if: steps.fetch_data.outcome != 'success' || steps.fetch_injuries.outcome != 'success'
+        run: echo "NFL data (nflverse) didn't come through, so this run skipped NFL picks; the site keeps the last ones." | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Build features
         id: build_features
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/build_features.py
 
       - name: Build defense personnel value (feeds auto_defense_adjustments)
         id: build_defense_stats
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/build_defense_stats.py
 
       # data/raw/odds.csv isn't committed, so the last pull is carried
@@ -118,7 +131,7 @@ jobs:
 
       - name: Fetch Vegas odds
         id: fetch_odds
-        if: steps.season.outputs.nfl != 'yes' && ((github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '35 13 * * 0' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == '')
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success' && steps.season.outputs.nfl != 'yes' && ((github.event_name == 'schedule' && (github.event.schedule == '5 16 * * 0-5' || github.event.schedule == '35 13 * * 0' || github.event.schedule == '15 23 * * 0,1,4')) || (github.event_name == 'workflow_dispatch' && inputs.odds) || hashFiles('nfl-cfb/data/raw/odds.csv') == '')
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python src/fetch_odds.py
@@ -133,17 +146,19 @@ jobs:
 
       - name: Generate game predictions (model + market-blended sharp line)
         id: game_predictions
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/models/game_predictions.py
 
       - name: Generate player props
         id: player_props
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/models/props_predictions.py
 
       # Anytime TD prices, only for games kicking off within 12 hours whose
       # last pull is over 6 hours old (~18 credits a week, see the script).
       - name: Fetch anytime TD odds
         id: fetch_td_odds
-        if: steps.season.outputs.nfl != 'yes' && (github.event_name != 'workflow_dispatch' || inputs.odds)
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success' && steps.season.outputs.nfl != 'yes' && (github.event_name != 'workflow_dispatch' || inputs.odds)
         continue-on-error: true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -151,19 +166,23 @@ jobs:
 
       - name: Track TD props
         id: track_td_props
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         continue-on-error: true
         run: python src/track_td_props.py
 
       - name: Compare to Vegas
         id: compare_vegas
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/models/compare_to_vegas.py
 
       - name: Sanity check output
         id: sanity_check
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/sanity_checks.py
 
       - name: Track prediction accuracy
         id: track_results
+        if: steps.fetch_data.outcome == 'success' && steps.fetch_injuries.outcome == 'success'
         run: python src/track_results.py
 
       # CFBD responses carried between runs (src/fetch_cfb_data.py): finished

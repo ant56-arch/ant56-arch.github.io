@@ -51,8 +51,12 @@ SPORTS = {
     "nhl": {"label": "NHL", "window": 50, "history": os.path.join(MLB, "nhl", "model_history.json")},
     "cbb": {"label": "College basketball", "window": 150, "history": os.path.join(MLB, "cbb", "model_history.json")},
     "soccer": {"label": "Soccer", "window": 60, "history": os.path.join(MLB, "soccer", "model_history.json")},
-    "nfl": {"label": "NFL", "window": 30, "history": None},
-    "cfb": {"label": "College football", "window": 60, "history": None},
+    # Football shares one history file, each run tagged with its sport. Football
+    # retrains weekly on its own schedule, so it never retrains early.
+    "nfl": {"label": "NFL", "window": 30, "history": os.path.join(TRACKING, "model_history.json"),
+            "sport": "nfl", "early": False},
+    "cfb": {"label": "College football", "window": 60, "history": os.path.join(TRACKING, "model_history.json"),
+            "sport": "cfb", "early": False},
 }
 
 
@@ -127,6 +131,9 @@ LOADERS = {
 def last_retrain(key):
     path = SPORTS[key]["history"]
     runs = load(path, {}).get("runs", []) if path else []
+    sport = SPORTS[key].get("sport")
+    if sport:
+        runs = [r for r in runs if r.get("sport") == sport]
     return runs[-1]["run_at"][:10] if runs else None
 
 
@@ -149,7 +156,7 @@ def status(key):
 def early_retrain(key, today=None):
     """The alarm's numbers if this sport should retrain now, else None."""
     s = status(key)
-    if not s["alarm"] or not SPORTS[key]["history"]:
+    if not s["alarm"] or not SPORTS[key]["history"] or not SPORTS[key].get("early", True):
         return None
     today = today or datetime.now(ET).date()
     last = s["last_retrain"]

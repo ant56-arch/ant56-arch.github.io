@@ -260,8 +260,6 @@ main > .card:first-child, main > section:first-child > .card:first-child { borde
 .edge-tabs a { color: inherit; text-decoration: none; opacity: .82; padding-bottom: 4px; border-bottom: 1px solid transparent; }
 .edge-tabs a:hover { opacity: 1; }
 .edge-tabs a[aria-current] { opacity: 1; border-bottom-color: currentColor; }
-.edge-cta { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; padding: 10px 16px; border-radius: 999px; background: var(--night-ink); color: #1b1b19; white-space: nowrap; }
-.edge-nav.solid .edge-cta { background: var(--forest); color: var(--forest-ink); }
 .edge-nav .ticker-settings { margin-left: 4px; }
 .edge-nav .ticker-gear { color: inherit; }
 .edge-nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); max-height: calc(100dvh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--text); text-transform: none; letter-spacing: normal; font-family: var(--font); }
@@ -301,8 +299,7 @@ header.masthead.edge-hero::before { z-index: 0; background: linear-gradient(180d
   .edge-tabs { order: 3; flex: 1 0 100%; margin: 0; gap: 14px; justify-content: space-between; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .edge-tabs::-webkit-scrollbar { display: none; }
   .edge-tabs a { white-space: nowrap; }
-  .edge-cta { margin-left: auto; }
-  .edge-nav .ticker-settings { margin-left: 0; }
+  .edge-nav .ticker-settings { margin-left: auto; }
   header.masthead.edge-hero { min-height: 0; padding-top: calc(140px + var(--tick-h, 0px)); }
   .edge-hero-bar { margin-top: 18px; grid-template-columns: 1fr auto; }
   .edge-hero-bar > :nth-child(2) { display: none; }

@@ -62,9 +62,16 @@ function edgeUpcoming(summaries) {
   return out.sort((a, b) => a.t - b.t);
 }
 
+// A team in a summary.json slate pick: its abbreviation, or for college and
+// soccer its name (away_name / home_name, edgeTeamLabel).
+function edgeSlateTeam(g, abbr) {
+  if (!edgeNamesTeams(g.site.sport) || abbr === "Draw") return abbr;
+  return (abbr === g.away ? g.away_name : abbr === g.home ? g.home_name : null) || abbr;
+}
+
 // "over BOS" under a pick; a soccer draw pick names both teams instead.
 function edgeOverText(g) {
-  return g.pick === "Draw" ? `${g.away} vs ${g.home}` : `over ${g.other}`;
+  return g.pick === "Draw" ? `${edgeSlateTeam(g, g.away)} vs ${edgeSlateTeam(g, g.home)}` : `over ${edgeSlateTeam(g, g.other)}`;
 }
 
 function edgeSureCard(eyebrow, name, pct, sub, href) {
@@ -99,8 +106,8 @@ async function initBestBets() {
     if (top) {
       const label = site.sport === "MLB" ? "MLB game" : site.sport;
       const when = edgeWhen(top.start);
-      cards.push(edgeSureCard(`${label} · ${when.split(" ")[0] || "soon"}`, top.pick, top.prob,
-                              `${top.pick === "Draw" ? edgeOverText(top) : `${top.at === "vs" ? "vs" : (top.pick === top.home ? "vs" : "at")} ${top.other}`}${when ? ", " + when.split(" ").slice(1).join(" ") : ""}`,
+      cards.push(edgeSureCard(`${label} · ${when.split(" ")[0] || "soon"}`, edgeSlateTeam(top, top.pick), top.prob,
+                              `${top.pick === "Draw" ? edgeOverText(top) : `${top.at === "vs" ? "vs" : (top.pick === top.home ? "vs" : "at")} ${edgeSlateTeam(top, top.other)}`}${when ? ", " + when.split(" ").slice(1).join(" ") : ""}`,
                               top.url));
     }
   });

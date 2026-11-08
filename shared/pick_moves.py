@@ -117,7 +117,8 @@ def football_pick(r):
         return r["ml_pick_team"], _num(r["ml_our_prob"])
     spread, hp = _num(r.get("model_spread")), _num(r.get("model_home_win_prob"))
     if spread is not None and hp is not None:
-        return (r["home_team"], hp) if spread > 0 else (r["away_team"], 1 - hp)
+        home = spread > 0 or (spread == 0 and hp > 0.5)  # a 0.0 line goes to the side the chance favors
+        return (r["home_team"], hp) if home else (r["away_team"], 1 - hp)
     return None
 
 

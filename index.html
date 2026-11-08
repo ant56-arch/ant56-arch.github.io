@@ -62,9 +62,7 @@ em, .it { font-family: var(--f-serif); font-style: italic; font-weight: 400; let
 .nav ul { display: flex; gap: 26px; list-style: none; margin: 0 auto; padding: 0; }
 .nav ul a { text-decoration: none; opacity: .82; }
 .nav ul a:hover { opacity: 1; }
-.pill { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; padding: 10px 16px; border-radius: 999px; background: var(--hero-ink); color: #1B1B19; white-space: nowrap; }
-.nav.solid .pill { background: var(--forest); color: var(--forest-ink); }
-@media (max-width: 860px) { .nav ul { display: none; } .nav .pill { margin-left: auto; } }
+@media (max-width: 860px) { .nav ul { display: none; } }
 
 /* --- Hero --- */
 .hero { position: relative; min-height: min(520px, 66vh); color: var(--hero-ink); display: grid; align-content: end; padding: 140px var(--gutter) 0; overflow: hidden; background: #0E1712; }
@@ -177,6 +175,8 @@ h2 em { font-size: 1.06em; }
 .g-head .big { font-family: var(--f-serif); font-size: 76px; line-height: .8; }
 .g-head small { display: block; color: var(--ink-soft); margin-bottom: 6px; }
 .g-head h3 { margin: 0; font-weight: 500; font-variation-settings: "wdth" 125; font-size: 24px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+.g-head > div { min-width: 0; }
+.g-head h3.long { font-size: 18px; line-height: 1.1; overflow-wrap: anywhere; text-wrap: balance; }
 .g-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--rule); }
 .g-facts div { padding: 12px 0; display: grid; gap: 4px; }
 .g-facts div + div { padding-left: 14px; }
@@ -317,7 +317,7 @@ a.league.feat:hover { background: color-mix(in srgb, var(--forest) 88%, var(--pa
 .nav .ticker-settings { margin-left: 4px; }
 .nav .ticker-gear { color: inherit; }
 .nav .ticker-panel { max-height: calc(100vh - var(--tick-h, 0px) - 90px); max-height: calc(100dvh - var(--tick-h, 0px) - 90px); overflow-y: auto; color: var(--ink); }
-@media (max-width: 860px) { .nav .ticker-settings { margin-left: 0; } }
+@media (max-width: 860px) { .nav .ticker-settings { margin-left: auto; } }
 /* Ticker settings: a gear at the right of the top bar. */
 .ticker-settings { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-left: -12px; }
 .ticker-gear {
@@ -598,7 +598,6 @@ a.crawl-item:hover { background: var(--paper); }
     <li><a href="/?l=cbb">CBB</a></li>
     <li><a href="/?l=soccer">Soccer</a></li>
   </ul>
-  <a class="pill" href="#slate">Today's picks</a>
 </nav>
 
 <header class="hero" id="top">
@@ -847,6 +846,7 @@ function loadVenues() {
     .then(d => {
       if (d && d.espn) ESPN[s.lg] = [d.espn];
       ((d && d.games) || []).forEach(gm => {
+        [gm.away, gm.home].forEach(t => { if (t && t.abbr) TEAMS[`${s.lg}|${t.abbr}`] = t; });
         if (gm.start && gm.away && gm.home) {
           const k = `${s.lg}|${dayKey(new Date(gm.start))}`;
           (LIVE[k] = LIVE[k] || []).push({ away: gm.away.abbr, home: gm.home.abbr, state: gm.state, detail: gm.detail, a: gm.away.score, h: gm.home.score });
@@ -862,6 +862,21 @@ function loadVenues() {
 // league -> ESPN scoreboard addresses. Soccer's three competitions each have their own.
 const ESPN = { Soccer: ["eng.1", "esp.1", "uefa.champions"].map(c => `https://site.api.espn.com/apis/site/v2/sports/soccer/${c}/scoreboard`) };
 const LIVE = {};   // "league|date" -> [{away, home, state, detail, a, h}]
+// How a team is shown: NFL, NBA, NHL and MLB by abbreviation; college and
+// soccer by the school or club ("Ohio State", "Bayern Munich"). Abbreviations
+// stay the keys (matching, picks). Names come with each summary.json pick
+// (away_name / home_name) or from the league's games.json (TEAMS).
+const NAME_LEAGUES = ["CFB", "CBB", "Soccer"];
+const TEAMS = {};  // "league|abbr" -> games.json team {abbr, short, name, logo}
+function teamName(g, abbr) {
+  if (!NAME_LEAGUES.includes(g.sp) || !abbr || abbr === "Draw") return abbr;
+  const own = abbr === g.away ? g.awayName : abbr === g.home ? g.homeName : null;
+  if (own) return own;
+  const t = TEAMS[`${g.sp}|${abbr}`];
+  if (!t) return abbr;
+  return (g.sp === "Soccer" ? t.name || t.short : t.short || t.name) || abbr;
+}
+const A = g => teamName(g, g.away), H = g => teamName(g, g.home);
 const BYKEY = {};  // gKey -> slate game
 const gKey = g => `${g.sp}|${g.date}|${g.away}|${g.home}`;
 function liveFor(g) {
@@ -880,20 +895,20 @@ function status(g) {
     let hit = g.hit;
     if (hit == null && sc) hit = g.pick === "Draw" ? sc[0] === sc[1] : g.pick === g.away ? sc[0] > sc[1] : g.pick === g.home ? sc[1] > sc[0] : null;
     const word = hit === true ? "Hit" : hit === false ? "Miss" : "Final";
-    const text = sc ? `Final · ${g.away} ${sc[0]}, ${g.home} ${sc[1]}${hit == null ? "" : " · " + word}` : "Final";
+    const text = sc ? `Final · ${A(g)} ${sc[0]}, ${H(g)} ${sc[1]}${hit == null ? "" : " · " + word}` : "Final";
     return { kind: "final", hit, stamp: hit == null ? "" : word, line: text, result: sc ? `${word} · ${sc[0]}-${sc[1]}` : "Final",
              short: sc ? `${word} · ${sc[0]}-${sc[1]}` : "Final",
              text };
   }
   if (r && r.state === "in" && sc) {
-    const text = `Live · ${g.away} ${sc[0]}, ${g.home} ${sc[1]}${r.detail ? " · " + r.detail : ""}`;
+    const text = `Live · ${A(g)} ${sc[0]}, ${H(g)} ${sc[1]}${r.detail ? " · " + r.detail : ""}`;
     return { kind: "live", stamp: "Live", short: `Live · ${sc[0]}-${sc[1]}`, result: `Live · ${sc[0]}-${sc[1]}`, text, line: text };
   }
   // Past its start with no live score (soccer has no ESPN feed here).
-  if (new Date(g.start) <= Date.now()) return { kind: "pre", stamp: "", short: "Started", result: "Started", text: `Started ${g.t} ET · score not in yet`, line: `${g.away} @ ${g.home} · started ${g.t} ET` };
+  if (new Date(g.start) <= Date.now()) return { kind: "pre", stamp: "", short: "Started", result: "Started", text: `Started ${g.t} ET · score not in yet`, line: `${A(g)} @ ${H(g)} · started ${g.t} ET` };
   const today = dayKey(new Date());
   const when = g.date === today ? "Today" : g.date === dayKey(new Date(Date.now() + 864e5)) ? "Tomorrow" : longDate(g.date, { weekday: "long" });
-  return { kind: "pre", stamp: "", short: g.t, result: "", text: `${when} · ${g.t} ET`, line: `${g.away} @ ${g.home} · ${when} · ${g.t} ET` };
+  return { kind: "pre", stamp: "", short: g.t, result: "", text: `${when} · ${g.t} ET`, line: `${A(g)} @ ${H(g)} · ${when} · ${g.t} ET` };
 }
 // Every <span class="st" data-k data-f> on the page shows one game's status:
 // data-f "short" (Live · 2-1), "result" (blank until it starts), "text"
@@ -1351,24 +1366,41 @@ function fieldMarkup(sp) {
     ${yl}`;
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-function teamMarker(x, y, abbr, isPick, side) {
+// Two lines at most, shrunk to fit the circle: a college or soccer name.
+function fitName(name, x, y, fill) {
+  const words = String(name).split(/\s+/).filter(Boolean);
+  let lines = [words.join(" ")];
+  if (words.length > 1 && lines[0].length > 7) {
+    lines = null;
+    for (let i = 1; i < words.length; i++) {
+      const two = [words.slice(0, i).join(" "), words.slice(i).join(" ")];
+      if (!lines || Math.max(...two.map(l => l.length)) < Math.max(...lines.map(l => l.length))) lines = two;
+    }
+  }
+  const fs = Math.max(6, Math.min(14, 52 / (Math.max(...lines.map(l => l.length)) * 0.62)));
+  const top = y - (lines.length - 1) * fs * 0.55 + fs * 0.35;
+  return `<text x="${x}" y="${top.toFixed(1)}" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="600" font-size="${fs.toFixed(1)}" fill="${fill}">` +
+    lines.map((l, i) => `<tspan x="${x}" dy="${i ? (fs * 1.1).toFixed(1) : 0}">${esc(l)}</tspan>`).join("") + "</text>";
+}
+function teamMarker(x, y, abbr, isPick, side, name) {
   const ink = css("--ink"), paper = css("--paper"), forest = css("--forest"), fi = css("--forest-ink");
   const a = esc(String(abbr).slice(0, 5));
   return `<g>
     <circle cx="${x}" cy="${y}" r="30" fill="${isPick ? forest : paper}" stroke="${isPick ? forest : ink}" stroke-width="1.5"/>
-    <text x="${x}" y="${y + 5}" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="600" font-size="${a.length > 4 ? 11 : 14}" letter-spacing="1" fill="${isPick ? fi : ink}">${a}</text>
+    ${name && name !== abbr ? fitName(name, x, y, isPick ? fi : ink) :
+    `<text x="${x}" y="${y + 5}" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="600" font-size="${a.length > 4 ? 11 : 14}" letter-spacing="1" fill="${isPick ? fi : ink}">${a}</text>`}
     <text x="${x}" y="${y + 52}" text-anchor="middle" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="2" fill="${css("--ink-soft")}">${side}${isPick ? " · PICK" : ""}</text>
     ${isPick ? `<path d="M${x + 22} ${y - 46} v24" stroke="${ink}" stroke-width="1.5"/><path d="M${x + 22} ${y - 46} l14 5 l-14 5 z" fill="${css("--clay")}"/>` : ""}
   </g>`;
 }
 function drawField(g) {
   const svg = $("fieldArt");
-  svg.innerHTML = `<title id="fieldTitle">${esc(g.sp)}: ${esc(g.away)} at ${esc(g.home)}, our pick ${esc(g.pick)}</title>`;
+  svg.innerHTML = `<title id="fieldTitle">${esc(g.sp)}: ${esc(A(g))} at ${esc(H(g))}, our pick ${esc(teamName(g, g.pick))}</title>`;
   topo(svg);
   const pickHome = g.pick === g.home, pickAway = g.pick === g.away;
   const p = g.prob / 100, b = (g.book || 0) / 100;
   svg.insertAdjacentHTML("beforeend", fieldMarkup(g.sp) +
-    teamMarker(250, 300, g.away, pickAway, "AWAY") + teamMarker(550, 300, g.home, pickHome, "HOME") +
+    teamMarker(250, 300, g.away, pickAway, "AWAY", A(g)) + teamMarker(550, 300, g.home, pickHome, "HOME", H(g)) +
     `<g font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1.5" fill="${css("--ink-soft")}">
       <text x="120" y="532">OUR CHANCE${g.pick === "Draw" ? " OF A DRAW" : ""}</text><text x="680" y="532" text-anchor="end">${g.prob.toFixed(1)}%</text>
       <rect x="120" y="540" width="560" height="5" fill="${css("--rule")}"/>
@@ -1384,10 +1416,10 @@ const chips = $("chips"), glist = $("glist"), filters = $("filters");
 const lgShort = sp => sp === "Soccer" ? "SOC" : sp;
 function autoNote(g) {
   if (g.result) return g.result;
-  if (!g.book) return `We have ${g.pick} at ${g.prob.toFixed(1)}%. No sportsbook price was posted for this one.`;
+  if (!g.book) return `We have ${teamName(g, g.pick)} at ${g.prob.toFixed(1)}%. No sportsbook price was posted for this one.`;
   const gap = g.prob - g.book;
-  const pickName = g.pick === "Draw" ? "the draw" : g.pick;
-  const other = g.pick === g.home ? g.away : g.home;
+  const pickName = g.pick === "Draw" ? "the draw" : teamName(g, g.pick);
+  const other = g.pick === g.home ? A(g) : H(g);
   if (gap >= 2) return `We give ${pickName} a ${g.prob.toFixed(1)}% chance to win, more than Vegas's ${g.book.toFixed(1)}%${g.pick === "Draw" ? "" : ` over ${other}`}.`;
   if (gap <= -2) return `Vegas likes ${pickName} even more than we do, so the bet pays less than our numbers say it should.`;
   return `We and Vegas agree on ${pickName} within a couple of points.`;
@@ -1415,7 +1447,7 @@ function renderChooser() {
         html += `<h4 class="mono"><span>${g.t} ET</span><span>${n} game${n > 1 ? "s" : ""}</span></h4>`;
         last = g.t;
       }
-      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(g.away)} @ ${esc(g.home)}</span><span class="pk">${esc(g.pick)} ${Math.round(g.prob)}%</span>${stSpan(g, "result")}</button>`;
+      html += `<button type="button" aria-pressed="false" data-i="${i}"><span class="lg">${lgShort(g.sp)}</span><span class="mt">${esc(A(g))} @ ${esc(H(g))}</span><span class="pk">${esc(teamName(g, g.pick))} ${Math.round(g.prob)}%</span>${stSpan(g, "result")}</button>`;
     });
     glist.innerHTML = html || `<div class="empty">No games match this filter.</div>`;
   }
@@ -1428,13 +1460,15 @@ function show(i, animate) {
   const g = list[cur], n = String(cur + 1).padStart(2, "0");
   $("gNum").textContent = n;
   $("gOf").textContent = `Game ${cur + 1} of ${list.length} · ${g.sp}`;
-  $("gTitle").innerHTML = g.url ? `<a href="${esc(g.url)}">${esc(g.away)} @ ${esc(g.home)}</a>` : `${esc(g.away)} @ ${esc(g.home)}`;
+  const title = `${esc(A(g))} @ ${esc(H(g))}`;
+  $("gTitle").innerHTML = g.url ? `<a href="${esc(g.url)}">${title}</a>` : title;
+  $("gTitle").classList.toggle("long", `${A(g)} @ ${H(g)}`.length > 16);
   $("gStatus").innerHTML = stSpan(g, "text");
-  $("gPick").textContent = g.pick;
+  $("gPick").textContent = teamName(g, g.pick);
   $("gProb").textContent = Math.round(g.prob) + "%";
   $("gPrice").textContent = fmtPrice(g.price);
   $("gNote").textContent = autoNote(g);
-  $("frameTag").textContent = `${g.sp} · ${g.away} at ${g.home}`;
+  $("frameTag").textContent = `${g.sp} · ${A(g)} at ${H(g)}`;
   const pill = $("framePill");
   pill.dataset.k = gKey(g); pill.dataset.f = "text"; pill.classList.add("st");
   updateStatus();
@@ -1488,6 +1522,7 @@ function slateGames(sums) {
     out.push({
       sp: g.sport || SITES[i].lg, start: g.start, date: g.date || dayKey(new Date(g.start)),
       t: etTime(g.start), h: etHour(g.start), away: g.away, home: g.home, pick: g.pick,
+      awayName: g.away_name || null, homeName: g.home_name || null,
       prob: +g.prob, price: g.price, book: g.book == null ? null : +g.book, final: !!g.final, url: g.url,
       score: Array.isArray(g.score) ? g.score : null, hit: g.hit == null ? null : !!g.hit,
     });
@@ -1681,10 +1716,15 @@ function render(sums) {
     board.push({ lg, rec: `${rec[0]}-${rec[1]}`, w: rec[0], l: rec[1], pct: rec[0] / (rec[0] + rec[1]) * 100,
                  streak: seasonOver(lg) ? "Final" : streakText(st), since: src.record.since, kind: st && st.kind, n: st && st.n });
   });
-  // MLB hitters sit under the game picks: top hitters who got a hit (no streak).
+  // MLB hitters sit right under the MLB game picks: top hitters who got a hit (no streak).
   const hits = by.MLB && by.MLB.record && wl(by.MLB.record.value);
   const rows = board.slice();
-  if (hits && hits[0] + hits[1]) rows.push({ lg: "MLB hitters", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: seasonOver("MLB") ? "Final" : "" });
+  if (hits && hits[0] + hits[1]) {
+    const at = rows.findIndex(b => b.lg === "MLB");
+    rows.splice(at < 0 ? rows.length : at + 1, 0, { lg: "MLB hitters", sp: "MLB", rec: `${hits[0]}-${hits[1]}`, pct: hits[0] / (hits[0] + hits[1]) * 100, streak: seasonOver("MLB") ? "Final" : "" });
+  }
+  // Sports whose season is over drop to the bottom, keeping their order.
+  rows.sort((a, b) => !!seasonOver(a.sp || a.lg) - !!seasonOver(b.sp || b.lg));
   $("boardRows").innerHTML = rows.map(b => `<tr><td>${b.lg}</td><td>${b.rec}</td><td><span class="bar"><i style="width:${Math.max(0, Math.min(100, (b.pct - 40) / 40 * 100))}%"></i></span>${b.pct.toFixed(1)}%</td><td>${b.streak ? `<span class="streak">${b.streak}</span>` : ""}</td></tr>`).join("");
   $("boardDate").textContent = "As of " + longDate(today, { month: "short", day: "numeric" });
   $("boardYear").textContent = "Picks to win · " + today.slice(0, 4);
@@ -1743,8 +1783,10 @@ function render(sums) {
     let sub = !recd ? null : `picks to win since ${(src.record.since || "").replace(/, \d{4}$/, "")}`;
     if (site.lg === "MLB" && recd && s.record) sub += ` · hitters ${s.record.value}`;
     if (done && recd) sub += ` · back on ${done.next_label.replace(/^(.)/, c => c.toUpperCase()).replace(/, usually.*/, "")}`;
-    leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" });
+    leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" && !done, done: !!done });
   });
+  // Sports whose season is over drop to the bottom, keeping their order.
+  leagues.sort((a, b) => a.done - b.done);
   $("leagueGrid").innerHTML = leagues.map(l => `
     <a class="league${l.feat ? " feat" : ""}" href="${l.href}">
       <div class="lt mono"><span>${l.lg}</span><span>${l.tag}</span></div>

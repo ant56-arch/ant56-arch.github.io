@@ -234,6 +234,15 @@ def spread_result(r):
         return None
     return (cover > 0) == (float(model) > float(vegas))
 
+# CFB-1 (Anthony, 2026-11-06): CFB's own spread trails Vegas (it missed by
+# 13.6 points a game against Vegas's 12.4, and its side covered 44%), so CFB
+# shows it as a "Model lean" with no chance to cover, and keeps it off the
+# scores bar and Betting tab. NFL keeps its spread pick.
+def lean_only(sport):
+    return sport["slug"] == "cfb"
+
+LEAN_NOTE = "the model's own side; it trails Vegas, so it isn't a bet"
+
 def spread_sigma(sport):
     """The model's typical miss on the margin, in points (margin_std_dev)."""
     coefs = load_coefficients(sport)
@@ -1852,7 +1861,10 @@ def nf_game(sport, g, espn=None):
         cover = ""
         if g["graded"] and g.get("covered") is not None:
             cover = " " + (pill("COVERED", "positive") if g["covered"] else pill("DIDN'T COVER", "danger"))
-        facts.append(("Spread pick", f'{escape(sp["team"])} {sp["line"]}{cover}', f'{sp["prob"]:.0%} chance to cover'))
+        if lean_only(sport):
+            facts.append(("Model lean", f'{escape(sp["team"])} {sp["line"]}{cover}', LEAN_NOTE))
+        else:
+            facts.append(("Spread pick", f'{escape(sp["team"])} {sp["line"]}{cover}', f'{sp["prob"]:.0%} chance to cover'))
     facts.append(("Total points", f'{g["total"]:.1f}', f'Vegas {g["vegas_total"]:.1f}' if g.get("vegas_total") else ""))
     if g["vegas_favored_team"]:
         # How far our line is from Vegas's, toward our pick: the model's reason to like it more (or less) than the market.
@@ -1869,13 +1881,13 @@ def nf_game(sport, g, espn=None):
         "ml": {"price": ml["price"], "book": ml["book"] * 100, "value": ml["value"], "units": ml["units"],
                "won": {"W": True, "L": False}.get(ml["result"])} if ml else None,
         "why": [], "facts": facts, "hitters": [], "note": g.get("lock_html", ""),
-        "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "series": eg.get("series", ""), "lines": card_lines(g),
+        "tv": eg.get("tv", ""), "venue": eg.get("venue", ""), "series": eg.get("series", ""), "lines": card_lines(g, lean_only(sport)),
         "range": {"margin": home_margin, "sd": spread_sigma(sport), "step": 10 if sport["slug"] == "cfb" else 7,
                   "total": g["total"] if pd.notna(g.get("total")) else None, "total_sd": total_sigma(sport)},
     }
 
 
-def card_lines(g):
+def card_lines(g, lean=False):
     """The strip under the teams on a game card: Vegas's line, ours, and our
     pick against Vegas's with its chance to cover (and whether it did)."""
     m = extras.MINUS
@@ -1887,10 +1899,10 @@ def card_lines(g):
         cover = ""
         if g["graded"] and g.get("covered") is not None:
             cover = " " + (pill("COVERED", "positive") if g["covered"] else pill("MISSED", "danger"))
-        lines.append(("Spread pick", f'{escape(sp["team"])} {sp["line"].replace("-", m)}{cover}', "",
-                      f'{sp["prob"]:.0%} to cover'))
+        lines.append(("Model lean" if lean else "Spread pick", f'{escape(sp["team"])} {sp["line"].replace("-", m)}{cover}', "",
+                      "" if lean else f'{sp["prob"]:.0%} to cover'))
     else:
-        lines.append(("Spread pick", '<span class="faint">After the line</span>', "", ""))
+        lines.append(("Model lean" if lean else "Spread pick", '<span class="faint">After the line</span>', "", ""))
     return lines
 
 
@@ -2011,7 +2023,9 @@ def ml_units(sport, log):
 
 
 def build_game_pages(sport, ngames):
-    return {g["file"]: page_shell(sport, f"{g['away']['abbr']} @ {g['home']['abbr']}", None,
+    # College names each team in full (extras.matchup_title); NFL keeps "BUF @ KC".
+    title = lambda g: extras.matchup_title(g) if extras.names_teams(g) else f"{g['away']['abbr']} @ {g['home']['abbr']}"
+    return {g["file"]: page_shell(sport, title(g), None,
                                   extras.game_page_body(g, "index.html", "All of this week's games"))
             for g in ngames}
 
@@ -2104,7 +2118,7 @@ def attach_game_picks(sport, slate, games, log, comparison):
                                   "sd": round(float(sigma), 2), "pick_home": pick_home,
                                   "team": eg["home"]["abbr"] if pick_home else eg["away"]["abbr"]}
             sp = match.get("spread")
-            if sp:
+            if sp and not lean_only(sport):
                 eg["pick"]["spread"] = {"text": f"{sp['team']} {sp['line']}, {sp['prob']:.0%} to cover",
                                         "short": f"{sp['team']} {sp['line']}",
                                         "result": match.get("covered") if final else None,

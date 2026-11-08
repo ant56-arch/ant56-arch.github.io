@@ -1,0 +1,198 @@
+name: League Agents
+
+# One read-only Claude agent per league tab plus one for the Model Room. Each
+# league agent reads its own tab's code and data and its own model, writes a
+# report of what it would change, and scouts stats its model might use. The
+# Model Room agent then reads those reports and weighs the stat ideas against
+# the models already in the Model Room. They only report: the agent jobs have
+# a read-only token and the Read/Grep/Glob tools, nothing else. Reports are
+# encrypted with the Model Room password and published at /agents/ (the repo
+# is public, so they never go in issues or logs). See agents/README.md.
+#
+# Needs the ANTHROPIC_API_KEY secret. Leagues whose season is over are skipped.
+
+on:
+  schedule:
+    - cron: "40 13 * * 2"   # Tuesdays, 9:40 AM ET (8:40 in winter), after the morning picks and Model Room runs
+  workflow_dispatch:
+    inputs:
+      agents:
+        description: 'Which agents: "all" (in-season leagues), a list like "nba,modelroom", or "none" (only delete old report files)'
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: league-agents
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has_sports: ${{ steps.plan.outputs.has_sports }}
+      has_model: ${{ steps.plan.outputs.has_model }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          AGENTS: ${{ github.event.inputs.agents || 'all' }}
+        run: python3 agents/plan.py >> "$GITHUB_OUTPUT"
+
+  # Stage 1: one agent per league. Each reports on its tab and model and
+  # scouts stats its model might use ("Stat ideas").
+  agent:
+    needs: plan
+    if: ${{ needs.plan.outputs.has_sports == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    permissions:
+      contents: read   # read-only on purpose: an agent can't change the repo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false   # no token left in .git for the agent to find
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run the agent (read-only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLUG: ${{ matrix.slug }}
+          LABEL: ${{ matrix.label }}
+          PROMPT_FILE: ${{ matrix.prompt }}
+        run: agents/run_agent.sh
+
+      # Run files of a public repo can be downloaded by anyone, so the report
+      # is locked with the Model Room password before it is kept, and the
+      # cleanup job deletes it once the page is published.
+      - name: Lock the report
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh lock reports
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.slug }}
+          path: reports/${{ matrix.slug }}.md.enc
+          if-no-files-found: ignore
+          retention-days: 1
+
+  # Stage 2: the Model Room agent reads the league agents' reports, compares
+  # their stat ideas with the models already in the Model Room, and says which
+  # are worth adding. Same read-only rules.
+  model-agent:
+    needs: [plan, agent]
+    if: ${{ !cancelled() && needs.plan.outputs.has_model == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true   # none if no league ran
+        with:
+          pattern: report-*
+          path: inbox
+          merge-multiple: true
+
+      - name: Open the league reports
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh open inbox
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run the Model Room agent (read-only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLUG: modelroom
+          LABEL: Model Room
+          PROMPT_FILE: model-room.md
+          MAX_TURNS: 60
+        run: |
+          mkdir -p inbox
+          agents/run_agent.sh
+
+      - name: Lock the report
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh lock reports
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report-modelroom
+          path: reports/modelroom.md.enc
+          if-no-files-found: ignore
+          retention-days: 1
+
+  publish:
+    needs: [agent, model-agent]
+    if: ${{ !cancelled() && (needs.agent.result == 'success' || needs.model-agent.result == 'success') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # to publish to the site branch; this job never runs an agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: report-*
+          path: reports
+          merge-multiple: true
+
+      - name: Open the reports
+        env:
+          REPORT_KEY: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: agents/seal.sh open reports
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the page
+        run: python3 agents/build_report_page.py reports dist/agents.html
+
+      - name: Lock it behind the password
+        env:
+          MODEL_ROOM_PASSWORD: ${{ secrets.MODEL_ROOM_PASSWORD }}
+        run: node model_room/lock_page.mjs dist/agents.html dist/agents
+
+      - name: Publish
+        run: ./publish_site.sh dist/agents:agents
+
+  # Deletes the locked report files once the page is published (and any left
+  # from earlier runs), so nothing but the password-locked page remains.
+  # Run by hand with agents "none" to clean up without running an agent.
+  cleanup:
+    needs: [plan, agent, model-agent, publish]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write   # to delete run files; this job never runs an agent
+    steps:
+      - name: Delete report files
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            -q '.artifacts[] | select(.name | startswith("report-")) | .id' |
+          while read -r id; do
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/$id" && echo "Deleted run file $id"
+          done
