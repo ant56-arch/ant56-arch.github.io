@@ -14273,7 +14273,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z",
+   "set_at": "2026-11-08T01:39:48Z",
    "ml": {
     "team": "UVU",
     "side": "away",
@@ -14284,7 +14284,7 @@
     "value": false,
     "home_ml": 270,
     "away_ml": -340,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -14319,7 +14319,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z"
+   "set_at": "2026-11-08T01:39:48Z"
   },
   {
    "date": "2026-11-07",
@@ -14351,7 +14351,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z",
+   "set_at": "2026-11-08T01:39:48Z",
    "ml": {
     "team": "UCI",
     "side": "home",
@@ -14362,7 +14362,7 @@
     "value": false,
     "home_ml": -395,
     "away_ml": 310,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -14397,7 +14397,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z",
+   "set_at": "2026-11-08T01:39:48Z",
    "ml": {
     "team": "SEA",
     "side": "home",
@@ -14408,7 +14408,7 @@
     "value": false,
     "home_ml": -625,
     "away_ml": 455,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -14443,7 +14443,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z",
+   "set_at": "2026-11-08T01:39:48Z",
    "ml": {
     "team": "SCU",
     "side": "home",
@@ -14454,7 +14454,7 @@
     "value": false,
     "home_ml": -3200,
     "away_ml": 1400,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -14489,7 +14489,7 @@
    },
    "model": "2026-10-17T15:00:23+00:00",
    "correct": null,
-   "set_at": "2026-11-07T23:33:28Z",
+   "set_at": "2026-11-08T01:39:48Z",
    "ml": {
     "team": "UCSD",
     "side": "home",
@@ -14500,7 +14500,7 @@
     "value": false,
     "home_ml": -650,
     "away_ml": 470,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
