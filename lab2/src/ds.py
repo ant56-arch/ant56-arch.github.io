@@ -5,9 +5,9 @@ labels in DM Mono. snap() rewrites a stylesheet onto a small set of tokens:
 
   type scale   11 12 14 16 18 20 24 28 32 40 48 56 (bigger and fluid sizes stay)
   tracking     -0.02em for big headings, 0 for text, 0.06em for small caps labels
-  fonts        Archivo for everything, tabular figures for numbers;
-               DM Mono only for chart axes; number columns use tabular figures
-  labels       small caps labels in Archivo 600
+  fonts        Archivo for text and numbers (tabular figures), Instrument Serif
+               where the site uses it, and DM Mono for one label style only
+  labels       small caps labels: DM Mono 11px, 0.12em tracking
 """
 import re
 
@@ -38,16 +38,14 @@ def block(decls):
     mono = "var(--font-mono)" in decls or "var(--f-mono)" in decls
     d = re.sub(r"font-size:\s*(\d*\.?\d+)px", lambda m: f"font-size: {size(float(m.group(1))):g}px", decls)
     d = re.sub(r"letter-spacing:\s*([^;}]+)", lambda m: "letter-spacing: " + track(m.group(1)), d)
-    if mono:
+    if mono and "uppercase" in d:  # the one mono style: small caps labels
+        d = re.sub(r"font-size:\s*[\d.]+px", "font-size: 11px", d)
+        d = re.sub(r"letter-spacing:\s*[^;}]+", "letter-spacing: 0.12em", d)
+    elif mono:                         # everything else goes to the sans
         d = d.replace("var(--font-mono)", "var(--font)").replace("var(--f-mono)", "var(--f-display)")
         d += "; font-variant-numeric: tabular-nums"
-        if "uppercase" in d and "font-weight" not in d:
-            d += "; font-weight: 600"
     return d
 
 
 def snap(css):
-    css = re.sub(r"\{([^{}]*)\}", lambda m: "{" + block(m.group(1)) + "}", css)
-    # the variable itself: anything still asking for mono gets the sans
-    return css.replace("--font-mono: 'DM Mono'", "--font-data: 'DM Mono'").replace(
-        "--font-data: 'DM Mono'", "--font-mono: var(--font); --font-data: 'DM Mono'", 1)
+    return re.sub(r"\{([^{}]*)\}", lambda m: "{" + block(m.group(1)) + "}", css)

@@ -11,21 +11,15 @@
 }
 body { font-variant-numeric: tabular-nums; }
 
-/* mono only where it earns it: the chart axes (drawn by the page's own scripts).
-   Number columns line up with Archivo's tabular figures, so they stay in Archivo. */
+/* mono for one thing only: the small caps label style (set in ds.py), plus chart axes.
+   Numbers line up with Archivo's tabular figures, so they stay in Archivo. */
 :root { --font-data: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace; }
 
 /* ---------- no random italics ---------- */
 em, i, .it, em.it { font-style: normal; }
 h1 em, h2 em, h3 em, em.it, .it { font-family: inherit !important; font-style: normal !important; font-weight: inherit !important; letter-spacing: inherit !important; }
 
-/* ---------- filler badges ---------- */
-.crawl-live,                       /* LIVE pill: the clock already says it */
-.scroll-cue, .edge-scroll,         /* "Scroll to explore" */
-.compass,                          /* the N on the game field */
-.gc-logo,                          /* team chip that repeats the team name */
 .ds-hide { display: none !important; }
-.hero-bar, .edge-hero-bar { display: flex !important; justify-content: flex-start !important; gap: var(--space-6); }
 
 /* ---------- redundant labels ---------- */
 .sec-label,                        /* "01 —— Week 9 games" over "Week 9 games." */

@@ -3,10 +3,6 @@
 (() => {
   const hide = e => e && e.classList.add("ds-hide");
   const tidy = () => {
-    // the hero's "Est. 2026"
-    document.querySelectorAll(".hero-bar > span, .edge-hero-bar > span").forEach(e => { if (/^Est\.\s*\d{4}$/.test(e.textContent.trim())) hide(e); });
-    // "In season" on every league card: only "Season over" says something
-    document.querySelectorAll(".lt > span").forEach(e => { if (/^in season$/i.test(e.textContent.trim())) hide(e); });
     // "NFL Edge · our picks to win": the page already says NFL
     document.querySelectorAll(".rb-eyebrow").forEach(e => { const t = e.textContent.replace(/^[A-Za-z ]+ Edge\s*·\s*/, ""); if (t !== e.textContent) e.textContent = t.charAt(0).toUpperCase() + t.slice(1); });
     // "League" over a column of league names
