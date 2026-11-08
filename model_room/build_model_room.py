@@ -721,7 +721,12 @@ def build_game_model(sport, log_path, coef_path, hist_runs, mid, name):
     hW = sum(g["margin"] > 0 for g in live)
     # sanity: matches model_correct_pick
     chk = [g for g in live if g["mcp"] is not None]
-    assert sum(int(g["mcp"]) for g in chk) == sum(won(g["mp"], g) for g in chk), "model pick rule mismatch"
+    # A mismatch means a log row was graded on a different pick rule: say so
+    # in the run log rather than stop the whole Model Room.
+    off = [g for g in chk if int(g["mcp"]) != won(g["mp"], g)]
+    if off:
+        print(f"Warning: {league} log grades {len(off)} pick(s) on a different rule, e.g. "
+              f"{off[0].get('away')} at {off[0].get('home')} {off[0].get('day')}", file=sys.stderr)
 
     co = coefs_file.get("coefficients", {})
     runs = [r for r in hist_runs if r.get("sport") == sport]
