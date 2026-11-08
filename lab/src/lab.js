@@ -1179,7 +1179,7 @@
     },
     court(T, o = {}) {
       const L = 14.33, D = 7.62;
-      T.ground(-L - 4, L + 4, -D - 4, D + 3, 2.4, 0.5, (X, Z) => { const k = 0.9 + T.rnd() * 0.16, inn = Math.abs(X) < L && Math.abs(Z) < D; const b = inn ? [158, 112, 70] : o.apron || [92, 62, 40]; return rgb(b.map(v => v * k)); });
+      T.ground(-L - 4, L + 4, -D - 4, D + 3, 2.4, 0.5, (X, Z) => { const k = 0.9 + T.rnd() * 0.16, inn = Math.abs(X) < L && Math.abs(Z) < D; const b = inn ? (o.wood || [158, 112, 70]) : o.apron || [92, 62, 40]; return rgb(b.map(v => v * k)); });
       [-1, 1].forEach(s => T.gpoly([[s * L, -2.45], [s * (L - 5.8), -2.45], [s * (L - 5.8), 2.45], [s * L, 2.45]], o.key || "rgba(190,84,38,.8)"));
       T.gdisc(0, 0, 1.83, o.center || "rgba(190,84,38,.8)");
       const C = "rgba(250,246,238,.85)";
@@ -1220,6 +1220,7 @@
       });
       // the boards: white with a yellow kick plate and red rail, glass above
       T.tier(rr, 0, 0, 0, 1.07, "rgba(238,240,242,.97)", null, 1, () => true, 1);
+      if (o.ads) { const ad = rr.map(p => p); for (let i = 0; i < ad.length - 1; i += 3) { const seg = ad.slice(i, i + 3); if (seg.length > 1) T.tier(seg, -0.02, 0.32, -0.02, 0.9, o.ads[(i / 3) % o.ads.length], null, 1, () => true, 1); } }
       T.tier(rr, 0, 0, 0, 0.2, "rgba(226,190,60,.95)", null, 1, () => true, 1);
       T.tier(rr, 0, 1.0, 0, 1.07, "rgba(186,46,46,.95)", null, 1, () => true, 1);
       T.tier(rr, 0, 1.07, 0, 2.5, "rgba(190,215,228,.10)", null, 1, () => true, 1);
@@ -1236,87 +1237,121 @@
         const { x, P } = T;
         // the ceiling: a ring of cables from the outer wall to a hub over center court
         const ring = T.oval(64, 58), hub = [0, 44, 0];
-        ring.forEach((p, i) => { if (i % 4) return; T.line([[p.x, 36, p.z], hub], 1, "rgba(190,200,220,.22)", 12); });
+        ring.forEach((p, i) => { if (i % 4) return; T.line([[p.x, 36, p.z], hub], 1.2, "rgba(220,224,235,.3)", 12); });
         [1, 0.75, 0.5].forEach(k => T.line(ring.map(p => [p.x * k, 36 + (1 - k) * 8, p.z * k]), 1.2, "rgba(190,200,220,.25)", 1));
         T.lights(ring, 0, 36, "rgba(255,238,205,.95)", 2, 1.2);
-        const bowl = T.oval(40, 34), fans = FANS("rgba(240,220,200,.4)", "rgba(245,132,38,.45)", "rgba(80,120,220,.45)", "rgba(255,255,255,.3)");
-        T.tier(bowl, 4, 15, 22, 31, "#141B30", fans, 1.3, p => T.side(p) !== "near", 10);           // upper bowl
+        const bowl = T.oval(40, 34), fans = FANS("rgba(30,30,36,.7)", "rgba(240,236,228,.45)", "rgba(245,132,38,.5)", "rgba(29,66,138,.55)", "rgba(210,170,140,.4)");
+        T.tier(bowl, 4, 15, 22, 31, "#4A361A", fans, 1.45, p => T.side(p) !== "near", 10);           // upper bowl (gold seats)
         // the bridges, hung over the upper bowl along both sides
         [[-26, 33, 22], [26, 33, 22]].forEach(([X, Y, L]) => { T.quad([[X - L / 2, Y, 28], [X + L / 2, Y, 28], [X + L / 2, Y + 1.6, 28], [X - L / 2, Y + 1.6, 28]], "#0F1422", 6); T.line([[X - L / 2, Y + 0.3, 27.9], [X + L / 2, Y + 0.3, 27.9]], 2, "rgba(255,214,150,.55)", 8); });
         T.tier(bowl, 0, 12, 2, 15, "#0A0E18", null, 1, p => T.side(p) !== "near", 1);              // suites
+        T.tier(bowl, -0.05, 12, -0.05, 12.8, "rgba(235,240,255,.85)", null, 1, p => T.side(p) !== "near", 1);   // the white ribbon board
+        T.tier(bowl, 21.9, 31, 21.9, 32, "rgba(150,110,255,.6)", null, 1, p => T.side(p) !== "near", 1);
         T.lights(bowl, 1, 13.4, "rgba(255,214,150,.8)", 2, 1.2, p => T.side(p) !== "near");
         const low = T.rrect(21, 13, 5);
-        T.tier(low, 0, 0.6, 19, 12, "#1A2340", fans, 1.6, p => T.side(p) !== "near", 12);           // lower bowl
+        T.tier(low, 0, 0.6, 19, 12, "#54401E", fans, 1.7, p => T.side(p) !== "near", 12);           // lower bowl (gold seats)
+        low.forEach((p, i) => { if (i % 7 || T.side(p) === "near") return; T.line([[p.x, 0.8, p.z], [p.x + p.nx * 19, 11.8, p.z + p.nz * 19]], 1, "rgba(20,26,50,.8)", 5); });
+        bowl.forEach((p, i) => { if (i % 6 || T.side(p) === "near") return; T.line([[p.x + p.nx * 4, 15.2, p.z + p.nz * 4], [p.x + p.nx * 22, 30.8, p.z + p.nz * 22]], 1, "rgba(20,26,50,.8)", 5); });
         FIELD.court(T, { key: "rgba(29,66,138,.85)", center: "rgba(245,132,38,.85)", apron: [26, 52, 104] });
         // the scoreboard hung over center court, just above the view
         T.screen([-6, 4], [6, 4], 22, 27, "#0B0F18", "rgba(120,170,230,.5)");
       },
     },
-    // Cameron Indoor: a small gothic gym; students on bleachers at the floor's edge,
-    // stone walls with tall windows, banners, a low balcony.
+    // Cameron Indoor (from the photo): a small, packed gym. A cream ceiling of
+    // arched steel trusses with lamps hung in rows, the retired jerseys and
+    // banners hung down the far side, a four-sided screen over center court,
+    // blue fans on every bleacher, a wood-fronted balcony, a pale maple floor.
     cbb: { kind: "court", name: "Cameron Indoor Stadium", city: "Durham", cam: [0, 8, -17], hz: 0.3, fov: 1.85, vs: 0.68,
-      sky: [[0, "#1C1813"], [0.6, "#2E271E"], [1, "#3B3226"]],
+      sky: [[0, "#B8AE98"], [0.5, "#8E8572"], [1, "#4C463C"]],
       draw(T) {
-        const { x } = T, box = T.rrect(26, 18, 2);
-        // stone walls with gothic windows
-        T.tier(box, 0, 0, 0, 22, "#3A3027", null, 1, () => true, 1);
-        box.forEach((p, i) => {
-          if (i % 9 || T.side(p) === "corner") return;
-          const tx = -p.nz, tz = p.nx, w = 1.1, at = (u, Y) => [p.x + tx * u - p.nx * 0.05, Y, p.z + tz * u - p.nz * 0.05];
-          const pts = [at(-w, 12.5), at(-w, 17.5), at(0, 19.5), at(w, 17.5), at(w, 12.5)];
-          if (T.quad(pts, "rgba(240,228,196,.32)", 3)) { T.line([at(0, 12.5), at(0, 19.2)], 1.2, "rgba(30,24,18,.7)", 2); [14.5, 16.5].forEach(Y => T.line([at(-w, Y), at(w, Y)], 1, "rgba(30,24,18,.6)", 2)); }
-        });
-        // banners
-        box.forEach((p, i) => { if ((i + 4) % 9 || T.side(p) !== "far") return; T.quad([[p.x - 1, 20, p.z - 0.2], [p.x + 1, 20, p.z - 0.2], [p.x + 1, 14.5, p.z - 0.2], [p.x - 1, 14.5, p.z - 0.2]], "#0B2A6B", 2); T.quad([[p.x - 1, 15.6, p.z - 0.25], [p.x + 1, 15.6, p.z - 0.25], [p.x + 1, 15.2, p.z - 0.25], [p.x - 1, 15.2, p.z - 0.25]], "rgba(245,245,240,.9)", 1); });
-        const blue = FANS("rgba(40,90,210,.65)", "rgba(245,245,240,.55)", "rgba(220,170,130,.4)", "rgba(20,50,140,.7)");
-        T.tier(T.rrect(25, 17, 2), -6, 7, 0, 9.5, "#2A2219", blue, 1.6, p => T.side(p) !== "near", 6);      // balcony
-        T.tier(T.rrect(25, 17, 2), -6, 6.8, 0, 7.2, "#5A3E26", null, 1, p => T.side(p) !== "near", 1);
-        T.tier(T.rrect(16.5, 9.5, 1), 0, 0.3, 7, 5.5, "#2A2219", blue, 2.6, p => T.side(p) !== "near", 10);
-        FIELD.court(T, { key: "rgba(0,32,91,.88)", center: "rgba(0,32,91,.88)", apron: [140, 98, 60], table: false });
-        [[-14, 22], [0, 22], [14, 22]].forEach(([X, Y]) => T.lamp(X, Y, 8, 1, 0.35));
+        const nn = p => T.side(p) !== "near", box = T.rrect(26, 18, 2);
+        // the arched trusses across the ceiling, and the lamps hung between them
+        for (let i = -6; i <= 6; i++) {
+          const X = i * 4.6, arc = []; for (let k = 0; k <= 16; k++) { const a = -Math.PI / 2 + k / 16 * Math.PI; arc.push([X, 14 + Math.cos(a) * 9, Math.sin(a) * 20 + 2]); }
+          T.line(arc, 2.2, "rgba(120,110,92,.9)", 2); T.line(arc.map(([a, b, c]) => [a, b - 1.2, c]), 1, "rgba(120,110,92,.7)", 2);
+          for (let k = -2; k <= 3; k++) T.lamp(X + 2.3, 19, k * 6, 0.5, 0.28);
+        }
+        // the walls under the balcony and the stands at the ends
+        T.tier(box, 0, 0, 0, 13, "#4A4236", null, 1, () => true, 1);
+        // banners: retired jerseys (white with a number) and title banners (navy)
+        for (let i = -9; i <= 9; i++) { const X = i * 2.6, nav = i % 3 === 0; T.quad([[X - 0.8, 21, 17.6], [X + 0.8, 21, 17.6], [X + 0.8, 15.5, 17.6], [X - 0.8, 15.5, 17.6]], nav ? "#0B2A6B" : "rgba(244,244,240,.95)", 2); T.quad([[X - 0.5, 19, 17.5], [X + 0.5, 19, 17.5], [X + 0.5, 17.3, 17.5], [X - 0.5, 17.3, 17.5]], nav ? "rgba(244,244,240,.9)" : "#0B2A6B", 1); }
+        const blue = FANS("rgba(30,90,220,.75)", "rgba(20,60,170,.75)", "rgba(245,245,240,.5)", "rgba(220,180,150,.4)", "rgba(25,30,45,.6)");
+        T.tier(T.rrect(25, 17, 2), -6, 7, 0, 12, "#2A3550", blue, 1.8, nn, 7);      // balcony
+        T.tier(T.rrect(25, 17, 2), -6, 6.6, -6, 7.4, "#8A6A3E", null, 1, nn, 1);   // its wood front
+        T.tier(T.rrect(16.5, 9.5, 1), 0, 0.3, 7, 5.5, "#24304A", blue, 2.6, nn, 10);
+        FIELD.court(T, { key: "rgba(0,48,135,.9)", center: "rgba(0,48,135,.9)", apron: [176, 140, 98], wood: [200, 160, 112], table: false });
+        // the four-sided screen over center court
+        T.panel([-2.6, -2], [2.6, -2], 12.5, 15.5, "#1A1E26"); T.screen([-2.6, 2], [2.6, 2], 12.5, 15.5, "#1A1E26", "rgba(60,110,200,.75)");
+        T.line([[0, 15.5, 0], [0, 22, 0]], 1, "rgba(80,80,80,.8)", 2);
       },
     },
-    // Bell Centre: steep red bowls, a ring of suites, banners in the rafters.
+    // Bell Centre (from the photo): three steep bowls of dark seats full of fans,
+    // a ring of LED boards between the decks, white boards covered in sponsor
+    // panels under the glass, the CH at center ice, a big blue screen hung over it.
     nhl: { kind: "ice", name: "Bell Centre", city: "Montreal", cam: [0, 12, -26], hz: 0.33, fov: 1.85, vs: 0.68,
-      sky: [[0, "#05060A"], [0.7, "#100F14"], [1, "#1C1A1F"]],
+      sky: [[0, "#040507"], [0.7, "#0B0C10"], [1, "#15161B"]],
       draw(T) {
-        const red = FANS("rgba(200,30,45,.6)", "rgba(245,240,235,.42)", "rgba(25,33,104,.45)", "rgba(230,190,160,.3)");
+        const fans = FANS("rgba(26,26,32,.8)", "rgba(48,46,52,.75)", "rgba(200,30,45,.6)", "rgba(235,232,226,.45)", "rgba(25,33,104,.55)", "rgba(210,170,140,.4)");
         const up = T.rrect(54, 38, 14), mid = T.rrect(42, 26, 10), low = T.rrect(33.5, 16, 8.5);
-        // banners hung over the far side
-        for (let i = -6; i <= 6; i++) { const X = i * 4.5; T.quad([[X - 1.3, 40, 30], [X + 1.3, 40, 30], [X + 1.3, 34, 30], [X - 1.3, 34, 30]], "rgba(242,240,236,.92)", 2); T.quad([[X - 1.3, 38.8, 29.9], [X + 1.3, 38.8, 29.9], [X + 1.3, 38.1, 29.9], [X - 1.3, 38.1, 29.9]], "#AF1E2D", 1); T.quad([[X - 1.3, 37.6, 29.9], [X + 1.3, 37.6, 29.9], [X + 1.3, 37.2, 29.9], [X - 1.3, 37.2, 29.9]], "#192168", 1); }
-        T.tier(up, 0, 21, 16, 36, "#5A0F17", red, 1.3, p => T.side(p) !== "near", 12);
-        T.tier(mid, 0, 15, 12, 21, "#0B0B0E", null, 1, p => T.side(p) !== "near", 1);
-        T.lights(mid, 6, 18, "rgba(255,214,150,.8)", 2, 1.4, p => T.side(p) !== "near");
-        T.tier(low, 0, 1.2, 10, 14, "#6E1420", red, 1.6, p => T.side(p) !== "near", 12);
-        FIELD.ice(T, { dot: "rgba(175,30,45,.5)" });
-        T.screen([-5, 2], [5, 2], 20, 25, "#0B0B0E", "rgba(120,170,230,.45)");
+        const nn = p => T.side(p) !== "near";
+        // banners and the retired numbers in the rafters
+        for (let i = -6; i <= 6; i++) { const X = i * 4.5; T.quad([[X - 1.3, 40, 30], [X + 1.3, 40, 30], [X + 1.3, 34, 30], [X - 1.3, 34, 30]], "rgba(242,240,236,.85)", 2); T.quad([[X - 1.3, 38.8, 29.9], [X + 1.3, 38.8, 29.9], [X + 1.3, 38.1, 29.9], [X - 1.3, 38.1, 29.9]], "#AF1E2D", 1); T.quad([[X - 1.3, 37.6, 29.9], [X + 1.3, 37.6, 29.9], [X + 1.3, 37.2, 29.9], [X - 1.3, 37.2, 29.9]], "#192168", 1); }
+        T.tier(up, 0, 21, 16, 36, "#5A131B", fans, 1.4, nn, 12);
+        T.tier(up, -0.1, 36, -0.1, 37.4, "#0A0A0D", null, 1, nn, 1);
+        T.lights(up, -0.2, 36.6, "rgba(140,190,255,.8)", 3, 1.6, nn);
+        // the deck between: suites, and a lit ribbon of boards running all the way round
+        T.tier(mid, 0, 15, 12, 21, "#09090C", null, 1, nn, 1);
+        T.tier(mid, 0, 15, 0, 16.4, "rgba(60,214,206,.85)", null, 1, nn, 1);
+        T.tier(mid, -0.05, 15.5, -0.05, 15.9, "rgba(240,240,250,.8)", null, 1, p => nn(p) && Math.sin(p.x * 0.35) > 0.2, 1);
+        T.lights(mid, 6, 18.5, "rgba(255,214,150,.75)", 2, 1.4, nn);
+        T.tier(low, 0, 1.2, 10, 14, "#661520", fans, 1.65, nn, 12);
+        FIELD.ice(T, { boards: "rgba(244,244,246,.98)", ads: ["#1F4BA5", "#C8102E", "#F2F2F2", "#0D7A3E", "#F2B705", "#1A1A1A"] });
+        // the CH at center ice: a red oval, a white band, the blue ring
+        T.gdisc(0, 0, 3.6, "rgba(175,30,45,.75)"); T.gdisc(0, 0, 2.5, "rgba(236,240,244,.9)");
+        T.gcircle(0, 0, 3.6, 0.12, "rgba(25,33,104,.8)");
+        T.gline([[-1.6, -0.9], [-1.6, 0.9], [0.1, 0.9]], 0.35, "rgba(175,30,45,.9)", 3); T.gline([[-1.6, -0.9], [0.1, -0.9]], 0.35, "rgba(175,30,45,.9)", 3);
+        T.gline([[0.6, -0.9], [0.6, 0.9]], 0.3, "rgba(25,33,104,.9)", 3); T.gline([[1.8, -0.9], [1.8, 0.9]], 0.3, "rgba(25,33,104,.9)", 3); T.gline([[0.6, 0], [1.8, 0]], 0.3, "rgba(25,33,104,.9)", 3);
+        // the big screen hung over center ice, blue faces with a white band
+        T.panel([-6, 3], [6, 3], 25.5, 26.6, "rgba(240,244,250,.9)");
+        T.screen([-6, 3], [6, 3], 19, 25.5, "#08090C", "rgba(30,40,70,.9)");
+        T.panel([-5.4, 2.9], [5.4, 2.9], 19.2, 19.9, "rgba(60,214,206,.8)");
+        // the flags of Quebec, Canada and the US hung with the banners
+        [[-16, ["#1B4FA0", "#F4F4F4"]], [-12, ["#D52B1E", "#F4F4F4"]], [-8, ["#B22234", "#3C3B6E"]]].forEach(([X, c]) => { T.quad([[X - 1.5, 41, 29.5], [X + 1.5, 41, 29.5], [X + 1.5, 35, 29.5], [X - 1.5, 35, 29.5]], c[0], 2); T.quad([[X - 0.5, 41, 29.4], [X + 0.5, 41, 29.4], [X + 0.5, 35, 29.4], [X - 0.5, 35, 29.4]], c[1], 1); });
       },
     },
-    // Lambeau: one continuous bowl of bench seats, ringed by the tall green
-    // sideline buildings (suites, glass, the gold rim), giant boards over both
-    // end zones, lights all along the rim. Cold, clear night.
+    // Lambeau (from the photo): one continuous bowl of bench seats packed with
+    // fans, a long low glass building along the top of the far side, the open
+    // frame light towers standing above it, video boards over the end zones,
+    // gold-lettered green end zones. Late afternoon, high cloud.
     nfl: { kind: "gridiron", name: "Lambeau Field", city: "Green Bay", cam: [0, 24, -55], hz: 0.252, fov: 1.85, vs: 0.68,
-      sky: [[0, "#0B1322"], [0.6, "#24344C"], [0.88, "#6E6070"], [1, "#B48C78"]],
+      sky: [[0, "#2A3A52"], [0.5, "#5D6F88"], [0.85, "#A9AAB0"], [1, "#C8C2B8"]],
       draw(T) {
-        const bowl = T.rrect(68, 38, 26), gb = FANS("rgba(255,182,18,.55)", "rgba(32,85,60,.65)", "rgba(240,236,228,.45)", "rgba(230,190,160,.3)");
-        // the sideline buildings: green, glass, suites, the gold band, lights on top
-        const out = T.rrect(68 + 38, 38 + 38, 40), sides = p => T.side(p) === "far";
-        T.tier(out, 0, 26, 0, 46, "#1C3029", null, 1, sides, 1);
-        T.tier(out, -0.1, 30, -0.1, 34, "rgba(150,190,220,.35)", null, 1, sides, 1);
-        T.tier(out, -0.1, 38, -0.1, 42, "rgba(150,190,220,.3)", null, 1, sides, 1);
-        T.lights(out, -0.2, 32, "rgba(255,224,170,.85)", 1, 1.4, sides);
-        T.lights(out, -0.2, 40, "rgba(255,224,170,.7)", 1, 1.4, sides);
-        T.tier(out, -0.15, 45, -0.15, 46, "#FFB612", null, 1, sides, 1);
-        // the bowl itself, rows of aluminum bleachers full of green and gold
-        T.tier(bowl, 0, 0, 0, 1.5, "#1C3029", null, 1, p => T.side(p) !== "near", 1);
-        T.tier(bowl, 0, 1.5, 38, 26, "#4A5058", gb, 1.5, p => T.side(p) !== "near", 14);
-        T.tier(bowl, 37.5, 25.6, 38.5, 27.2, "#FFB612", null, 1, p => T.side(p) !== "near", 1);
-        T.tier(bowl, 38.5, 27.2, 38.5, 29, "#1C3029", null, 1, p => T.side(p) !== "near" && T.side(p) !== "far", 1);
-        // the giant boards over each end zone
-        [-1, 1].forEach(s => { const X = s * 104; T.screen([X, -20], [X, 20], 30, 46, "#13201B", "rgba(255,196,90,.5)"); T.line([[X, 0, -12], [X, 30, -12]], 3, "#13201B", 2); T.line([[X, 0, 12], [X, 30, 12]], 3, "#13201B", 2); });
-        T.lights(T.rrect(106, 76, 40), 0, 47, "rgba(255,248,226,1)", 2, 2.2, sides);
+        const bowl = T.rrect(68, 38, 26), nn = p => T.side(p) !== "near";
+        const gb = FANS("rgba(40,44,50,.7)", "rgba(240,236,228,.55)", "rgba(255,182,18,.6)", "rgba(32,85,60,.7)", "rgba(120,110,100,.55)", "rgba(230,190,160,.35)");
+        // the light towers: open rectangular frames on two legs, over the far side
+        for (let i = -3; i <= 3; i++) {
+          const X = i * 34, Z = 74, c = "rgba(70,74,78,.95)";
+          T.line([[X - 5, 30, Z], [X - 5, 52, Z]], 2, c, 2); T.line([[X + 5, 30, Z], [X + 5, 52, Z]], 2, c, 2);
+          T.line([[X - 7, 52, Z], [X + 7, 52, Z], [X + 7, 57, Z], [X - 7, 57, Z], [X - 7, 52, Z]], 2, c, 2);
+          T.line([[X - 7, 54.5, Z], [X + 7, 54.5, Z]], 1.2, c, 2);
+          for (let k = -5; k <= 5; k += 2) T.lamp(X + k, 56, Z - 0.3, 0.45, 0.18);
+        }
+        // the glass suites that ring the top of the bowl
+        T.tier(bowl, 39, 26, 39, 36, "#3A4E44", null, 1, nn, 1);
+        T.tier(bowl, 38.9, 27.5, 38.9, 34.5, "rgba(120,150,150,.75)", null, 1, nn, 1);
+        T.tier(bowl, 38.85, 30.8, 38.85, 31.3, "rgba(30,44,40,.9)", null, 1, nn, 1);
+        T.lights(bowl, 38.8, 29, "rgba(255,236,200,.5)", 2, 1.2, nn);
+        T.tier(bowl, 39, 36, 39, 36.6, "#4A5E52", null, 1, nn, 1);
+        // the bowl: rows of aluminum benches, every seat full, yellow rails on the aisles
+        T.tier(bowl, 0, 0, 0, 1.4, "#1C3029", null, 1, nn, 1);
+        T.tier(bowl, 0, 1.4, 38, 26, "#5A5E64", gb, 1.9, nn, 16);
+        bowl.forEach((p, i) => { if (i % 9 || !nn(p)) return; T.line([[p.x, 1.6, p.z], [p.x + p.nx * 37, 25.8, p.z + p.nz * 37]], 1.1, "rgba(255,196,30,.75)", 6); });
+        T.line(bowl.filter(nn).map(p => [p.x, 1.5, p.z]), 1.6, "rgba(255,196,30,.9)", 1);
+        T.line(bowl.filter(nn).map(p => [p.x + p.nx * 38, 26.2, p.z + p.nz * 38]), 1.4, "rgba(255,196,30,.85)", 1);
+        // the video boards over each end zone, on the rim
+        [-1, 1].forEach(s => { const X = s * 104; T.screen([X, -22], [X, 22], 28, 44, "#1E2A26", "rgba(120,170,200,.55)"); T.panel([X, -22], [X, 22], 44, 46.5, "#C8102E"); T.line([[X, 0, -12], [X, 28, -12]], 3, "#1E2A26", 2); T.line([[X, 0, 12], [X, 28, 12]], 3, "#1E2A26", 2); });
         FIELD.gridiron(T, { ez: ["#203731", "#203731"], ezLine: "rgba(255,182,18,.95)", apron: "#24472C" });
-        for (let i = 0; i < 220; i++) { T.x.fillStyle = `rgba(255,255,255,${0.2 + T.rnd() * 0.45})`; T.x.beginPath(); T.x.arc(T.rnd() * T.W, T.rnd() * T.H, 0.6 + T.rnd() * 1.2, 0, Math.PI * 2); T.x.fill(); }
+        [-1, 1].forEach(s => { for (let k = -3; k <= 3; k++) T.gpoly([[s * 51.5, k * 3 - 1], [s * 53.5, k * 3 - 1], [s * 53.5, k * 3 + 1], [s * 51.5, k * 3 + 1]], "rgba(255,182,18,.85)", 1); });
       },
     },
     // Michigan Stadium: the biggest bowl in America, dug into the ground, so it's
@@ -1331,17 +1366,19 @@
         T.tier(far, 0, 10, 0, 18, "rgba(60,90,64,.7)", null, 1, p => Math.sin(p.x * 0.3) > 0, 1);
         const bowl = T.rrect(62, 34, 24), maize = FANS("rgba(255,203,5,.7)", "rgba(255,203,5,.62)", "rgba(255,214,60,.55)", "rgba(0,39,76,.55)", "rgba(245,240,230,.35)");
         // the press box: three glass decks on a tower over the far side
-        T.quad([[-60, 18, 106], [60, 18, 106], [60, 44, 106], [-60, 44, 106]], "#16243C", 8);
-        [[22, 27], [30, 35], [37.5, 42]].forEach(([y0, y1], i) => T.quad([[-58, y0, 105.8], [58, y0, 105.8], [58, y1, 105.8], [-58, y1, 105.8]], i === 1 ? "rgba(255,214,150,.6)" : "rgba(150,190,230,.45)", 8));
-        T.quad([[-60, 44, 105.7], [60, 44, 105.7], [60, 45.4, 105.7], [-60, 45.4, 105.7]], "#FFCB05", 8);
+        T.quad([[-60, 18, 106], [60, 18, 106], [60, 44, 106], [-60, 44, 106]], "#1E3558", 8);
+        [[22, 27], [30, 35], [37.5, 42]].forEach(([y0, y1], i) => T.quad([[-58, y0, 105.8], [58, y0, 105.8], [58, y1, 105.8], [-58, y1, 105.8]], i === 1 ? "rgba(255,214,150,.55)" : "rgba(120,160,210,.5)", 8));
+        T.quad([[-60, 44, 105.7], [60, 44, 105.7], [60, 45.4, 105.7], [-60, 45.4, 105.7]], "#C9D2DC", 8);
+        // the red brick towers at each end of the press box
+        [-1, 1].forEach(s => { const X = s * 66; T.quad([[X - 6, 14, 104], [X + 6, 14, 104], [X + 6, 47, 104], [X - 6, 47, 104]], "#8A4632", 4); T.quad([[X - 1.6, 20, 103.8], [X + 1.6, 20, 103.8], [X + 1.6, 42, 103.8], [X - 1.6, 42, 103.8]], "rgba(120,160,200,.55)", 4); T.quad([[X - 6.5, 47, 103.9], [X + 6.5, 47, 103.9], [X + 6.5, 48.4, 103.9], [X - 6.5, 48.4, 103.9]], "#D8D2C8", 4); });
         // the bowl: shallow and huge, every row full
         T.tier(bowl, 0, 0, 0, 0.6, "#00274C", null, 1, p => T.side(p) !== "near", 1);
-        T.tier(bowl, 0, 0.6, 70, 18, "#2B3448", maize, 1.8, p => T.side(p) !== "near", 18);
+        T.tier(bowl, 0, 0.6, 70, 18, "#56708F", maize, 1.7, p => T.side(p) !== "near", 18);
         T.tier(bowl, 70, 18, 71, 19.5, "#00274C", null, 1, p => T.side(p) !== "near", 1);
         T.tier(bowl, 71, 19.5, 71.4, 20.1, "#FFCB05", null, 1, p => T.side(p) !== "near", 1);
         // boards at both ends, standing on the rim
         [-1, 1].forEach(s => { const X = s * 134; T.screen([X, -24], [X, 24], 24, 40, "#0E1626", "rgba(255,203,5,.42)"); T.line([[X, 18, -16], [X, 24, -16]], 3, "#0E1626", 1); T.line([[X, 18, 16], [X, 24, 16]], 3, "#0E1626", 1); });
-        FIELD.gridiron(T, { ez: ["#00274C", "#00274C"], ezLine: "rgba(255,203,5,.95)", apron: "#22482A" });
+        FIELD.gridiron(T, { ez: ["#00274C", "#00274C"], ezLine: "rgba(255,203,5,.95)", apron: "#5A3A30" });
         const M = [[0, 0], [0.28, 0], [0.28, 0.52], [0.5, 0.22], [0.72, 0.52], [0.72, 0], [1, 0], [1, 1], [0.74, 1], [0.5, 0.62], [0.26, 1], [0, 1]];
         const pts = M.map(([u, v]) => [(u - 0.5) * 9, -4 + v * 8]);
         T.gpoly(pts, "rgba(255,203,5,.95)"); T.gline([...pts, pts[0]], 0.25, "rgba(0,39,76,.95)", 3);
@@ -1368,6 +1405,15 @@
         // the bleachers behind the ivy, and the scoreboard on top of center field
         const cubs = FANS("rgba(14,51,134,.65)", "rgba(240,236,228,.55)", "rgba(204,52,51,.5)", "rgba(230,190,160,.35)");
         T.tier(wall, 0.3, 3.5, 26, 15, "#1F4A2C", cubs, 1.8, () => true, 12);
+        // the two video boards added in left and right field: tall grey boxes on legs
+        [-1, 1].forEach(sd => {
+          const a = sd * 0.56, r = 134, c = [Math.sin(a) * r, Math.cos(a) * r], t = [Math.cos(a), -Math.sin(a)], hw = 11;
+          const A = [c[0] - t[0] * hw, c[1] - t[1] * hw], B = [c[0] + t[0] * hw, c[1] + t[1] * hw];
+          T.line([[A[0], 10, A[1]], [A[0], 18, A[1]]], 3, "#55595C", 2); T.line([[B[0], 10, B[1]], [B[0], 18, B[1]]], 3, "#55595C", 2);
+          T.panel(A, B, 18, 40, "#8C8F8E"); T.panel(A, B, 38.5, 40, "#6E7271");
+          const k = 0.08, A2 = [lerp(A[0], B[0], k), lerp(A[1], B[1], k)], B2 = [lerp(A[0], B[0], 1 - k), lerp(A[1], B[1], 1 - k)];
+          T.screen(A2, B2, 21, 36, "#2A2E30", "rgba(70,120,190,.55)");
+        });
         const sbA = [-12, 152], sbB = [12, 152];
         T.panel(sbA, sbB, 13, 27, "#1E4D2B"); T.panel(sbA, sbB, 25, 27, "#183F23");
         for (let r = 0; r < 4; r++) for (let k = 0; k < 12; k++) { const u0 = 0.05 + k * 0.075, y0 = 15 + r * 2.4; T.panel([lerp(-12, 12, u0), 151.8], [lerp(-12, 12, u0 + 0.055), 151.8], y0, y0 + 1.7, rnd() < 0.7 ? "rgba(236,230,212,.95)" : "rgba(20,40,26,.95)"); }
@@ -1387,7 +1433,12 @@
           T.tier(line, 20, 9, 20, 12, "#6A3A2A", null, 1, () => true, 1);
           T.tier(line, 14, 12, 32, 22, "#1D3D2A", cubs, 1.3, () => true, 8);
           T.tier(line, 8, 26, 34, 27, "#1B1E22", null, 1, () => true, 1);
-          T.lights(line, 10, 26, "rgba(255,248,226,.95)", 6, 2.4);
+          // the white lattice light towers on the grandstand roof
+          line.forEach((p, i) => { if (i % 9 !== 4) return; const bx = p.x + p.nx * 22, bz = p.z + p.nz * 22, tx = -p.nz, tz = p.nx, c = "rgba(236,236,230,.9)";
+            T.line([[bx - tx * 3, 27, bz - tz * 3], [bx - tx * 2, 36, bz - tz * 2], [bx + tx * 2, 36, bz + tz * 2], [bx + tx * 3, 27, bz + tz * 3]], 1.3, c, 2);
+            T.line([[bx - tx * 2, 36, bz - tz * 2], [bx + tx * 3, 27, bz + tz * 3]], 0.8, c, 2); T.line([[bx + tx * 2, 36, bz + tz * 2], [bx - tx * 3, 27, bz - tz * 3]], 0.8, c, 2);
+            T.line([[bx - tx * 4, 36, bz - tz * 4], [bx + tx * 4, 36, bz + tz * 4], [bx + tx * 4, 40, bz + tz * 4], [bx - tx * 4, 40, bz - tz * 4], [bx - tx * 4, 36, bz - tz * 4]], 1.4, c, 2);
+            for (let k = -3; k <= 3; k += 2) T.lamp(bx + tx * k, 38.5, bz + tz * k, 0.4, 0.2); });
           const pole = [s * 76.3, 76.3]; T.line([[pole[0], 0, pole[1]], [pole[0], 20, pole[1]]], 2.5, "rgba(238,206,96,.95)", 2);
         });
         // the field: grass, the warning track, the infield dirt and the bases
@@ -1416,7 +1467,7 @@
         const st = T.rrect(62, 41, 3), side = T.side;
         // the Kop: one huge tier behind the goal on the left, roof over it
         T.tier(st, 0, 1, 42, 26, "#7A0E1C", red, 1.8, p => side(p) === "left", 16);
-        T.tier(st, 36, 31, 48, 30, "#1A1C20", null, 1, p => side(p) === "left", 1);
+        T.tier(st, 36, 31, 48, 30, "#D9DCDE", null, 1, p => side(p) === "left", 1);
         T.lights(st, 37, 30.6, "rgba(255,248,226,.95)", 3, 1.6, p => side(p) === "left");
         // the Main Stand: lower tier, boxes, upper tier, a third tier, a deep roof lit along its edge
         const ms = p => side(p) === "far";
@@ -1424,12 +1475,15 @@
         T.tier(st, 18, 9, 18, 12, "#101216", null, 1, ms, 1); T.lights(st, 17.9, 10.5, "rgba(255,214,150,.75)", 1, 1.2, ms);
         T.tier(st, 14, 12, 32, 22, "#7A0E1C", red, 1.4, ms, 10);
         T.tier(st, 28, 24, 44, 34, "#6E0C18", red, 1.2, ms, 8);
-        T.tier(st, 20, 39, 48, 40, "#16181C", null, 1, ms, 1);
+        T.tier(st, 20, 39, 48, 40, "#E2E4E6", null, 1, ms, 1);
+        T.tier(st, 20, 40, 20, 44, "rgba(150,154,158,.25)", null, 1, ms, 1);
+        st.forEach((p, i) => { if (i % 2 || !ms(p)) return; const a = [p.x + p.nx * 20, 40, p.z + p.nz * 20]; T.line([a, [a[0], 44, a[2] + 3], [st[Math.min(st.length - 1, i + 2)].x + p.nx * 20, 40, st[Math.min(st.length - 1, i + 2)].z + p.nz * 20]], 1, "rgba(120,124,128,.9)", 3); });
+        T.line(st.filter(ms).map(p => [p.x + p.nx * 20, 44, p.z + p.nz * 20 + 3]), 1.6, "rgba(120,124,128,.95)", 1);
         T.lights(st, 21, 38.6, "rgba(255,248,226,1)", 1, 2, ms);
         // the Anfield Road end on the right: two tiers, a lower roof
         const ar = p => side(p) === "right";
         T.tier(st, 0, 1, 16, 8, "#8A1020", red, 1.6, ar, 8); T.tier(st, 12, 10, 30, 20, "#7A0E1C", red, 1.3, ar, 8);
-        T.tier(st, 8, 24, 32, 25, "#1A1C20", null, 1, ar, 1); T.lights(st, 9, 23.6, "rgba(255,248,226,.95)", 3, 1.6, ar);
+        T.tier(st, 8, 24, 32, 25, "#D9DCDE", null, 1, ar, 1); T.lights(st, 9, 23.6, "rgba(255,248,226,.95)", 3, 1.6, ar);
         // corners filled in, lower
         T.tier(st, 0, 1, 14, 7, "#6A0C16", red, 1.2, p => side(p) === "corner" && p.nz > 0, 6);
         FIELD.pitch(T);
