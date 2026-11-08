@@ -6456,13 +6456,15 @@
    "away_record": "8-2",
    "neutral": false,
    "pick": "PHI",
-   "prob": 74.9,
-   "home_prob": 25.1,
-   "model_home_prob": 29.6,
+   "prob": 77.6,
+   "home_prob": 22.4,
+   "model_home_prob": 25.1,
    "model_weight": 0.38,
    "blended": true,
-   "margin": 9.5,
-   "home_out": [],
+   "margin": 10.7,
+   "home_out": [
+    "Norman Powell"
+   ],
    "away_out": [],
    "rest": {
     "home": 3,
@@ -6470,18 +6472,18 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "PHI",
     "side": "away",
-    "price": -420,
-    "prob": 74.9,
-    "book_prob": 77.6,
-    "edge": -2.7,
+    "price": -470,
+    "prob": 77.6,
+    "book_prob": 79.2,
+    "edge": -1.6,
     "value": false,
-    "home_ml": 329,
-    "away_ml": -420,
-    "book": "DraftKings",
+    "home_ml": 362,
+    "away_ml": -470,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6499,35 +6501,37 @@
    "away_record": "8-2",
    "neutral": false,
    "pick": "DET",
-   "prob": 61.9,
-   "home_prob": 61.9,
-   "model_home_prob": 60.0,
+   "prob": 69.4,
+   "home_prob": 69.4,
+   "model_home_prob": 68.4,
    "model_weight": 0.38,
    "blended": true,
-   "margin": 4.3,
+   "margin": 7.2,
    "home_out": [
     "Jalen Duren",
     "Isaiah Joe"
    ],
-   "away_out": [],
+   "away_out": [
+    "Luka Doncic"
+   ],
    "rest": {
     "home": 3,
     "away": 1
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "DET",
     "side": "home",
-    "price": -191,
-    "prob": 61.9,
-    "book_prob": 63.1,
-    "edge": -1.2,
+    "price": -269,
+    "prob": 69.4,
+    "book_prob": 70.0,
+    "edge": -0.6,
     "value": false,
-    "home_ml": -191,
-    "away_ml": 160,
-    "book": "DraftKings",
+    "home_ml": -269,
+    "away_ml": 220,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6563,7 +6567,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "MIN",
     "side": "home",
@@ -6574,7 +6578,7 @@
     "value": false,
     "home_ml": -650,
     "away_ml": 470,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6592,12 +6596,12 @@
    "away_record": "2-7",
    "neutral": false,
    "pick": "DAL",
-   "prob": 75.5,
-   "home_prob": 75.5,
+   "prob": 74.9,
+   "home_prob": 74.9,
    "model_home_prob": 78.7,
    "model_weight": 0.39,
    "blended": true,
-   "margin": 9.7,
+   "margin": 9.5,
    "home_out": [],
    "away_out": [
     "Mikel Brown Jr.",
@@ -6609,18 +6613,18 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "DAL",
     "side": "home",
-    "price": -324,
-    "prob": 75.5,
-    "book_prob": 73.4,
-    "edge": 2.1,
+    "price": -308,
+    "prob": 74.9,
+    "book_prob": 72.5,
+    "edge": 2.4,
     "value": false,
-    "home_ml": -324,
-    "away_ml": 261,
-    "book": "DraftKings",
+    "home_ml": -308,
+    "away_ml": 249,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6652,7 +6656,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "BOS",
     "side": "away",
@@ -6663,7 +6667,7 @@
     "value": false,
     "home_ml": 530,
     "away_ml": -750,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6699,7 +6703,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "LAC",
     "side": "home",
@@ -6710,7 +6714,7 @@
     "value": false,
     "home_ml": 103,
     "away_ml": -121,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -6744,7 +6748,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-08T17:53:54Z",
+   "set_at": "2026-11-08T19:22:36Z",
    "ml": {
     "team": "MIA",
     "side": "away",
@@ -6755,7 +6759,7 @@
     "value": false,
     "home_ml": 346,
     "away_ml": -446,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
