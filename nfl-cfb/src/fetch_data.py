@@ -15,10 +15,14 @@ This script downloads:
 Output: raw CSVs saved to data/raw/
 """
 
-import requests
-import pandas as pd
+import io
 import os
+import sys
+import time
 from datetime import datetime
+
+import pandas as pd
+import requests
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 os.makedirs(RAW_DIR, exist_ok=True)
@@ -38,14 +42,48 @@ def get_seasons_to_pull(lookback_years=2):
     current = current_nfl_season()
     return list(range(current - lookback_years, current + 1))
 
+class SourceDown(Exception):
+    """nflverse (GitHub releases) is erroring or unreachable, as opposed to a
+    file that simply isn't published yet (404). Picks made from a partial
+    pull would be wrong, so the run stops before predicting (exit code 3)."""
+
+
+def get_file(url, tries=4):
+    """The file's bytes, or None if it isn't published (404). Server errors
+    and timeouts are retried with backoff, then raise SourceDown."""
+    last = None
+    for attempt in range(tries):
+        try:
+            r = requests.get(url, timeout=90)
+            if r.status_code == 404:
+                return None
+            if r.status_code < 500 and r.status_code != 429:
+                r.raise_for_status()
+                return r.content
+            last = f"HTTP {r.status_code}"
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            last = type(e).__name__
+        if attempt < tries - 1:
+            time.sleep(10 * 2 ** attempt)
+    raise SourceDown(f"{url}: {last}")
+
+
+def read_csv_url(url, **kw):
+    """A published CSV as a DataFrame, or None if it isn't published."""
+    content = get_file(url)
+    return None if content is None else pd.read_csv(io.BytesIO(content), low_memory=False, **kw)
+
+
 def download_csv_gz(url, dest_path):
-    """Download a gzipped CSV from a nflverse release URL."""
+    """Download a gzipped CSV from a nflverse release URL. False if it isn't published."""
     print(f"  Fetching: {url}")
-    r = requests.get(url, timeout=60)
-    r.raise_for_status()
+    content = get_file(url)
+    if content is None:
+        return False
     with open(dest_path, "wb") as f:
-        f.write(r.content)
-    print(f"  Saved: {dest_path} ({len(r.content) / 1_000_000:.1f} MB)")
+        f.write(content)
+    print(f"  Saved: {dest_path} ({len(content) / 1_000_000:.1f} MB)")
+    return True
 
 def fetch_play_by_play(seasons):
     """Pull play-by-play data for each season (this is the core advanced-stats source)."""
@@ -53,13 +91,12 @@ def fetch_play_by_play(seasons):
     for season in seasons:
         dest = os.path.join(RAW_DIR, f"pbp_{season}.csv.gz")
         url = f"{BASE}/pbp/play_by_play_{season}.csv.gz"
-        try:
-            download_csv_gz(url, dest)
-            df = pd.read_csv(dest, compression="gzip", low_memory=False)
-            df["season"] = season
-            frames.append(df)
-        except requests.exceptions.HTTPError as e:
-            print(f"  Skipping {season} (not available yet): {e}")
+        if not download_csv_gz(url, dest):
+            print(f"  Skipping {season} (not available yet)")
+            continue
+        df = pd.read_csv(dest, compression="gzip", low_memory=False)
+        df["season"] = season
+        frames.append(df)
     if not frames:
         raise RuntimeError("No play-by-play data could be fetched.")
     return pd.concat(frames, ignore_index=True)
@@ -83,11 +120,11 @@ def fetch_rosters(seasons):
     frames = []
     for season in seasons:
         url = f"{BASE}/weekly_rosters/roster_weekly_{season}.csv"
-        try:
-            df = pd.read_csv(url, low_memory=False)
+        df = read_csv_url(url)
+        if df is None:
+            print(f"  Skipping roster {season} (not published yet)")
+        else:
             frames.append(df)
-        except Exception as e:  # pandas raises urllib's HTTPError, not requests'
-            print(f"  Skipping roster {season} (not published yet): {e}")
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 def fetch_current_roster(season):
@@ -100,12 +137,11 @@ def fetch_current_roster(season):
     when the previous season's play-by-play data is stale on personnel.
     """
     url = f"{BASE}/rosters/roster_{season}.csv"
-    try:
-        df = pd.read_csv(url, low_memory=False)
-        return df
-    except Exception as e:  # pandas raises urllib's HTTPError, not requests'
-        print(f"  Current roster not available yet for {season}: {e}")
+    df = read_csv_url(url)
+    if df is None:
+        print(f"  Current roster not available yet for {season}")
         return pd.DataFrame()
+    return df
 
 def main():
     seasons = get_seasons_to_pull(lookback_years=2)
@@ -147,4 +183,8 @@ def main():
     print("\nDone. Raw data saved to data/raw/")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SourceDown as e:
+        print(f"\nnflverse is down ({e}). Skipping this run's NFL picks; the site keeps the last ones.")
+        sys.exit(3)

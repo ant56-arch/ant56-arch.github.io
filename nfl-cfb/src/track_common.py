@@ -128,7 +128,10 @@ def grade(log, results, push_as_float=False):
     ]:
         # Straight-up: did the favored team win the game outright?
         # No line (a Vegas row without one) is no pick: left ungraded.
-        picked_home_won = (log[spread_col] > 0) == (log["actual_margin"] > 0)
+        # A line rounded to 0.0 (a pick'em) goes to the side the win chance
+        # favors, the same side the site and the Model Room show as our pick.
+        picked_home = (log[spread_col] > 0) | ((log[spread_col] == 0) & (log[wp_col] > 0.5))
+        picked_home_won = picked_home == (log["actual_margin"] > 0)
         log.loc[graded, f"{label}_correct_pick"] = (picked_home_won[graded].astype(float).where(~tie[graded], 0.0)
                                                     .where(log.loc[graded, spread_col].notna()))
         log.loc[graded, f"{label}_spread_error"] = (log[spread_col] - log["actual_margin"]).abs()[graded]
