@@ -1446,13 +1446,12 @@
         T.tier(wall, 0, 0, 0, 3.5, "#24461F", null, 1, () => true, 1);
         for (let i = 0; i < 2600; i++) { const k = Math.floor(rnd() * (wall.length - 1)), p = wall[k], a = rnd(), q = T.P(p.x + (wall[k + 1].x - p.x) * a, rnd() * 3.5, p.z + (wall[k + 1].z - p.z) * a); if (!T.ok(q)) continue; const s = clamp(T.f * 0.35 / q[2], 0.7, 2.5), c0 = rnd(); x.fillStyle = c0 < 0.4 ? "#3E6B2E" : c0 < 0.75 ? "#2F5A26" : c0 < 0.93 ? "#56853A" : "#7A3B26"; x.fillRect(q[0], q[1], s, s); }
         T.line(wall.map(p => [p.x, 3.5, p.z]), 1.4, "rgba(240,236,224,.85)", 1);
-        // the corners where the grandstand curves around into the bleachers
+        // the corners where the lower deck curves around into the bleachers
         [-1, 1].forEach(s => {
           const c = []; for (let i = 0; i <= 14; i++) { const t = i / 14, a = Math.PI * (0.75 - 0.5 * t);
             c.push({ x: s * lerp(84.8, 76.3, t), z: lerp(62.2, 76.3, t), nx: s * Math.sin(a), nz: Math.cos(a) }); }
           if (s < 0) c.reverse();
-          T.blend(c, [0, 1, 34, 24], [0.3, 3.5, 26, 15], "#1D3D2A", cubs, 1.5);
-          T.blend(c, [8, 26, 34, 27], [20, 15, 26, 15.5], "#1B1E22");
+          T.blend(c, [0, 1, 20, 9], [0.3, 3.5, 26, 15], "#1D3D2A", cubs, 1.5);   // low seats only: the upper deck and roof stop short of the pole
         });
         // the grandstand down both lines: lower deck, upper deck, roof, lights on top
         [-1, 1].forEach(s => {
