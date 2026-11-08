@@ -1141,68 +1141,88 @@ def anytime_td_prob(rush_tds, rec_tds):
     lam = (0 if pd.isna(rush_tds) else float(rush_tds)) + (0 if pd.isna(rec_tds) else float(rec_tds))
     return 1 - math.exp(-lam)
 
+PLAYER_CATS = [  # tab id, label, sort column, (column, label) stat line, matchup column, positions
+    ("passing", "Passing", "proj_pass_yards",
+     [("proj_pass_attempts", "Att"), ("proj_completions", "Comp"), ("proj_pass_yards", "Yds"), ("proj_pass_tds", "TD")],
+     "matchup_mult_pass", "pass"),
+    ("rushing", "Rushing", "proj_rush_yards",
+     [("proj_carries", "Car"), ("proj_rush_yards", "Yds"), ("proj_rush_tds", "TD")], "matchup_mult_rush", "rush"),
+    ("receiving", "Receiving", "proj_rec_yards",
+     [("proj_targets", "Tgt"), ("proj_receptions", "Rec"), ("proj_rec_yards", "Yds"), ("proj_rec_tds", "TD")],
+     "matchup_mult_rec", "pass"),
+]
+
+def _num(v, digits=1):
+    return DASH if pd.isna(v) else f"{float(v):.{digits}f}"
+
+def player_prop_row(rank, r, cat):
+    _, _, sort_col, stats, mcol, phase = cat
+    name = r.get("full_name") if isinstance(r.get("full_name"), str) and r.get("full_name").strip() else r["player_name"]
+    inj = ""
+    if isinstance(r.get("injury_status"), str) and r["injury_status"]:
+        inj = " " + pill(r["injury_status"].upper(), "primary" if r["injury_status"] == "Questionable" else "danger")
+    pos = r.get("pos") if isinstance(r.get("pos"), str) else ""
+    meta = " &middot; ".join(x for x in (pos, f"{r['team']} vs {r['opponent']}") if x)
+    mult = r.get(mcol, np.nan)
+    tag = ""
+    if pd.notna(mult) and mult >= 1.08:
+        tag = '<span class="tdp-tag">Soft matchup</span>'
+    elif pd.notna(mult) and mult <= 0.92:
+        tag = '<span class="tdp-tag is-due">Tough matchup</span>'
+    side = [f"{_num(r.get(c))} {lab.lower()}" for c, lab in stats if c != sort_col]
+    tiles = "".join(f'<div class="tdp-tile"><b>{_num(r.get(c))}</b><span>{lab}</span></div>' for c, lab in stats)
+    notes = []
+    if pd.notna(mult):
+        pct = (float(mult) - 1) * 100
+        notes.append(f"{r['opponent']}'s {phase} defense moves his projection {'up' if pct > 0 else 'down'} {abs(pct):.0f}%."
+                     if abs(pct) >= 1 else f"{r['opponent']}'s {phase} defense is about average.")
+    if pd.notna(r.get("game_total")):
+        notes.append(f"Vegas total {float(r['game_total']):g}" + (f", {r['team']} {fmt_spread(r['team_spread'])}" if pd.notna(r.get("team_spread")) else "") + ".")
+    if inj:
+        notes.append(f"Listed {str(r['injury_status']).lower()}, so his numbers are trimmed.")
+    note_html = f'<p class="tdp-foot">{" ".join(notes)}</p>' if notes else ""
+    hot = "mid" if rank <= 3 else "cool"
+    return f"""<details class="tdp"><summary>
+      <span class="tdp-rank">{rank}</span>{td_face(name, r.get("headshot"))}
+      <span class="tdp-who"><span class="tdp-name">{escape(str(name))}{inj}</span>
+        <span class="tdp-meta">{meta}</span>
+        <span class="tdp-tags">{tag}</span></span>
+      <span class="tdp-book"><span class="tdp-book-sub">{" &middot; ".join(side)}</span></span>
+      <span class="tdp-pct is-{hot}"><b>{float(r[sort_col]):.0f}</b><small>YDS</small></span>
+    </summary><div class="tdp-body"><div class="tdp-tiles">{tiles}</div>{note_html}</div></details>"""
+
 def build_players_page(sport, props):
-    if not props.empty:
-        props = props.copy()
-        props["td_total"] = props.reindex(columns=["proj_rush_tds", "proj_rec_tds"]).fillna(0).sum(axis=1).round(2)
-        if "td_prob" not in props.columns:  # no TD model output: the simple projection
-            props["td_prob"] = [anytime_td_prob(r, c) for r, c in
-                                zip(props.get("proj_rush_tds", np.nan), props.get("proj_rec_tds", np.nan))]
-        for c in ("proj_rush_tds", "proj_rec_tds"):
-            if c in props.columns:
-                props[c] = props[c].fillna(0)
-    def table(stat_cols, cat_id, active):
-        if props.empty or stat_cols["sort"] not in props.columns:
-            return ""
-        top = props.dropna(subset=[stat_cols["sort"]]).sort_values(stat_cols["sort"], ascending=False).head(TOP_PLAYERS).reset_index(drop=True)
+    """Players tab: this week's projected stat lines, top 10 per category, in
+    the TD Props tab's rows (face, name, matchup, the projection on the right)."""
+    panels = []
+    for cat in PLAYER_CATS:
+        cid, label, sort_col = cat[:3]
+        if props.empty or sort_col not in props.columns:
+            continue
+        top = props.dropna(subset=[sort_col]).sort_values(sort_col, ascending=False).head(TOP_PLAYERS)
         if top.empty:
-            return ""
-        headers = "".join(f'<th data-sort-key="{c}" class="num">{h}</th>' for c, h in zip(stat_cols["display"], stat_cols["headers"]))
-        rows = ""
-        for _, p in top.iterrows():
-            tag = ""
-            if p.get("injury_status") and pd.notna(p.get("injury_status")) and p["injury_status"]:
-                style = "primary" if p["injury_status"] == "Questionable" else "danger"
-                tag = " " + pill(str(p["injury_status"]).upper(), style)
-            mult = p.get(stat_cols.get("matchup_col", ""), np.nan)
-            badge = ""
-            if pd.notna(mult):
-                if mult >= 1.08:
-                    badge = " " + pill("SOFT MATCHUP", "positive")
-                elif mult <= 0.92:
-                    badge = " " + pill("TOUGH MATCHUP", "danger")
-            cells = "".join(f'<td data-key="{c}" data-value="{p[c]}" data-label="{h}" class="num">{p[c]}</td>'
-                            for c, h in zip(stat_cols["display"], stat_cols["headers"]))
-            rows += f"""<tr>
-              <td data-key="player" data-value="{p['player_name']}"><b>{p['player_name']}</b>{tag}<div class="muted" style="font-size:13px;">{p['team']} vs {p['opponent']}</div>{badge}</td>
-              {cells}
-            </tr>"""
-        hidden = "" if active else " hidden"
-        return f"""<div class="cat-panel" id="cat-{cat_id}"{hidden}>
-        <table class="data responsive-stack" data-sortable>
-          <thead><tr><th data-sort-key="player">Player</th>{headers}</tr></thead>
-          <tbody>{rows}</tbody>
-        </table></div>"""
-
-    passing = table({"sort": "proj_pass_yards", "display": ["proj_pass_attempts", "proj_completions", "proj_pass_yards", "proj_pass_tds"],
-                      "headers": ["Att", "Comp", "Yds", "TDs"], "matchup_col": "matchup_mult_pass"}, "passing", True)
-    rushing = table({"sort": "proj_rush_yards", "display": ["proj_carries", "proj_rush_yards", "proj_rush_tds"],
-                      "headers": ["Car", "Yds", "TDs"], "matchup_col": "matchup_mult_rush"}, "rushing", False)
-    receiving = table({"sort": "proj_rec_yards", "display": ["proj_targets", "proj_receptions", "proj_rec_yards", "proj_rec_tds"],
-                        "headers": ["Tgt", "Rec", "Yds", "TDs"], "matchup_col": "matchup_mult_rec"}, "receiving", False)
-    scorers = ""
-
-    if not (passing or rushing or receiving or scorers):
-        body = '<div class="empty-state">No player projections available yet.</div>'
+            continue
+        rows = "".join(player_prop_row(i + 1, r, cat) for i, (_, r) in enumerate(top.iterrows()))
+        panels.append((f"cat-{cid}", label, f'<div class="tdg"><div class="tdg-list">{rows}</div></div>'))
+    if not panels:
+        body = '<div class="empty-state">No player projections yet. They come back with the next NFL week.</div>'
         return page_shell(sport, "Players", "players", card("Player Projections", "Top 10 per category", body))
-
-    subtabs = """<div class="subtabs">
-      <button type="button" class="subtab active" aria-pressed="true" data-target="cat-passing">Passing</button>
-      <button type="button" class="subtab" aria-pressed="false" data-target="cat-rushing">Rushing</button>
-      <button type="button" class="subtab" aria-pressed="false" data-target="cat-receiving">Receiving</button>
-    </div>"""
-    body = subtabs + passing + rushing + receiving + scorers
-    card_html = card("Player Projections", "Top 10 per category by projected yards. Touchdown scorers are on the <a href=\"td.html\">TD Props</a> tab.", body)
+    week = ""
+    if "week" in props.columns and props["week"].notna().any():
+        week = f"Week {int(props['week'].dropna().mode().iloc[0])}: "
+    tabs = "".join(
+        f'<button type="button" class="subtab{" active" if i == 0 else ""}" aria-pressed="{"true" if i == 0 else "false"}" '
+        f'data-target="{pid}">{lab}</button>' for i, (pid, lab, _) in enumerate(panels))
+    body = f'<div class="subtabs">{tabs}</div>' + "".join(
+        f'<div class="cat-panel" id="{pid}"{"" if i == 0 else " hidden"}>{h}</div>' for i, (pid, _, h) in enumerate(panels))
+    how = """<details class="how-to"><summary>How to read this</summary><div>
+      <p>The big number is the yards we project for him this week. Next to it is the rest of his projected line, and you can tap
+      a player to see all of it. Each projection starts from his recent games, then gets adjusted for the defense he faces and
+      for injuries. Players listed Out are left off.</p>
+      <p><b>Soft matchup</b> means the defense he faces lifts his projection 8% or more, and <b>Tough matchup</b>
+      means it cuts it 8% or more. These are projections, not Vegas lines. Touchdown scorers are on the
+      <a href="td.html">TD Props</a> tab.</p></div></details>"""
+    card_html = card("Player Projections", f"{week}top 10 per category by projected yards", body + how)
     return page_shell(sport, "Players", "players", card_html)
 
 def display_season(sport, games, log):
