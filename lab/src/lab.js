@@ -1082,6 +1082,19 @@
           T.quad(q, "rgba(0,0,0,.16)", 1);
         }
       },
+      // a band whose depth and heights blend from A to B along the outline (corners joining two stands)
+      blend(per, A, B, seat, fans = null, dens = 1) {
+        const at = (p, o, h) => [p.x + p.nx * o, h, p.z + p.nz * o], n = per.length - 1;
+        for (let i = 0; i < n; i++) {
+          const a = per[i], b = per[i + 1], u = A.map((v, k) => lerp(v, B[k], i / n)), w = A.map((v, k) => lerp(v, B[k], (i + 1) / n));
+          const q = [at(a, u[0], u[1]), at(b, w[0], w[1]), at(b, w[2], w[3]), at(a, u[2], u[3])];
+          if (!T.quad(q, seat, 2)) continue;
+          if (fans) T.crowd(q, fans, dens);
+          T.quad([at(a, lerp(u[0], u[2], 0.55), lerp(u[1], u[3], 0.55)), at(b, lerp(w[0], w[2], 0.55), lerp(w[1], w[3], 0.55)), q[2], q[3]], "rgba(0,0,0,.16)", 1);
+        }
+      },
+      // points along a corner arc around (cx, cz), normals pointing out
+      arc(cx, cz, r, a0, a1, n = 16) { const o = []; for (let i = 0; i <= n; i++) { const a = lerp(a0, a1, i / n); o.push({ x: cx + Math.sin(a) * r, z: cz + Math.cos(a) * r, nx: Math.sin(a), nz: Math.cos(a) }); } return o; },
       // lights in a row along an outline (suite windows, roof lights)
       lights(per, o, h, color, every = 2.2, sz = 1.4, where = () => true) {
         per.forEach((p, i) => { if (!where(p) || i % Math.max(1, Math.round(every)) ) return; const q = P(p.x + p.nx * o, h, p.z + p.nz * o); if (!ok(q)) return; const s = clamp(f * sz / q[2], 1, 6); x.fillStyle = color; x.fillRect(q[0] - s / 2, q[1] - s * 0.3, s, s * 0.6); });
@@ -1392,6 +1405,13 @@
       draw(T) {
         const { x, rnd } = T, R = a => 109 + 13 * Math.cos(a * 2) - 1.5 * Math.sin(a);
         const wall = []; for (let i = 0; i <= 90; i++) { const a = -Math.PI / 4 + i / 90 * Math.PI / 2; wall.push({ x: Math.sin(a) * R(a), z: Math.cos(a) * R(a), nx: Math.sin(a), nz: Math.cos(a) }); }
+        // grass everywhere inside the park (fair and foul), the track by the wall; drawn first, under the stands
+        T.ground(-200, 200, -30, 200, 4, 4, (X, Z) => {
+          X += 2; Z += 2; const a = Math.atan2(X, Z), r = Math.hypot(X, Z);
+          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a)) return null;
+          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a) - 4.6) return "#7A5236";
+          return Math.floor((X + 200) / 8) % 2 ? "#2F6A37" : "#2A6132";
+        });
         // rooftops across Waveland and Sheffield, with their own bleachers on top
         [[-1, -0.62, -0.18], [1, 0.18, 0.62]].forEach(([s, a0, a1]) => {
           for (let a = a0; a < a1; a += 0.055 + rnd() * 0.03) {
@@ -1426,6 +1446,14 @@
         T.tier(wall, 0, 0, 0, 3.5, "#24461F", null, 1, () => true, 1);
         for (let i = 0; i < 2600; i++) { const k = Math.floor(rnd() * (wall.length - 1)), p = wall[k], a = rnd(), q = T.P(p.x + (wall[k + 1].x - p.x) * a, rnd() * 3.5, p.z + (wall[k + 1].z - p.z) * a); if (!T.ok(q)) continue; const s = clamp(T.f * 0.35 / q[2], 0.7, 2.5), c0 = rnd(); x.fillStyle = c0 < 0.4 ? "#3E6B2E" : c0 < 0.75 ? "#2F5A26" : c0 < 0.93 ? "#56853A" : "#7A3B26"; x.fillRect(q[0], q[1], s, s); }
         T.line(wall.map(p => [p.x, 3.5, p.z]), 1.4, "rgba(240,236,224,.85)", 1);
+        // the corners where the grandstand curves around into the bleachers
+        [-1, 1].forEach(s => {
+          const c = []; for (let i = 0; i <= 14; i++) { const t = i / 14, a = Math.PI * (0.75 - 0.5 * t);
+            c.push({ x: s * lerp(84.8, 76.3, t), z: lerp(62.2, 76.3, t), nx: s * Math.sin(a), nz: Math.cos(a) }); }
+          if (s < 0) c.reverse();
+          T.blend(c, [0, 1, 34, 24], [0.3, 3.5, 26, 15], "#1D3D2A", cubs, 1.5);
+          T.blend(c, [8, 26, 34, 27], [20, 15, 26, 15.5], "#1B1E22");
+        });
         // the grandstand down both lines: lower deck, upper deck, roof, lights on top
         [-1, 1].forEach(s => {
           const line = []; for (let d = 104; d >= 6; d -= 2) line.push({ x: s * d * Math.SQRT1_2 + s * 16 * Math.SQRT1_2, z: d * Math.SQRT1_2 - 16 * Math.SQRT1_2, nx: s * Math.SQRT1_2, nz: -Math.SQRT1_2 });
@@ -1442,13 +1470,6 @@
           const pole = [s * 76.3, 76.3]; T.line([[pole[0], 0, pole[1]], [pole[0], 20, pole[1]]], 2.5, "rgba(238,206,96,.95)", 2);
         });
         // the field: grass, the warning track, the infield dirt and the bases
-        // grass everywhere inside the park (fair and foul), the track by the wall
-        T.ground(-110, 110, -30, 140, 4, 4, (X, Z) => {
-          X += 2; Z += 2; const a = Math.atan2(X, Z), r = Math.hypot(X, Z);
-          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a)) return null;
-          if (Math.abs(a) < Math.PI / 4 + 0.03 && r > R(a) - 4.6) return "#7A5236";
-          return Math.floor((X + 200) / 8) % 2 ? "#2F6A37" : "#2A6132";
-        });
         const dirt = []; for (let i = 0; i <= 40; i++) { const a = -Math.PI / 4 - 0.12 + i / 40 * (Math.PI / 2 + 0.24); dirt.push([Math.sin(a) * 29, Math.cos(a) * 29]); }
         T.gpoly([[-5, -4], [5, -4], ...dirt.slice().reverse()].reverse(), "#9A6440", 6);
         T.gpoly([[0, 3.6], [16, 19.4], [0, 35.2], [-16, 19.4]], "#2C6534", 6);
@@ -1465,6 +1486,12 @@
       draw(T) {
         const red = FANS("rgba(200,16,46,.65)", "rgba(200,16,46,.55)", "rgba(245,240,235,.42)", "rgba(230,190,160,.3)");
         const st = T.rrect(62, 41, 3), side = T.side;
+        // the far corners, filled in so the Kop and the Anfield Road end meet the Main Stand
+        const kc = T.arc(-59, 38, 3, -Math.PI / 2, 0), rc = T.arc(59, 38, 3, 0, Math.PI / 2);
+        T.blend(kc, [0, 1, 42, 26], [0, 1, 44, 34], "#741020", red, 1.5);
+        T.blend(kc, [36, 31, 48, 30], [20, 39, 48, 40], "#D9DCDE");
+        T.blend(rc, [0, 1, 44, 34], [0, 1, 30, 20], "#741020", red, 1.5);
+        T.blend(rc, [20, 39, 48, 40], [8, 24, 32, 25], "#D9DCDE");
         // the Kop: one huge tier behind the goal on the left, roof over it
         T.tier(st, 0, 1, 42, 26, "#7A0E1C", red, 1.8, p => side(p) === "left", 16);
         T.tier(st, 36, 31, 48, 30, "#D9DCDE", null, 1, p => side(p) === "left", 1);
@@ -1484,8 +1511,6 @@
         const ar = p => side(p) === "right";
         T.tier(st, 0, 1, 16, 8, "#8A1020", red, 1.6, ar, 8); T.tier(st, 12, 10, 30, 20, "#7A0E1C", red, 1.3, ar, 8);
         T.tier(st, 8, 24, 32, 25, "#D9DCDE", null, 1, ar, 1); T.lights(st, 9, 23.6, "rgba(255,248,226,.95)", 3, 1.6, ar);
-        // corners filled in, lower
-        T.tier(st, 0, 1, 14, 7, "#6A0C16", red, 1.2, p => side(p) === "corner" && p.nz > 0, 6);
         FIELD.pitch(T);
         T.lamp(-20, 38.6, 61, 1.4, 0.25); T.lamp(20, 38.6, 61, 1.4, 0.25);
       },
