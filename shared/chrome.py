@@ -61,6 +61,15 @@ def pills(links, active, label):
         else f'<a href="{href}">{text}</a>' for href, text in links) + "</nav>"
 
 
+def calendar_body(sport):
+    """A sport's Schedule tab: the month calendar from /schedule.html with only
+    this sport's games (calendar.js and calendar.css at the site root, written
+    by schedule_cal.py when the site publishes)."""
+    return (f'<link rel="stylesheet" href="/calendar.css?v=1">\n'
+            f'<div class="edge-cal" data-sport="{escape(sport)}"></div>\n'
+            f'<script defer src="/calendar.js?v=1"></script>')
+
+
 def page_top(sport, title, tabs, active, updated, tagline=""):
     """sport: the league tab's name ("NHL", "Soccer"); title: this page's name;
     tabs: [(href, label)] of the sport's pages; active: the current href

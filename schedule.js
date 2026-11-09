@@ -1,4 +1,5 @@
-// The Schedule tab: each sport's current slate laid out like a TV listings
+// The Schedule tab opens on the month calendar (calendar.js); TV Guide and
+// Cards are its other two views. They show each sport's current slate laid out like a TV listings
 // grid, one panel per day with a row per start time and a column per network.
 // Uses the same data as the scoreboard strip (edgeLoadGames in home.js: each
 // site's games.json, refreshed from ESPN in the browser when it can be
@@ -24,11 +25,11 @@ const SCHED_MAX_NETWORKS = 6;
 // Typical game length in minutes, for the width of a guide block.
 const GUIDE_MINUTES = { nfl: 180, cfb: 210, mlb: 180, nba: 150, nhl: 150, soccer: 115 };
 const GUIDE_SLOT = 30;
-const GUIDE_VIEW_KEY = "edge-schedule-view-2";  // new key so everyone starts on TV Guide
+const GUIDE_VIEW_KEY = "edge-schedule-view-3";  // new key so everyone starts on the calendar
 
 function schedView() {
-  // TV Guide unless this device picked Cards.
-  try { return localStorage.getItem(GUIDE_VIEW_KEY) === "cards" ? "cards" : "guide"; } catch (e) { return "guide"; }
+  // The calendar (calendar.js) unless this device picked TV Guide or Cards.
+  try { const v = localStorage.getItem(GUIDE_VIEW_KEY); return v === "guide" || v === "cards" ? v : "calendar"; } catch (e) { return "calendar"; }
 }
 
 function schedSetView(view) {
@@ -336,6 +337,26 @@ function schedDefault(slates) {
 async function initSchedule() {
   const main = document.querySelector(".schedule-main");
   if (!main) return;
+  // Show the right view now, before the slates load.
+  const cal = document.querySelector(".edge-cal");
+  const guideParts = [document.querySelector("nav.tabs"), main];
+  const showView = () => {
+    const calendar = schedView() === "calendar";
+    if (cal) cal.hidden = !calendar;
+    guideParts.forEach(n => { if (n) n.hidden = calendar; });
+    return calendar;
+  };
+  showView();
+  // Calendar / TV Guide / Cards, remembered on this device.
+  let show = showView;  // the full version once the slates are in
+  const buttons = document.querySelectorAll(".view-toggle button");
+  const markView = () => buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === schedView())));
+  buttons.forEach(b => b.addEventListener("click", () => {
+    schedSetView(b.dataset.view);
+    markView();
+    show();
+  }));
+  markView();
   const sites = SCHED_SPORTS.map(cfg => EDGE_SITES.find(s => s.sport === cfg.sport));
   const slates = await Promise.all(sites.map(site => (site ? edgeLoadGames(site) : null)));
   const tabs = document.querySelectorAll(".sched-tabs a");
@@ -346,7 +367,9 @@ async function initSchedule() {
     if (n) a.append(edgeNode("span", "tab-count", String(n)));
   });
 
-  const show = () => {
+  // The calendar has its own sport filter; the guide and cards use the sport tabs.
+  show = () => {
+    if (showView()) return;
     const key = location.hash.slice(1).toLowerCase();
     const i = Math.max(0, SCHED_SPORTS.findIndex(cfg => cfg.key === (SCHED_SPORTS.some(c => c.key === key) ? key : schedDefault(slates))));
     tabs.forEach(a => {
@@ -357,17 +380,7 @@ async function initSchedule() {
     });
     schedRender(main, SCHED_SPORTS[i], slates[i]);
   };
-  window.addEventListener("hashchange", show);
-
-  // Cards / TV Guide toggle, remembered on this device.
-  const buttons = document.querySelectorAll(".view-toggle button");
-  const markView = () => buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === schedView())));
-  buttons.forEach(b => b.addEventListener("click", () => {
-    schedSetView(b.dataset.view);
-    markView();
-    show();
-  }));
-  markView();
+  window.addEventListener("hashchange", () => show());
   show();
 }
 initSchedule();

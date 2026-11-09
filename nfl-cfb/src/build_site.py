@@ -409,6 +409,7 @@ def page_shell(sport, title, active_tab, body_html):
         tabs.append(("players.html", "players", "Players"))
         tabs.append(("td.html", "td", "TD Props"))
     tabs += [
+        ("schedule.html", "schedule", "Schedule"),
         ("accuracy.html", "accuracy", "Accuracy"),
         ("model.html", "model", "Model"),
     ]
@@ -2158,7 +2159,7 @@ def build_sport_pages(sport):
         "accuracy.html": build_accuracy_page(sport, log, games),
         "model.html": build_model_page(sport),
         **({"ratings.html": build_ratings_page(sport, log)} if sport.get("ratings") else {}),
-        "schedule.html": games_mod.schedule_redirect(sport["slug"]),
+        "schedule.html": page_shell(sport, "Schedule", "schedule", chrome.calendar_body(sport["wordmark"])),
     }
     if sport["player_props_csv"]:
         pages["players.html"] = build_players_page(sport, props)

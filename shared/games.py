@@ -211,25 +211,6 @@ def card_info(espn_game):
 
 
 
-def schedule_redirect(sport):
-    """A stub at a sport's old schedule.html (each league had its own Schedule
-    tab before it moved to the home site) that forwards to the shared page."""
-    url = f"https://ant56-arch.github.io/schedule.html#{sport}"
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url={url}">
-<link rel="canonical" href="{url}">
-<title>Schedule | Sports Edge</title>
-</head>
-<body>
-<p>The schedule moved. <a href="{url}">Open the Schedule tab</a>.</p>
-</body>
-</html>
-"""
-
-
 def legal_redirect(page):
     """A stub at a site's old terms.html / privacy.html that forwards to the
     one Terms of Use and Privacy Policy on the home site, which cover every
