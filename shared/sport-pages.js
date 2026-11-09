@@ -292,7 +292,8 @@ function initEdgeCharts() {
     });
   });
 }
-initEdgeCharts();
+// the chart script loads with defer, so draw once the page (and it) has loaded
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initEdgeCharts); else initEdgeCharts();
 
 // --- Model switch (accuracy_page.switcher) ---
 // Where a sport has two models (MLB hitters and games), buttons show one
