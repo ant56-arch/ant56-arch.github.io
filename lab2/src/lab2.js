@@ -7,8 +7,6 @@
     document.querySelectorAll(".rb-eyebrow").forEach(e => { const t = e.textContent.replace(/^[A-Za-z ]+ Edge\s*·\s*/, ""); if (t !== e.textContent) e.textContent = t.charAt(0).toUpperCase() + t.slice(1); });
     // "League" over a column of league names
     document.querySelectorAll("th").forEach(e => { if (e.textContent.trim() === "League") e.textContent = ""; });
-    // a spread pill showing a raw code instead of "Covered"
-    document.querySelectorAll(".pill").forEach(e => { if (/^CO[0-9A-F]{6,}$/.test(e.textContent.trim())) e.textContent = "Covered"; });
     repeats();
     icons();
     loading();
@@ -56,8 +54,8 @@
   // a shimmer where something is still loading: charts waiting on their script, "Loading..." text
   const started = Date.now();
   function loading() {
-    document.querySelectorAll("canvas").forEach(c => {
-      const box = c.parentElement; if (!box) return;
+    document.querySelectorAll(".chart-card > canvas").forEach(c => {
+      const box = c.parentElement;
       const drawn = window.Chart && window.Chart.getChart && window.Chart.getChart(c);
       box.classList.toggle("ds-loading", !drawn && Date.now() - started < 10000 && !box.textContent.match(/couldn.t load/i));
     });

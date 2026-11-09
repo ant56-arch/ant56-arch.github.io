@@ -44,9 +44,9 @@ def rewrite(html, site, here=None):
         html = html.replace(f'"/{sp}/"', f'"{P}/{sp}/index.html"')
     # inline styles go onto the design system too
     html = re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + ds.snap(m.group(2)) + m.group(3), html, flags=re.S)
-    tags = (f'<meta name="robots" content="noindex">\n<link rel="stylesheet" href="{P}/lab2.css?v=VER">\n')
+    tags = (f'<meta name="robots" content="noindex">\n<link rel="stylesheet" href="{P}/lab2.css?v=__LAB2VER__">\n')
     html = html.replace("</head>", tags + "</head>", 1)
-    return html.replace("</body>", f'<script src="{P}/lab2.js?v=VER"></script>\n</body>', 1)
+    return html.replace("</body>", f'<script src="{P}/lab2.js?v=__LAB2VER__"></script>\n</body>', 1)
 
 
 def main(site, out):
@@ -65,11 +65,11 @@ def main(site, out):
             (out / d / "style.css").write_text(ds.snap(css.read_text()))
     for f in TOP:
         if (site / f).exists():
-            (out / f).write_text(rewrite((site / f).read_text(), site).replace("VER", ver))
+            (out / f).write_text(rewrite((site / f).read_text(), site).replace("__LAB2VER__", ver))
     for sp in SPORTS:
         for t in tabs(site, sp):
             (out / sp).mkdir(exist_ok=True)
-            (out / sp / t).write_text(rewrite((site / sp / t).read_text(), site, sp).replace("VER", ver))
+            (out / sp / t).write_text(rewrite((site / sp / t).read_text(), site, sp).replace("__LAB2VER__", ver))
     print("Built", len(list(out.rglob("*.html"))), "pages")
 
 

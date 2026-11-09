@@ -1,0 +1,6 @@
+/* bigger tap areas on phones, without moving anything: an invisible pad around small links */
+@media (pointer: coarse) {
+  .edge-tabs a, .edge-brand, .ticker-gear, .edge-scroll { position: relative; }
+  .edge-tabs a::before, .edge-brand::before, .ticker-gear::before, .edge-scroll::before { content: ""; position: absolute; inset: -12px -6px; }
+  .edge-jump a, .jump a { min-height: 44px; display: inline-flex; align-items: center; }
+}

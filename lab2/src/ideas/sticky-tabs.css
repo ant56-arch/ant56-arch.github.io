@@ -1,0 +1,2 @@
+.edge-jump, .jump { position: sticky; top: 0; z-index: 30; background: var(--bg, var(--paper)); padding-top: 10px !important; padding-bottom: 10px !important;
+  -webkit-mask-image: none !important; mask-image: none !important; box-shadow: 0 1px 0 var(--rule); }
