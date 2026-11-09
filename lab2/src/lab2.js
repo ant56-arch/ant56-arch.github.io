@@ -9,48 +9,38 @@
     document.querySelectorAll("th").forEach(e => { if (e.textContent.trim() === "League") e.textContent = ""; });
     // a spread pill showing a raw code instead of "Covered"
     document.querySelectorAll(".pill").forEach(e => { if (/^CO[0-9A-F]{6,}$/.test(e.textContent.trim())) e.textContent = "Covered"; });
-    // headlines that say what the section found, from the numbers already on the page
-    headlines();
+    repeats();
     icons();
     loading();
   };
 
-  // the headline as the page wrote it, so a redraw can be recognised
-  const orig = el => (el.dataset.dsOrig = el.dataset.dsOrig || el.textContent.trim());
-  const set = (el, text) => { if (el && el.textContent.trim() !== text) { orig(el); el.textContent = text; } };
-  const num = s => Number(String(s).replace(/,/g, ""));
-  const fmt = n => n.toLocaleString("en-US");
-  function headlines() {
-    // home: "A model for every season." -> "7 leagues, 1,273 games graded."
-    const tally = document.getElementById("heroTally"), lg = document.getElementById("lgH2");
-    const m = tally && tally.textContent.match(/([\d,]+) games graded/);
-    if (lg && m) set(lg, `${document.querySelectorAll(".lt").length || 7} leagues, ${fmt(num(m[1]))} games graded.`);
-    // home: "The calendar." -> "380-111 over the last six days."
-    const cal = document.querySelector("#calendar h2"), rows = [...document.querySelectorAll("#cal .wl")];
-    if (cal && rows.length) {
-      let w = 0, l = 0; rows.forEach(r => { const x = (r.firstChild || r).textContent.match(/(\d+)\s*-\s*(\d+)/); if (x) { w += +x[1]; l += +x[2]; } });
-      if (w + l) set(cal, `${w}-${l} over the last ${["", "day", "two days", "three days", "four days", "five days", "six days", "seven days"][rows.length] || rows.length + " days"}.`);
-    }
-    // accuracy pages: "How we've done." -> "95-44 this season."
-    document.querySelectorAll("h2.sec-h2").forEach(h => {
-      if (!/^How we.ve done\.?$/.test(orig(h))) return;
-      const st = [...document.querySelectorAll(".stat")].find(s => /this season/i.test(s.textContent));
-      const v = st && st.querySelector(".stat-value");
-      if (v) set(h, `${v.textContent.trim()} this season.`);
+  // the same number shown twice in one place: keep the first, drop the echo
+  function repeats() {
+    // game cards: the pick's chance is on its team row, so the footer doesn't repeat it
+    document.querySelectorAll("a.gc").forEach(c => {
+      const rows = [...c.querySelectorAll(".gc-team .gc-num")].map(e => e.textContent.trim());
+      c.querySelectorAll(".gc-pct").forEach(e => { if (rows.includes(e.textContent.trim())) e.classList.add("ds-hide"); });
+      // "79% for PHI, we say 78%": our 78% is right above
+      c.querySelectorAll("dd small").forEach(e => { e.textContent = e.textContent.replace(/,\s*we say \d+%/, ""); });
     });
-    // sport home: "Today's games." -> "8 games on Sun, Nov 8."
-    document.querySelectorAll(".slate-sec").forEach(sec => {
-      const h = sec.querySelector("h2.sec-h2"); if (!h || !/^Today.s (games|matches)\.?$/.test(orig(h))) return;
-      const n = sec.querySelectorAll("a.gc").length, lab = sec.querySelector(".sec-label b"), day = lab && lab.textContent.split("·")[1];
-      const many = /matches/.test(orig(h)) ? "matches" : "games", one = many === "matches" ? "match" : "game";
-      if (n) set(h, `${n} ${n === 1 ? one : many}${day ? " on " + day.trim() : " today"}.`);
+    // results tables: "We give OKC 76%" sits next to the 76% win chance column
+    document.querySelectorAll(".ml-sub").forEach(e => {
+      const row = e.closest("tr"), prob = row && row.querySelector("td.prob");
+      if (prob) e.textContent = e.textContent.replace(new RegExp("\\s*·?\\s*We give \\S+ " + prob.textContent.trim().replace("%", "\\%") + ",?\\s*"), " · ").replace(/ · $/, "").replace(/ ·  · /, " · ");
     });
-    // betting: "Units" -> "+0.78 units on 1,202 picks"
-    const units = [...document.querySelectorAll(".card-header h2")].find(h => orig(h) === "Units");
-    const tile = document.querySelector(".money-tile");
-    if (units && tile) {
-      const u = tile.querySelector(".mt-num"), p = tile.querySelector(".mt-sub"), pk = p && p.textContent.match(/([\d,]+) picks/);
-      if (u) set(units, `${u.textContent.trim().replace(/u$/, "")} units${pk ? " on " + fmt(num(pk[1])) + " picks" : ""}`);
+    // day headers: "Sat, Nov 7, 2026: 6-1 · Moneyline 6-1"
+    document.querySelectorAll(".section-label, h3, .day-head").forEach(e => {
+      if (e.children.length) return;
+      const t = e.textContent.replace(/(:\s*(\d+-\d+(?:-\d+)?))\s*·\s*Moneyline\s+\2\s*$/i, "$1");
+      if (t !== e.textContent) e.textContent = t;
+    });
+    // accuracy: the moneyline record is the season record again, so show its units
+    const stats = [...document.querySelectorAll(".statline .stat")];
+    const season = stats.find(s => /^this season$/i.test(s.querySelector(".stat-label")?.textContent.trim() || ""));
+    const ml = stats.find(s => /^moneyline$/i.test(s.querySelector(".stat-label")?.textContent.trim() || ""));
+    if (season && ml) {
+      const v = ml.querySelector(".stat-value"), sub = ml.querySelector(".stat-sub"), u = sub && sub.textContent.match(/^([+−-]?[\d.]+) units?,?\s*(.*)$/);
+      if (v && u && v.textContent.trim() === season.querySelector(".stat-value").textContent.trim()) { v.textContent = u[1] + "u"; sub.textContent = u[2]; }
     }
   }
 
