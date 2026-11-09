@@ -1532,14 +1532,14 @@
   function nflPark(s) {
     const roof = s.roof || "open";
     const ceiling = { dome: [[0, "#C9CCCC"], [0.6, "#A9AEB0"], [1, "#868C90"]], dark: [[0, "#07080A"], [0.6, "#121418"], [1, "#1C1F24"]],
-      etfe: [[0, "#B8C6D2"], [0.6, "#9EB0C0"], [1, "#7E8E9C"]], fabric: [[0, "#D8D4CC"], [0.6, "#B8B4AC"], [1, "#8E8A84"]] };
+      etfe: [[0, "#D8E2EA"], [0.6, "#B4C4D2"], [1, "#8A9AA8"]], fabric: [[0, "#D8D4CC"], [0.6, "#B8B4AC"], [1, "#8E8A84"]] };
     const sky = roof === "open" || roof === "canopy" || roof === "ring" ? SKIES[s.sky || "dusk"] : ceiling[s.ceil || (roof === "etfe" ? "etfe" : roof === "retract" ? "fabric" : "dome")];
     return { kind: "gridiron", name: s.name, city: s.city, cam: [0, s.camY || 15, -58], hz: s.hz || 0.4, fov: 1.85, vs: 0.68, sky,
       draw(T) { drawPark(T, s, roof); } };
   }
   function drawPark(T, s, roof) {
     const hw = s.hw || 66, hd = s.hd || 36, bowl = T.rrect(hw, hd, s.r || 22), c1 = s.c[0], c2 = s.c[1];
-    const fans = FANS(hexA(c1, 0.6), hexA(c2, 0.55), "rgba(240,236,228,.5)", "rgba(36,38,44,.7)", "rgba(230,190,160,.35)", hexA(c1, 0.5));
+    const fans = s.fans || FANS(hexA(c1, 0.6), hexA(c2, 0.55), "rgba(240,236,228,.5)", "rgba(36,38,44,.7)", "rgba(230,190,160,.35)", hexA(c1, 0.5));
     const seat = s.seat || "#4A4E56", dk = s.trim || "#1C2026", nn = p => T.side(p) !== "near";
     const low = s.lowEnd || [];                                         // ends with only a lower deck
     const up = p => nn(p) && !low.some(e => T.side(p) === e || (T.side(p) === "corner" && (e === "right" ? p.nx > 0 : p.nx < 0)));
@@ -1565,6 +1565,11 @@
     }
     T.tier(bowl, deep, top, deep, top + 1.2, s.rim || dk, null, 1, up, 1);
     if (low.length) T.tier(bowl, 22, 12, 23, 13, s.rim || dk, null, 1, p => nn(p) && !up(p), 1);
+    if (s.aisles) bowl.forEach((p, i) => {                                // aisle steps running up the stands
+      if (i % 7 || !nn(p)) return;
+      T.line([[p.x, 1.6, p.z], [p.x + p.nx * (s.decks === 1 ? deep : 22), s.decks === 1 ? top : 12, p.z + p.nz * (s.decks === 1 ? deep : 22)]], 1, s.aisles, 6);
+      if (s.decks !== 1 && up(p)) T.line([[p.x + p.nx * 23, 16, p.z + p.nz * 23], [p.x + p.nx * deep, top, p.z + p.nz * deep]], 1, s.aisles, 6);
+    });
     T.line(bowl.filter(nn).map(p => [p.x, 1.5, p.z]), 1.4, s.wall || hexA(c1, 0.9), 1);
     // the roof
     ROOFS[roof] && ROOFS[roof](T, s, bowl, top, deep);
@@ -1580,6 +1585,7 @@
     } else {
       [-1, 1].forEach(sd => {
         if (s.oneBoard && sd !== s.oneBoard) return;
+        if (s.boardAt) { if (sd > 0) return; const [X, Z] = s.boardAt; T.screen([X - 16, Z], [X + 16, Z], 26, 38, "#14181C", "rgba(110,160,210,.6)"); T.line([[X, 0, Z], [X, 26, Z]], 3, "#14181C", 2); return; }
         const X = sd * bx, w = s.bigBoards ? 34 : 22, y0 = low.includes(sd > 0 ? "right" : "left") ? 22 : top - 12;
         T.screen([X, -w], [X, w], y0, y0 + (s.bigBoards ? 22 : 16), "#14181C", "rgba(110,160,210,.55)");
         T.line([[X, 0, -w * 0.5], [X, y0, -w * 0.5]], 3, "#14181C", 2); T.line([[X, 0, w * 0.5], [X, y0, w * 0.5]], 3, "#14181C", 2);
@@ -1614,6 +1620,9 @@
       const y = top + 14, Y = X => y + (s.slope ? -X * 0.08 : 0);
       for (let X = -180; X <= 180; X += 12) T.line([[X, Y(X), -20], [X, Y(X), 160]], 1, s.grid || "rgba(60,70,80,.45)", 10);
       for (let Z = -20; Z <= 160; Z += 12) T.line([[-180, Y(-180), Z], [180, Y(180), Z]], 1, s.grid || "rgba(60,70,80,.45)", 20);
+      if (s.half) for (let Z = 60; Z < 160; Z += 6) T.quad([[-180, Y(-180) + 0.2, Z], [180, Y(180) + 0.2, Z], [180, Y(180) + 0.2, Z + 6], [-180, Y(-180) + 0.2, Z + 6]], "rgba(92,98,108,.92)", 20);
+      if (s.half) for (let X = -180; X <= 180; X += 24) T.line([[X, Y(X) - 1, -20], [X, Y(X) - 1, 160]], 2.6, "rgba(50,54,62,.9)", 10);
+      if (s.half) for (let X = -180; X < 180; X += 24) { T.line([[X, Y(X) - 1.5, 60], [X + 24, Y(X + 24) - 1.5, 110]], 2, "rgba(50,54,62,.9)", 8); T.line([[X + 24, Y(X + 24) - 1.5, 110], [X, Y(X) - 1.5, 160]], 2, "rgba(50,54,62,.9)", 8); }
       T.line(bowl.filter(p => T.side(p) !== "near").map(p => [p.x + p.nx * 54, top + 2, p.z + p.nz * 54]), 2.5, "rgba(40,44,50,.9)", 1);
     },
     // canopies over the side stands (and over the ends too for a ring)
@@ -1629,6 +1638,14 @@
       T.lights(pts.map(p => ({ x: p.x + p.nx * ((s.reach || 20) + 2), z: p.z + p.nz * ((s.reach || 20) + 2), nx: 0, nz: 0, y: h(p) })), 0, top + 5, "rgba(255,246,226,.9)", 6, 1.6);
     },
     ring(T, s, bowl, top, deep) { ROOFS.canopy(T, { ...s, roofAll: true }, bowl, top, deep); },
+    // a dark fixed roof on a lattice of steel trusses, rows of catwalk lights (Ford Field)
+    truss(T, s, bowl, top) {
+      const y = top + 26, Y = Z => y + 6 * Math.cos((Z - 20) / 90 * Math.PI / 2);
+      for (let X = -160; X < 160; X += 22) for (let Z = -30; Z < 130; Z += 40) T.quad([[X + 1, Y(Z) + 0.5, Z + 1], [X + 21, Y(Z) + 0.5, Z + 1], [X + 21, Y(Z + 40) + 0.5, Z + 39], [X + 1, Y(Z + 40) + 0.5, Z + 39]], (X / 22 + Z / 40) % 2 ? "rgba(34,36,42,.8)" : "rgba(52,54,60,.75)", 4);
+      for (let X = -160; X <= 160; X += 22) T.line([[X, Y(-30), -30], [X, Y(130), 130]], 2.2, "rgba(150,154,160,.75)", 10);
+      for (let X = -160; X < 160; X += 22) { T.line([[X, Y(-10), -10], [X + 22, Y(40), 40]], 1.2, "rgba(150,154,160,.6)", 6); T.line([[X + 22, Y(40), 40], [X, Y(90), 90]], 1.2, "rgba(150,154,160,.6)", 6); }
+      [5, 45, 85].forEach(Z => { T.line([[-170, Y(Z), Z], [170, Y(Z), Z]], 3, "rgba(60,64,72,.95)", 20); for (let X = -120; X <= 120; X += 12) T.lamp(X, Y(Z) - 2, Z, 1.1, 0.5); });
+    },
   };
   // things beyond the rim
   const BEYOND = {
@@ -1716,12 +1733,14 @@
     BAL: { name: "M&T Bank Stadium", city: "Baltimore", c: ["#241773", "#9E7C0C"], seat: "#3A2A6E", decks: 2, ezLine: "rgba(158,124,12,.9)" },
     BUF: { name: "Highmark Stadium", city: "Orchard Park", c: ["#00338D", "#C60C30"], seat: "#1E3E86", roof: "canopy", roofAll: true, decks: 2, sky: "day", ezLine: "rgba(198,12,48,.95)" },
     CAR: { name: "Bank of America Stadium", city: "Charlotte", c: ["#0085CA", "#101820"], seat: "#2A3038", decks: 2, beyond: ["skyline"], skyX: -1, tall: 120, ez: "#0085CA" },
-    CHI: { name: "Soldier Field", city: "Chicago", c: ["#0B162A", "#C83803"], seat: "#1E2A44", decks: 2, marks: ["colonnade"], ezLine: "rgba(200,56,3,.95)", sky: "day" },
+    // Soldier Field (from the photo): navy seats with white aisles, a tall steep east stand under a thin roof lip, glass suites stacked on the west, the north end lower with the skyline over it
+    CHI: { name: "Soldier Field", city: "Chicago", c: ["#0B162A", "#C83803"], seat: "#1A2238", aisles: "rgba(225,228,232,.55)", decks: 2, roof: "canopy", reach: 40, under: "#9AA2AA", edge: "rgba(235,238,240,.9)", lowEnd: ["left"], beyond: ["skyline"], skyX: -1, tall: 150, boardAt: [-62, 90], ezLine: "rgba(200,56,3,.95)", sky: "day", glass: "rgba(140,175,185,.6)" },
     CIN: { name: "Paycor Stadium", city: "Cincinnati", c: ["#FB4F14", "#000000"], seat: "#2A2A2C", roof: "canopy", decks: 2, ez: "#101010", ezLine: "rgba(251,79,20,.95)", mid: "#FB4F14", mid2: "#000000" },
     CLE: { name: "Huntington Bank Field", city: "Cleveland", c: ["#FF3C00", "#311D00"], seat: "#5A3A22", decks: 2, beyond: ["water"], skyX: -1, ez: "#311D00", ezLine: "rgba(255,60,0,.95)", sky: "day" },
     DAL: { name: "AT&T Stadium", city: "Arlington", c: ["#003594", "#869397"], seat: "#3A4250", roof: "retract", decks: 3, board: "center", ez: "#003594" },
     DEN: { name: "Empower Field at Mile High", city: "Denver", c: ["#FB4F14", "#0A2343"], seat: "#B84A1E", decks: 3, beyond: ["mountains"], marks: ["bronco"], ez: "#0A2343", ezLine: "rgba(251,79,20,.95)", sky: "day" },
-    DET: { name: "Ford Field", city: "Detroit", c: ["#0076B6", "#B0B7BC"], seat: "#2C4A6A", roof: "dome", decks: 2, marks: ["windows"], ez: "#0076B6" },
+    // Ford Field (from the photo): a dark roof over a lattice of steel trusses, rows of catwalk lights, blue seats, lit ribbon boards between the decks, a board hung at the end
+    DET: { name: "Ford Field", city: "Detroit", c: ["#0076B6", "#B0B7BC"], seat: "#141C30", fans: FANS("rgba(18,26,44,.85)", "rgba(24,34,58,.8)", "rgba(0,90,150,.3)", "rgba(120,126,132,.3)", "rgba(200,160,130,.25)"), roof: "truss", ceil: "dark", decks: 2, ribbon: "rgba(235,240,250,.75)", boardAt: [-56, 74], ez: "#0076B6" },
     GB: null,
     HOU: { name: "NRG Stadium", city: "Houston", c: ["#03202F", "#A71930"], seat: "#6A2230", roof: "retract", decks: 3, ezLine: "rgba(167,25,48,.95)" },
     IND: { name: "Lucas Oil Stadium", city: "Indianapolis", c: ["#002C5F", "#A2AAAD"], seat: "#1E3A6A", roof: "retract", decks: 2, marks: ["window"] },
@@ -1731,7 +1750,8 @@
     LAC: { name: "SoFi Stadium", city: "Inglewood", c: ["#0080C6", "#FFC20E"], seat: "#3A4250", roof: "etfe", decks: 3, board: "oval", ezLine: "rgba(255,194,14,.95)" },
     LAR: { name: "SoFi Stadium", city: "Inglewood", c: ["#003594", "#FFA300"], seat: "#3A4250", roof: "etfe", decks: 3, board: "oval", ezLine: "rgba(255,163,0,.95)" },
     MIA: { name: "Hard Rock Stadium", city: "Miami Gardens", c: ["#008E97", "#FC4C02"], seat: "#2A6A70", roof: "ring", decks: 2, sky: "day", ezLine: "rgba(252,76,2,.95)" },
-    MIN: { name: "U.S. Bank Stadium", city: "Minneapolis", c: ["#4F2683", "#FFC62F"], seat: "#3A2464", roof: "etfe", slope: true, decks: 3, marks: ["prow"], ezLine: "rgba(255,198,47,.95)" },
+    // U.S. Bank Stadium (from the photo): half the roof clear ETFE, half steel, a glass wall at the west end, purple seats, blue LED ribbons between the levels
+    MIN: { name: "U.S. Bank Stadium", city: "Minneapolis", c: ["#4F2683", "#FFC62F"], seat: "#3A2464", roof: "etfe", half: true, grid: "rgba(40,44,52,.75)", decks: 3, ribbon: "rgba(70,130,235,.85)", marks: ["window"], ezLine: "rgba(255,198,47,.95)" },
     NE: { name: "Gillette Stadium", city: "Foxborough", c: ["#002244", "#C60C30"], seat: "#2A3A5A", decks: 2, lowEnd: ["left"], marks: ["lighthouse"], ezLine: "rgba(198,12,48,.95)", beyond: ["trees"] },
     NO: { name: "Caesars Superdome", city: "New Orleans", c: ["#D3BC8D", "#101820"], seat: "#2A2A2C", roof: "dome", ceil: "dome", decks: 3, ez: "#101820", ezLine: "rgba(211,188,141,.95)", mid: "#101820", mid2: "#D3BC8D", ribbon: "rgba(211,188,141,.8)" },
     NYG: { name: "MetLife Stadium", city: "East Rutherford", c: ["#0B2265", "#A71930"], seat: "#4A4E56", decks: 3, marks: ["louvers"], glow: "rgba(40,90,220,.85)", ezLine: "rgba(167,25,48,.95)" },
