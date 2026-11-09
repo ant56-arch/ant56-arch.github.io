@@ -161,7 +161,7 @@ class TeamSite:
 
     # ── Page chrome ──────────────────────────────────────────────────────────
     def page_shell(self, title, active, body_html, charts=False):
-        chart_js = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
+        chart_js = '<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
         ver = asset_version()
         return f"""<!DOCTYPE html>
 <html lang="en">

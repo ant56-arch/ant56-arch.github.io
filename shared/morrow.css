@@ -304,7 +304,7 @@ header.masthead.edge-hero::before { z-index: 0; background: linear-gradient(180d
   .edge-hero-bar { margin-top: 18px; grid-template-columns: 1fr auto; }
   .edge-hero-bar > :nth-child(2) { display: none; }
 }
-@media (max-width: 640px) { .edge-jump { flex-wrap: wrap; overflow: visible; } }
+@media (max-width: 640px) { .edge-jump { flex-wrap: nowrap; overflow-x: auto; padding-right: 32px; } }  /* one row you swipe; the half-shown pill hints at more */
 @media (prefers-reduced-motion: reduce) { .edge-hero h1 .ln > span { animation: none; } }
 .edge-tick .topbar[hidden] { display: none; }
 .edge-sheet > main > :first-child, .edge-sheet > main > :first-child > .card:first-child { border-top: 0; }
@@ -361,3 +361,26 @@ h2.sec-h2 em { font-family: var(--font-serif); font-style: italic; font-weight: 
 .sp-pill { padding: 7px 14px; font-size: 11px; }
 .sp-pill.is-miss { background: var(--ours); }
 .edge-sheet > main > section.card:first-of-type { border-top: 0; }
+
+/* easier to read and use: numbers line up, headlines wrap evenly, bigger tap areas on phones,
+   press and hover feedback, and a shimmer while a chart loads */
+body { font-variant-numeric: tabular-nums; }
+h1, h2, h3, .sec-h2 { text-wrap: balance; }
+p, .subtitle { text-wrap: pretty; }
+@media (pointer: coarse) {
+  .edge-jump a { min-height: 44px; display: inline-flex; align-items: center; }
+  .edge-tabs a, .edge-brand, .ticker-gear, .edge-scroll { position: relative; }
+  .edge-tabs a::before, .edge-brand::before, .ticker-gear::before, .edge-scroll::before { content: ""; position: absolute; inset: -12px -6px; }
+}
+button, a.gc, .edge-jump a { transition: background-color .15s, color .15s, border-color .15s, transform .12s, box-shadow .15s; }
+button:active, .edge-jump a:active { transform: scale(.97); }
+a.gc:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27, 27, 25, .08); }
+a.gc:active { transform: none; }
+@keyframes edge-shimmer { from { background-position: -400px 0; } to { background-position: 400px 0; } }
+.chart-card[data-state="loading"]::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(90deg, transparent 0, rgba(127, 120, 105, .14) 50%, transparent 100%) 0 0 / 800px 100%; animation: edge-shimmer 1.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  button, a.gc, .edge-jump a { transition: none; }
+  button:active, .edge-jump a:active, a.gc:hover { transform: none; }
+  .chart-card[data-state="loading"]::before { animation: none; }
+}
