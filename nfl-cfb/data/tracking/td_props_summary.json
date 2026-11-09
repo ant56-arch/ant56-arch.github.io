@@ -9,12 +9,12 @@
   },
   "top10": {
     "scored": 28,
-    "graded": 49,
-    "predicted": 0.62
+    "graded": 50,
+    "predicted": 0.621
   },
   "vs_book": {
-    "n": 1324,
-    "our_brier": 0.1638,
-    "book_brier": 0.1608
+    "n": 1340,
+    "our_brier": 0.1635,
+    "book_brier": 0.1604
   }
 }
