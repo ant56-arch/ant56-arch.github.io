@@ -387,7 +387,7 @@ a.gc:active { transform: none; }
 
 /* page tabs stay pinned under the top bars while you scroll (edge.js sets top and --edge-tabs) */
 .edge-jump { position: sticky; top: 0; z-index: 30; background: var(--bg); padding-top: 10px; padding-bottom: 10px; box-shadow: 0 1px 0 var(--rule); }
-.edge-jump.is-stuck { box-shadow: 0 1px 0 var(--rule), -24px 0 0 var(--bg), 24px 0 0 var(--bg); }
+.edge-jump.is-stuck { box-shadow: 0 0 0 100vmax var(--bg), 0 1px 0 100vmax var(--rule); clip-path: inset(0 -100vmax -1px); }  /* full width once pinned, like the bar above */
 .tv-head { top: var(--edge-tabs, 48px); }
 /* "Loading..." text shimmers until the real text arrives */
 @keyframes edge-shimmer-text { from { background-position: -400px 0; } to { background-position: 400px 0; } }
