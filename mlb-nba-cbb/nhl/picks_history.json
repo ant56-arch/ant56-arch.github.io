@@ -11405,7 +11405,7 @@
    },
    "model": "2026-11-03T10:54:56+00:00",
    "correct": null,
-   "set_at": "2026-11-09T11:33:32Z",
+   "set_at": "2026-11-09T15:56:35Z",
    "ml": {
     "team": "EDM",
     "side": "home",
@@ -11416,7 +11416,7 @@
     "value": false,
     "home_ml": -155,
     "away_ml": 130,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -11444,7 +11444,7 @@
    },
    "model": "2026-11-03T10:54:56+00:00",
    "correct": null,
-   "set_at": "2026-11-09T11:33:32Z",
+   "set_at": "2026-11-09T15:56:35Z",
    "ml": {
     "team": "PHI",
     "side": "away",
@@ -11455,7 +11455,7 @@
     "value": false,
     "home_ml": 114,
     "away_ml": -135,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -11473,8 +11473,8 @@
    "away_record": "7-9",
    "neutral": false,
    "pick": "NYI",
-   "prob": 54.6,
-   "home_prob": 45.4,
+   "prob": 55.5,
+   "home_prob": 44.5,
    "model_home_prob": 47.2,
    "margin": 0.16,
    "rest": {
@@ -11483,18 +11483,18 @@
    },
    "model": "2026-11-03T10:54:56+00:00",
    "correct": null,
-   "set_at": "2026-11-09T11:33:32Z",
+   "set_at": "2026-11-09T15:56:35Z",
    "ml": {
     "team": "NYI",
     "side": "away",
-    "price": -135,
-    "prob": 54.6,
-    "book_prob": 55.1,
-    "edge": -0.5,
+    "price": -142,
+    "prob": 55.5,
+    "book_prob": 56.3,
+    "edge": -0.8,
     "value": false,
-    "home_ml": 114,
-    "away_ml": -135,
-    "book": "DraftKings",
+    "home_ml": 120,
+    "away_ml": -142,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
