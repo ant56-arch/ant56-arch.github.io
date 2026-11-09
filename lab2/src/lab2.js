@@ -14,10 +14,8 @@
 
   // the same number shown twice in one place: keep the first, drop the echo
   function repeats() {
-    // game cards: the pick's chance is on its team row, so the footer doesn't repeat it
+    // game cards: the big pick percentage in the footer stays (Anthony likes it)
     document.querySelectorAll("a.gc").forEach(c => {
-      const rows = [...c.querySelectorAll(".gc-team .gc-num")].map(e => e.textContent.trim());
-      c.querySelectorAll(".gc-pct").forEach(e => { if (rows.includes(e.textContent.trim())) e.classList.add("ds-hide"); });
       // "79% for PHI, we say 78%": our 78% is right above
       c.querySelectorAll("dd small").forEach(e => { e.textContent = e.textContent.replace(/,\s*we say \d+%/, ""); });
     });
