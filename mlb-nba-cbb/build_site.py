@@ -150,7 +150,7 @@ def graded(picks):
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
     tabs = [("index.html", "Home"), ("games.html", "Games"), ("players.html", "Player Hits"),
-            ("accuracy.html", "Accuracy"), ("model.html", "Model")]
+            ("schedule.html", "Schedule"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     chart_js = '<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
     ver = asset_version()
     return f"""<!DOCTYPE html>
@@ -1482,7 +1482,7 @@ def main():
         "games.html": build_games(team_history, games_slate["games"]),
         "history.html": moved("players.html#past", "Player Hits"),
         "accuracy.html": build_accuracy(model, team_model, history, team_history),
-        "schedule.html": games_mod.schedule_redirect("mlb"),
+        "schedule.html": page_shell("Schedule", "schedule.html", chrome.calendar_body("MLB")),
         "model.html": build_model(model, load_json("model_history.json", {"runs": []})["runs"], team_model,
                                   load_json(os.path.join("teams", "model_history.json"), {"runs": []})["runs"]),
         "terms.html": games_mod.legal_redirect("terms"),

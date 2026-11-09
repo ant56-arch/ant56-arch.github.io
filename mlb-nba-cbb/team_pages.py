@@ -79,10 +79,10 @@ class TeamSite:
     top_n = 3
     strong = 70  # win chance, in percent, that counts as a strong pick
     favicon_letter = "M8 23V9h3.3l6.9 8.6V9H24v14h-3.3l-6.9-8.6V23z"
-    tabs = [("index.html", "Home"), ("history.html", "History"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
+    tabs = [("index.html", "Home"), ("history.html", "History"), ("schedule.html", "Schedule"), ("accuracy.html", "Accuracy"),
+            ("model.html", "Model")]
     sources = "Scores, box scores, injury reports and Vegas odds via ESPN."
     has_games_feed = True  # ESPN scoreboard for the board, games.json and the Schedule redirect
-    has_schedule = True    # a tab on the home site's Schedule page
     board_note = ("The percentage by each team is its chance to win, and the odds are our pick's moneyline. "
                   "Tap a game for injuries and rest.")
     no_games = "No NBA games today."
@@ -416,8 +416,8 @@ class TeamSite:
             "history.html": self.build_history(),
             "accuracy.html": self.build_accuracy(),
         })
-        if slate and self.has_schedule:
-            pages["schedule.html"] = games_mod.schedule_redirect(self.slug)
+        # The month calendar with this sport's games (shared/calendar.js).
+        pages["schedule.html"] = self.page_shell("Schedule", "schedule.html", chrome.calendar_body(self.sport))
         pages.update({
             "model.html": self.build_model(load_json(os.path.join(self.here, "model_history.json"), {"runs": []})["runs"]),
             "terms.html": games_mod.legal_redirect("terms"),

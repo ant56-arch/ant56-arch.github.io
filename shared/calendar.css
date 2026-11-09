@@ -1,0 +1,98 @@
+/* The Schedule calendar (calendar.js), on /schedule.html and each sport's
+   Schedule tab. Site tokens from base.css; one rust accent (--ours). */
+.edge-cal { font-variant-numeric: tabular-nums; }
+.cal-sec { padding-block: clamp(40px, 5vw, 72px); }
+.cal-sec + .cal-sec { border-top: 1px solid var(--rule); }
+.edge-cal .sec-label .cal-tag { order: 3; margin-left: auto; font-style: normal; white-space: nowrap; }
+
+.cal-tools { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin: 24px 0 18px; }
+.cal-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.cal-filters button, .cal-more { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 9px 14px; min-height: 36px;
+  border: 1px solid var(--rule); border-radius: 99px; background: transparent; color: var(--text); cursor: pointer; }
+.cal-filters button span { color: var(--text-muted); margin-left: 6px; }
+.cal-filters button:hover:not([aria-pressed="true"]), .cal-more:hover { border-color: var(--text-faint); background: var(--surface-2); }
+.cal-filters button[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: var(--forest-ink); }
+.cal-filters button[aria-pressed="true"] span { color: inherit; opacity: .8; }
+.cal-tools > .cal-monthnav:only-child { margin-left: auto; }
+
+.cal-monthnav { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--rule); border-radius: 99px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+/* inner radius = outer radius minus the 3px padding (both fully round here) */
+.cal-monthnav button { width: 36px; height: 36px; border: 0; border-radius: 99px; background: transparent; color: var(--text); cursor: pointer; display: grid; place-items: center; }
+.cal-monthnav button:hover:not(:disabled) { background: var(--surface-2); }
+.cal-monthnav button:disabled { opacity: .35; cursor: default; }
+.cal-monthnav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cal-monthnav span { padding: 0 10px; min-width: 128px; text-align: center; }
+
+/* The month: 1px rules between days, 10px outer radius */
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.cal-dow { background: var(--bg); color: var(--text-muted); padding: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.cal-day { background: var(--bg); min-height: 124px; padding: 10px; border: 0; border-radius: 0; color: var(--text); text-align: left; font: inherit; cursor: pointer;
+  display: flex; flex-direction: column; gap: 6px; }
+.cal-day:hover { background: var(--surface-2); }
+.cal-day:active { transform: none; background: var(--rule); }
+.cal-day.is-blank { cursor: default; }
+.cal-day.is-blank:hover { background: var(--bg); }
+.cal-day.is-empty .cal-n { color: var(--text-muted); }
+.cal-day.is-sel { box-shadow: inset 0 0 0 2px var(--ours); }
+.cal-day:focus-visible { outline: 2px solid var(--ours); outline-offset: -4px; }
+.cal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.cal-n { font-family: var(--font-serif); font-size: 30px; line-height: .9; }
+.cal-day.is-today .cal-n, .cal-day.is-today .cal-today { color: var(--ours); }
+.cal-wl { font-size: 13px; font-weight: 600; }
+.cal-wl.is-up { color: var(--hit); }
+.cal-wl.is-down { color: var(--miss); }
+.cal-day ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.cal-day li { display: flex; justify-content: space-between; gap: 6px; font-size: 12.5px; color: var(--text-muted); }
+.cal-day li b { font-weight: 600; color: var(--text); }
+.cal-tot { display: none; font-size: 12.5px; color: var(--text-muted); }
+.cal-tot.is-on { display: block; }
+.cal-today { margin-top: auto; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+
+/* The day */
+.cal-sport { margin-top: 28px; }
+.cal-sport h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0; padding-bottom: 10px; border-bottom: 1px solid var(--text);
+  font-family: var(--font-head); font-weight: 500; font-stretch: 125%; text-transform: uppercase; font-size: 20px; letter-spacing: -0.01em; }
+.cal-sport h3 span { font-family: var(--font); font-stretch: 100%; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--text-muted); }
+.cal-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0 32px; }
+.cal-row { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.cal-tm { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+.cal-mt { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-mt small { display: block; font-size: 13px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; }
+.cal-mt small b { color: var(--text); }
+.cal-out { text-align: right; }
+.cal-pct { display: block; font-family: var(--font-serif); font-size: 34px; line-height: .9; }
+.cal-pct sup { font-size: .45em; vertical-align: top; margin-left: 1px; }
+.cal-res { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; margin-top: 4px; }
+.cal-res.is-hit { color: var(--hit); }
+.cal-res.is-miss { color: var(--miss); }
+.cal-more { margin-top: 14px; }
+
+@media (max-width: 760px) {
+  .cal-tools { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .cal-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter, 16px)); padding-inline: var(--gutter, 16px); }
+  .cal-filters::-webkit-scrollbar { display: none; }
+  .cal-filters button { flex: none; }
+  .cal-monthnav { display: flex; justify-content: space-between; }
+  .cal-monthnav span { flex: 1; min-width: 0; }
+  .cal-grid { border-radius: 8px; }
+  .cal-dow { padding: 8px 2px; letter-spacing: .04em; text-align: center; }
+  .cal-day { min-height: 64px; padding: 6px 2px; gap: 2px; align-items: center; text-align: center; }
+  .cal-top { flex-direction: column; align-items: center; gap: 2px; }
+  .cal-n { font-size: 22px; }
+  .cal-wl { font-size: 11px; }
+  .cal-day ul, .cal-today { display: none; }
+  .cal-tot { display: block; font-size: 11px; }
+  .cal-w { display: none; }
+  .cal-rows { grid-template-columns: minmax(0, 1fr); }
+  .cal-row { grid-template-columns: 62px minmax(0, 1fr) auto; gap: 10px; }
+}
+
+/* /schedule.html: one of Calendar, TV Guide or Cards shows at a time (schedule.js) */
+.edge-cal[hidden], .schedule-main[hidden], nav.tabs[hidden] { display: none !important; }
+.edge-cal > .cal-sec:first-child { padding-top: clamp(16px, 2.4vw, 32px); }
+.sched-toolbar + main .edge-cal > .cal-sec:first-child { padding-top: 8px; }
+.view-toggle button { white-space: nowrap; }
+@media (max-width: 420px) { .view-toggle button { padding-inline: 12px; } }
+.sched-toolbar-label, .sched-toolbar .view-toggle button { font-family: var(--font-mono); font-size: 11px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; }
+.sched-toolbar .view-toggle button { min-height: 36px; }

@@ -12,7 +12,7 @@ and soccer/ratings.json and writes:
   accuracy.html - predicted vs. actual for live picks, and last season's
                   walk-forward backtest against the closing odds
   model.html    - how the model retrains, league levels and the top clubs
-  game-<id>.html, terms.html, privacy.html, schedule.html (redirects)
+  game-<id>.html, schedule.html (the calendar), terms.html, privacy.html (redirects)
   summary.json  - record, top picks, slate, units and last results for the
                   home site; games.json for the Schedule tab
 
@@ -119,7 +119,7 @@ def score_text(p):
 
 # ── Page chrome ──────────────────────────────────────────────────────────────
 def page_shell(title, active, body_html, charts=False):
-    tabs = [("index.html", "Home"), ("history.html", "History"), ("accuracy.html", "Accuracy"),
+    tabs = [("index.html", "Home"), ("history.html", "History"), ("schedule.html", "Schedule"), ("accuracy.html", "Accuracy"),
             ("model.html", "Model")]
     chart_js = '<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>' if charts else ""
     ver = asset_version()
@@ -574,7 +574,7 @@ def main():
         "index.html": build_index(history, slate["games"]),
         "history.html": build_history(history),
         "accuracy.html": build_accuracy(history, model),
-        "schedule.html": games_mod.schedule_redirect("soccer"),
+        "schedule.html": page_shell("Schedule", "schedule.html", chrome.calendar_body("Soccer")),
         "model.html": build_model(model, load_json(os.path.join(HERE, "model_history.json"), {"runs": []})["runs"], ratings),
         "terms.html": games_mod.legal_redirect("terms"),
         "privacy.html": games_mod.legal_redirect("privacy"),

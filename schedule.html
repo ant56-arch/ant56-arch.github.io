@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Schedule | Sports Edge</title>
-<meta name="description" content="Today's NFL, NBA, MLB, NHL, college football Top 25 and soccer games with start times, TV networks and our pick for each.">
+<meta name="description" content="Every NFL, college football, NBA, NHL, college basketball and soccer game on a month calendar, with our pick and how it went, plus start times and TV.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23121314%22/%3E%3Cpath d=%22M10 9h12v3.2h-8.4v2.3h7.4v3h-7.4v2.3H22V23H10z%22 fill=%22%23e5793b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="calendar.css?v=1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -19,14 +20,14 @@
   <ul class="edge-tabs"><li><a href="/" aria-current=page>All</a></li><li><a href="/?l=nfl">NFL</a></li><li><a href="/?l=cfb">CFB</a></li><li><a href="/?l=mlb">MLB</a></li><li><a href="/?l=nhl">NHL</a></li><li><a href="/?l=nba">NBA</a></li><li><a href="/?l=cbb">CBB</a></li><li><a href="/?l=soccer">Soccer</a></li></ul>
 </nav>
 
-<header class="masthead edge-hero" data-sport="TV">
+<header class="masthead edge-hero" data-sport="CAL">
   <div class="edge-hero-row">
-    <div class="edge-eyebrow">Where to watch</div>
-    <h1><span class="ln"><span>TV</span></span><span class="ln"><span>schedule.</span></span></h1>
+    <div class="edge-eyebrow">Every sport · Every pick</div>
+    <h1><span class="ln"><span>Schedule.</span></span></h1>
   </div>
   <div class="edge-hero-bar">
     <a class="edge-scroll" href="#main-content"><i aria-hidden="true">&darr;</i>Scroll to explore</a>
-    <span>Every game, when it starts and where to watch</span>
+    <span>Tap a day for its games</span>
     <span>Est. 2026</span>
   </div>
 </header>
@@ -44,12 +45,16 @@
   <div class="sched-toolbar">
     <span class="sched-toolbar-label">View</span>
     <div class="view-toggle" role="group" aria-label="Schedule view">
-      <button type="button" data-view="guide" aria-pressed="true">TV Guide</button>
+      <button type="button" data-view="calendar" aria-pressed="true">Calendar</button>
+      <button type="button" data-view="guide" aria-pressed="false">TV Guide</button>
       <button type="button" data-view="cards" aria-pressed="false">Cards</button>
     </div>
   </div>
-  <main id="main-content" class="schedule-main" aria-live="polite">
-    <section class="card"><div class="empty-state" data-loading>Loading the schedule</div></section>
+  <main id="main-content">
+    <div class="edge-cal" data-hash></div>
+    <div class="schedule-main" aria-live="polite" hidden>
+      <section class="card"><div class="empty-state" data-loading>Loading the schedule</div></section>
+    </div>
   </main>
 
   <footer class="site-footer slim">
@@ -70,6 +75,7 @@
   </footer>
 </div>
 <script src="home.js?v=25"></script>
-<script src="schedule.js?v=8"></script>
+<script src="schedule.js?v=9"></script>
+<script src="calendar.js?v=1"></script>
 </body>
 </html>

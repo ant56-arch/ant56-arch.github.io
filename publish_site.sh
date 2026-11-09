@@ -55,6 +55,9 @@ for attempt in 1 2 3 4 5; do
   # Each league's season state (/seasons.json, read by the home page) and the
   # past seasons' final records (/archive.html): shared/seasons.py.
   python3 "$root/shared/seasons.py" site "$work" || echo "Couldn't write seasons.json and archive.html; publishing without them"
+  # The Schedule calendar's data, one file per month (/calendar/), and its
+  # calendar.js and calendar.css: shared/schedule_cal.py.
+  python3 "$root/shared/schedule_cal.py" site "$work" || echo "Couldn't write the calendar; publishing the last one"
 
   export GIT_INDEX_FILE="$tmp/index"
   rm -f "$GIT_INDEX_FILE"

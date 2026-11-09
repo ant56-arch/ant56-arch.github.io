@@ -118,10 +118,9 @@ class CBBSite(TeamSite):
     tagline = "Picks for every Division I men's basketball game, graded every night."
     top_n = 5
     tabs = [("index.html", "Home"), ("ratings.html", "Ratings"), ("bracket.html", "Bracket"), ("history.html", "History"),
-            ("accuracy.html", "Accuracy"), ("model.html", "Model")]
+            ("schedule.html", "Schedule"), ("accuracy.html", "Accuracy"), ("model.html", "Model")]
     sources = "Scores, box scores and Vegas odds via ESPN. Not affiliated with KenPom."
     has_games_feed = True
-    has_schedule = False  # not on the shared Schedule tab yet
     board_note = ("Scores are our projections, and the odds are our pick's moneyline. "
                   "Tap a game for more.")
     no_games = "No Division I games today."
