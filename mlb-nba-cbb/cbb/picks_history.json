@@ -14687,7 +14687,7 @@
     "tempo": 72
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T13:10:49Z",
    "ml": {
     "team": "SJU",
@@ -14700,9 +14700,12 @@
     "home_ml": -50000,
     "away_ml": 4000,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.002
+   },
+   "home_pts": 104,
+   "away_pts": 65,
+   "winner": "SJU"
   },
   {
    "date": "2026-11-08",
@@ -14733,7 +14736,7 @@
     "tempo": 75
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "ARK",
@@ -14746,9 +14749,12 @@
     "home_ml": -175,
     "away_ml": 145,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 91,
+   "away_pts": 72,
+   "winner": "UVA"
   },
   {
    "date": "2026-11-08",
@@ -14779,7 +14785,7 @@
     "tempo": 71
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "BRY",
@@ -14792,9 +14798,12 @@
     "home_ml": 102,
     "away_ml": -122,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 59,
+   "away_pts": 68,
+   "winner": "FAIR"
   },
   {
    "date": "2026-11-08",
@@ -14825,7 +14834,7 @@
     "tempo": 69
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "ME",
@@ -14838,9 +14847,12 @@
     "home_ml": -142,
     "away_ml": 120,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 62,
+   "away_pts": 68,
+   "winner": "MAN"
   },
   {
    "date": "2026-11-08",
@@ -14871,7 +14883,7 @@
     "tempo": 72
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "UNH",
@@ -14884,9 +14896,12 @@
     "home_ml": -118,
     "away_ml": -102,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 76,
+   "away_pts": 81,
+   "winner": "SHU"
   },
   {
    "date": "2026-11-08",
@@ -14917,7 +14932,7 @@
     "tempo": 72
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "UML",
@@ -14930,9 +14945,12 @@
     "home_ml": -130,
     "away_ml": 110,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.769
+   },
+   "home_pts": 63,
+   "away_pts": 61,
+   "winner": "UML"
   },
   {
    "date": "2026-11-08",
@@ -14963,7 +14981,7 @@
     "tempo": 71
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "SC",
@@ -14976,9 +14994,12 @@
     "home_ml": -2100,
     "away_ml": 1100,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.048
+   },
+   "home_pts": 78,
+   "away_pts": 68,
+   "winner": "SC"
   },
   {
    "date": "2026-11-08",
@@ -15009,7 +15030,7 @@
     "tempo": 69
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "SIE",
@@ -15022,9 +15043,12 @@
     "home_ml": 110,
     "away_ml": -130,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 1.1
+   },
+   "home_pts": 82,
+   "away_pts": 68,
+   "winner": "SIE"
   },
   {
    "date": "2026-11-08",
@@ -15055,7 +15079,7 @@
     "tempo": 73
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "BOIS",
@@ -15068,9 +15092,12 @@
     "home_ml": -148,
     "away_ml": 124,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.676
+   },
+   "home_pts": 100,
+   "away_pts": 81,
+   "winner": "BOIS"
   },
   {
    "date": "2026-11-08",
@@ -15101,7 +15128,7 @@
     "tempo": 70
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "LEH",
@@ -15114,9 +15141,12 @@
     "home_ml": -225,
     "away_ml": 185,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 55,
+   "away_pts": 65,
+   "winner": "BRWN"
   },
   {
    "date": "2026-11-08",
@@ -15147,7 +15177,7 @@
     "tempo": 70
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "DART",
@@ -15160,9 +15190,12 @@
     "home_ml": -375,
     "away_ml": 295,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 71,
+   "away_pts": 78,
+   "winner": "CCSU"
   },
   {
    "date": "2026-11-08",
@@ -15193,7 +15226,7 @@
     "tempo": 69
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "UVM",
@@ -15206,9 +15239,12 @@
     "home_ml": -380,
     "away_ml": 300,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 76,
+   "away_pts": 79,
+   "winner": "QUIN"
   },
   {
    "date": "2026-11-08",
@@ -15239,7 +15275,7 @@
     "tempo": 71
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "CAM",
@@ -15252,9 +15288,12 @@
     "home_ml": -205,
     "away_ml": 170,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 87,
+   "away_pts": 71,
+   "winner": "WMU"
   },
   {
    "date": "2026-11-08",
@@ -15285,7 +15324,7 @@
     "tempo": 69
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "STMN",
@@ -15298,9 +15337,12 @@
     "home_ml": -345,
     "away_ml": 275,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 67,
+   "away_pts": 76,
+   "winner": "GB"
   },
   {
    "date": "2026-11-08",
@@ -15331,7 +15373,7 @@
     "tempo": 66
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T17:54:14Z",
    "ml": {
     "team": "UALB",
@@ -15344,9 +15386,12 @@
     "home_ml": 114,
     "away_ml": -135,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 60,
+   "away_pts": 73,
+   "winner": "MRMK"
   },
   {
    "date": "2026-11-08",
@@ -15377,7 +15422,7 @@
     "tempo": 70
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "AF",
@@ -15390,9 +15435,12 @@
     "home_ml": -258,
     "away_ml": 210,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.388
+   },
+   "home_pts": 89,
+   "away_pts": 82,
+   "winner": "AF"
   },
   {
    "date": "2026-11-08",
@@ -15423,7 +15471,7 @@
     "tempo": 73
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "WKU",
@@ -15436,9 +15484,12 @@
     "home_ml": 130,
     "away_ml": -155,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 97,
+   "away_pts": 94,
+   "winner": "TNTC"
   },
   {
    "date": "2026-11-08",
@@ -15469,7 +15520,7 @@
     "tempo": 73
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "DRKE",
@@ -15482,9 +15533,12 @@
     "home_ml": -1100,
     "away_ml": 700,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.091
+   },
+   "home_pts": 75,
+   "away_pts": 68,
+   "winner": "DRKE"
   },
   {
    "date": "2026-11-08",
@@ -15515,7 +15569,7 @@
     "tempo": 68
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "BING",
@@ -15528,9 +15582,12 @@
     "home_ml": -325,
     "away_ml": 260,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.308
+   },
+   "home_pts": 75,
+   "away_pts": 63,
+   "winner": "BING"
   },
   {
    "date": "2026-11-08",
@@ -15561,7 +15618,7 @@
     "tempo": 67
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "NJIT",
@@ -15574,9 +15631,12 @@
     "home_ml": 102,
     "away_ml": -122,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 1.02
+   },
+   "home_pts": 54,
+   "away_pts": 52,
+   "winner": "NJIT"
   },
   {
    "date": "2026-11-08",
@@ -15607,7 +15667,7 @@
     "tempo": 69
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "SMC",
@@ -15620,9 +15680,12 @@
     "home_ml": -118,
     "away_ml": -102,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 96,
+   "away_pts": 95,
+   "winner": "NEV"
   },
   {
    "date": "2026-11-08",
@@ -15653,7 +15716,7 @@
     "tempo": 71
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "RICH",
@@ -15666,9 +15729,12 @@
     "home_ml": 100,
     "away_ml": -120,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.833
+   },
+   "home_pts": 53,
+   "away_pts": 79,
+   "winner": "RICH"
   },
   {
    "date": "2026-11-08",
@@ -15699,8 +15765,11 @@
     "tempo": 76
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
-   "set_at": "2026-11-08T19:22:55Z"
+   "correct": true,
+   "set_at": "2026-11-08T19:22:55Z",
+   "home_pts": 108,
+   "away_pts": 69,
+   "winner": "IDHO"
   },
   {
    "date": "2026-11-08",
@@ -15731,7 +15800,7 @@
     "tempo": 72
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "NDSU",
@@ -15744,9 +15813,12 @@
     "home_ml": 120,
     "away_ml": -142,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 91,
+   "away_pts": 80,
+   "winner": "CSUB"
   },
   {
    "date": "2026-11-08",
@@ -15777,7 +15849,7 @@
     "tempo": 74
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T19:22:55Z",
    "ml": {
     "team": "W&M",
@@ -15790,9 +15862,12 @@
     "home_ml": -600,
     "away_ml": 440,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.167
+   },
+   "home_pts": 104,
+   "away_pts": 73,
+   "winner": "W&M"
   },
   {
    "date": "2026-11-08",
@@ -15823,7 +15898,7 @@
     "tempo": 70
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T23:32:04Z",
    "ml": {
     "team": "UTEP",
@@ -15836,9 +15911,12 @@
     "home_ml": -850,
     "away_ml": 575,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.118
+   },
+   "home_pts": 79,
+   "away_pts": 60,
+   "winner": "UTEP"
   },
   {
    "date": "2026-11-08",
@@ -15869,8 +15947,11 @@
     "tempo": 79
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
-   "set_at": "2026-11-08T23:32:04Z"
+   "correct": true,
+   "set_at": "2026-11-08T23:32:04Z",
+   "home_pts": 56,
+   "away_pts": 130,
+   "winner": "PORT"
   },
   {
    "date": "2026-11-08",
@@ -15901,7 +15982,7 @@
     "tempo": 72
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T23:32:04Z",
    "ml": {
     "team": "PITT",
@@ -15914,9 +15995,12 @@
     "home_ml": 120,
     "away_ml": -142,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.704
+   },
+   "home_pts": 76,
+   "away_pts": 82,
+   "winner": "PITT"
   },
   {
    "date": "2026-11-08",
@@ -15947,7 +16031,7 @@
     "tempo": 71
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-08T23:32:04Z",
    "ml": {
     "team": "HOU",
@@ -15960,9 +16044,12 @@
     "home_ml": 1400,
     "away_ml": -3200,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 14.0
+   },
+   "home_pts": 86,
+   "away_pts": 68,
+   "winner": "HOU"
   },
   {
    "date": "2026-11-08",
@@ -15993,7 +16080,7 @@
     "tempo": 74
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-09T01:48:33Z",
    "ml": {
     "team": "USC",
@@ -16006,9 +16093,12 @@
     "home_ml": -278,
     "away_ml": 225,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.36
+   },
+   "home_pts": 93,
+   "away_pts": 86,
+   "winner": "USC"
   },
   {
    "date": "2026-11-08",
@@ -16039,7 +16129,7 @@
     "tempo": 73
    },
    "model": "2026-11-08T10:26:00+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-09T01:48:33Z",
    "ml": {
     "team": "HAW",
@@ -16051,6 +16141,1581 @@
     "value": false,
     "home_ml": -425,
     "away_ml": 330,
+    "book": "DraftKings",
+    "won": true,
+    "units": 0.235
+   },
+   "home_pts": 71,
+   "away_pts": 62,
+   "winner": "HAW"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401916315",
+   "start": "2026-11-09T18:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "OSU",
+   "away": "MRSH",
+   "home_id": "194",
+   "away_id": "276",
+   "home_name": "Ohio State",
+   "away_name": "Marshall",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 45,
+   "away_em_rank": 171,
+   "home_record": "1-1",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "OSU",
+   "prob": 93.1,
+   "home_prob": 93.1,
+   "margin": 17.8,
+   "proj": {
+    "home": 89,
+    "away": 72,
+    "tempo": 73
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "OSU",
+    "side": "home",
+    "price": -10000,
+    "prob": 93.1,
+    "book_prob": 96.8,
+    "edge": -3.7,
+    "value": false,
+    "home_ml": -10000,
+    "away_ml": 3000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401909718",
+   "start": "2026-11-09T18:30:00-05:00",
+   "type": "regular",
+   "note": "Bad Boy Mowers Series",
+   "home": "IU",
+   "away": "SYR",
+   "home_id": "84",
+   "away_id": "183",
+   "home_name": "Indiana",
+   "away_name": "Syracuse",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 46,
+   "away_em_rank": 41,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": true,
+   "pick": "SYR",
+   "prob": 50.7,
+   "home_prob": 49.3,
+   "margin": 0.2,
+   "proj": {
+    "home": 77,
+    "away": 77,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "SYR",
+    "side": "away",
+    "price": 190,
+    "prob": 50.7,
+    "book_prob": 33.1,
+    "edge": 17.6,
+    "value": true,
+    "home_ml": -230,
+    "away_ml": 190,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401921180",
+   "start": "2026-11-09T18:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "PENN",
+   "away": "HOW",
+   "home_id": "219",
+   "away_id": "47",
+   "home_name": "Pennsylvania",
+   "away_name": "Howard",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 194,
+   "away_em_rank": 146,
+   "home_record": "0-1",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "PENN",
+   "prob": 57.2,
+   "home_prob": 57.2,
+   "margin": 2.2,
+   "proj": {
+    "home": 80,
+    "away": 77,
+    "tempo": 75
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "PENN",
+    "side": "home",
+    "price": -250,
+    "prob": 57.2,
+    "book_prob": 68.5,
+    "edge": -11.3,
+    "value": false,
+    "home_ml": -250,
+    "away_ml": 205,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906781",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "UGA",
+   "away": "FGCU",
+   "home_id": "61",
+   "away_id": "526",
+   "home_name": "Georgia",
+   "away_name": "Florida Gulf Coast",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 68,
+   "away_em_rank": 158,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "UGA",
+   "prob": 79.9,
+   "home_prob": 79.9,
+   "margin": 10.0,
+   "proj": {
+    "home": 88,
+    "away": 78,
+    "tempo": 74
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "UGA",
+    "side": "home",
+    "price": -6500,
+    "prob": 79.9,
+    "book_prob": 95.4,
+    "edge": -15.5,
+    "value": false,
+    "home_ml": -6500,
+    "away_ml": 2000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906849",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "TENN",
+   "away": "RAD",
+   "home_id": "2633",
+   "away_id": "2515",
+   "home_name": "Tennessee",
+   "away_name": "Radford",
+   "home_rank": 8,
+   "away_rank": null,
+   "home_em_rank": 21,
+   "away_em_rank": 233,
+   "home_record": "1-0",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "TENN",
+   "prob": 96.4,
+   "home_prob": 96.4,
+   "margin": 21.6,
+   "proj": {
+    "home": 85,
+    "away": 64,
+    "tempo": 72
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "TENN",
+    "side": "home",
+    "price": -50000,
+    "prob": 96.4,
+    "book_prob": 97.6,
+    "edge": -1.2,
+    "value": false,
+    "home_ml": -50000,
+    "away_ml": 4000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906865",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "TEX",
+   "away": "GRAM",
+   "home_id": "251",
+   "away_id": "2755",
+   "home_name": "Texas",
+   "away_name": "Grambling",
+   "home_rank": 7,
+   "away_rank": null,
+   "home_em_rank": 9,
+   "away_em_rank": 261,
+   "home_record": "2-0",
+   "away_record": "1-0",
+   "neutral": false,
+   "pick": "TEX",
+   "prob": 99.0,
+   "home_prob": 99.0,
+   "margin": 28.1,
+   "proj": {
+    "home": 92,
+    "away": 64,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401911010",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "BGSU",
+   "away": "CLE",
+   "home_id": "189",
+   "away_id": "325",
+   "home_name": "Bowling Green",
+   "away_name": "Cleveland State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 130,
+   "away_em_rank": 364,
+   "home_record": "1-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "BGSU",
+   "prob": 98.1,
+   "home_prob": 98.1,
+   "margin": 25.0,
+   "proj": {
+    "home": 91,
+    "away": 66,
+    "tempo": 72
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "BGSU",
+    "side": "home",
+    "price": -950,
+    "prob": 98.1,
+    "book_prob": 86.8,
+    "edge": 11.3,
+    "value": true,
+    "home_ml": -950,
+    "away_ml": 625,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401916305",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CIN",
+   "away": "MINN",
+   "home_id": "2132",
+   "away_id": "135",
+   "home_name": "Cincinnati",
+   "away_name": "Minnesota",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 48,
+   "away_em_rank": 55,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "CIN",
+   "prob": 66.0,
+   "home_prob": 66.0,
+   "margin": 4.9,
+   "proj": {
+    "home": 70,
+    "away": 65,
+    "tempo": 68
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "CIN",
+    "side": "home",
+    "price": -325,
+    "prob": 66.0,
+    "book_prob": 73.4,
+    "edge": -7.4,
+    "value": false,
+    "home_ml": -325,
+    "away_ml": 260,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401918074",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CLEM",
+   "away": "UND",
+   "home_id": "228",
+   "away_id": "155",
+   "home_name": "Clemson",
+   "away_name": "North Dakota",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 97,
+   "away_em_rank": 269,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "CLEM",
+   "prob": 84.8,
+   "home_prob": 84.8,
+   "margin": 12.4,
+   "proj": {
+    "home": 83,
+    "away": 70,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "CLEM",
+    "side": "home",
+    "price": -6500,
+    "prob": 84.8,
+    "book_prob": 95.4,
+    "edge": -10.6,
+    "value": false,
+    "home_ml": -6500,
+    "away_ml": 2000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401919733",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CHST",
+   "away": "SCST",
+   "home_id": "2130",
+   "away_id": "2569",
+   "home_name": "Chicago State",
+   "away_name": "South Carolina State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 332,
+   "away_em_rank": 295,
+   "home_record": "1-1",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "CHST",
+   "prob": 55.3,
+   "home_prob": 55.3,
+   "margin": 1.6,
+   "proj": {
+    "home": 74,
+    "away": 72,
+    "tempo": 73
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "CHST",
+    "side": "home",
+    "price": -230,
+    "prob": 55.3,
+    "book_prob": 66.9,
+    "edge": -11.6,
+    "value": false,
+    "home_ml": -230,
+    "away_ml": 190,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401919806",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "TOW",
+   "away": "LIU",
+   "home_id": "119",
+   "away_id": "112358",
+   "home_name": "Towson",
+   "away_name": "Long Island University",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 182,
+   "away_em_rank": 192,
+   "home_record": "0-2",
+   "away_record": "0-3",
+   "neutral": false,
+   "pick": "TOW",
+   "prob": 67.0,
+   "home_prob": 67.0,
+   "margin": 5.3,
+   "proj": {
+    "home": 72,
+    "away": 67,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "TOW",
+    "side": "home",
+    "price": -250,
+    "prob": 67.0,
+    "book_prob": 68.5,
+    "edge": -1.5,
+    "value": false,
+    "home_ml": -250,
+    "away_ml": 205,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401919846",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "COLU",
+   "away": "STO",
+   "home_id": "171",
+   "away_id": "284",
+   "home_name": "Columbia",
+   "away_name": "Stonehill",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 274,
+   "away_em_rank": 330,
+   "home_record": "1-1",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "COLU",
+   "prob": 71.6,
+   "home_prob": 71.6,
+   "margin": 6.9,
+   "proj": {
+    "home": 77,
+    "away": 70,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "COLU",
+    "side": "home",
+    "price": -625,
+    "prob": 71.6,
+    "book_prob": 82.7,
+    "edge": -11.1,
+    "value": false,
+    "home_ml": -625,
+    "away_ml": 455,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920686",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CONN",
+   "away": "WAG",
+   "home_id": "41",
+   "away_id": "2681",
+   "home_name": "UConn",
+   "away_name": "Wagner",
+   "home_rank": 4,
+   "away_rank": null,
+   "home_em_rank": 11,
+   "away_em_rank": 316,
+   "home_record": "2-0",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "CONN",
+   "prob": 99.0,
+   "home_prob": 99.0,
+   "margin": 28.0,
+   "proj": {
+    "home": 84,
+    "away": 57,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920877",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "JAX",
+   "away": "KC",
+   "home_id": "294",
+   "away_id": "140",
+   "home_name": "Jacksonville",
+   "away_name": "Kansas City",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 290,
+   "away_em_rank": 309,
+   "home_record": "1-1",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "JAX",
+   "prob": 69.9,
+   "home_prob": 69.9,
+   "margin": 6.2,
+   "proj": {
+    "home": 78,
+    "away": 72,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "JAX",
+    "side": "home",
+    "price": -238,
+    "prob": 69.9,
+    "book_prob": 67.5,
+    "edge": 2.4,
+    "value": false,
+    "home_ml": -238,
+    "away_ml": 195,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401921720",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "MIA",
+   "away": "UNF",
+   "home_id": "2390",
+   "away_id": "2454",
+   "home_name": "Miami",
+   "away_name": "North Florida",
+   "home_rank": 14,
+   "away_rank": null,
+   "home_em_rank": 53,
+   "away_em_rank": 302,
+   "home_record": "1-1",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "MIA",
+   "prob": 97.3,
+   "home_prob": 97.3,
+   "margin": 23.1,
+   "proj": {
+    "home": 91,
+    "away": 67,
+    "tempo": 75
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "MIA",
+    "side": "home",
+    "price": -100000,
+    "prob": 97.3,
+    "book_prob": 98.1,
+    "edge": -0.8,
+    "value": false,
+    "home_ml": -100000,
+    "away_ml": 5000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401922060",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CCU",
+   "away": "UPST",
+   "home_id": "324",
+   "away_id": "2908",
+   "home_name": "Coastal Carolina",
+   "away_name": "South Carolina Upstate",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 337,
+   "away_em_rank": 336,
+   "home_record": "0-2",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "CCU",
+   "prob": 61.8,
+   "home_prob": 61.8,
+   "margin": 3.6,
+   "proj": {
+    "home": 77,
+    "away": 74,
+    "tempo": 73
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "CCU",
+    "side": "home",
+    "price": -470,
+    "prob": 61.8,
+    "book_prob": 79.1,
+    "edge": -17.3,
+    "value": false,
+    "home_ml": -470,
+    "away_ml": 360,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401925681",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "ND",
+   "away": "EIU",
+   "home_id": "87",
+   "away_id": "2197",
+   "home_name": "Notre Dame",
+   "away_name": "Eastern Illinois",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 74,
+   "away_em_rank": 354,
+   "home_record": "2-0",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "ND",
+   "prob": 98.4,
+   "home_prob": 98.4,
+   "margin": 25.6,
+   "proj": {
+    "home": 85,
+    "away": 60,
+    "tempo": 69
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "ND",
+    "side": "home",
+    "price": -50000,
+    "prob": 98.4,
+    "book_prob": 97.6,
+    "edge": 0.8,
+    "value": false,
+    "home_ml": -50000,
+    "away_ml": 4000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401926181",
+   "start": "2026-11-09T19:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "UIC",
+   "away": "UNCG",
+   "home_id": "82",
+   "away_id": "2430",
+   "home_name": "UIC",
+   "away_name": "UNC Greensboro",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 105,
+   "away_em_rank": 245,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "UIC",
+   "prob": 85.7,
+   "home_prob": 85.7,
+   "margin": 12.8,
+   "proj": {
+    "home": 80,
+    "away": 68,
+    "tempo": 71
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "UIC",
+    "side": "home",
+    "price": -4500,
+    "prob": 85.7,
+    "book_prob": 94.6,
+    "edge": -8.9,
+    "value": false,
+    "home_ml": -4500,
+    "away_ml": 1700,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906759",
+   "start": "2026-11-09T19:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "ALA",
+   "away": "OAK",
+   "home_id": "333",
+   "away_id": "2473",
+   "home_name": "Alabama",
+   "away_name": "Oakland",
+   "home_rank": 20,
+   "away_rank": null,
+   "home_em_rank": 33,
+   "away_em_rank": 207,
+   "home_record": "2-0",
+   "away_record": "0-3",
+   "neutral": false,
+   "pick": "ALA",
+   "prob": 94.7,
+   "home_prob": 94.7,
+   "margin": 19.3,
+   "proj": {
+    "home": 95,
+    "away": 76,
+    "tempo": 76
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "ALA",
+    "side": "home",
+    "price": -100000,
+    "prob": 94.7,
+    "book_prob": 98.1,
+    "edge": -3.4,
+    "value": false,
+    "home_ml": -100000,
+    "away_ml": 5000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906793",
+   "start": "2026-11-09T19:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "MSST",
+   "away": "JKST",
+   "home_id": "344",
+   "away_id": "2296",
+   "home_name": "Mississippi State",
+   "away_name": "Jackson State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 62,
+   "away_em_rank": 319,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "MSST",
+   "prob": 97.6,
+   "home_prob": 97.6,
+   "margin": 23.7,
+   "proj": {
+    "home": 89,
+    "away": 65,
+    "tempo": 73
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "MSST",
+    "side": "home",
+    "price": -6500,
+    "prob": 97.6,
+    "book_prob": 95.4,
+    "edge": 2.2,
+    "value": false,
+    "home_ml": -6500,
+    "away_ml": 2000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401919016",
+   "start": "2026-11-09T19:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "UAB",
+   "away": "FAMU",
+   "home_id": "5",
+   "away_id": "50",
+   "home_name": "UAB",
+   "away_name": "Florida A&M",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 208,
+   "away_em_rank": 352,
+   "home_record": "1-1",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "UAB",
+   "prob": 91.7,
+   "home_prob": 91.7,
+   "margin": 16.7,
+   "proj": {
+    "home": 86,
+    "away": 69,
+    "tempo": 74
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "UAB",
+    "side": "home",
+    "price": -1800,
+    "prob": 91.7,
+    "book_prob": 91.2,
+    "edge": 0.5,
+    "value": false,
+    "home_ml": -1800,
+    "away_ml": 1000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401925032",
+   "start": "2026-11-09T19:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "MCN",
+   "away": "CBS",
+   "home_id": "2377",
+   "away_id": "128256",
+   "home_name": "McNeese",
+   "away_name": "College of Biblical Studies",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 56,
+   "away_em_rank": 374,
+   "home_record": "1-1",
+   "away_record": "0-1",
+   "neutral": false,
+   "pick": "MCN",
+   "prob": 100.0,
+   "home_prob": 100.0,
+   "margin": 46.0,
+   "proj": {
+    "home": 106,
+    "away": 60,
+    "tempo": 78
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401906803",
+   "start": "2026-11-09T20:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "OU",
+   "away": "UNA",
+   "home_id": "201",
+   "away_id": "2453",
+   "home_name": "Oklahoma",
+   "away_name": "North Alabama",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 116,
+   "away_em_rank": 258,
+   "home_record": "1-1",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "OU",
+   "prob": 83.8,
+   "home_prob": 83.8,
+   "margin": 11.9,
+   "proj": {
+    "home": 80,
+    "away": 68,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "OU",
+    "side": "home",
+    "price": -20000,
+    "prob": 83.8,
+    "book_prob": 97.3,
+    "edge": -13.5,
+    "value": false,
+    "home_ml": -20000,
+    "away_ml": 3500,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401917978",
+   "start": "2026-11-09T20:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "TA&M",
+   "away": "ULM",
+   "home_id": "245",
+   "away_id": "2433",
+   "home_name": "Texas A&M",
+   "away_name": "UL Monroe",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 31,
+   "away_em_rank": 315,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "TA&M",
+   "prob": 98.4,
+   "home_prob": 98.4,
+   "margin": 25.7,
+   "proj": {
+    "home": 94,
+    "away": 68,
+    "tempo": 76
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920734",
+   "start": "2026-11-09T20:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "NU",
+   "away": "BU",
+   "home_id": "77",
+   "away_id": "104",
+   "home_name": "Northwestern",
+   "away_name": "Boston University",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 67,
+   "away_em_rank": 201,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "NU",
+   "prob": 84.0,
+   "home_prob": 84.0,
+   "margin": 11.9,
+   "proj": {
+    "home": 82,
+    "away": 70,
+    "tempo": 67
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "NU",
+    "side": "home",
+    "price": -1600,
+    "prob": 84.0,
+    "book_prob": 90.4,
+    "edge": -6.4,
+    "value": false,
+    "home_ml": -1600,
+    "away_ml": 900,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401921810",
+   "start": "2026-11-09T20:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "LSU",
+   "away": "LT",
+   "home_id": "99",
+   "away_id": "2348",
+   "home_name": "LSU",
+   "away_name": "Louisiana Tech",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 29,
+   "away_em_rank": 170,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "LSU",
+   "prob": 94.5,
+   "home_prob": 94.5,
+   "margin": 19.2,
+   "proj": {
+    "home": 83,
+    "away": 64,
+    "tempo": 71
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "LSU",
+    "side": "home",
+    "price": -100000,
+    "prob": 94.5,
+    "book_prob": 98.1,
+    "edge": -3.6,
+    "value": false,
+    "home_ml": -100000,
+    "away_ml": 5000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401921815",
+   "start": "2026-11-09T20:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "MIZ",
+   "away": "SIUE",
+   "home_id": "142",
+   "away_id": "2565",
+   "home_name": "Missouri",
+   "away_name": "SIU Edwardsville",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 26,
+   "away_em_rank": 179,
+   "home_record": "1-1",
+   "away_record": "2-1",
+   "neutral": false,
+   "pick": "MIZ",
+   "prob": 95.7,
+   "home_prob": 95.7,
+   "margin": 20.6,
+   "proj": {
+    "home": 85,
+    "away": 64,
+    "tempo": 70
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "MIZ",
+    "side": "home",
+    "price": -50000,
+    "prob": 95.7,
+    "book_prob": 97.6,
+    "edge": -1.9,
+    "value": false,
+    "home_ml": -50000,
+    "away_ml": 4000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401926132",
+   "start": "2026-11-09T20:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "PUR",
+   "away": "ILST",
+   "home_id": "2509",
+   "away_id": "2287",
+   "home_name": "Purdue",
+   "away_name": "Illinois State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 47,
+   "away_em_rank": 66,
+   "home_record": "0-2",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "PUR",
+   "prob": 70.6,
+   "home_prob": 70.6,
+   "margin": 6.5,
+   "proj": {
+    "home": 80,
+    "away": 74,
+    "tempo": 71
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "PUR",
+    "side": "home",
+    "price": -1800,
+    "prob": 70.6,
+    "book_prob": 91.2,
+    "edge": -20.6,
+    "value": false,
+    "home_ml": -1800,
+    "away_ml": 1000,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401909502",
+   "start": "2026-11-09T21:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "DEP",
+   "away": "AAMU",
+   "home_id": "305",
+   "away_id": "2010",
+   "home_name": "DePaul",
+   "away_name": "Alabama A&M",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 134,
+   "away_em_rank": 296,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "DEP",
+   "prob": 88.8,
+   "home_prob": 88.8,
+   "margin": 14.6,
+   "proj": {
+    "home": 79,
+    "away": 65,
+    "tempo": 69
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "DEP",
+    "side": "home",
+    "price": -8000,
+    "prob": 88.8,
+    "book_prob": 95.8,
+    "edge": -7.0,
+    "value": false,
+    "home_ml": -8000,
+    "away_ml": 2200,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920799",
+   "start": "2026-11-09T21:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "AUB",
+   "away": "APP",
+   "home_id": "2",
+   "away_id": "2026",
+   "home_name": "Auburn",
+   "away_name": "App State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 32,
+   "away_em_rank": 124,
+   "home_record": "1-0",
+   "away_record": "2-0",
+   "neutral": false,
+   "pick": "AUB",
+   "prob": 86.4,
+   "home_prob": 86.4,
+   "margin": 13.2,
+   "proj": {
+    "home": 79,
+    "away": 65,
+    "tempo": 68
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "AUB",
+    "side": "home",
+    "price": -9000,
+    "prob": 86.4,
+    "book_prob": 96.3,
+    "edge": -9.9,
+    "value": false,
+    "home_ml": -9000,
+    "away_ml": 2500,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920887",
+   "start": "2026-11-09T21:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "CLT",
+   "away": "HALL",
+   "home_id": "2429",
+   "away_id": "2550",
+   "home_name": "Charlotte",
+   "away_name": "Seton Hall",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 139,
+   "away_em_rank": 87,
+   "home_record": "2-0",
+   "away_record": "2-0",
+   "neutral": true,
+   "pick": "HALL",
+   "prob": 61.3,
+   "home_prob": 38.7,
+   "margin": 3.4,
+   "proj": {
+    "home": 66,
+    "away": 70,
+    "tempo": 66
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "HALL",
+    "side": "away",
+    "price": -225,
+    "prob": 61.3,
+    "book_prob": 66.4,
+    "edge": -5.1,
+    "value": false,
+    "home_ml": 185,
+    "away_ml": -225,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401920718",
+   "start": "2026-11-09T21:30:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "ORST",
+   "away": "EWU",
+   "home_id": "204",
+   "away_id": "331",
+   "home_name": "Oregon State",
+   "away_name": "Eastern Washington",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 69,
+   "away_em_rank": 211,
+   "home_record": "2-0",
+   "away_record": "0-2",
+   "neutral": false,
+   "pick": "ORST",
+   "prob": 83.3,
+   "home_prob": 83.3,
+   "margin": 11.6,
+   "proj": {
+    "home": 85,
+    "away": 73,
+    "tempo": 71
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "ORST",
+    "side": "home",
+    "price": -2400,
+    "prob": 83.3,
+    "book_prob": 92.6,
+    "edge": -9.3,
+    "value": false,
+    "home_ml": -2400,
+    "away_ml": 1200,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401929357",
+   "start": "2026-11-09T21:30:00-05:00",
+   "type": "regular",
+   "note": "Rainbow Classic",
+   "home": "BTHS",
+   "away": "UTA",
+   "home_id": "3246",
+   "away_id": "250",
+   "home_name": "Bethesda",
+   "away_name": "UT Arlington",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 378,
+   "away_em_rank": 142,
+   "home_record": "0-5",
+   "away_record": "2-1",
+   "neutral": true,
+   "pick": "UTA",
+   "prob": 100.0,
+   "home_prob": 0.0,
+   "margin": 63.3,
+   "proj": {
+    "home": 48,
+    "away": 111,
+    "tempo": 78
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401921095",
+   "start": "2026-11-09T22:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "STAN",
+   "away": "RICE",
+   "home_id": "24",
+   "away_id": "242",
+   "home_name": "Stanford",
+   "away_name": "Rice",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 95,
+   "away_em_rank": 252,
+   "home_record": "2-0",
+   "away_record": "1-1",
+   "neutral": false,
+   "pick": "STAN",
+   "prob": 84.9,
+   "home_prob": 84.9,
+   "margin": 12.4,
+   "proj": {
+    "home": 79,
+    "away": 67,
+    "tempo": 69
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "STAN",
+    "side": "home",
+    "price": -2800,
+    "prob": 84.9,
+    "book_prob": 93.1,
+    "edge": -8.2,
+    "value": false,
+    "home_ml": -2800,
+    "away_ml": 1300,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401925737",
+   "start": "2026-11-09T22:00:00-05:00",
+   "type": "regular",
+   "note": "",
+   "home": "WASH",
+   "away": "MVSU",
+   "home_id": "264",
+   "away_id": "2400",
+   "home_name": "Washington",
+   "away_name": "Mississippi Valley State",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 71,
+   "away_em_rank": 368,
+   "home_record": "1-0",
+   "away_record": "0-1",
+   "neutral": false,
+   "pick": "WASH",
+   "prob": 99.4,
+   "home_prob": 99.4,
+   "margin": 30.0,
+   "proj": {
+    "home": 90,
+    "away": 60,
+    "tempo": 71
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z"
+  },
+  {
+   "date": "2026-11-09",
+   "game_id": "401929003",
+   "start": "2026-11-09T23:59:00-05:00",
+   "type": "regular",
+   "note": "Rainbow Classic",
+   "home": "HAW",
+   "away": "PORT",
+   "home_id": "62",
+   "away_id": "2501",
+   "home_name": "Hawai'i",
+   "away_name": "Portland",
+   "home_rank": null,
+   "away_rank": null,
+   "home_em_rank": 112,
+   "away_em_rank": 150,
+   "home_record": "3-0",
+   "away_record": "2-1",
+   "neutral": false,
+   "pick": "HAW",
+   "prob": 69.1,
+   "home_prob": 69.1,
+   "margin": 6.0,
+   "proj": {
+    "home": 81,
+    "away": 75,
+    "tempo": 77
+   },
+   "model": "2026-11-08T10:26:00+00:00",
+   "correct": null,
+   "set_at": "2026-11-09T11:33:38Z",
+   "ml": {
+    "team": "HAW",
+    "side": "home",
+    "price": -325,
+    "prob": 69.1,
+    "book_prob": 73.4,
+    "edge": -4.3,
+    "value": false,
+    "home_ml": -325,
+    "away_ml": 260,
     "book": "DraftKings",
     "won": null,
     "units": null
