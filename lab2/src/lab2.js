@@ -78,14 +78,16 @@
   const cur = bar.querySelector('[aria-current="page"], .go');
   if (cur && cur.offsetLeft + cur.offsetWidth > bar.clientWidth - 32) bar.scrollLeft = cur.offsetLeft + cur.offsetWidth - bar.clientWidth + 48;
   let pinned = [];
-  const find = () => { pinned = [...document.querySelectorAll("body *")].filter(e => !bar.contains(e) && e.offsetHeight && e.offsetHeight < 200 && /fixed|sticky/.test(getComputedStyle(e).position)); set(); };
+  // only the bars fixed across the top (scores, scoring alerts, the EDGE nav), never sticky bits inside the page or small pop-ups
+  const find = () => { pinned = [...document.querySelectorAll("body *")].filter(e => !bar.contains(e) && getComputedStyle(e).position === "fixed"); set(); };
   const set = () => {
-    const top = Math.max(0, ...pinned.map(e => e.getBoundingClientRect()).filter(r => r.top < 160 && r.bottom > 0).map(r => r.bottom));
+    const top = Math.max(0, ...pinned.map(e => e.getBoundingClientRect()).filter(r => r.top < 160 && r.bottom > 0 && r.height < 200 && r.width > innerWidth * 0.6).map(r => r.bottom));
     bar.style.top = top + "px";
+    document.documentElement.style.setProperty("--ds-tabs", top + bar.offsetHeight + "px");
     bar.classList.toggle("is-stuck", Math.abs(bar.getBoundingClientRect().top - top) < 1 && scrollY > 0);
   };
   let raf = 0; addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(set); }, { passive: true });
-  addEventListener("resize", find); addEventListener("load", find); find();
+  addEventListener("resize", find); addEventListener("load", find); find(); setInterval(find, 5000);
 })();
 
 // the chart script now loads last (defer): draw the charts once it arrives

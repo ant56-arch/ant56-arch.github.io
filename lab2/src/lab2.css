@@ -98,3 +98,6 @@ a.gc:active { transform: translateY(0); }
   .edge-tabs a::before, .edge-brand::before, .ticker-gear::before, .edge-scroll::before { content: ""; position: absolute; inset: -12px -6px; }
   .edge-jump a, .jump a { min-height: 44px; display: inline-flex; align-items: center; }
 }
+/* other sticky things sit below the pinned tabs */
+.field-frame { top: calc(var(--ds-tabs, 120px) + 16px) !important; max-height: calc(100vh - var(--ds-tabs, 120px) - 32px) !important; }
+.tv-head { top: var(--ds-tabs, 48px) !important; }
