@@ -6,11 +6,11 @@ a.duo { display: block; color: inherit; text-decoration: none; min-width: 0; }
 a.duo + a.duo { border-left: 1px solid var(--rule); padding-left: 40px; }
 a.duo:hover .rb-num { color: var(--ours); }
 .duo-band .rb-num { font-size: 72px; }
-.duo-band .rb-num.rb-wait { font-size: 36px; }
+.duo-band .rb-num.rb-wait { font-size: 40px; }
 .duo-note { margin: 18px 0 0 0; font-size: 14px; color: var(--text-muted); }
 .duo-note a, a.more-link { color: var(--ours); font-weight: 600; white-space: nowrap; }
 .duo-note a::after, a.more-link::after { content: " \2192"; }
-a.more-link { display: inline-block; margin-top: 16px; font-size: 15px; text-decoration: none; }
+a.more-link { display: inline-block; margin-top: 16px; font-size: 16px; text-decoration: none; }
 a.more-link:hover, .duo-note a:hover { text-decoration: underline; }
 @media (max-width: 760px) {
   .duo-band { grid-template-columns: minmax(0, 1fr); }
@@ -20,7 +20,7 @@ a.more-link:hover, .duo-note a:hover { text-decoration: underline; }
 
 .pill-void { color: var(--text-faint); }
 
-.player-name { font-weight: 700; }
+.player-name { font-weight: 600; }
 .player-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; white-space: normal; }
 .why { font-size: 13px; color: var(--text-muted); white-space: normal; max-width: 44ch; }
 
@@ -35,10 +35,10 @@ td.prob { font-family: var(--font-head); font-stretch: 100%; font-size: 24px; fo
 
 /* Moneyline picks (Games tab, NBA Home and History): "BUF +135" with its
    VALUE tag, our chance vs. the book's, and the graded units. */
-.ml-pick { font-weight: 700; white-space: nowrap; }
+.ml-pick { font-weight: 600; white-space: nowrap; }
 .ml-pick .pill { margin-left: 4px; }
 .ml-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; }
-.lock-note { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.lock-note { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 .lock-note.locked::before { content: "\1F512\FE0E  "; }
 
 @media (max-width: 700px) {
@@ -55,7 +55,7 @@ td.prob { font-family: var(--font-head); font-stretch: 100%; font-size: 24px; fo
 .bk-lead { margin: 10px 0 0; color: var(--text-muted); max-width: 62ch; line-height: 1.45; }
 .bk-rounds { display: grid; grid-template-columns: repeat(2, auto); gap: 6px 18px; align-content: start; }
 .bk-round-score { display: flex; flex-direction: column; }
-.bk-round-score b { font-family: var(--font-mono); font-size: 1.05rem; }
+.bk-round-score b { font-family: var(--font); font-size: 1.05rem; }
 .bk-round-score span { font-size: .75rem; color: var(--text-faint); }
 .rb-since .team-logo { width: 18px; height: 18px; vertical-align: -4px; margin: 0 4px 0 2px; }
 tr.bk-out td { color: var(--text-faint); }
@@ -63,19 +63,19 @@ tr.bk-out td { color: var(--text-faint); }
 .bk-region { display: grid; grid-template-columns: repeat(4, minmax(190px, 1fr)); gap: 14px; min-width: 800px; }
 .bk-region.bk-ff { grid-template-columns: repeat(2, minmax(190px, 1fr)); min-width: 400px; max-width: 560px; }
 .bk-col { display: flex; flex-direction: column; }
-.bk-col-head { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+.bk-col-head { font-size: .72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--text-faint); margin-bottom: 8px; }
 .bk-col-games { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 10px; }
 .bk-game { border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--surface); font-size: .85rem; }
 .bk-team { display: flex; align-items: center; gap: 6px; padding: 5px 8px; min-height: 30px; }
 .bk-team + .bk-team { border-top: 1px solid var(--rule); }
 .bk-team .team-logo { width: 18px; height: 18px; }
-.bk-seed { width: 18px; text-align: right; font-family: var(--font-mono); font-size: .75rem; color: var(--text-faint); }
+.bk-seed { width: 18px; text-align: right; font-family: var(--font); font-size: .75rem; color: var(--text-faint); }
 .bk-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bk-score { font-family: var(--font-mono); min-width: 22px; text-align: right; }
-.bk-won { font-weight: 700; }
+.bk-score { font-family: var(--font); min-width: 22px; text-align: right; }
+.bk-won { font-weight: 600; }
 .bk-lost .bk-name, .bk-lost .bk-score { color: var(--text-faint); }
-.bk-tbd .bk-name { color: var(--text-faint); font-style: italic; }
+.bk-tbd .bk-name { color: var(--text-faint); font-style: normal; }
 .bk-pick { color: var(--ours); font-size: .7rem; }
 .bk-foot { padding: 4px 8px; border-top: 1px dashed var(--rule); font-size: .72rem; color: var(--text-muted); }
 .bk-right { color: var(--hit); }

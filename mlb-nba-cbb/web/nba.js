@@ -39,7 +39,7 @@ function initNbaHistory() {
         <td class="num" data-label="Result"><span>${nbaResult(g)}</span></td>
       </tr>`).join("");
     const s = d.summary;
-    const ml = s.ml ? ` · Moneyline ${s.ml.wins}-${s.ml.losses}` : "";
+    const ml = s.ml && (s.ml.wins !== s.wins || s.ml.losses !== s.losses) ? ` · Moneyline ${s.ml.wins}-${s.ml.losses}` : "";  // same record twice says nothing
     container.innerHTML = `<div class="section-label">${edgeEsc(d.label)}: ${s.wins}-${s.losses}${s.voided ? `, ${s.voided} no decision` : ""}${ml}</div>
       <table class="data responsive-stack">
         <thead><tr><th>Game</th><th>Pick</th><th class="num">Win chance</th>${hasMl ? "<th>Moneyline bet</th>" : ""}<th class="num">Result</th></tr></thead>

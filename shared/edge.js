@@ -1013,7 +1013,7 @@ function edgeOpenTeamPicker(startSport) {
   let token = 0;
   const drawList = async () => {
     const mineToken = ++token;
-    if (!list.childElementCount) list.append(edgeNode("p", "team-picker-none", "Loading teams."));
+    if (!list.childElementCount) { const p = edgeNode("p", "team-picker-none", "Loading teams."); p.dataset.loading = ""; list.append(p); }
     const teams = await edgeLoadTeams(sport);
     if (mineToken !== token) return;
     const q = search.value.trim().toLowerCase();
@@ -1681,3 +1681,42 @@ function edgeSlatePicker(opts) {
   }
   return { el, set, state: st };
 }
+
+// Page tabs (the pill row under the hero) stay pinned just under the bars
+// fixed across the top (scores, scoring plays, the EDGE nav) while you scroll.
+// Only full-width bars count, so sticky headers inside the page and score
+// pop-ups never push the tabs down. --edge-tabs is where the tabs end, for
+// anything else that sticks below them.
+function initStickyTabs() {
+  const bar = document.querySelector(".edge-jump, .jump");
+  if (!bar) return;
+  const cur = bar.querySelector('[aria-current="page"], .go');
+  if (cur && cur.offsetLeft + cur.offsetWidth > bar.clientWidth - 32) bar.scrollLeft = cur.offsetLeft + cur.offsetWidth - bar.clientWidth + 48;
+  let pinned = [];
+  const set = () => {
+    const top = Math.max(0, ...pinned.map(e => e.getBoundingClientRect())
+      .filter(r => r.top < 160 && r.bottom > 0 && r.height < 200 && r.width > innerWidth * 0.6).map(r => r.bottom));
+    bar.style.top = top + "px";
+    document.documentElement.style.setProperty("--edge-tabs", top + bar.offsetHeight + "px");
+    bar.classList.toggle("is-stuck", Math.abs(bar.getBoundingClientRect().top - top) < 1 && scrollY > 0);
+  };
+  const find = () => { pinned = [...document.querySelectorAll("body *")].filter(e => !bar.contains(e) && getComputedStyle(e).position === "fixed"); set(); };
+  let raf = 0;
+  addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(set); }, { passive: true });
+  addEventListener("resize", find);
+  addEventListener("load", find);
+  find();
+  setInterval(find, 5000);
+}
+
+// "Loading..." text marked data-loading shimmers until the real text replaces it.
+function initLoadingText() {
+  document.querySelectorAll("[data-loading]").forEach(el => {
+    const done = () => { if (!/^Loading\b/.test(el.textContent.trim())) { el.removeAttribute("data-loading"); mo.disconnect(); } };
+    const mo = new MutationObserver(done);
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+  });
+}
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => { initStickyTabs(); initLoadingText(); });
+else { initStickyTabs(); initLoadingText(); }

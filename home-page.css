@@ -5,10 +5,10 @@
   margin-bottom: 16px;
   padding: 5px 12px 5px 10px;
   font-family: var(--font-head); font-stretch: 100%;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   font-style: normal;
-  letter-spacing: 1px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--bar);
   background: var(--ours);
@@ -18,14 +18,14 @@
 .home-hero .masthead-inner { padding-top: 36px; padding-bottom: 30px; }
 
 @media (max-width: 700px) {
-  .home-hero .wordmark { font-size: 52px; }
+  .home-hero .wordmark { font-size: 56px; }
   .home-hero .masthead-inner { padding-top: 22px; padding-bottom: 20px; }
 }
 
 /* Home page hero: shorter, with today's date and how many games we pick. */
 .home-slim .masthead-inner { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; flex-wrap: wrap; padding-top: 26px; padding-bottom: 22px; }
-.home-slim .wordmark { font-size: 60px; }
-.home-date { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; min-height: 18px; }
+.home-slim .wordmark { font-size: 56px; }
+.home-date { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; min-height: 18px; }
 .home-hero-meta { text-align: right; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
 .home-hero-meta b { color: var(--text); font-weight: 600; }
 
@@ -37,7 +37,7 @@
 .hg-head h2 { margin: 0; font-family: var(--font-head); font-stretch: 100%; font-size: 32px; font-weight: 600; font-style: normal; line-height: 1; text-transform: uppercase; }
 .hg-head p { margin: 0; font-size: 14px; color: var(--text-muted); }
 .hg-seg { display: inline-flex; padding: 3px; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--bar); }
-.hg-seg button { font: 600 13px var(--font); letter-spacing: 0.04em; color: var(--text-muted); background: none; border: 0; padding: 6px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.hg-seg button { font: 600 13px var(--font); letter-spacing: 0; color: var(--text-muted); background: none; border: 0; padding: 6px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
 .hg-seg button span { margin-left: 4px; font-size: 11px; color: var(--text-faint); }
 .hg-seg button[aria-pressed="true"] { background: var(--ours); color: #16110d; }
 .hg-seg button[aria-pressed="true"] span { color: #3a2414; }
@@ -51,19 +51,19 @@
 .hr-tile { display: flex; flex-direction: column; min-width: 0; padding: 14px 18px 14px 0; text-decoration: none; color: inherit; border-right: 1px solid var(--rule); }
 .hr-tile + .hr-tile { padding-left: 18px; }
 .hr-tile:last-child { border-right: 0; }
-.hr-val { margin-top: 4px; font-family: var(--font-head); font-stretch: 100%; font-size: 34px; font-weight: 600; font-style: normal; line-height: 1.05; white-space: nowrap; transition: color 0.15s ease; }
-.hr-val i { margin-left: 6px; font-size: 19px; color: var(--ours); }
+.hr-val { margin-top: 4px; font-family: var(--font-head); font-stretch: 100%; font-size: 32px; font-weight: 600; font-style: normal; line-height: 1.05; white-space: nowrap; transition: color 0.15s ease; }
+.hr-val i { margin-left: 6px; font-size: 20px; color: var(--ours); }
 a.hr-tile:hover .hr-val { color: var(--ours); }
-.hr-tile small { font-size: 12px; color: var(--text-muted); }
+.hr-tile small { font-size: 13px; color: var(--text-muted); }
 .hr-tile.is-soon .hr-val { white-space: normal; font-size: 20px; color: var(--text-muted); }
 @media (max-width: 700px) {
-  .home-slim .wordmark { font-size: 46px; }
+  .home-slim .wordmark { font-size: 48px; }
   .home-slim .masthead-inner { padding-top: 18px; padding-bottom: 16px; }
   .home-hero-meta { text-align: left; }
   .hr-tile { padding-left: 0; padding-right: 12px; border-right: 0; border-bottom: 1px solid var(--rule); }
   .hr-tile + .hr-tile { padding-left: 0; }
   .hr-tile.is-soon { grid-column: 1 / -1; }
-  .hr-val { font-size: 30px; }
+  .hr-val { font-size: 32px; }
 }
 
 /* $10 a pick: a tile per sport and the running total (home.js). */
@@ -80,13 +80,13 @@ a.hr-tile:hover .hr-val { color: var(--ours); }
   border-radius: var(--radius-sm);
 }
 a.money-tile:hover { border-color: var(--rule-strong); }
-.mt-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
-.mt-num { font-family: var(--font-head); font-stretch: 100%; font-size: 34px; font-weight: 600; font-style: normal; line-height: 1.05; }
-.mt-sub { font-size: 12px; color: var(--text-muted); }
+.mt-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+.mt-num { font-family: var(--font-head); font-stretch: 100%; font-size: 32px; font-weight: 600; font-style: normal; line-height: 1.05; }
+.mt-sub { font-size: 13px; color: var(--text-muted); }
 .units-wrap { margin-top: 18px; overflow-x: auto; }
-.units-table td b { font-weight: 700; }
-.units-table .u-rec { display: block; font-size: 12px; color: var(--text-muted); }
-.units-table td.row-label a { color: inherit; text-decoration: none; font-weight: 700; }
+.units-table td b { font-weight: 600; }
+.units-table .u-rec { display: block; font-size: 13px; color: var(--text-muted); }
+.units-table td.row-label a { color: inherit; text-decoration: none; font-weight: 600; }
 .units-table td.row-label a:hover { color: var(--ours); }
 
 .sure-cards { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
@@ -94,22 +94,22 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 @media (max-width: 700px) {
   .money-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .money-tiles > :first-child { grid-column: 1 / -1; }
-  .mt-num { font-size: 28px; }
+  .mt-num { font-size: 32px; }
 }
 
 /* ---------- Schedule page: Cards / TV Guide toggle and guide view ---------- */
 
 .sched-tabs .tab-count { margin-left: 6px; color: var(--text-faint); }
 .sched-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 16px; }
-.sched-toolbar-label { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-faint); }
+.sched-toolbar-label { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
 .view-toggle { display: inline-flex; padding: 3px; gap: 3px; background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; }
 .view-toggle button {
   min-height: 36px;
   padding: 0 16px;
   font-family: var(--font-head); font-stretch: 100%;
   font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
   background: none;
@@ -138,10 +138,10 @@ a.money-tile:hover { border-color: var(--rule-strong); }
   align-items: center;
   padding: 0 12px;
   font-family: var(--font-head); font-stretch: 100%;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   font-style: normal;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--vegas);
   background: var(--surface-2);
@@ -155,7 +155,7 @@ a.money-tile:hover { border-color: var(--rule-strong); }
    Paramount+) keeps its name at the top, beside the first game. */
 .guide-row:not(.guide-head) .guide-net { align-items: flex-start; padding-top: 16px; }
 .guide-corner { font-size: 13px; font-style: normal; color: var(--text-faint); }
-.guide-tick { display: flex; align-items: center; padding-left: 8px; font-size: 12px; font-weight: 700; color: var(--text-muted);
+.guide-tick { display: flex; align-items: center; padding-left: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted);
   border-left: 1px solid var(--rule); white-space: nowrap; overflow: visible; min-width: 0; grid-row: 1; }
 .guide-tick.is-half { border-left-color: transparent; }
 .guide-show {
@@ -173,10 +173,10 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 }
 .guide-show.is-live { border-left-color: var(--miss); background: rgba(226, 102, 95, 0.08); }
 .guide-show.is-final { border-left-color: var(--rule-strong); }
-.guide-status { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
+.guide-status { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
 .guide-show.is-live .guide-status { color: var(--miss); }
 .guide-show.is-live .guide-status::before { content: "\25CF  "; }
-.guide-matchup { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-weight: 700; }
+.guide-matchup { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-weight: 600; }
 .guide-team { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; color: var(--text); }
 .guide-show.is-final .guide-team { color: var(--text-muted); }
 .guide-show.is-final .guide-team.is-winner { color: var(--text); }
@@ -188,9 +188,9 @@ a.money-tile:hover { border-color: var(--rule-strong); }
 .guide-pick > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .guide-logo { width: 20px; height: 20px; object-fit: contain; }
 .guide-rank { font-size: 11px; color: var(--text-faint); }
-.guide-score { font-family: var(--font-head); font-stretch: 100%; font-size: 18px; }
+.guide-score { font-family: var(--font-head); font-stretch: 100%; font-size: 20px; }
 .guide-at { font-size: 11px; color: var(--text-faint); }
-.guide-pick { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ours); white-space: nowrap; }
+.guide-pick { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ours); white-space: nowrap; }
 .guide-now {
   position: absolute;
   top: 0;
@@ -206,7 +206,7 @@ a.money-tile:hover { border-color: var(--rule-strong); }
   .guide-card { --guide-net-w: 96px; --guide-slot-w: 44px; }
   .guide-net { padding: 0 8px; font-size: 11px; letter-spacing: 0; }
   .guide-row:not(.guide-head) .guide-net { padding-top: 14px; }
-  .view-toggle button { padding: 0 14px; font-size: 15px; }
+  .view-toggle button { padding: 0 14px; font-size: 16px; }
 }
 
 /* Top 3 picks: three small cards; a swipe row with dots on phones. */
