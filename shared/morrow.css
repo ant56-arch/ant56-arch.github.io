@@ -384,3 +384,14 @@ a.gc:active { transform: none; }
   button:active, .edge-jump a:active, a.gc:hover { transform: none; }
   .chart-card[data-state="loading"]::before { animation: none; }
 }
+
+/* page tabs stay pinned under the top bars while you scroll (edge.js sets top and --edge-tabs) */
+.edge-jump { position: sticky; top: 0; z-index: 30; background: var(--bg); padding-top: 10px; padding-bottom: 10px; box-shadow: 0 1px 0 var(--rule); }
+.edge-jump.is-stuck { box-shadow: 0 1px 0 var(--rule), -24px 0 0 var(--bg), 24px 0 0 var(--bg); }
+.tv-head { top: var(--edge-tabs, 48px); }
+/* "Loading..." text shimmers until the real text arrives */
+@keyframes edge-shimmer-text { from { background-position: -400px 0; } to { background-position: 400px 0; } }
+[data-loading] { color: transparent !important; display: inline-block; min-width: 12em; border-radius: 4px;
+  background: linear-gradient(90deg, rgba(127, 120, 105, .10) 0, rgba(127, 120, 105, .22) 50%, rgba(127, 120, 105, .10) 100%) 0 0 / 800px 100%;
+  animation: edge-shimmer-text 1.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) { [data-loading] { animation: none; } }

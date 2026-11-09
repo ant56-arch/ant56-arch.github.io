@@ -27,6 +27,7 @@ spec keys (all optional except prefix):
                sections with nothing yet
 """
 import json
+import re
 from datetime import date, timedelta
 from html import escape
 
@@ -172,6 +173,17 @@ def ml_tile(rec):
     return (f"{rec['wins']}-{rec['losses']}", "Moneyline", f"{rec['units']:+.2f} units, {rec['roi']:+.1%} ROI")
 
 
+def _ml_units_when_same(tiles):
+    """When the Moneyline record is the season record again, its tile shows the
+    units instead, so the same W-L isn't printed twice side by side."""
+    season = next((t for t in tiles if t and t[1] == "This season"), None)
+    out = []
+    for t in tiles:
+        m = t and t[1] == "Moneyline" and season and t[0] == season[0] and re.match(r"([+-][\d.]+) units, (.*)", t[2] or "")
+        out.append((m.group(1) + "u", "Moneyline", m.group(2)) if m else t)
+    return out
+
+
 def season_items(items, season_of):
     """Keep the latest season's items: [(date ISO, ...)] -> (season, items)."""
     if not items:
@@ -192,7 +204,7 @@ def render(spec):
 
     rec = spec.get("record") or {}
     if rec.get("tiles"):
-        body = statline(rec["tiles"])
+        body = statline(_ml_units_when_same(rec["tiles"]))
         if rec.get("note"):
             body += f'<div class="table-footnote">{rec["note"]}</div>'
     else:

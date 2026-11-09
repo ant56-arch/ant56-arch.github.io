@@ -591,6 +591,15 @@ p { text-wrap: pretty; }
 button, .jump a, .nav a { transition: background-color .15s, color .15s, border-color .15s, transform .12s; }
 button:active, .jump a:active { transform: scale(.97); }
 @media (prefers-reduced-motion: reduce) { button, .jump a, .nav a { transition: none; } button:active, .jump a:active { transform: none; } }
+/* page tabs stay pinned under the top bars while you scroll (edge.js sets top and --edge-tabs) */
+.jump { position: sticky; top: 0; z-index: 30; background: var(--paper); padding-top: 10px; padding-bottom: 10px; box-shadow: 0 1px 0 var(--rule); }
+.jump.is-stuck { box-shadow: 0 1px 0 var(--rule), -24px 0 0 var(--paper), 24px 0 0 var(--paper); }
+@media (min-width: 901px) { .field-frame { top: calc(var(--edge-tabs, 120px) + 16px); max-height: calc(100vh - var(--edge-tabs, 120px) - 32px); } }
+@keyframes edge-shimmer-text { from { background-position: -400px 0; } to { background-position: 400px 0; } }
+[data-loading] { color: transparent !important; display: inline-block; min-width: 12em; border-radius: 4px;
+  background: linear-gradient(90deg, rgba(127, 120, 105, .10) 0, rgba(127, 120, 105, .22) 50%, rgba(127, 120, 105, .10) 100%) 0 0 / 800px 100%;
+  animation: edge-shimmer-text 1.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) { [data-loading] { animation: none; } }
 </style>
 </head>
 <body>
@@ -661,7 +670,7 @@ button:active, .jump a:active { transform: scale(.97); }
         <div>
           <div class="dayswitch mono" id="dayswitch" role="group" aria-label="Which slate"></div>
           <h2 id="slateH2">Today's <em>card.</em></h2>
-          <p class="lede" id="slateLede">Loading today's picks.</p>
+          <p class="lede" id="slateLede" data-loading>Loading today's picks.</p>
         </div>
         <div>
           <div class="g-head">

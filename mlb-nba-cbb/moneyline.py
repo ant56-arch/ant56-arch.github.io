@@ -199,8 +199,9 @@ def detail(ml):
 
 
 def detail_lines(ml):
-    """Every line under the pick: the payout and our chance vs the price's."""
-    return [payout_text(ml["price"]), detail(ml)]
+    """Every line under the pick: the payout and Vegas's chance (ours is in
+    the table's Win chance column right beside it)."""
+    return [payout_text(ml["price"]), f"Vegas {ml['book_prob']:.0f}%"]
 
 
 # ── Grading and record ───────────────────────────────────────────────────────

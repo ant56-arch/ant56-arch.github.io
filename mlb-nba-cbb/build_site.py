@@ -851,7 +851,7 @@ def price_line(p):
     ml = p.get("ml")
     if not ml:
         return ("Odds say", '<span class="faint">No odds yet</span>', "", "")
-    return ("Odds say", f"{ml['book_prob']:.0f}%", "vegas", f"for {escape(p['pick'])}, we say {p['prob']:.0f}%")
+    return ("Odds say", f"{ml['book_prob']:.0f}%", "vegas", f"for {escape(p['pick'])}")
 
 
 def mlb_lines(p):
