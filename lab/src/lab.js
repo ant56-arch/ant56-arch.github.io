@@ -1516,6 +1516,256 @@
     },
   };
 
+  // ---------- every NFL stadium ----------
+  // One builder, a short description of each park: its seating decks and their
+  // colors, the roof (open sky, a dome, a retractable roof, a see-through
+  // ETFE roof, or canopies over the stands), the video boards, the end zones,
+  // and the one or two things you'd know it by (the lighthouse, the pirate
+  // ship, the mountains). The NFL board shows the park of the game in its pick card.
+  const hexA = (h, a) => { const n = parseInt(h.replace("#", ""), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
+  const SKIES = {
+    dusk: [[0, "#1E2C46"], [0.5, "#4A5D80"], [0.85, "#B98F7A"], [1, "#E2AE84"]],
+    day: [[0, "#2D5C94"], [0.55, "#6C93C2"], [0.9, "#B9C9D8"], [1, "#D8DCD8"]],
+    night: [[0, "#04060B"], [0.6, "#0C1220"], [1, "#1A2234"]],
+    desert: [[0, "#24345A"], [0.5, "#5E6F9A"], [0.85, "#E09A6A"], [1, "#F4C08A"]],
+  };
+  function nflPark(s) {
+    const roof = s.roof || "open";
+    const ceiling = { dome: [[0, "#C9CCCC"], [0.6, "#A9AEB0"], [1, "#868C90"]], dark: [[0, "#07080A"], [0.6, "#121418"], [1, "#1C1F24"]],
+      etfe: [[0, "#B8C6D2"], [0.6, "#9EB0C0"], [1, "#7E8E9C"]], fabric: [[0, "#D8D4CC"], [0.6, "#B8B4AC"], [1, "#8E8A84"]] };
+    const sky = roof === "open" || roof === "canopy" || roof === "ring" ? SKIES[s.sky || "dusk"] : ceiling[s.ceil || (roof === "etfe" ? "etfe" : roof === "retract" ? "fabric" : "dome")];
+    return { kind: "gridiron", name: s.name, city: s.city, cam: [0, s.camY || 15, -58], hz: s.hz || 0.4, fov: 1.85, vs: 0.68, sky,
+      draw(T) { drawPark(T, s, roof); } };
+  }
+  function drawPark(T, s, roof) {
+    const hw = s.hw || 66, hd = s.hd || 36, bowl = T.rrect(hw, hd, s.r || 22), c1 = s.c[0], c2 = s.c[1];
+    const fans = FANS(hexA(c1, 0.6), hexA(c2, 0.55), "rgba(240,236,228,.5)", "rgba(36,38,44,.7)", "rgba(230,190,160,.35)", hexA(c1, 0.5));
+    const seat = s.seat || "#4A4E56", dk = s.trim || "#1C2026", nn = p => T.side(p) !== "near";
+    const low = s.lowEnd || [];                                         // ends with only a lower deck
+    const up = p => nn(p) && !low.some(e => T.side(p) === e || (T.side(p) === "corner" && (e === "right" ? p.nx > 0 : p.nx < 0)));
+    T.ground(-260, 260, -57, 60, 20, 3, () => s.apron || "#22482A");     // ground out to the corners of the view
+    // what's out beyond the rim: mountains, the city, the water
+    (s.beyond || []).forEach(k => BEYOND[k] && BEYOND[k](T, s));
+    // the decks: a lower bowl, a band of suites, an upper deck (and a middle one in the big parks)
+    // heights kept low enough that the roof, the boards and the sky still show above them
+    const top = s.decks === 3 ? 32 : s.decks === 1 ? 24 : 30, deep = s.decks === 1 ? 36 : 44;
+    const band = (o, h0, h1) => { T.tier(bowl, o, h0, o + 1, h1, "#151A1E", null, 1, up, 1); T.tier(bowl, o + 0.9, h0 + 0.6, o + 0.9, h1 - 0.6, s.glass || "rgba(150,170,180,.55)", null, 1, up, 1); T.lights(bowl, o + 0.8, (h0 + h1) / 2, "rgba(255,230,190,.6)", 2, 1.2, up); };
+    T.tier(bowl, 0, 0, 0, 1.4, dk, null, 1, nn, 1);
+    if (s.decks === 1) T.tier(bowl, 0, 1.4, deep, top, seat, fans, 1.8, nn, 16);
+    else {
+      const lo = s.decks === 3 ? [20, 10] : [22, 12];
+      T.tier(bowl, 0, 1.4, lo[0], lo[1], seat, fans, 1.8, nn, 10);
+      band(lo[0], lo[1], lo[1] + 4);
+      if (s.decks === 3) {
+        T.tier(bowl, 21, 14, 28, 20, seat, fans, 1.6, up, 6);
+        band(28, 20, 23);
+        T.tier(bowl, 29, 23, deep, top, seat, fans, 1.4, up, 10);
+      } else T.tier(bowl, lo[0] + 1, lo[1] + 4, deep, top, seat, fans, 1.5, up, 12);
+      if (s.ribbon) T.tier(bowl, lo[0] - 0.05, lo[1] - 0.8, lo[0] - 0.05, lo[1], s.ribbon, null, 1, up, 1);
+    }
+    T.tier(bowl, deep, top, deep, top + 1.2, s.rim || dk, null, 1, up, 1);
+    if (low.length) T.tier(bowl, 22, 12, 23, 13, s.rim || dk, null, 1, p => nn(p) && !up(p), 1);
+    T.line(bowl.filter(nn).map(p => [p.x, 1.5, p.z]), 1.4, s.wall || hexA(c1, 0.9), 1);
+    // the roof
+    ROOFS[roof] && ROOFS[roof](T, s, bowl, top, deep);
+    // the boards
+    const bx = hw + deep + 2;
+    if (s.board === "center") {                                         // one huge board hung over the field
+      T.screen([-26, 2], [26, 2], 27, 48, "#0E1116", "rgba(110,160,220,.6)");
+      T.panel([-26, 1.9], [26, 1.9], 26, 27.2, "rgba(240,244,250,.85)");
+    } else if (s.board === "halo" || s.board === "oval") {               // a ring of screens hung over the field
+      const ring = s.board === "halo" ? T.oval(34, 22, 96) : T.oval(52, 24, 120), y0 = s.board === "halo" ? 26 : 24, h = s.board === "halo" ? 8 : 7;
+      for (let i = 0; i < ring.length - 1; i++) { const a = ring[i], b = ring[i + 1]; if (a.nz < 0.05 && Math.abs(a.x) < 20) continue; T.panel([a.x, a.z], [b.x, b.z], y0, y0 + h, i % 2 ? "rgba(90,140,210,.7)" : "rgba(110,160,225,.7)"); }
+      T.line(ring.map(p => [p.x, y0 + h, p.z]), 1.4, "rgba(20,22,28,.9)", 1); T.line(ring.map(p => [p.x, y0, p.z]), 1.4, "rgba(20,22,28,.9)", 1);
+    } else {
+      [-1, 1].forEach(sd => {
+        if (s.oneBoard && sd !== s.oneBoard) return;
+        const X = sd * bx, w = s.bigBoards ? 34 : 22, y0 = low.includes(sd > 0 ? "right" : "left") ? 22 : top - 12;
+        T.screen([X, -w], [X, w], y0, y0 + (s.bigBoards ? 22 : 16), "#14181C", "rgba(110,160,210,.55)");
+        T.line([[X, 0, -w * 0.5], [X, y0, -w * 0.5]], 3, "#14181C", 2); T.line([[X, 0, w * 0.5], [X, y0, w * 0.5]], 3, "#14181C", 2);
+      });
+    }
+    (s.marks || []).forEach(k => MARKS[k] && MARKS[k](T, s, bowl, top, deep));
+    FIELD.gridiron(T, { ez: [s.ez || c1, s.ez2 || s.ez || c1], ezLine: s.ezLine || "rgba(246,244,236,.9)", apron: s.apron || "#22482A" });
+    T.gdisc(0, 0, 4.4, hexA(s.mid || c1, 0.82));
+    T.gcircle(0, 0, 4.4, 0.15, hexA(s.mid2 || c2, 0.9));
+  }
+  const ROOFS = {
+    // a fixed dome: ribs from the rim to the middle, rings of catwalk lights
+    dome(T, s, bowl, top, deep) {
+      const rim = bowl.filter(p => T.side(p) !== "near"), hub = [0, top + 40, 10];
+      rim.forEach((p, i) => { if (i % 6) return; T.line([[p.x + p.nx * deep, top + 1, p.z + p.nz * deep], hub], 1.2, s.rib || "rgba(120,124,130,.55)", 14); });
+      [0.8, 0.55, 0.3].forEach(k => T.line(rim.map(p => [(p.x + p.nx * deep) * k, top + 1 + (1 - k) * 34, (p.z + p.nz * deep) * k + 10 * (1 - k)]), 1.2, s.rib || "rgba(120,124,130,.5)", 1));
+      [0.66, 0.42].forEach(k => T.lights(rim.map(p => ({ x: (p.x + p.nx * deep) * k, z: (p.z + p.nz * deep) * k, nx: 0, nz: 0 })), 0, top + 1 + (1 - k) * 34, "rgba(255,244,220,.9)", 5, 1.4));
+    },
+    // a retractable roof, shut: two big trusses running end to end, panels between
+    retract(T, s, bowl, top) {
+      const y = top + 2;
+      [-1, 1].forEach(sd => {
+        const Z = 24 + sd * 30, arch = []; for (let i = 0; i <= 40; i++) { const X = -170 + i * 8.5; arch.push([X, y + 30 * Math.cos(X / 170 * Math.PI / 2), Z]); }
+        T.line(arch, 4, s.truss || "rgba(70,74,80,.95)", 2); T.line(arch.map(([a, b, c]) => [a, b - 5, c]), 2, s.truss || "rgba(70,74,80,.9)", 2);
+        for (let i = 0; i < arch.length; i += 2) T.line([arch[i], [arch[i][0], arch[i][1] - 5, Z]], 1, "rgba(70,74,80,.8)", 1);
+      });
+      for (let X = -150; X <= 150; X += 15) T.line([[X, y + 30 * Math.cos(X / 170 * Math.PI / 2), -6], [X, y + 30 * Math.cos(X / 170 * Math.PI / 2), 54]], 1, "rgba(90,92,96,.45)", 8);
+      if (s.open) { const g = []; for (let X = -120; X <= 120; X += 12) g.push([X, y + 30 * Math.cos(X / 170 * Math.PI / 2) + 0.5]); T.quad([...g.map(([X, Y]) => [X, Y, 0]), ...g.reverse().map(([X, Y]) => [X, Y, 48])], "rgba(120,150,190,.55)", 1); }
+    },
+    // a see-through roof (ETFE): pale panels in a grid, lit from the sky
+    etfe(T, s, bowl, top) {
+      const y = top + 14, Y = X => y + (s.slope ? -X * 0.08 : 0);
+      for (let X = -180; X <= 180; X += 12) T.line([[X, Y(X), -20], [X, Y(X), 160]], 1, s.grid || "rgba(60,70,80,.45)", 10);
+      for (let Z = -20; Z <= 160; Z += 12) T.line([[-180, Y(-180), Z], [180, Y(180), Z]], 1, s.grid || "rgba(60,70,80,.45)", 20);
+      T.line(bowl.filter(p => T.side(p) !== "near").map(p => [p.x + p.nx * 54, top + 2, p.z + p.nz * 54]), 2.5, "rgba(40,44,50,.9)", 1);
+    },
+    // canopies over the side stands (and over the ends too for a ring)
+    canopy(T, s, bowl, top, deep) {
+      const where = s.roofAll ? (p => T.side(p) !== "near") : (p => T.side(p) === "far" || (T.side(p) === "corner" && p.nz > 0.3));
+      const h = p => top + 6 + (s.arch ? s.arch * Math.cos(p.x / 110 * Math.PI / 2) : 0);
+      const pts = bowl.filter(where);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i], b = pts[i + 1], o0 = deep + 2, o1 = s.reach || 20;
+        T.quad([[a.x + a.nx * o0, top + 1, a.z + a.nz * o0], [b.x + b.nx * o0, top + 1, b.z + b.nz * o0], [b.x + b.nx * o1, h(b), b.z + b.nz * o1], [a.x + a.nx * o1, h(a), a.z + a.nz * o1]], s.under || "#2A2E34", 2);
+      }
+      T.line(pts.map(p => [p.x + p.nx * (s.reach || 20), h(p), p.z + p.nz * (s.reach || 20)]), 2.4, s.edge || "rgba(220,224,228,.9)", 1);
+      T.lights(pts.map(p => ({ x: p.x + p.nx * ((s.reach || 20) + 2), z: p.z + p.nz * ((s.reach || 20) + 2), nx: 0, nz: 0, y: h(p) })), 0, top + 5, "rgba(255,246,226,.9)", 6, 1.6);
+    },
+    ring(T, s, bowl, top, deep) { ROOFS.canopy(T, { ...s, roofAll: true }, bowl, top, deep); },
+  };
+  // things beyond the rim
+  const BEYOND = {
+    mountains(T) {
+      let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const ridge = []; for (let X = -1400; X <= 1400; X += 70) ridge.push([X, 280 + r() * 120 + 60 * Math.sin(X / 300), 1500]);
+      T.quad([...ridge, [1400, 0, 1500], [-1400, 0, 1500]], "rgba(70,84,110,.85)", 2);
+      ridge.forEach((p, i) => { if (i % 2 || p[1] < 360) return; T.quad([[p[0] - 40, p[1] - 30, 1499], [p[0], p[1], 1499], [p[0] + 40, p[1] - 30, 1499]], "rgba(235,238,245,.75)", 1); });
+    },
+    skyline(T, s) {
+      let seed = 3; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647, X = (s.skyX || 1) * 260;
+      for (let Z = -160; Z < 220; Z += 14 + r() * 10) {
+        const h = 30 + r() * (s.tall || 90), w = 8 + r() * 8;
+        T.panel([X, Z], [X, Z + w], 0, h, ["#2A3240", "#323A48", "#262C36", "#3A4250"][Math.floor(r() * 4)]);
+        for (let k = 6; k < h - 4; k += 7) if (r() < 0.7) T.panel([X - 0.1 * (s.skyX || 1), Z + 1.5], [X - 0.1 * (s.skyX || 1), Z + w - 1.5], k, k + 1.6, "rgba(255,214,150,.5)");
+      }
+    },
+    water(T, s) { const X = (s.skyX || 1) * 140; T.quad([[X, 0.2, -300], [X + (s.skyX || 1) * 400, 0.2, -300], [X + (s.skyX || 1) * 400, 0.2, 400], [X, 0.2, 400]], "rgba(60,90,120,.8)", 4); },
+    trees(T) { const far = T.rrect(190, 150, 60); T.tier(far, 0, 0, 0, 16, "#2C4632", null, 1, () => true, 1); },
+  };
+  // the things you'd know a park by
+  const MARKS = {
+    towers: () => {},
+    lighthouse(T) {                                                     // Gillette: the lighthouse over the north end
+      const X = -78, Z = 52, c = "rgba(240,240,236,.95)";
+      T.quad([[X - 4, 14, Z], [X + 4, 14, Z], [X + 2.6, 58, Z], [X - 2.6, 58, Z]], c, 4);
+      T.quad([[X - 3.6, 58, Z], [X + 3.6, 58, Z], [X + 3.6, 64, Z], [X - 3.6, 64, Z]], "#1F2A3A", 2);
+      T.quad([[X - 4.2, 64, Z], [X + 4.2, 64, Z], [X, 68, Z]], "#1F2A3A", 2);
+      T.lamp(X, 61, Z - 0.5, 1.4, 0.7);
+      T.panel([-96, 20], [-60, 80], 16, 19, "#1F2A3A");                   // the bridge across the end
+    },
+    ship(T) {                                                           // Raymond James: the pirate ship in the north end
+      const X = -82;
+      T.quad([[X, 9, 12], [X, 9, 48], [X, 13, 52], [X, 15, 8]], "#5A3A22", 4);
+      T.panel([X + 0.2, 12], [X + 0.2, 48], 11, 12, "#C9A24A");
+      [20, 30, 40].forEach(Z => { T.line([[X, 13, Z], [X, 36, Z]], 2, "#3A2A1C", 3); T.quad([[X + 0.3, 18, Z - 6], [X + 0.3, 18, Z + 6], [X + 0.3, 32, Z + 5], [X + 0.3, 32, Z - 5]], "rgba(240,236,226,.9)", 2); });
+      T.quad([[X + 0.4, 35, 30], [X + 0.4, 35, 36], [X + 0.4, 38, 33]], "#D50A0A", 1);
+    },
+    colonnade(T) {                                                      // Soldier Field: the old columns above the far side
+      for (let X = -90; X <= 90; X += 7.5) { T.line([[X, 26, 118], [X, 46, 118]], 4, "rgba(214,206,190,.95)", 2); }
+      T.panel([-94, 118.2], [94, 118.2], 46, 50, "rgba(214,206,190,.95)");
+    },
+    louvers(T, s, bowl, top, deep) {                                    // MetLife: the lit louvers round the rim
+      T.tier(bowl, deep, top + 1.2, deep + 2, top + 9, s.glow, null, 1, p => T.side(p) !== "near", 1);
+      T.tier(bowl, deep, top + 9, deep + 2, top + 10, "#202428", null, 1, p => T.side(p) !== "near", 1);
+    },
+    suites(T) {                                                         // Levi's: the suite tower along the far side
+      T.panel([-70, 104], [70, 104], 40, 74, "#3A3F46");
+      [46, 54, 62].forEach(y => T.panel([-68, 103.8], [68, 103.8], y, y + 5, "rgba(150,175,195,.6)"));
+      T.panel([-72, 103.7], [72, 103.7], 74, 76, "#C8CCD0");
+    },
+    torch(T) {                                                          // Allegiant: the torch at the open end
+      const X = -76, Z = 50; T.line([[X, 0, Z], [X, 52, Z]], 4, "rgba(60,64,70,.95)", 3);
+      const p = T.P(X, 56, Z); if (T.ok(p)) { T.glow(p[0], p[1], 40, 0.55, "255,200,120"); T.glow(p[0], p[1], 12, 0.9, "255,240,210"); }
+    },
+    window(T, s) {                                                      // Lucas Oil: the big window at the north end
+      const X = -86; T.panel([X, 10], [X, 80], 26, 58, "rgba(120,150,180,.55)");
+      for (let Z = 10; Z <= 80; Z += 7) T.line([[X + 0.1, 26, Z], [X + 0.1, 58, Z]], 1.2, "rgba(40,44,50,.8)", 2);
+      for (let y = 26; y <= 58; y += 6.4) T.line([[X + 0.1, y, 10], [X + 0.1, y, 80]], 1.2, "rgba(40,44,50,.8)", 4);
+    },
+    oculus(T) {                                                         // Mercedes-Benz: the pinwheel of roof petals round the opening
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, b = a + 0.62, r0 = 22, r1 = 70; T.quad([[Math.sin(a) * r0, 72, 20 + Math.cos(a) * r0], [Math.sin(b) * r0, 72, 20 + Math.cos(b) * r0], [Math.sin(b + 0.3) * r1, 56, 20 + Math.cos(b + 0.3) * r1], [Math.sin(a + 0.3) * r1, 56, 20 + Math.cos(a + 0.3) * r1]], i % 2 ? "rgba(200,206,212,.55)" : "rgba(176,184,192,.55)", 3); }
+      const o = []; for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI * 2; o.push([Math.sin(a) * 22, 72, 20 + Math.cos(a) * 22]); } T.line(o, 2, "rgba(60,66,72,.9)", 3);
+    },
+    prow(T) {                                                           // U.S. Bank: the Legacy Ship prow at the west end
+      T.quad([[-84, 30, 34], [-84, 30, 46], [-76, 50, 40]], "#2A1E36", 2); T.lamp(-76, 49, 40, 0.8, 0.5);
+    },
+    windows(T) {                                                        // Ford Field: the warehouse windows down one side
+      for (let X = -80; X <= 80; X += 10) T.panel([X, 110], [X + 7, 110], 30, 44, "rgba(150,180,210,.45)");
+    },
+    hawks(T) {                                                          // Lumen: the open north end and the Hawks Nest
+      T.line([[-100, 32, -40], [-100, 32, 40]], 2, "rgba(105,190,40,.8)", 4);
+    },
+    bronco(T) {                                                         // Empower: the white horse on top of the south board
+      const X = -80, Z = 56, c = "rgba(244,244,240,.95)";
+      T.panel([X - 14, Z], [X + 14, Z], 22, 36, "#14181C"); T.panel([X - 13, Z - 0.1], [X + 13, Z - 0.1], 23, 35, "rgba(110,160,210,.55)");
+      T.quad([[X - 5, 40, Z], [X + 4, 40, Z], [X + 3, 45, Z], [X - 5, 45, Z]], c, 2); T.quad([[X + 3, 45, Z], [X + 5, 45, Z], [X + 7, 50, Z], [X + 5, 51, Z]], c, 2);
+      T.line([[X - 4, 36, Z], [X - 4, 40, Z]], 2, c, 1); T.line([[X + 3, 36, Z], [X + 3, 40, Z]], 2, c, 1); T.line([[X - 5, 44, Z], [X - 8, 41, Z]], 2, c, 1);
+    },
+  };
+  // the parks: c = [main color, second color], seat = empty seat color
+  const NFL_PARKS = {
+    ARI: { name: "State Farm Stadium", city: "Glendale", c: ["#97233F", "#FFB612"], seat: "#5C2230", roof: "retract", decks: 2 },
+    ATL: { name: "Mercedes-Benz Stadium", city: "Atlanta", c: ["#A71930", "#101820"], seat: "#2A2C30", roof: "dome", ceil: "dark", board: "halo", decks: 3, marks: ["oculus"], ez: "#101820", ezLine: "rgba(167,25,48,.95)" },
+    BAL: { name: "M&T Bank Stadium", city: "Baltimore", c: ["#241773", "#9E7C0C"], seat: "#3A2A6E", decks: 2, ezLine: "rgba(158,124,12,.9)" },
+    BUF: { name: "Highmark Stadium", city: "Orchard Park", c: ["#00338D", "#C60C30"], seat: "#1E3E86", roof: "canopy", roofAll: true, decks: 2, sky: "day", ezLine: "rgba(198,12,48,.95)" },
+    CAR: { name: "Bank of America Stadium", city: "Charlotte", c: ["#0085CA", "#101820"], seat: "#2A3038", decks: 2, beyond: ["skyline"], skyX: -1, tall: 120, ez: "#0085CA" },
+    CHI: { name: "Soldier Field", city: "Chicago", c: ["#0B162A", "#C83803"], seat: "#1E2A44", decks: 2, marks: ["colonnade"], ezLine: "rgba(200,56,3,.95)", sky: "day" },
+    CIN: { name: "Paycor Stadium", city: "Cincinnati", c: ["#FB4F14", "#000000"], seat: "#2A2A2C", roof: "canopy", decks: 2, ez: "#101010", ezLine: "rgba(251,79,20,.95)", mid: "#FB4F14", mid2: "#000000" },
+    CLE: { name: "Huntington Bank Field", city: "Cleveland", c: ["#FF3C00", "#311D00"], seat: "#5A3A22", decks: 2, beyond: ["water"], skyX: -1, ez: "#311D00", ezLine: "rgba(255,60,0,.95)", sky: "day" },
+    DAL: { name: "AT&T Stadium", city: "Arlington", c: ["#003594", "#869397"], seat: "#3A4250", roof: "retract", decks: 3, board: "center", ez: "#003594" },
+    DEN: { name: "Empower Field at Mile High", city: "Denver", c: ["#FB4F14", "#0A2343"], seat: "#B84A1E", decks: 3, beyond: ["mountains"], marks: ["bronco"], ez: "#0A2343", ezLine: "rgba(251,79,20,.95)", sky: "day" },
+    DET: { name: "Ford Field", city: "Detroit", c: ["#0076B6", "#B0B7BC"], seat: "#2C4A6A", roof: "dome", decks: 2, marks: ["windows"], ez: "#0076B6" },
+    GB: null,
+    HOU: { name: "NRG Stadium", city: "Houston", c: ["#03202F", "#A71930"], seat: "#6A2230", roof: "retract", decks: 3, ezLine: "rgba(167,25,48,.95)" },
+    IND: { name: "Lucas Oil Stadium", city: "Indianapolis", c: ["#002C5F", "#A2AAAD"], seat: "#1E3A6A", roof: "retract", decks: 2, marks: ["window"] },
+    JAX: { name: "EverBank Stadium", city: "Jacksonville", c: ["#006778", "#D7A22A"], seat: "#1E5A64", decks: 2, bigBoards: true, beyond: ["water"], skyX: -1, ezLine: "rgba(215,162,42,.95)" },
+    KC: { name: "GEHA Field at Arrowhead Stadium", city: "Kansas City", c: ["#E31837", "#FFB81C"], seat: "#9A1A2A", decks: 2, ez: "#E31837", ezLine: "rgba(255,184,28,.95)", rim: "#E31837" },
+    LV: { name: "Allegiant Stadium", city: "Las Vegas", c: ["#A5ACAF", "#000000"], seat: "#1C1E22", roof: "etfe", grid: "rgba(30,32,36,.7)", ceil: "dark", decks: 3, marks: ["torch"], ez: "#101010", ezLine: "rgba(165,172,175,.95)", mid: "#000000", mid2: "#A5ACAF", lowEnd: ["left"] },
+    LAC: { name: "SoFi Stadium", city: "Inglewood", c: ["#0080C6", "#FFC20E"], seat: "#3A4250", roof: "etfe", decks: 3, board: "oval", ezLine: "rgba(255,194,14,.95)" },
+    LAR: { name: "SoFi Stadium", city: "Inglewood", c: ["#003594", "#FFA300"], seat: "#3A4250", roof: "etfe", decks: 3, board: "oval", ezLine: "rgba(255,163,0,.95)" },
+    MIA: { name: "Hard Rock Stadium", city: "Miami Gardens", c: ["#008E97", "#FC4C02"], seat: "#2A6A70", roof: "ring", decks: 2, sky: "day", ezLine: "rgba(252,76,2,.95)" },
+    MIN: { name: "U.S. Bank Stadium", city: "Minneapolis", c: ["#4F2683", "#FFC62F"], seat: "#3A2464", roof: "etfe", slope: true, decks: 3, marks: ["prow"], ezLine: "rgba(255,198,47,.95)" },
+    NE: { name: "Gillette Stadium", city: "Foxborough", c: ["#002244", "#C60C30"], seat: "#2A3A5A", decks: 2, lowEnd: ["left"], marks: ["lighthouse"], ezLine: "rgba(198,12,48,.95)", beyond: ["trees"] },
+    NO: { name: "Caesars Superdome", city: "New Orleans", c: ["#D3BC8D", "#101820"], seat: "#2A2A2C", roof: "dome", ceil: "dome", decks: 3, ez: "#101820", ezLine: "rgba(211,188,141,.95)", mid: "#101820", mid2: "#D3BC8D", ribbon: "rgba(211,188,141,.8)" },
+    NYG: { name: "MetLife Stadium", city: "East Rutherford", c: ["#0B2265", "#A71930"], seat: "#4A4E56", decks: 3, marks: ["louvers"], glow: "rgba(40,90,220,.85)", ezLine: "rgba(167,25,48,.95)" },
+    NYJ: { name: "MetLife Stadium", city: "East Rutherford", c: ["#125740", "#FFFFFF"], seat: "#4A4E56", decks: 3, marks: ["louvers"], glow: "rgba(40,180,110,.85)" },
+    PHI: { name: "Lincoln Financial Field", city: "Philadelphia", c: ["#004C54", "#A5ACAF"], seat: "#24484C", roof: "canopy", decks: 2, sky: "day" },
+    PIT: { name: "Acrisure Stadium", city: "Pittsburgh", c: ["#FFB612", "#101820"], seat: "#B8901E", decks: 2, lowEnd: ["left"], beyond: ["water", "skyline"], skyX: -1, tall: 110, ez: "#101820", ezLine: "rgba(255,182,18,.95)", mid: "#101820", mid2: "#FFB612" },
+    SF: { name: "Levi's Stadium", city: "Santa Clara", c: ["#AA0000", "#B3995D"], seat: "#8A1A1E", decks: 2, marks: ["suites"], sky: "desert", ezLine: "rgba(179,153,93,.95)" },
+    SEA: { name: "Lumen Field", city: "Seattle", c: ["#002244", "#69BE28"], seat: "#1E2E46", roof: "canopy", arch: 10, reach: 14, decks: 2, lowEnd: ["left"], marks: ["hawks"], ezLine: "rgba(105,190,40,.95)", beyond: ["skyline"], skyX: -1 },
+    TB: { name: "Raymond James Stadium", city: "Tampa", c: ["#D50A0A", "#34302B"], seat: "#8A1E1E", decks: 2, marks: ["ship"], lowEnd: ["left"], sky: "desert", ezLine: "rgba(255,121,0,.95)" },
+    TEN: { name: "Nissan Stadium", city: "Nashville", c: ["#0C2340", "#4B92DB"], seat: "#2A4A7A", decks: 2, beyond: ["water", "skyline"], skyX: -1, ezLine: "rgba(75,146,219,.95)" },
+    WAS: { name: "Northwest Stadium", city: "Landover", c: ["#5A1414", "#FFB612"], seat: "#5A1E22", decks: 3, ezLine: "rgba(255,182,18,.95)", beyond: ["trees"] },
+  };
+  // which park a game is played in: the home team's, unless it's at a neutral site
+  function nflVenueKey(g) {
+    if (!g || !g.home) return null;
+    if (g.neutral) return null;
+    return NFL_PARKS[g.home.abbr] !== undefined ? "nfl:" + g.home.abbr : null;
+  }
+  function venueFor(k) {
+    if (VENUES[k]) return VENUES[k];
+    const m = /^nfl:(\w+)$/.exec(k); if (!m) return null;
+    if (m[1] === "GB") return VENUES.nfl;
+    const s = NFL_PARKS[m[1]]; if (!s) return null;
+    return (VENUES[k] = nflPark(s));
+  }
+  // the NFL page's park: the game in the pick card, else the next game, else the last one
+  async function nflKey() {
+    const want = (new URLSearchParams(location.search).get("labteam") || "").toUpperCase();
+    if (want && (NFL_PARKS[want] !== undefined)) return "nfl:" + want;
+    const gs = await games("nfl"), list = (gs && gs.games) || [], best = surest(gs);
+    const pick = best && nflVenueKey(best.g) ? best.g : list.find(g => g.state === "in" && nflVenueKey(g)) || list.find(g => g.state === "pre" && nflVenueKey(g)) || list.slice().reverse().find(nflVenueKey);
+    return nflVenueKey(pick) || "nfl";
+  }
+
   // ---------- players and the ball ----------
   const kind0 = sp => Object.keys(SPORT).find(k => SPORT[k] === sp);
   // A player, drawn as an illustration: tapered limbs with real knees and
@@ -2367,7 +2617,7 @@
   // home page it turns from sport to sport (sports with games today first),
   // and the pick card and record tab turn with it.
   function drawStadium(keys) {
-    keys = keys.filter(k => VENUES[k]); if (!keys.length) return false;
+    keys = keys.filter(k => venueFor(k)); if (!keys.length) return false;
     let c = isHome ? document.getElementById("heroArt") : head.querySelector("canvas.stadium");
     if (!c) return false;
     const n = c.cloneNode(false); n.classList.add("lab-field"); c.replaceWith(n); c = n;
@@ -2375,7 +2625,7 @@
     if (!cap) { cap = document.createElement("div"); cap.className = "lab-caption"; cap.setAttribute("aria-hidden", "true"); head.append(cap); }
     const x = c.getContext("2d");
     let cache = {}, W = 0, H = 0, dpr = 1, i = 0, from = null, at = 0, raf = 0;
-    const bg = k => cache[k] || (cache[k] = pano(VENUES[k], W, H, dpr).canvas);
+    const bg = k => cache[k] || (cache[k] = pano(venueFor(k), W, H, dpr).canvas);
     const size = () => { const r = c.getBoundingClientRect(); W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1); c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); cache = {}; };
     const paint = () => {
       const u = from == null || still ? 1 : clamp((performance.now() - at) / 1200);
@@ -2385,9 +2635,9 @@
       raf = u < 1 ? requestAnimationFrame(paint) : 0;
     };
     const turn = () => {
-      const k = keys[i], V = VENUES[k];
+      const k = keys[i], V = venueFor(k);
       cap.textContent = `${V.name} · ${V.city}`; cap.classList.remove("in"); void cap.offsetWidth; cap.classList.add("in");
-      if (isHome) card.show(k);
+      if (isHome) card.show(k.split(":")[0]);
       at = performance.now(); if (!raf) raf = requestAnimationFrame(paint);
     };
     size(); turn();
@@ -2401,7 +2651,9 @@
     const all = ["nfl", "cfb", "mlb", "nhl", "nba", "cbb", "soccer"];
     const today = await Promise.all(all.map(k => games(k).then(d => ((d && d.games) || []).some(g => g.state === "in" || g.state === "pre")).catch(() => false)));
     const on = all.filter((k, j) => today[j]);
-    return on.length ? on : all;
+    const keys = on.length ? on : all;
+    if (keys.includes("nfl")) keys[keys.indexOf("nfl")] = await nflKey();
+    return keys;
   }
 
   // ---------- pick card and record tab ----------
@@ -2491,7 +2743,8 @@
     document.body.classList.toggle("lab-serif", on.serif);
     if (k === "three") { location.reload(); return; }
     if (k == null && new URLSearchParams(location.search).get("labvenue") !== "0") {      // stadium headers are the lab default
-      if (pageSport) drawStadium([pageSport.toLowerCase()]); else venueOrder().then(drawStadium);
+      if (pageSport === "NFL") nflKey().then(k => drawStadium([k]));
+      else if (pageSport) drawStadium([pageSport.toLowerCase()]); else venueOrder().then(drawStadium);
       if (on.touches && pageSport) card.show(pageSport.toLowerCase());
       return;
     }
