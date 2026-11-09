@@ -33,7 +33,7 @@ def rewrite(html, site, here=None):
         attr, url = m.group(1), m.group(2)
         page = url.split("?")[0].split("#")[0]
         return f'{attr}="{P}{base}{url}"' if page in mine else f'{attr}="{base}{url}"'
-    html = re.sub(r'(href|src)="(?!https?:|/|#|data:|mailto:|\$\{)([^"]+)"', rel, html)
+    html = re.sub(r'(href|src|data-summary)="(?!https?:|/|#|data:|mailto:|\$\{)([^"]+)"', rel, html)
     html = html.replace('href="/"', f'href="{P}/"').replace('href="/#', f'href="{P}/#')
     html = re.sub(r'(["\'`])/\?l=', rf'\1{P}/?l=', html)
     for f in TOP[1:]:
@@ -42,6 +42,8 @@ def rewrite(html, site, here=None):
         for t in tabs(site, sp):
             html = html.replace(f'"/{sp}/{t}"', f'"{P}/{sp}/{t}"')
         html = html.replace(f'"/{sp}/"', f'"{P}/{sp}/index.html"')
+    # the chart script loads last, so the page shows up first (lab2.js draws the charts)
+    html = re.sub(r'<script src="(https://cdn\.jsdelivr\.net/npm/chart\.js[^"]*)"></script>', r'<script defer src="\1"></script>', html)
     # inline styles go onto the design system too
     html = re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + ds.snap(m.group(2)) + m.group(3), html, flags=re.S)
     tags = (f'<meta name="robots" content="noindex">\n<link rel="stylesheet" href="{P}/lab2.css?v=__LAB2VER__">\n')

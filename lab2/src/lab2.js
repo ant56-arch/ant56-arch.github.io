@@ -71,3 +71,26 @@
   const mo = new MutationObserver(run);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
 })();
+
+// page tabs: stick just under whatever is pinned at the top, and keep the current tab in view
+(() => {
+  const bar = document.querySelector(".edge-jump, .jump"); if (!bar) return;
+  const cur = bar.querySelector('[aria-current="page"], .go');
+  if (cur && cur.offsetLeft + cur.offsetWidth > bar.clientWidth - 32) bar.scrollLeft = cur.offsetLeft + cur.offsetWidth - bar.clientWidth + 48;
+  let pinned = [];
+  const find = () => { pinned = [...document.querySelectorAll("body *")].filter(e => !bar.contains(e) && e.offsetHeight && e.offsetHeight < 200 && /fixed|sticky/.test(getComputedStyle(e).position)); set(); };
+  const set = () => {
+    const top = Math.max(0, ...pinned.map(e => e.getBoundingClientRect()).filter(r => r.top < 160 && r.bottom > 0).map(r => r.bottom));
+    bar.style.top = top + "px";
+    bar.classList.toggle("is-stuck", Math.abs(bar.getBoundingClientRect().top - top) < 1 && scrollY > 0);
+  };
+  let raf = 0; addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(set); }, { passive: true });
+  addEventListener("resize", find); addEventListener("load", find); find();
+})();
+
+// the chart script now loads last (defer): draw the charts once it arrives
+(() => {
+  if (typeof Chart !== "undefined" || !document.querySelector("script[defer][src*='chart.js']")) return;
+  document.querySelectorAll('.chart-card[data-state="failed"]').forEach(c => c.dataset.state = "loading");
+  document.addEventListener("DOMContentLoaded", () => { if (typeof initEdgeCharts === "function") initEdgeCharts(); });
+})();

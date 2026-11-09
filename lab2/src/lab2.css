@@ -83,3 +83,18 @@ a.gc:active { transform: translateY(0); }
   *, *::after { animation: none !important; transition: none !important; }
   a.gc:hover { transform: none; }
 }
+
+/* ── Ideas round 3 ───────────────────────────────────────────── */
+/* page tabs: one row you swipe on phones (the half-shown pill hints at more) */
+@media (max-width: 640px) {
+  .edge-jump, .jump { flex-wrap: nowrap !important; overflow-x: auto !important; scroll-padding-inline: 16px; padding-right: 32px; }
+}
+/* page tabs stay pinned under the top bar (lab2.js sets top) */
+.edge-jump, .jump { position: sticky; top: 0; z-index: 30; background: var(--bg, var(--paper)); padding-top: 10px !important; padding-bottom: 10px !important; box-shadow: 0 1px 0 var(--rule); }
+.edge-jump.is-stuck, .jump.is-stuck { box-shadow: 0 1px 0 var(--rule), -24px 0 0 var(--bg, var(--paper)), 24px 0 0 var(--bg, var(--paper)); }
+/* bigger tap areas on phones, without moving anything */
+@media (pointer: coarse) {
+  .edge-tabs a, .edge-brand, .ticker-gear, .edge-scroll { position: relative; }
+  .edge-tabs a::before, .edge-brand::before, .ticker-gear::before, .edge-scroll::before { content: ""; position: absolute; inset: -12px -6px; }
+  .edge-jump a, .jump a { min-height: 44px; display: inline-flex; align-items: center; }
+}
