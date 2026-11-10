@@ -1840,6 +1840,217 @@
     "shot_share": 6.7927,
     "goalie": -0.0333
    }
+  },
+  {
+   "run_at": "2026-11-10T11:14:08+00:00",
+   "data_through": "2026-11-09",
+   "holdout": {
+    "from": "2026-10-04",
+    "games": 250,
+    "home_rate_log_loss": 0.6849
+   },
+   "live_model": {
+    "trained_at": "2026-11-03T10:54:56+00:00",
+    "recipe": {
+     "elo_k": 8,
+     "elo_carry": 0.7,
+     "years": 3,
+     "elo_only": true,
+     "extras": [
+      "shots",
+      "goalies"
+     ],
+     "calib": true
+    },
+    "holdout_log_loss": 0.6511
+   },
+   "current_recipe_log_loss": 0.6519,
+   "best_recipe": {
+    "recipe": {
+     "elo_k": 6,
+     "elo_carry": 0.7,
+     "years": 3,
+     "elo_only": true,
+     "extras": [
+      "shots",
+      "goalies"
+     ],
+     "calib": true
+    },
+    "log_loss": 0.6515
+   },
+   "candidates": [
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "extras": [
+       "shots"
+      ]
+     },
+     "log_loss": 0.6525,
+     "accuracy": 0.616
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "extras": [
+       "xg",
+       "shots",
+       "goalies"
+      ]
+     },
+     "log_loss": 0.6538,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "shots",
+       "goalies"
+      ],
+      "calib": true
+     },
+     "log_loss": 0.6519,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "xg",
+       "shots",
+       "goalies"
+      ],
+      "calib": true
+     },
+     "log_loss": 0.653,
+     "accuracy": 0.616
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "shots",
+       "goalies"
+      ]
+     },
+     "log_loss": 0.654,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "extras": [
+       "shots",
+       "goalies",
+       "pyth"
+      ]
+     },
+     "log_loss": 0.6532,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "shots",
+       "goalies"
+      ],
+      "calib": true,
+      "season_decay": 0.5
+     },
+     "log_loss": 0.6544,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 8,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "xg",
+       "shots",
+       "goalies"
+      ],
+      "calib": true,
+      "season_decay": 0.5
+     },
+     "log_loss": 0.6558,
+     "accuracy": 0.604
+    },
+    {
+     "recipe": {
+      "elo_k": 6,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "shots",
+       "goalies"
+      ],
+      "calib": true
+     },
+     "log_loss": 0.6515,
+     "accuracy": 0.612
+    },
+    {
+     "recipe": {
+      "elo_k": 10,
+      "elo_carry": 0.7,
+      "years": 3,
+      "elo_only": true,
+      "extras": [
+       "shots",
+       "goalies"
+      ],
+      "calib": true
+     },
+     "log_loss": 0.6523,
+     "accuracy": 0.608
+    }
+   ],
+   "switched_recipe": false,
+   "deployed": true,
+   "reason": "kept the recipe, refit with the newest games",
+   "trigger": "weekly",
+   "live_picks_last_14_days": {
+    "days": 14,
+    "picks": 98,
+    "accuracy": 0.6327,
+    "predicted": 0.5853
+   },
+   "weights_before": {
+    "home_ice": 0.2329,
+    "elo": 0.616,
+    "shot_share": 6.7927,
+    "goalie": -0.0333
+   },
+   "weights_after": {
+    "home_ice": 0.2377,
+    "elo": 0.6278,
+    "shot_share": 6.7867,
+    "goalie": -0.0338
+   }
   }
  ]
 }
