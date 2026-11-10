@@ -7222,7 +7222,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "NY",
     "side": "home",
@@ -7233,7 +7233,7 @@
     "value": false,
     "home_ml": -1040,
     "away_ml": 670,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -7265,7 +7265,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "BOS",
     "side": "away",
@@ -7276,7 +7276,7 @@
     "value": false,
     "home_ml": -101,
     "away_ml": -117,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -7310,7 +7310,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "PHX",
     "side": "home",
@@ -7321,7 +7321,7 @@
     "value": false,
     "home_ml": -167,
     "away_ml": 140,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -7339,14 +7339,15 @@
    "away_record": "4-6",
    "neutral": false,
    "pick": "MIA",
-   "prob": 72.9,
-   "home_prob": 27.1,
-   "model_home_prob": 30.4,
+   "prob": 76.7,
+   "home_prob": 23.3,
+   "model_home_prob": 25.6,
    "model_weight": 0.4,
    "blended": true,
-   "margin": 8.6,
+   "margin": 10.3,
    "home_out": [
     "Keyonte George",
+    "Lauri Markkanen",
     "Jaren Jackson Jr."
    ],
    "away_out": [],
@@ -7356,18 +7357,18 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "MIA",
     "side": "away",
-    "price": -359,
-    "prob": 72.9,
-    "book_prob": 75.1,
-    "edge": -2.2,
+    "price": -438,
+    "prob": 76.7,
+    "book_prob": 78.2,
+    "edge": -1.5,
     "value": false,
-    "home_ml": 286,
-    "away_ml": -359,
-    "book": "Draft Kings",
+    "home_ml": 341,
+    "away_ml": -438,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -7385,12 +7386,12 @@
    "away_record": "2-7",
    "neutral": false,
    "pick": "ORL",
-   "prob": 58.8,
-   "home_prob": 41.2,
+   "prob": 59.2,
+   "home_prob": 40.8,
    "model_home_prob": 53.8,
    "model_weight": 0.39,
    "blended": true,
-   "margin": 3.1,
+   "margin": 3.3,
    "home_out": [],
    "away_out": [
     "Paolo Banchero",
@@ -7402,18 +7403,18 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "ORL",
     "side": "away",
-    "price": -229,
-    "prob": 58.8,
-    "book_prob": 66.9,
-    "edge": -8.1,
+    "price": -237,
+    "prob": 59.2,
+    "book_prob": 67.5,
+    "edge": -8.3,
     "value": false,
-    "home_ml": 190,
-    "away_ml": -229,
-    "book": "Draft Kings",
+    "home_ml": 196,
+    "away_ml": -237,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -7451,7 +7452,7 @@
    },
    "model": "2026-11-03T10:54:04+00:00",
    "correct": null,
-   "set_at": "2026-11-10T14:44:02Z",
+   "set_at": "2026-11-10T19:40:11Z",
    "ml": {
     "team": "OKC",
     "side": "away",
@@ -7462,7 +7463,7 @@
     "value": false,
     "home_ml": 110,
     "away_ml": -130,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
