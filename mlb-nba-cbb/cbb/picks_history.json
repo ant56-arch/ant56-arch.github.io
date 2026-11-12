@@ -22808,7 +22808,7 @@
    },
    "model": "2026-11-08T10:26:00+00:00",
    "correct": null,
-   "set_at": "2026-11-12T01:51:59Z",
+   "set_at": "2026-11-12T03:12:24Z",
    "ml": {
     "team": "USC",
     "side": "away",
@@ -22819,7 +22819,7 @@
     "value": false,
     "home_ml": 285,
     "away_ml": -360,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
