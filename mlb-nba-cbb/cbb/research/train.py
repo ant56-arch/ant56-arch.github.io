@@ -50,11 +50,9 @@ DEFAULT_RECIPE = {"half_life": M.DEFAULT_PARAMS["half_life"], "carry": M.DEFAULT
 _L = {"half_life": 60, "carry": 0.6, "years": 3}
 _BEST = {"half_life": None, "carry": 0.4, "years": 3}
 RECIPES = [
-    _L,
     _BEST,
     {"half_life": None, "carry": 0.4, "years": 2},
     {"half_life": None, "carry": 0.6, "years": 3},
-    {**_L, "extras": ["pyth"]},
     {**_BEST, "extras": ["pyth"]},
     {**_L, "calib": True},
     {**_BEST, "calib": True},
@@ -63,6 +61,11 @@ RECIPES = [
     # counts each older season half as much (season_decay).
     {**_L, "season_decay": 0.5},
     {**_BEST, "season_decay": 0.5},
+    # 2026-11-11 (weekly swap): half-life 60 with and without Pythagorean, last
+    # on the holdout, made way for two built on the new live version (no
+    # fade, carry 0.6): on 2 years of games, and with carry 0.75.
+    {"half_life": None, "carry": 0.6, "years": 2},
+    {"half_life": None, "carry": 0.75, "years": 3},
 ]
 
 

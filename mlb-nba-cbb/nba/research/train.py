@@ -53,9 +53,7 @@ _L = {"elo_k": 15, "elo_carry": 0.6, "years": 2}
 RECIPES = [
     {"elo_k": 15, "elo_carry": 0.75, "years": 2},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2},
-    {"elo_k": 12, "elo_carry": 0.6, "years": 2},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["massey"]},
-    {**_L, "calib": True},
     {**_L, "extras": ["travel"]},
     # 2026-10-27 (Anthony: keep each version learning from this season): 3
     # years and Pythagorean, last on the holdout, made way for two whose fit
@@ -72,6 +70,11 @@ RECIPES = [
     # loss from 0.6245 to 0.6120 next to travel alone.
     {**_L, "extras": ["travel", "lineup"]},
     {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["travel", "lineup"]},
+    # 2026-11-11 (weekly swap): K 12 and calib, last on the holdout, made way
+    # for two built on the new live lineup version: with more of last
+    # season's rating kept (carry 0.75), and with calibrated chances.
+    {"elo_k": 10, "elo_carry": 0.75, "years": 2, "extras": ["travel", "lineup"]},
+    {"elo_k": 10, "elo_carry": 0.6, "years": 2, "extras": ["travel", "lineup"], "calib": True},
 ]
 
 
