@@ -12116,7 +12116,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "BOS",
     "side": "home",
@@ -12155,7 +12155,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "MIN",
     "side": "away",
@@ -12194,7 +12194,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "COL",
     "side": "away",
@@ -12223,8 +12223,8 @@
    "away_record": "10-6",
    "neutral": false,
    "pick": "NJ",
-   "prob": 58.6,
-   "home_prob": 58.6,
+   "prob": 59.4,
+   "home_prob": 59.4,
    "model_home_prob": 59.4,
    "margin": 0.54,
    "rest": {
@@ -12233,17 +12233,17 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "NJ",
     "side": "home",
-    "price": -155,
-    "prob": 58.6,
-    "book_prob": 58.3,
-    "edge": 0.3,
+    "price": -162,
+    "prob": 59.4,
+    "book_prob": 59.3,
+    "edge": 0.1,
     "value": false,
-    "home_ml": -155,
-    "away_ml": 130,
+    "home_ml": -162,
+    "away_ml": 136,
     "book": "DraftKings",
     "won": null,
     "units": null
@@ -12272,7 +12272,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "TB",
     "side": "away",
@@ -12311,7 +12311,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "FLA",
     "side": "home",
@@ -12350,7 +12350,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "BUF",
     "side": "away",
@@ -12389,7 +12389,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "DAL",
     "side": "home",
@@ -12428,7 +12428,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "STL",
     "side": "away",
@@ -12467,7 +12467,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T19:51:43Z",
+   "set_at": "2026-11-12T21:46:08Z",
    "ml": {
     "team": "LA",
     "side": "home",
