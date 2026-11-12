@@ -63,13 +63,16 @@ RECIPES = [
     # 2026-10-27 (Anthony: keep each version learning from this season): the
     # two Massey versions, last on the holdout, made way for two whose fit
     # counts each older season half as much (season_decay).
-    {**_L, "elo_only": True, "extras": ["shots", "goalies"], "calib": True, "season_decay": 0.5},
-    {**_L, "elo_only": True, "extras": ["xg", "shots", "goalies"], "calib": True, "season_decay": 0.5},
     # 2026-11-05: the full model with shots and goalies, with and without
     # calib, last on the holdout, made way for the live version with a slower
     # (K 6) and a faster (K 10) Elo.
     {**_L, "elo_k": 6, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
     {**_L, "elo_k": 10, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
+    # 2026-11-11 (weekly swap): the two season_decay versions, last on the
+    # holdout, made way for the K 6 version (best this week) on 2 years of
+    # games, and an even slower K 5.
+    {**_L, "elo_k": 6, "years": 2, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
+    {**_L, "elo_k": 5, "elo_only": True, "extras": ["shots", "goalies"], "calib": True},
 ]
 
 

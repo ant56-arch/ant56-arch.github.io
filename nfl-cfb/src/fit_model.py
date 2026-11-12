@@ -93,10 +93,15 @@ DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES,
 # 2026-11-05: Pythagorean and this-season home field on their own, last on
 # the recent games, made way for injuries + weather + home field and
 # injuries + rest + weather (the best inputs so far, stacked).
+# 2026-11-11 (weekly swap): injuries + Elo and weather alone, last on the
+# recent games, made way for injuries + weather and injuries + weather +
+# home field fit on the last 8 seasons (8 seasons had the best Brier).
 RECIPES = ([{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": n} for n in ("all", 8)]
            + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": "all", "extras": extras}
-              for extras in (["injuries"], ["injuries", "rest"], ["injuries", "weather", "home"], ["injuries", "elo"],
-                             ["injuries", "rest", "weather"], ["injuries", "home"], ["weather"], ["injuries", "weather"])])
+              for extras in (["injuries"], ["injuries", "rest"], ["injuries", "weather", "home"],
+                             ["injuries", "rest", "weather"], ["injuries", "home"], ["injuries", "weather"])]
+           + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "rating_half_life": 4, "seasons": 8, "extras": extras}
+              for extras in (["injuries", "weather"], ["injuries", "weather", "home"])])
 EXTRA_FEATURES = [c for cols in game_context.FEATURES.values() for c in cols]
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_coefficients.json")
 

@@ -49,9 +49,14 @@ DEFAULT_RECIPE = {"team_half_life": RECENCY_HALF_LIFE_GAMES, "seasons": "all"}
 # 2026-11-01 (Anthony: 10 versions per sport, using methods others use): four
 # tryouts add one input on top of the live settings (see cfb_context.py): our
 # power ratings, power ratings + rest/bye weeks, Elo, and Pythagorean record.
-RECIPES = ([{"team_half_life": h, "seasons": n} for h in (2, 4, 8) for n in ("all", 3)]
+# 2026-11-11 (weekly swap): Pythagorean and half-life 2 on all seasons, last
+# on the recent games, made way for power + bye + Elo and the live power +
+# bye on the last 3 seasons.
+RECIPES = ([{"team_half_life": 2, "seasons": 3}]
+           + [{"team_half_life": h, "seasons": n} for h in (4, 8) for n in ("all", 3)]
            + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "seasons": "all", "extras": extras}
-              for extras in (["power"], ["power", "bye"], ["elo"], ["pyth"])])
+              for extras in (["power"], ["power", "bye"], ["elo"], ["power", "bye", "elo"])]
+           + [{"team_half_life": RECENCY_HALF_LIFE_GAMES, "seasons": 3, "extras": ["power", "bye"]}])
 COEFFICIENTS_PATH = os.path.join(MODELS_DIR, "fitted_cfb_coefficients.json")
 EXTRA_FEATURES = cfb_context.COLUMNS
 
