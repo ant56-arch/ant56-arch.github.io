@@ -441,6 +441,7 @@ def page_shell(sport, title, active_tab, body_html):
       Call 1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
       <a href="model.html">How the model works</a>
+      <a href="https://ant56-arch.github.io/about.html">About</a>
       <a href="https://ant56-arch.github.io/terms.html">Terms</a>
       <a href="https://ant56-arch.github.io/privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>

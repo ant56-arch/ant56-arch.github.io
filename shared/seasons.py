@@ -288,7 +288,7 @@ def archive_page():
   <footer class="site-footer slim"><p class="footer-text">Each season's records are saved the day its season is
     over and never change after that. The all-time records on each league's page keep counting.
     For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</p>
-    <nav class="footer-links" aria-label="Site"><a href="/">All sites</a><a href="/terms.html">Terms</a>
+    <nav class="footer-links" aria-label="Site"><a href="/">All sites</a><a href="/about.html">About</a><a href="/terms.html">Terms</a>
       <a href="/privacy.html">Privacy</a></nav></footer>
 </div>
 <script src="home.js"></script>

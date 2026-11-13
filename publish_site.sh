@@ -15,7 +15,7 @@
 set -euo pipefail
 
 BRANCH=site
-HOME_FILES=".nojekyll index.html bets.html schedule.html schedule.js terms.html privacy.html"
+HOME_FILES=".nojekyll index.html about.html bets.html schedule.html schedule.js terms.html privacy.html"
 
 root=$(git rev-parse --show-toplevel)
 git="git --git-dir=$root/.git"
