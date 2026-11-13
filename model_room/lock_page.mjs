@@ -79,7 +79,7 @@ html.opening main{visibility:hidden}
 <form id="f" autocomplete="on">
 <input type="text" name="username" value="owner" autocomplete="username" hidden>
 <input type="password" id="pw" name="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required autofocus>
-<label class="rem"><input type="checkbox" id="rem" checked> Remember on this device</label>
+<label class="rem"><input type="checkbox" id="rem" checked> Remember on this device for 30 days</label>
 <button id="go" type="submit">Open</button>
 <p class="err" id="err" role="alert"></p>
 </form>
@@ -89,7 +89,17 @@ const LOCKED = ${payload.replace(/</g, "\\u003c")};
 const KEY_STORE = "model-room-key";
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const store = (v) => { try { v === undefined ? localStorage.removeItem(KEY_STORE) : localStorage.setItem(KEY_STORE, v); } catch (e) {} };
-const stored = () => { try { return localStorage.getItem(KEY_STORE); } catch (e) { return null; } };
+// "Remember on this device" runs out after REMEMBER_DAYS; then the password is
+// asked for again. Saved as {k: key, t: time saved}; anything else is dropped.
+const REMEMBER_DAYS = 30;
+const stored = () => {
+  try {
+    const v = JSON.parse(localStorage.getItem(KEY_STORE) || "null");
+    if (v && typeof v.k === "string" && Date.now() - v.t < REMEMBER_DAYS * 864e5) return v.k;
+  } catch (e) {}
+  store();
+  return null;
+};
 
 async function keyFromPassword(pw) {
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
@@ -140,7 +150,7 @@ if (!LOCKED) {
     try {
       const raw = await keyFromPassword(document.getElementById("pw").value);
       const page = await open(raw);
-      if (document.getElementById("rem").checked) store(toB64(raw)); else store();
+      if (document.getElementById("rem").checked) store(JSON.stringify({ k: toB64(raw), t: Date.now() })); else store();
       show(page);
     } catch (x) {
       err.textContent = "That password didn't work.";

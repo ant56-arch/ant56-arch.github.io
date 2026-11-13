@@ -48,6 +48,9 @@ for attempt in 1 2 3 4 5; do
   for f in $HOME_FILES; do
     cp "$root/$f" "$work/$f"
   done
+  # Chart.js, served from the site itself (not a CDN) so no outside code runs
+  # on the same site as the Model Room's remembered key. Pages load /chart.umd.js.
+  cp "$root/shared/vendor/chart.umd.js" "$work/chart.umd.js"
   # Every team in each league, for the My teams picker (Update team lists workflow).
   if [ -f "$root/teams.json" ]; then cp "$root/teams.json" "$work/teams.json"; fi
   # The home page's style.css and home.js are built from shared/ (see shared/assets.py).
