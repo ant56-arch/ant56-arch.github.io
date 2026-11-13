@@ -12350,7 +12350,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:46:08Z",
+   "set_at": "2026-11-13T00:58:36Z",
    "ml": {
     "team": "BUF",
     "side": "away",
@@ -12361,7 +12361,7 @@
     "value": false,
     "home_ml": 130,
     "away_ml": -155,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -12379,8 +12379,8 @@
    "away_record": "8-11",
    "neutral": false,
    "pick": "DAL",
-   "prob": 61.6,
-   "home_prob": 61.6,
+   "prob": 59.6,
+   "home_prob": 59.6,
    "model_home_prob": 63.5,
    "margin": 0.77,
    "rest": {
@@ -12389,18 +12389,18 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:46:08Z",
+   "set_at": "2026-11-13T00:58:36Z",
    "ml": {
     "team": "DAL",
     "side": "home",
-    "price": -175,
-    "prob": 61.6,
-    "book_prob": 60.9,
-    "edge": 0.7,
+    "price": -155,
+    "prob": 59.6,
+    "book_prob": 58.3,
+    "edge": 1.3,
     "value": false,
-    "home_ml": -175,
-    "away_ml": 145,
-    "book": "DraftKings",
+    "home_ml": -155,
+    "away_ml": 130,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -12428,7 +12428,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:46:08Z",
+   "set_at": "2026-11-13T00:58:36Z",
    "ml": {
     "team": "STL",
     "side": "away",
@@ -12439,7 +12439,7 @@
     "value": false,
     "home_ml": 110,
     "away_ml": -130,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -12467,7 +12467,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:46:08Z",
+   "set_at": "2026-11-13T00:58:36Z",
    "ml": {
     "team": "LA",
     "side": "home",
@@ -12478,7 +12478,7 @@
     "value": false,
     "home_ml": -125,
     "away_ml": 105,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }

@@ -8118,7 +8118,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:45:52Z",
+   "set_at": "2026-11-13T00:58:20Z",
    "ml": {
     "team": "MIN",
     "side": "home",
@@ -8129,7 +8129,7 @@
     "value": false,
     "home_ml": -223,
     "away_ml": 185,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -8165,7 +8165,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-12T21:45:52Z",
+   "set_at": "2026-11-13T00:58:20Z",
    "ml": {
     "team": "PHX",
     "side": "home",
@@ -8176,7 +8176,7 @@
     "value": false,
     "home_ml": -229,
     "away_ml": 190,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
