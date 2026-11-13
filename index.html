@@ -1914,7 +1914,8 @@ function renderJump() {
   const slate = $("slate").hidden ? null : "#slate";
   let links;
   if (LG === "All") links = [[slate, "Today's games", true], ["#record", "Record"], ["#calendar", "Past days"],
-                             ["/bets.html", "Betting"], ["/schedule.html", "Schedule"], ["/about.html", "About"]];
+                             ["/bets.html", "Betting"], ["/schedule.html", "Schedule"], ["/about.html", "About"],
+                             ["/privacy.html", "Privacy"]];
   else {
     const base = SITE.href.replace(/index\.html$/, "");
     links = [[slate, "Today's games", true], ...LEAGUE[LG].pages.map(([f, name]) => [base + f, name])];
