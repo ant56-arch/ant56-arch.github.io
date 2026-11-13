@@ -727,7 +727,7 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   .lg-row.has-feat { --rest: var(--q); }
   .lg-row + .lg-row { margin-top: 1px; }
   .lg-row .league { flex: 0 0 auto; width: var(--rest); min-width: 0; grid-column: auto; }
-  .lg-row a.league, .anim .lg-row a.league.rv { transition: width .45s cubic-bezier(.2, .7, .1, 1), opacity .7s ease var(--d, 0s), transform .7s cubic-bezier(.2, .7, .1, 1) var(--d, 0s), background .2s; }
+  .lg-row a.league, .anim .lg-row a.league.rv { transition: width .45s cubic-bezier(.2, .7, .1, 1), opacity .7s ease var(--d, 0s), transform .7s cubic-bezier(.2, .7, .1, 1) var(--d, 0s), background .25s, color .25s; }
   .lg-row .league.feat, .lg-row .league:hover, .lg-row .league:focus-visible { width: var(--bigw); }
   .lg-row:has(.league:hover) .league:not(:hover), .lg-row:has(.league:focus-visible) .league:not(:focus-visible) { width: var(--sq); }
   /* Text stays on a fixed number of lines so the row's height never jumps. */
@@ -739,6 +739,20 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   .lg-row .league.feat .lspark, .lg-row .league:hover .lspark, .lg-row .league:focus-visible .lspark { width: 220px; height: 44px; margin-top: 0; }
   .lg-row:has(.league:not(.feat):hover) .league.feat:not(:hover) .lspark { width: 92px; height: 30px; margin-top: 14px; }
   .lg-row.n4:has(.league:hover) .league:not(:hover) .lspark, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lspark { width: 0; opacity: 0; }
+  /* The green "featured" look follows the pointer: the card being hovered turns green... */
+  .lg-row a.league:hover, .lg-row a.league:focus-visible { --forest: var(--board); --forest-ink: var(--board-ink); background: var(--board); color: var(--board-ink); }
+  .lg-row a.league:hover :is(.lt, p, .lrec span), .lg-row a.league:focus-visible :is(.lt, p, .lrec span) { color: inherit; opacity: .78; }
+  .lg-row a.league:hover .lspark polyline, .lg-row a.league:focus-visible .lspark polyline { stroke: var(--board-ink); }
+  .lg-row a.league:hover .lnext, .lg-row a.league:focus-visible .lnext { border-top-color: color-mix(in srgb, var(--board-ink) 22%, transparent); color: inherit; }
+  .lg-row a.league:hover .lnext span, .lg-row a.league:focus-visible .lnext span { opacity: .78; }
+  .lg-row a.league:hover .lnext b, .lg-row a.league:focus-visible .lnext b { color: inherit; }
+  /* ...and the usual featured card goes plain while another card has it, so only one is green at a time. */
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) { --forest: inherit; --forest-ink: inherit; background: var(--paper); color: var(--ink); box-shadow: none; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) :is(.lt, p, .lrec span) { color: var(--ink-soft); opacity: 1; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lspark polyline { stroke: var(--forest); }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext { border-top-color: var(--rule); color: var(--ink-soft); }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext span { opacity: 1; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext b { color: var(--ink); }
 }
 </style>
 </head>
