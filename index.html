@@ -724,22 +724,43 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
 .glist button[aria-pressed="true"] .pk b { color: inherit; }
 @media (max-width: 640px) { .glist .pk { font-size: 13px; } }
 
-/* ===== About: what the site is and how it keeps score ===== */
+/* ===== About: what the site is, how a model works, how to read it, when each league started, questions ===== */
 .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 80px); align-items: start; margin-top: clamp(28px, 4vw, 48px); }
+.about-grid + .about-grid, .about-block { margin-top: clamp(40px, 5vw, 72px); }
 .about-lede p { margin: 0 0 18px; max-width: 30ch; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.4; }
 .about-lede p + p { color: var(--ink-soft); font-size: 16px; line-height: 1.55; max-width: 44ch; }
-.about-models { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--ink-soft); }
-.about-models span { flex: 0 0 100%; margin-bottom: 4px; }
-.about-models a { padding: 8px 0; color: var(--ink); text-underline-offset: 5px; }
+.about-stat { display: grid; gap: 4px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.about-stat b { font-weight: 400; font-variation-settings: "wdth" 125; font-size: clamp(40px, 4.4vw, 60px); line-height: 1; letter-spacing: -0.01em; color: var(--forest); font-variant-numeric: tabular-nums; }
+.about-stat span { color: var(--ink-soft); }
+.about-label { display: flex; align-items: center; gap: 14px; margin: 0 0 6px; color: var(--ink-soft); }
+.about-label::before { content: ""; width: 24px; height: 1px; background: currentColor; flex: none; }
 .about-list { list-style: none; margin: 0; padding: 0; }
-.about-list li { display: grid; grid-template-columns: minmax(0, 210px) minmax(0, 1fr); gap: 6px 28px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.about-list li { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); gap: 6px 28px; padding: 20px 0; border-top: 1px solid var(--rule); }
 .about-list li:last-child { border-bottom: 1px solid var(--rule); }
-.about-list h3 { margin: 0; font-weight: 400; font-size: 20px; line-height: 1.25; }
-.about-list p { margin: 0; color: var(--ink-soft); }
+.about-list h3, .about-list dt { margin: 0; font-weight: 400; font-size: 20px; line-height: 1.25; }
+.about-list p, .about-list dd { margin: 0; color: var(--ink-soft); }
+dl.about-list > div { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); gap: 6px 28px; padding: 20px 0; border-top: 1px solid var(--rule); }
+dl.about-list > div:last-child { border-bottom: 1px solid var(--rule); }
+.about-time { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.about-time li { display: grid; gap: 2px; padding: 18px 0; }
+.about-time b { font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1; }
+.about-time span { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.about-faq { max-width: 860px; border-bottom: 1px solid var(--rule); }
+.about-faq details { border-top: 1px solid var(--rule); }
+.about-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; min-height: 44px; font-size: 20px; line-height: 1.25; cursor: pointer; list-style: none; }
+.about-faq summary::-webkit-details-marker { display: none; }
+.about-faq summary::after { content: "+"; flex: none; font-family: var(--f-mono); font-size: 20px; color: var(--ink-soft); }
+.about-faq details[open] summary::after { content: "\2212"; }
+.about-faq p { margin: 0 0 20px; max-width: 62ch; color: var(--ink-soft); }
+.about-foot { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: clamp(28px, 4vw, 44px); color: var(--ink-soft); }
+.about-foot a { color: var(--ink); text-underline-offset: 5px; }
 @media (max-width: 860px) {
   .about-grid { grid-template-columns: 1fr; }
   .about-lede p { max-width: none; }
-  .about-list li { grid-template-columns: 1fr; padding: 18px 0; }
+  .about-list li, dl.about-list > div { grid-template-columns: 1fr; padding: 18px 0; }
+  .about-time { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .about-time b { font-size: 26px; }
+  .about-faq summary { font-size: 18px; }
 }
 </style>
 </head>
@@ -859,19 +880,58 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   <section id="about">
     <div class="sec-head mono"><span class="num"><b>About</b></span><span>Est. 2026</span></div>
     <h2>Built to be <em>checked.</em></h2>
+
     <div class="about-grid">
       <div class="about-lede">
         <p>Sports Edge asks one question: can a model pick games better than the market does?</p>
         <p>It is a free, one-person project. It publishes a pick for every game in seven leagues, then keeps score in public so anyone can see how the picks turned out.</p>
-        <nav class="about-models mono" aria-label="How each model works"><span>How each model works</span><a href="/nfl/model.html">NFL</a><a href="/cfb/model.html">CFB</a><a href="/mlb/model.html">MLB</a><a href="/nhl/model.html">NHL</a><a href="/nba/model.html">NBA</a><a href="/cbb/model.html">CBB</a><a href="/soccer/model.html">Soccer</a></nav>
+        <div class="about-stat" id="aboutStat" hidden></div>
       </div>
       <ul class="about-list">
         <li><h3>A model for each league</h3><p>Seven leagues, seven separate models. Each one is built for its own sport.</p></li>
         <li><h3>Every pick is graded</h3><p>When a game goes final, its pick is marked right or wrong. The record never resets, and the misses stay on the board.</p></li>
         <li><h3>Vegas is the yardstick</h3><p>Wherever Vegas has posted a price, the pick shows our win chance beside theirs, so you can see where we disagree.</p></li>
-        <li><h3>Free, and not advice</h3><p>A non-commercial project for entertainment and research. Nothing here is a recommendation to bet. <a href="/terms.html">Terms</a></p></li>
       </ul>
     </div>
+
+    <div class="about-grid">
+      <div class="about-block-in">
+        <p class="about-label mono">How a model works</p>
+        <ul class="about-list">
+          <li><h3>It rates every team</h3><p>Each model learns from several seasons of past games and gives every team a strength rating that moves with each result.</p></li>
+          <li><h3>It turns ratings into a win chance</h3><p>For each game it weighs the two ratings with the factors that matter in that sport, such as home field, starters or injuries.</p></li>
+          <li><h3>It checks itself each week</h3><p>It tests new versions on the newest games and only switches when one clearly predicts better.</p></li>
+        </ul>
+        <nav class="about-foot mono" aria-label="How each model works"><span>The full detail</span><a href="/nfl/model.html">NFL</a><a href="/cfb/model.html">CFB</a><a href="/mlb/model.html">MLB</a><a href="/nhl/model.html">NHL</a><a href="/nba/model.html">NBA</a><a href="/cbb/model.html">CBB</a><a href="/soccer/model.html">Soccer</a></nav>
+      </div>
+      <div class="about-block-in">
+        <p class="about-label mono">Reading the site</p>
+        <dl class="about-list">
+          <div><dt>Pick</dt><dd>The side the model thinks is most likely to win. In soccer it can be a draw.</dd></div>
+          <div><dt>Win chance</dt><dd>How likely the model thinks the pick is. At 70%, it should win about seven times in ten.</dd></div>
+          <div><dt>Price</dt><dd>What Vegas pays on the pick. At &minus;150 you bet $150 to win $100. At +130 a $100 bet wins $130.</dd></div>
+          <div><dt>Vegas %</dt><dd>Vegas's win chance for the same side, shown beside ours.</dd></div>
+          <div><dt>Streak</dt><dd>The current run. "W10 days" is ten winning days in a row. Football counts weeks.</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="about-block" id="aboutTimeBlock" hidden>
+      <p class="about-label mono">Graded since</p>
+      <ol class="about-time" id="aboutTime"></ol>
+    </div>
+
+    <div class="about-block">
+      <p class="about-label mono">Questions</p>
+      <div class="about-faq">
+        <details><summary>How often do the picks update?</summary><p>Several times a day. The daily sports refresh from morning to early evening as lineups and injuries come in, football refreshes through the week, and results are graded overnight.</p></details>
+        <details><summary>What counts as a right pick?</summary><p>The picked side wins the game. In soccer a draw can be the pick, and it is right when the match ends level.</p></details>
+        <details><summary>Why does a model disagree with Vegas?</summary><p>A model only knows what is in its data: past results, ratings and, in some leagues, starters or injuries. Vegas's price also reflects news and where the money is going. A gap means the two disagree, not that the model is right.</p></details>
+        <details><summary>Do the models ever change?</summary><p>Yes. Each one retests itself about once a week during its season and keeps a log of every retrain on its Model page. The record carries on through every change.</p></details>
+      </div>
+    </div>
+
+    <p class="about-foot mono"><span>Free, non-commercial and not betting advice</span><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></p>
   </section>
 
   <footer class="foot">
@@ -1965,8 +2025,7 @@ function motion() {
   tag(".sec-head, section > h2, .board, .wk, .rt, .foot-word");
   tag("#leagueGrid .league", i => (i % 4) * 70);
   tag(".cal li", i => i * 50);
-  tag(".about-lede", null);
-  tag(".about-list li", i => i * 70);
+  tag(".about-lede, .about-block, .about-block-in", null);
   const els = document.querySelectorAll(".rv:not(.in)");
   if (!document.documentElement.classList.contains("anim")) { els.forEach(e => e.classList.add("in")); return; }
   const io = new IntersectionObserver(es => es.forEach(e => {
@@ -2021,6 +2080,24 @@ function sparkline(rows) {
   if (pts.length < 3) return "";
   const lo = Math.min(...pts), hi = Math.max(...pts), span = Math.max(4, hi - lo);
   return `<svg class="lspark" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts.map((v, i) => `${(i / (pts.length - 1) * 100).toFixed(1)},${(28 - (v - lo) / span * 26).toFixed(1)}`).join(" ")}"/></svg>`;
+}
+
+// About: the overall record and the day each league's grading began, from the same summaries.
+function aboutFill(by) {
+  const rows = [];
+  SITES.forEach(site => {
+    const s = by[site.lg], src = s && (site.lg === "MLB" ? s.games : s);
+    const rec = src && src.record && wl(src.record.value);
+    if (!rec || !(rec[0] + rec[1]) || !src.record.since) return;
+    rows.push({ lg: site.lg, w: rec[0], l: rec[1], since: src.record.since, t: new Date(src.record.since) });
+  });
+  if (rows.length < SITES.length) return;          // a league tab loads one league: leave both blocks hidden
+  rows.sort((a, b) => a.t - b.t);
+  const W = rows.reduce((a, r) => a + r.w, 0), N = W + rows.reduce((a, r) => a + r.l, 0);
+  $("aboutStat").innerHTML = `<b data-count>${(W / N * 100).toFixed(1)}%</b><span>right on ${N.toLocaleString("en-US")} graded picks since ${esc(rows[0].since)}</span>`;
+  $("aboutStat").hidden = false;
+  $("aboutTime").innerHTML = rows.map(r => `<li><b>${esc(r.since.replace(/, \d{4}$/, ""))}</b><span>${esc(r.lg)}</span></li>`).join("");
+  $("aboutTimeBlock").hidden = false;
 }
 
 function render(sums) {
@@ -2177,6 +2254,7 @@ function render(sums) {
   $("calendar").hidden = !cal.length;
   renderJump();
   $("footDate").textContent = "Figures from the live sites, " + longDate(today, { month: "short", day: "numeric", year: "numeric" });
+  aboutFill(by);
   motion();
 }
 
