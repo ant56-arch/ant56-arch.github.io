@@ -723,6 +723,24 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
 .glist .pk b { font-weight: 600; color: var(--ink); }
 .glist button[aria-pressed="true"] .pk b { color: inherit; }
 @media (max-width: 640px) { .glist .pk { font-size: 13px; } }
+
+/* ===== About: what the site is and how it keeps score ===== */
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 80px); align-items: start; margin-top: clamp(28px, 4vw, 48px); }
+.about-lede p { margin: 0 0 18px; max-width: 30ch; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.4; }
+.about-lede p + p { color: var(--ink-soft); font-size: 16px; line-height: 1.55; max-width: 44ch; }
+.about-models { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--ink-soft); }
+.about-models span { flex: 0 0 100%; margin-bottom: 4px; }
+.about-models a { padding: 8px 0; color: var(--ink); text-underline-offset: 5px; }
+.about-list { list-style: none; margin: 0; padding: 0; }
+.about-list li { display: grid; grid-template-columns: minmax(0, 210px) minmax(0, 1fr); gap: 6px 28px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.about-list li:last-child { border-bottom: 1px solid var(--rule); }
+.about-list h3 { margin: 0; font-weight: 400; font-size: 20px; line-height: 1.25; }
+.about-list p { margin: 0; color: var(--ink-soft); }
+@media (max-width: 860px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .about-lede p { max-width: none; }
+  .about-list li { grid-template-columns: 1fr; padding: 18px 0; }
+}
 </style>
 </head>
 <body>
@@ -838,10 +856,28 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
     <ul class="cal" id="cal"></ul>
   </section>
 
+  <section id="about">
+    <div class="sec-head mono"><span class="num"><b>About</b></span><span>Est. 2026</span></div>
+    <h2>Built to be <em>checked.</em></h2>
+    <div class="about-grid">
+      <div class="about-lede">
+        <p>Sports Edge asks one question: can a model pick games better than the market does?</p>
+        <p>It is a free, one-person project. It publishes a pick for every game in seven leagues, then keeps score in public so anyone can see how the picks turned out.</p>
+        <nav class="about-models mono" aria-label="How each model works"><span>How each model works</span><a href="/nfl/model.html">NFL</a><a href="/cfb/model.html">CFB</a><a href="/mlb/model.html">MLB</a><a href="/nhl/model.html">NHL</a><a href="/nba/model.html">NBA</a><a href="/cbb/model.html">CBB</a><a href="/soccer/model.html">Soccer</a></nav>
+      </div>
+      <ul class="about-list">
+        <li><h3>A model for each league</h3><p>Seven leagues, seven separate models. Each one is built for its own sport.</p></li>
+        <li><h3>Every pick is graded</h3><p>When a game goes final, its pick is marked right or wrong. The record never resets, and the misses stay on the board.</p></li>
+        <li><h3>Vegas is the yardstick</h3><p>Wherever Vegas has posted a price, the pick shows our win chance beside theirs, so you can see where we disagree.</p></li>
+        <li><h3>Free, and not advice</h3><p>A non-commercial project for entertainment and research. Nothing here is a recommendation to bet. <a href="/terms.html">Terms</a></p></li>
+      </ul>
+    </div>
+  </section>
+
   <footer class="foot">
     <p class="foot-word" aria-hidden="true">EDGE</p>
     <div class="foot-row mono"><span>Sports Edge · For entertainment only, not betting advice. Gambling problem? Call 1-800-GAMBLER.</span><span id="footDate"></span></div>
-    <nav class="foot-links mono" aria-label="Sites"><a href="/nfl/index.html">NFL</a><a href="/cfb/index.html">CFB</a><a href="/mlb/">MLB</a><a href="/nhl/index.html">NHL</a><a href="/nba/index.html">NBA</a><a href="/cbb/index.html">CBB</a><a href="/soccer/index.html">Soccer</a><a href="/bets.html">Betting</a><a href="/schedule.html">Schedule</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></nav>
+    <nav class="foot-links mono" aria-label="Sites"><a href="/nfl/index.html">NFL</a><a href="/cfb/index.html">CFB</a><a href="/mlb/">MLB</a><a href="/nhl/index.html">NHL</a><a href="/nba/index.html">NBA</a><a href="/cbb/index.html">CBB</a><a href="/soccer/index.html">Soccer</a><a href="/bets.html">Betting</a><a href="/schedule.html">Schedule</a><a href="/#about">About</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></nav>
   </footer>
 </main>
 
@@ -1884,7 +1920,7 @@ function renderJump() {
   const slate = $("slate").hidden ? null : "#slate";
   let links;
   if (LG === "All") links = [[slate, "Today's games", true], ["#record", "Record"], ["#calendar", "Past days"],
-                             ["/bets.html", "Betting"], ["/schedule.html", "Schedule"]];
+                             ["/bets.html", "Betting"], ["/schedule.html", "Schedule"], ["#about", "About"]];
   else {
     const base = SITE.href.replace(/index\.html$/, "");
     links = [[slate, "Today's games", true], ...LEAGUE[LG].pages.map(([f, name]) => [base + f, name])];
@@ -1929,6 +1965,8 @@ function motion() {
   tag(".sec-head, section > h2, .board, .wk, .rt, .foot-word");
   tag("#leagueGrid .league", i => (i % 4) * 70);
   tag(".cal li", i => i * 50);
+  tag(".about-lede", null);
+  tag(".about-list li", i => i * 70);
   const els = document.querySelectorAll(".rv:not(.in)");
   if (!document.documentElement.classList.contains("anim")) { els.forEach(e => e.classList.add("in")); return; }
   const io = new IntersectionObserver(es => es.forEach(e => {
