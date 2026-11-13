@@ -38,6 +38,7 @@ body.lab-touches .lab-pick {
   box-shadow: 0 24px 60px rgba(0,0,0,.35);
   font-family: Archivo, sans-serif;
 }
+body.lab-touches .lab-pick[hidden] { display: none; }
 body.lab-touches .lab-pick.in { animation: lab-in .6s cubic-bezier(.2,.7,.1,1) both; }
 @keyframes lab-in { from { opacity: 0; transform: translateY(10px); } }
 .lab-pick-top { display: flex; justify-content: space-between; font: 500 10.5px/1 "DM Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: #6A6F68; margin-bottom: 14px; }

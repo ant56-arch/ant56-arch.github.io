@@ -6,7 +6,8 @@
 //    a deep pass, a fly ball to left-center, a one-timer, a cross and a header).
 //    The home page's All view rotates through the sports.
 // 2. Pick card and record tab: tonight's surest pick floats on the banner and
-//    the record sits in a tab cut into the bottom corner.
+//    the record sits in a tab cut into the bottom corner. The pick card is on
+//    the live home page now, so here it shows on the game boards only.
 // 3. Serif headline: the banner headline set in big serif caps.
 // Each one switches on and off from the small Test panel, remembered per browser.
 (() => {
@@ -2441,6 +2442,7 @@
     async function show(sp) {
       if (!on.touches) return;
       build();
+      el.hidden = isHome;   // the home page has its own surest-pick card now; this one stays on the game boards
       shown = sp;
       const [d, gs] = await Promise.all([summary(sp), games(sp)]);
       if (shown !== sp || !d) return;

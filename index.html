@@ -606,32 +606,28 @@ em, i { font-style: normal; }
 
 /* ===== Build-on pass: hero top pick, motion, league cards, phone polish ===== */
 
-/* Hero: today's top pick beside the headline. */
-.hero-row.has-pick { grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); }
-.top-pick { display: grid; gap: 14px; padding: 20px 22px; text-decoration: none; color: var(--hero-ink); background: rgba(10, 16, 13, .5); border: 1px solid rgba(242, 238, 230, .28); border-radius: 6px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: background .2s, border-color .2s, transform .2s; animation: tp-in .9s cubic-bezier(.2, .7, .1, 1) .35s backwards; }
-@keyframes tp-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.top-pick:hover { background: rgba(10, 16, 13, .66); border-color: rgba(242, 238, 230, .55); transform: translateY(-2px); }
-.tp-top { display: flex; justify-content: space-between; gap: 12px; opacity: .85; }
-.tp-top span:first-child { display: inline-flex; align-items: center; gap: 8px; }
-.tp-top span:first-child::before { content: ""; width: 8px; height: 8px; background: #D98B5F; clip-path: polygon(0 0, 100% 50%, 0 100%); }
-.tp-name { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-variation-settings: "wdth" 125; font-size: clamp(22px, 2.1vw, 30px); line-height: 1.05; text-transform: uppercase; letter-spacing: 0.02em; }
-.tp-name b { display: none; font-weight: 400; }
-.tp-game { margin-top: -6px; font-size: 14px; opacity: .8; }
-.tp-bars { display: grid; gap: 8px; }
-.tp-bar { display: grid; grid-template-columns: 52px minmax(0, 1fr) 48px; align-items: center; gap: 10px; font-size: 14px; }
-.tp-bar .mono { opacity: .8; }
-.tp-bar i { position: relative; display: block; height: 4px; background: rgba(242, 238, 230, .2); }
-.tp-bar i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 0; background: var(--hero-ink); transition: width 1s cubic-bezier(.2, .7, .1, 1) .7s; }
-.top-pick.in .tp-bar i::after { width: var(--w); }
-.tp-bar.vegas i::after { background: #D98B5F; }
-.tp-bar b { text-align: right; font-weight: 400; }
-.tp-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(242, 238, 230, .22); }
+/* Hero: today's surest pick beside the headline, in the card design tested on /lab/. */
+.hero-row.has-pick { grid-template-columns: minmax(0, 1fr) min(320px, 28vw); }
+.top-pick { display: block; padding: 20px 22px 18px; text-decoration: none; background: #F2EEE6; color: #121314; border-radius: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); transition: transform .2s, box-shadow .2s; animation: tp-in .6s cubic-bezier(.2, .7, .1, 1) .35s backwards; }
+@keyframes tp-in { from { opacity: 0; transform: translateY(10px); } }
+.top-pick:hover { transform: translateY(-2px); box-shadow: 0 28px 64px rgba(0, 0, 0, .45); }
+.tp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font: 500 10.5px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: #5E625C; }
+.tp-top span:first-child { background: #121314; color: #F2EEE6; padding: 5px 9px; border-radius: 99px; }
+.tp-name { display: block; font-size: 20px; font-weight: 600; line-height: 1.15; }
+.tp-game { display: block; margin-top: 4px; font-size: 12.5px; color: #5E625C; }
+.tp-num { margin-top: 16px; font-family: var(--f-serif); font-size: 64px; line-height: 1; }
+.tp-num i { font-style: normal; font-size: .55em; }
+.tp-bar { height: 4px; margin-top: 12px; background: rgba(18, 19, 20, .12); border-radius: 4px; overflow: hidden; }
+.tp-bar span { display: block; width: 0; height: 100%; background: #E5793B; border-radius: 4px; transition: width 1s cubic-bezier(.2, .7, .1, 1) .7s; }
+.top-pick.in .tp-bar span { width: var(--w); }
+.tp-cap { display: block; margin-top: 8px; font: 500 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: #5E625C; }
 @media (max-width: 760px) {
   .hero-row.has-pick { grid-template-columns: 1fr; gap: 18px; }
-  .top-pick { padding: 12px 14px; gap: 8px; }
-  .tp-name { font-size: 18px; }
-  .tp-name b { display: inline; }
-  .tp-game, .tp-bars, .tp-foot { display: none; }
+  .top-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 14px; padding: 12px 16px; border-radius: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); }
+  .tp-top { grid-column: 1 / -1; margin-bottom: 8px; font-size: 12px; letter-spacing: .1em; }
+  .tp-name { font-size: 16px; }
+  .tp-game, .tp-bar, .tp-cap { display: none; }
+  .tp-num { margin: 0; font-size: 34px; }
 }
 
 /* Motion: things rise in as they scroll into view, bars grow, the chart wipes in.
@@ -1950,22 +1946,24 @@ function motion() {
   }, { passive: true });
   countUp($("heroTally"));
 }
-// The hero's surest pick: today's most likely winner that Vegas rates lower than we do
-// (else the surest with a price, else the surest). A tap opens it in the slate.
+// The hero's surest pick: today's most likely winner among games still to
+// start, in the card design tested on /lab/. A tap opens the game in the slate.
 function heroPick(all, today) {
-  const now = Date.now(), prob = (a, b) => b.prob - a.prob;
-  const up = all.filter(g => g.date === today && !g.final && new Date(g.start) > now && g.pick !== "Draw");
-  const g = up.filter(x => x.book && x.prob - x.book >= 2).sort(prob)[0] || up.filter(x => x.book).sort(prob)[0] || up.sort(prob)[0];
+  const now = Date.now();
+  const g = all.filter(x => x.date === today && !x.final && new Date(x.start) > now && x.pick !== "Draw")
+    .sort((a, b) => b.prob - a.prob || new Date(a.start) - new Date(b.start))[0];
   const row = document.querySelector(".hero-row");
   if (!g || !row || $("topPick")) return;
-  const bar = (label, v, cls) => `<div class="tp-bar${cls}"><span class="mono">${label}</span><i style="--w:${Math.max(0, Math.min(100, v))}%"></i><b>${v.toFixed(1)}%</b></div>`;
+  const other = g.pick === g.away ? g.home : g.away;
+  const wd = new Date(g.start).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short" });
   row.classList.add("has-pick");
   row.insertAdjacentHTML("beforeend", `<a class="top-pick" id="topPick" href="#slate">
-    <div class="tp-top mono"><span>Today's surest pick</span><span>${esc(g.sp)} · ${esc(g.t)} ET</span></div>
-    <div class="tp-name"><span>${esc(teamName(g, g.pick))}</span><b>${Math.round(g.prob)}%</b></div>
-    <div class="tp-game">${esc(A(g))} @ ${esc(H(g))}</div>
-    <div class="tp-bars">${bar("Us", g.prob, "")}${g.book ? bar("Vegas", g.book, " vegas") : ""}</div>
-    <div class="tp-foot mono"><span>${g.price == null ? "No price posted" : "Price " + fmtPrice(g.price)}</span><span>See the game ↓</span></div>
+    <div class="tp-top"><span>${esc(g.sp)}</span><span>Surest pick</span></div>
+    <b class="tp-name">${esc(teamName(g, g.pick))} over ${esc(teamName(g, other))}</b>
+    <small class="tp-game">${esc(g.away)} @ ${esc(g.home)} · ${wd} ${esc(g.t)} ET</small>
+    <div class="tp-num">${Math.round(g.prob)}<i>%</i></div>
+    <div class="tp-bar"><span style="--w:${Math.max(0, Math.min(100, g.prob))}%"></span></div>
+    <small class="tp-cap">Our chance to win</small>
   </a>`);
   const a = $("topPick");
   requestAnimationFrame(() => requestAnimationFrame(() => a.classList.add("in")));
