@@ -134,15 +134,11 @@ def headline(title):
 
 
 def sections(body_html):
-    """Number a page's section headings and give each the home page's
-    label-over-headline look. Headings that already carry markup are left as is."""
-    n = 0
-
+    """Give a page's section headings the home page's label-over-headline
+    look (no section numbers). Headings that already carry markup are left as is."""
     def one(m):
-        nonlocal n
-        n += 1
         title = m.group(1).strip()
         label = title.replace(": ", " &middot; ")
-        return (f'<div class="sec-label"><span>{n:02d}</span><b>{label}</b></div>'
+        return (f'<div class="sec-label"><b>{label}</b></div>'
                 f'<h2 class="sec-h2">{headline(title)}</h2>')
     return _H2.sub(one, body_html)
