@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - index.html
+      - about.html
       - bets.html
       - home-page.js
       - home-page.css

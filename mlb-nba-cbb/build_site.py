@@ -189,6 +189,7 @@ def slim_footer(name, sources):
       1-800-GAMBLER.</p>
     <nav class="footer-links" aria-label="Site">
       <a href="model.html">How the model works</a>
+      <a href="{HOME_URL}about.html">About</a>
       <a href="{HOME_URL}terms.html">Terms</a>
       <a href="{HOME_URL}privacy.html">Privacy</a>
       <a href="{HOME_URL}">All sites</a>
