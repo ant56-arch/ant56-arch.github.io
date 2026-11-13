@@ -632,16 +632,29 @@ a.league:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; 
 .league { display: flex; flex-direction: column; }
 .lrec { grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: 16px; }
 .lrec span { grid-column: 1 / -1; }
-/* Form strip: one square per game day, newest on the right. Filled is a winning day, hollow a losing day. */
-.lform { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 22px; }
-.lform .lcap { font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft); white-space: nowrap; }
-.lsq { display: flex; gap: 3px; flex: none; }
-.lsq i { box-sizing: border-box; width: 10px; height: 10px; display: grid; place-items: center; border: 1.5px solid var(--sqc, var(--ink)); font: 500 0/1 var(--f-mono); font-style: normal; color: transparent; }
-.lsq i.w { background: var(--sqc, var(--ink)); }
-.lsq i.e { border-style: dotted; }
 .league { --sqc: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); }
 .league.feat { --sqc: var(--board-ink); }
 .league.feat .lcap { color: inherit; opacity: .78; }
+/* Day chart: one column per game day for the last ten, oldest on the left. Right picks
+   rise above the zero line and wrong picks drop below it, on the same labelled scale. */
+.lchart { --lw: var(--sqc); --ll: color-mix(in srgb, var(--sqc) 38%, transparent); display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 92px auto; column-gap: 8px; row-gap: 6px; margin-top: 14px; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--ink-soft); }
+.lc-head { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; overflow: hidden; }
+.lc-key { display: flex; gap: 10px; }
+.lc-key i { display: inline-block; width: 8px; height: 8px; margin-right: 5px; background: var(--lw); }
+.lc-key i.l { background: var(--ll); }
+.lc-y { display: grid; grid-template-rows: auto 1fr auto 1fr auto; text-align: right; font-variant-numeric: tabular-nums; }
+.lc-y span:nth-child(2) { grid-row: 3; align-self: center; }
+.lc-y span:nth-child(3) { grid-row: 5; align-self: end; }
+.lc-plot { position: relative; display: flex; gap: 3px; border-top: 1px dashed var(--rule); border-bottom: 1px dashed var(--rule); }
+.lc-plot::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid color-mix(in srgb, var(--sqc) 55%, transparent); }
+.lc-col { flex: 1 1 0; min-width: 0; display: grid; grid-template-rows: 1fr 1fr; }
+.lc-col i { display: block; width: 100%; max-width: 22px; justify-self: center; }
+.lc-col i.w { align-self: end; background: var(--lw); }
+.lc-col i.l { align-self: start; background: var(--ll); }
+.lc-x { grid-column: 2; display: flex; justify-content: space-between; }
+.league.feat .lchart { --sqc: var(--board-ink); color: inherit; }
+.league.feat .lchart > * { opacity: .85; }
+.league.feat .lc-plot { border-color: color-mix(in srgb, var(--board-ink) 28%, transparent); }
 /* Each league has its own colour (--lc, set on the card): a light tint at rest, the graph's bars, and the full fill when featured. */
 .league { background: color-mix(in srgb, var(--lc, var(--board)) 9%, var(--paper)); }
 a.league:hover { background: color-mix(in srgb, var(--lc, var(--board)) 16%, var(--paper)); }
@@ -742,15 +755,13 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   .lg-row .lrec span, .lg-row .lt span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lg-row .lrec b { white-space: nowrap; }
   /* The trend line follows the card: full size when big, small otherwise, gone when squeezed. */
-  /* Squares: bigger, with W and L written in, on the big card; hidden on a squeezed one (its caption stays). */
-  .lg-row .lsq, .lg-row .lsq i { transition: width .45s cubic-bezier(.2, .7, .1, 1), height .45s cubic-bezier(.2, .7, .1, 1), gap .45s, opacity .2s; }
-  .lg-row .league.feat .lsq, .lg-row .league:hover .lsq, .lg-row .league:focus-visible .lsq { gap: 4px; }
-  .lg-row .league.feat .lsq i, .lg-row .league:hover .lsq i, .lg-row .league:focus-visible .lsq i { width: 20px; height: 20px; font-size: 11px; color: var(--sqc); }
-  .lg-row .league.feat .lsq i.w, .lg-row .league:hover .lsq i.w, .lg-row .league:focus-visible .lsq i.w { color: var(--lc, var(--board)); }
-  .lg-row.n4:has(.league:hover) .league:not(:hover) .lsq, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lsq { display: none; }
   /* The green "featured" look follows the pointer: the card being hovered turns green... */
   .lg-row a.league:hover, .lg-row a.league:focus-visible { --forest: var(--lc, var(--board)); --forest-ink: var(--board-ink); --sqc: var(--board-ink); background: var(--lc, var(--board)); color: var(--board-ink); }
   .lg-row a.league:hover :is(.lt, p, .lrec span, .lcap), .lg-row a.league:focus-visible :is(.lt, p, .lrec span, .lcap) { color: inherit; opacity: .78; }
+  .lg-row a.league:hover .lchart, .lg-row a.league:focus-visible .lchart { color: inherit; }
+  /* A squeezed card is too narrow for the key; the big card beside it shows it. */
+  .lg-row.n4:has(.league:hover) .league:not(:hover) .lc-key, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lc-key { display: none; }
+  .lg-row a.league:hover .lc-plot, .lg-row a.league:focus-visible .lc-plot { border-color: color-mix(in srgb, var(--board-ink) 28%, transparent); }
   .lg-row a.league:hover .lnext, .lg-row a.league:focus-visible .lnext { border-top-color: color-mix(in srgb, var(--board-ink) 22%, transparent); color: inherit; }
   .lg-row a.league:hover .lnext span, .lg-row a.league:focus-visible .lnext span { opacity: .78; }
   .lg-row a.league:hover .lnext b, .lg-row a.league:focus-visible .lnext b { color: inherit; }
@@ -758,8 +769,9 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) { --forest: inherit; --forest-ink: inherit; --sqc: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); background: color-mix(in srgb, var(--lc, var(--board)) 9%, var(--paper)); color: var(--ink); box-shadow: none; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) :is(.lt, p, .lrec span, .lcap) { color: var(--ink-soft); opacity: 1; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext { border-top-color: var(--rule); color: var(--ink-soft); }
-  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lsq { gap: 3px; }
-  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lsq i { width: 10px; height: 10px; font-size: 0; color: transparent; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lchart { --sqc: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); color: var(--ink-soft); }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lchart > * { opacity: 1; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lc-plot { border-color: var(--rule); }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext span { opacity: 1; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext b { color: var(--ink); }
 }
@@ -2004,17 +2016,24 @@ function motion() {
   }, { passive: true });
   countUp($("heroTally"));
 }
-// A league card's form strip: one square per game day for its last ten, newest
-// on the right. W is a day with more picks right than wrong, L the reverse.
-function formStrip(rows) {
+// A league card's day chart: its last ten game days, oldest on the left. Each
+// column's top bar is that day's right picks and its bottom bar the wrong ones,
+// both against the y-axis, which runs to a round number above the busiest day.
+function dayChart(rows) {
   const days = (rows || []).filter(r => r[1] + r[2] > 0).slice(-10);
   if (days.length < 3) return "";
-  const won = days.filter(r => r[1] > r[2]).length;
-  const sq = days.map(([d, w, l]) => {
-    const k = w > l ? "w" : l > w ? "l" : "e";
-    return `<i class="${k}" title="${esc(longDate(d, { month: "short", day: "numeric" }))}: ${w}-${l}">${k === "w" ? "W" : k === "l" ? "L" : "="}</i>`;
-  }).join("");
-  return `<div class="lform" role="img" aria-label="Won ${won} of the last ${days.length} game days"><span class="lcap mono">Won ${won} of last ${days.length} days</span><span class="lsq" aria-hidden="true">${sq}</span></div>`;
+  const peak = Math.max(...days.map(r => Math.max(r[1], r[2])));
+  const nice = n => { const p = Math.pow(10, Math.floor(Math.log10(n))), f = n / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
+  const top = Math.max(2, nice(peak)), won = days.filter(r => r[1] > r[2]).length;
+  const short = d => longDate(d, { month: "short", day: "numeric" });
+  const cols = days.map(([d, w, l]) => `<span class="lc-col" title="${esc(short(d))}: ${w} right, ${l} wrong"><i class="w" style="height:${(w / top * 100).toFixed(1)}%"></i><i class="l" style="height:${(l / top * 100).toFixed(1)}%"></i></span>`).join("");
+  const said = days.map(([d, w, l]) => `${short(d)} ${w} right ${l} wrong`).join("; ");
+  return `<div class="lchart">
+      <div class="lc-head"><span>Won ${won} of last ${days.length} days</span><span class="lc-key" aria-hidden="true"><span><i></i>Right</span><span><i class="l"></i>Wrong</span></span></div>
+      <div class="lc-y" aria-hidden="true"><span>${top}</span><span>0</span><span>${top}</span></div>
+      <div class="lc-plot" role="img" aria-label="Picks right and wrong on each of the last ${days.length} game days: ${esc(said)}">${cols}</div>
+      <div class="lc-x" aria-hidden="true"><span>${esc(short(days[0][0]))}</span><span>${esc(short(days[days.length - 1][0]))}</span></div>
+    </div>`;
 }
 
 // About teaser: the overall record, from the same summaries as the hero tally.
@@ -2124,7 +2143,7 @@ function render(sums) {
     const next = !nx ? (done ? { when: "Back", text: done.next_label.replace(/^(.)/, c => c.toUpperCase()).replace(/, usually.*/, "") } : { when: "Next game", text: "Not on the board yet" })
       : new Date(nx.start) <= Date.now() ? { when: "Live now", text: game }
       : { when: "Next game", text: `${nx.date === today ? "Today" : longDate(nx.date, { weekday: "short" })} ${nx.t} ET · ${game}` };
-    const spark = recd ? formStrip((src.daily || []).filter(([d]) => d < today)) : "";
+    const spark = recd ? dayChart((src.daily || []).filter(([d]) => d < today)) : "";
     leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" && !done, done: !!done, next, spark });
   });
   // Sports whose season is over drop to the bottom, keeping their order.
