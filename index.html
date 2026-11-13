@@ -619,8 +619,6 @@ em, i { font-style: normal; }
 .anim .rt.in .rt-plot svg { clip-path: inset(-12px -12px -12px -12px); }
 .anim .rt-dot { opacity: 0; transition: opacity .3s ease 1.6s; }
 .anim .rt.in .rt-dot { opacity: 1; }
-.anim .lspark { clip-path: inset(-6px 100% -6px -6px); transition: clip-path 1.1s cubic-bezier(.4, 0, .2, 1) calc(var(--d, 0s) + .35s); }
-.anim .league.in .lspark { clip-path: inset(-6px -6px -6px -6px); }
 #heroFx { pointer-events: none; }
 
 /* Hover: a calendar row lights up, a league card underlines its name. */
@@ -634,23 +632,21 @@ a.league:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; 
 .league { display: flex; flex-direction: column; }
 .lrec { grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: 16px; }
 .lrec span { grid-column: 1 / -1; }
-.lgraph { display: grid; justify-items: end; gap: 3px; }
-.lrec .lcap { font-style: normal; font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft); white-space: nowrap; }
-.lspark { width: 92px; height: 30px; overflow: visible; margin-bottom: 0; }
-.lspark { justify-self: end; }
-.league.feat .lspark { width: 220px; height: 44px; }
-@media (max-width: 520px) { .league.feat .lspark { width: 120px; height: 34px; } }
+/* Form strip: one square per game day, newest on the right. Filled is a winning day, hollow a losing day. */
+.lform { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 22px; }
+.lform .lcap { font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft); white-space: nowrap; }
+.lsq { display: flex; gap: 3px; flex: none; }
+.lsq i { box-sizing: border-box; width: 10px; height: 10px; display: grid; place-items: center; border: 1.5px solid var(--sqc, var(--ink)); font: 500 0/1 var(--f-mono); font-style: normal; color: transparent; }
+.lsq i.w { background: var(--sqc, var(--ink)); }
+.lsq i.e { border-style: dotted; }
+.league { --sqc: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); }
+.league.feat { --sqc: var(--board-ink); }
+.league.feat .lcap { color: inherit; opacity: .78; }
 /* Each league has its own colour (--lc, set on the card): a light tint at rest, the graph's bars, and the full fill when featured. */
 .league { background: color-mix(in srgb, var(--lc, var(--board)) 9%, var(--paper)); }
 a.league:hover { background: color-mix(in srgb, var(--lc, var(--board)) 16%, var(--paper)); }
 .league.feat { --forest: var(--lc, var(--board)); background: var(--lc, var(--board)); }
-.lspark rect { fill: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); }
-.lspark rect.dn { opacity: .42; }
-.lspark rect.ev { opacity: .6; }
-.lspark line { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.league.feat .lspark rect { fill: var(--board-ink); }
-.league.feat .lspark line { stroke: color-mix(in srgb, var(--board-ink) 30%, transparent); }
-.league.feat .lcap { color: inherit; opacity: .78; }
+
 .lnext { display: flex; gap: 10px; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--ink-soft); letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; }
 .lnext b { font-weight: 400; color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
 .league.feat .lnext { border-top-color: color-mix(in srgb, var(--forest-ink) 22%, transparent); color: inherit; }
@@ -743,30 +739,27 @@ h2 em { font-variation-settings: "wdth" 125; text-transform: uppercase; font-siz
   .lg-row:has(.league:hover) .league:not(:hover), .lg-row:has(.league:focus-visible) .league:not(:focus-visible) { width: var(--sq); }
   /* Text stays on a fixed number of lines so the row's height never jumps. */
   .lg-row .league p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.5; height: 3em; }
-  /* A squeezed card keeps the room its graph caption took, so the row stays the same height. */
-  .lg-row .lgraph { min-height: 61px; align-content: end; }
   .lg-row .lrec span, .lg-row .lt span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lg-row .lrec b { white-space: nowrap; }
   /* The trend line follows the card: full size when big, small otherwise, gone when squeezed. */
-  .lg-row .lspark, .anim .lg-row .lspark { margin-top: 14px; transition: clip-path 1.1s cubic-bezier(.4, 0, .2, 1) calc(var(--d, 0s) + .35s), width .45s cubic-bezier(.2, .7, .1, 1), height .45s cubic-bezier(.2, .7, .1, 1), margin-top .45s cubic-bezier(.2, .7, .1, 1), opacity .2s; }
-  .lg-row .league.feat .lspark, .lg-row .league:hover .lspark, .lg-row .league:focus-visible .lspark { width: 220px; height: 44px; margin-top: 0; }
-  .lg-row:has(.league:not(.feat):hover) .league.feat:not(:hover) .lspark { width: 92px; height: 30px; margin-top: 14px; }
-  .lg-row.n4:has(.league:hover) .league:not(:hover) .lspark, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lspark { width: 0; opacity: 0; }
-  .lg-row.n4:has(.league:hover) .league:not(:hover) .lcap, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lcap { display: none; }
+  /* Squares: bigger, with W and L written in, on the big card; hidden on a squeezed one (its caption stays). */
+  .lg-row .lsq, .lg-row .lsq i { transition: width .45s cubic-bezier(.2, .7, .1, 1), height .45s cubic-bezier(.2, .7, .1, 1), gap .45s, opacity .2s; }
+  .lg-row .league.feat .lsq, .lg-row .league:hover .lsq, .lg-row .league:focus-visible .lsq { gap: 4px; }
+  .lg-row .league.feat .lsq i, .lg-row .league:hover .lsq i, .lg-row .league:focus-visible .lsq i { width: 20px; height: 20px; font-size: 11px; color: var(--sqc); }
+  .lg-row .league.feat .lsq i.w, .lg-row .league:hover .lsq i.w, .lg-row .league:focus-visible .lsq i.w { color: var(--lc, var(--board)); }
+  .lg-row.n4:has(.league:hover) .league:not(:hover) .lsq, .lg-row.n4:has(.league:focus-visible) .league:not(:focus-visible) .lsq { display: none; }
   /* The green "featured" look follows the pointer: the card being hovered turns green... */
-  .lg-row a.league:hover, .lg-row a.league:focus-visible { --forest: var(--lc, var(--board)); --forest-ink: var(--board-ink); background: var(--lc, var(--board)); color: var(--board-ink); }
+  .lg-row a.league:hover, .lg-row a.league:focus-visible { --forest: var(--lc, var(--board)); --forest-ink: var(--board-ink); --sqc: var(--board-ink); background: var(--lc, var(--board)); color: var(--board-ink); }
   .lg-row a.league:hover :is(.lt, p, .lrec span, .lcap), .lg-row a.league:focus-visible :is(.lt, p, .lrec span, .lcap) { color: inherit; opacity: .78; }
-  .lg-row a.league:hover .lspark rect, .lg-row a.league:focus-visible .lspark rect { fill: var(--board-ink); }
-  .lg-row a.league:hover .lspark line, .lg-row a.league:focus-visible .lspark line { stroke: color-mix(in srgb, var(--board-ink) 30%, transparent); }
   .lg-row a.league:hover .lnext, .lg-row a.league:focus-visible .lnext { border-top-color: color-mix(in srgb, var(--board-ink) 22%, transparent); color: inherit; }
   .lg-row a.league:hover .lnext span, .lg-row a.league:focus-visible .lnext span { opacity: .78; }
   .lg-row a.league:hover .lnext b, .lg-row a.league:focus-visible .lnext b { color: inherit; }
   /* ...and the usual featured card goes plain while another card has it, so only one is green at a time. */
-  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) { --forest: inherit; --forest-ink: inherit; background: color-mix(in srgb, var(--lc, var(--board)) 9%, var(--paper)); color: var(--ink); box-shadow: none; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) { --forest: inherit; --forest-ink: inherit; --sqc: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); background: color-mix(in srgb, var(--lc, var(--board)) 9%, var(--paper)); color: var(--ink); box-shadow: none; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) :is(.lt, p, .lrec span, .lcap) { color: var(--ink-soft); opacity: 1; }
-  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lspark rect { fill: color-mix(in srgb, var(--lc, var(--board)) 72%, var(--ink)); }
-  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lspark line { stroke: var(--rule); }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext { border-top-color: var(--rule); color: var(--ink-soft); }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lsq { gap: 3px; }
+  .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lsq i { width: 10px; height: 10px; font-size: 0; color: transparent; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext span { opacity: 1; }
   .leagues.rows:is(:has(.league:not(.feat):hover), :has(.league:not(.feat):focus-visible)) .league.feat:not(:hover, :focus-visible) .lnext b { color: var(--ink); }
 }
@@ -2011,19 +2004,17 @@ function motion() {
   }, { passive: true });
   countUp($("heroTally"));
 }
-// A league card's graph: its last ten game days. A bar above the line is a
-// winning day and one below is a losing day; the taller the bar, the more lopsided.
-function formBars(rows, daily) {
+// A league card's form strip: one square per game day for its last ten, newest
+// on the right. W is a day with more picks right than wrong, L the reverse.
+function formStrip(rows) {
   const days = (rows || []).filter(r => r[1] + r[2] > 0).slice(-10);
   if (days.length < 3) return "";
-  const bw = 100 / days.length, up = days.filter(r => r[1] > r[2]).length, dn = days.filter(r => r[2] > r[1]).length;
-  const bars = days.map(([, w, l], i) => {
-    const m = (w - l) / (w + l), h = Math.max(2, Math.abs(m) * 13), x = (i * bw + bw * 0.16).toFixed(2), wd = (bw * 0.68).toFixed(2);
-    return m === 0 ? `<rect class="ev" x="${x}" y="14" width="${wd}" height="2"/>`
-      : `<rect${m < 0 ? ' class="dn"' : ""} x="${x}" y="${(m > 0 ? 15 - h : 15).toFixed(2)}" width="${wd}" height="${h.toFixed(2)}"/>`;
+  const won = days.filter(r => r[1] > r[2]).length;
+  const sq = days.map(([d, w, l]) => {
+    const k = w > l ? "w" : l > w ? "l" : "e";
+    return `<i class="${k}" title="${esc(longDate(d, { month: "short", day: "numeric" }))}: ${w}-${l}">${k === "w" ? "W" : k === "l" ? "L" : "="}</i>`;
   }).join("");
-  const label = `Last ${days.length} ${daily ? "days" : "game days"}`;
-  return { svg: `<svg class="lspark" viewBox="0 0 100 30" preserveAspectRatio="none" role="img" aria-label="${label}: ${up} winning, ${dn} losing"><line x1="0" y1="15" x2="100" y2="15"/>${bars}</svg>`, label };
+  return `<div class="lform" role="img" aria-label="Won ${won} of the last ${days.length} game days"><span class="lcap mono">Won ${won} of last ${days.length} days</span><span class="lsq" aria-hidden="true">${sq}</span></div>`;
 }
 
 // About teaser: the overall record, from the same summaries as the hero tally.
@@ -2133,7 +2124,7 @@ function render(sums) {
     const next = !nx ? (done ? { when: "Back", text: done.next_label.replace(/^(.)/, c => c.toUpperCase()).replace(/, usually.*/, "") } : { when: "Next game", text: "Not on the board yet" })
       : new Date(nx.start) <= Date.now() ? { when: "Live now", text: game }
       : { when: "Next game", text: `${nx.date === today ? "Today" : longDate(nx.date, { weekday: "short" })} ${nx.t} ET · ${game}` };
-    const spark = recd ? formBars((src.daily || []).filter(([d]) => d < today), ["MLB", "NHL", "NBA", "CBB"].includes(site.lg)) : "";
+    const spark = recd ? formStrip((src.daily || []).filter(([d]) => d < today)) : "";
     leagues.push({ lg: site.lg, href: site.href, tag, about: site.about, rec: recd ? src.record.value : null, sub, wait: recd ? null : site.wait, feat: site.lg === "NFL" && !done, done: !!done, next, spark });
   });
   // Sports whose season is over drop to the bottom, keeping their order.
@@ -2143,7 +2134,7 @@ function render(sums) {
       <div class="lt mono"><span>${l.lg}</span><span>${l.tag}</span></div>
       <h3>${l.lg}</h3>
       <p>${l.about}</p>
-      ${l.rec ? `<div class="lrec"><b data-count>${l.rec}</b>${l.spark ? `<div class="lgraph">${l.spark.svg}<i class="lcap mono">${l.spark.label}</i></div>` : ""}<span>${l.sub}</span></div>` : `<div class="wait">${l.wait}</div>`}
+      ${l.rec ? `<div class="lrec"><b data-count>${l.rec}</b><span>${l.sub}</span></div>${l.spark}` : `<div class="wait">${l.wait}</div>`}
       ${l.next ? `<div class="lnext mono"><span>${l.next.when}</span><b>${esc(l.next.text)}</b></div>` : ""}
     </a>`);
   // Two rows (three cards beside a featured one, else four), so a hovered card
