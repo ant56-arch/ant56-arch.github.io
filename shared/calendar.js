@@ -32,7 +32,7 @@
   function shell(root, fixed) {
     root.innerHTML = `
 <section class="cal-sec">
-  <div class="sec-label"><span>01</span><b>The month</b><i class="cal-tag" data-k="monthTag"></i></div>
+  <div class="sec-label"><b>The month</b><i class="cal-tag" data-k="monthTag"></i></div>
   <h2 class="sec-h2" data-k="monthH2"><span data-loading>Loading the month</span></h2>
   <div class="cal-tools">
     ${fixed ? "" : `<div class="cal-filters" role="group" aria-label="Sport" data-k="filters"></div>`}
@@ -45,7 +45,7 @@
   <div class="cal-grid" data-k="grid"></div>
 </section>
 <section class="cal-sec" data-k="day">
-  <div class="sec-label"><span>02</span><b>The day</b><i class="cal-tag" data-k="dayTag"></i></div>
+  <div class="sec-label"><b>The day</b><i class="cal-tag" data-k="dayTag"></i></div>
   <h2 class="sec-h2" data-k="dayH2"></h2>
   <div data-k="dayBody"></div>
 </section>`;
