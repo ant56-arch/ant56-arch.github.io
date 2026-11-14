@@ -8489,12 +8489,12 @@
    "away_record": "8-4",
    "neutral": false,
    "pick": "SA",
-   "prob": 81.7,
-   "home_prob": 81.7,
+   "prob": 82.2,
+   "home_prob": 82.2,
    "model_home_prob": 79.7,
    "model_weight": 0.42,
    "blended": true,
-   "margin": 12.8,
+   "margin": 13.0,
    "home_out": [],
    "away_out": [
     "Stephen Curry",
@@ -8506,18 +8506,18 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T00:49:26Z",
+   "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "SA",
     "side": "home",
-    "price": -650,
-    "prob": 81.7,
-    "book_prob": 83.2,
-    "edge": -1.5,
+    "price": -700,
+    "prob": 82.2,
+    "book_prob": 84.0,
+    "edge": -1.8,
     "value": false,
-    "home_ml": -650,
-    "away_ml": 473,
-    "book": "Draft Kings",
+    "home_ml": -700,
+    "away_ml": 501,
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -8553,7 +8553,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T00:49:26Z",
+   "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "POR",
     "side": "away",
@@ -8564,7 +8564,7 @@
     "value": false,
     "home_ml": 361,
     "away_ml": -468,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
@@ -8600,7 +8600,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T00:49:26Z",
+   "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "OKC",
     "side": "away",
@@ -8611,7 +8611,7 @@
     "value": false,
     "home_ml": 231,
     "away_ml": -283,
-    "book": "Draft Kings",
+    "book": "DraftKings",
     "won": null,
     "units": null
    }
