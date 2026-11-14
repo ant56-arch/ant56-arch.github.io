@@ -8674,7 +8674,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T10:27:18Z",
+   "set_at": "2026-11-14T13:21:44Z",
    "ml": {
     "team": "DEN",
     "side": "away",
@@ -8685,7 +8685,7 @@
     "value": false,
     "home_ml": 443,
     "away_ml": -597,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -8703,12 +8703,12 @@
    "away_record": "7-5",
    "neutral": false,
    "pick": "CLE",
-   "prob": 54.0,
-   "home_prob": 54.0,
+   "prob": 52.1,
+   "home_prob": 52.1,
    "model_home_prob": 53.6,
    "model_weight": 0.42,
    "blended": true,
-   "margin": 1.4,
+   "margin": 0.7,
    "home_out": [
     "Evan Mobley",
     "Sam Merrill"
@@ -8720,18 +8720,18 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T10:27:18Z",
+   "set_at": "2026-11-14T13:21:44Z",
    "ml": {
     "team": "CLE",
     "side": "home",
-    "price": -130,
-    "prob": 54.0,
-    "book_prob": 54.3,
-    "edge": -0.3,
+    "price": -113,
+    "prob": 52.1,
+    "book_prob": 51.0,
+    "edge": 1.1,
     "value": false,
-    "home_ml": -130,
-    "away_ml": 110,
-    "book": "DraftKings",
+    "home_ml": -113,
+    "away_ml": -104,
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -8769,7 +8769,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T10:27:18Z",
+   "set_at": "2026-11-14T13:21:44Z",
    "ml": {
     "team": "DET",
     "side": "away",
@@ -8780,7 +8780,7 @@
     "value": false,
     "home_ml": 160,
     "away_ml": -191,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -8815,7 +8815,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T10:27:18Z",
+   "set_at": "2026-11-14T13:21:44Z",
    "ml": {
     "team": "MEM",
     "side": "home",
@@ -8826,7 +8826,7 @@
     "value": false,
     "home_ml": -197,
     "away_ml": 164,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -8862,7 +8862,7 @@
    },
    "model": "2026-11-11T10:58:29+00:00",
    "correct": null,
-   "set_at": "2026-11-14T10:27:18Z",
+   "set_at": "2026-11-14T13:21:44Z",
    "ml": {
     "team": "MIN",
     "side": "home",
@@ -8873,7 +8873,7 @@
     "value": false,
     "home_ml": -880,
     "away_ml": 599,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
