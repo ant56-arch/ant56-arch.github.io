@@ -1,0 +1,877 @@
+{
+ "sport": "NFL",
+ "label": "Week 10",
+ "updated": "2026-11-14T03:13:23.914137+00:00",
+ "espn": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+ "top25_only": false,
+ "games": [
+  {
+   "id": "401873052",
+   "start": "2026-11-13T01:15Z",
+   "state": "post",
+   "detail": "Final",
+   "tv": "Prime Video",
+   "venue": "MetLife Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "WSH",
+    "name": "Washington Commanders",
+    "short": "Commanders",
+    "location": "Washington",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+    "color": "5a1414",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 24,
+    "record": "3-5-1",
+    "probable": null,
+    "winner": true
+   },
+   "home": {
+    "abbr": "NYG",
+    "name": "New York Giants",
+    "short": "Giants",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyg.png",
+    "color": "003c7f",
+    "alt": "c9243f",
+    "rank": null,
+    "score": 21,
+    "record": "5-3-1",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "NYG to win, 56%",
+    "result": false,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 2.1,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "NYG"
+    },
+    "spread": {
+     "text": "NYG -1.5, 52% to cover",
+     "short": "NYG -1.5",
+     "result": false,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-was-nyg.html"
+  },
+  {
+   "id": "401873053",
+   "start": "2026-11-15T14:30Z",
+   "state": "pre",
+   "detail": "11/15 - 9:30 AM EST",
+   "tv": "Fox",
+   "venue": "FC Bayern Munich Stadium",
+   "neutral": true,
+   "series": "",
+   "away": {
+    "abbr": "NE",
+    "name": "New England Patriots",
+    "short": "Patriots",
+    "location": "New England",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
+    "color": "002a5c",
+    "alt": "c60c30",
+    "rank": null,
+    "score": 0,
+    "record": "5-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "DET",
+    "name": "Detroit Lions",
+    "short": "Lions",
+    "location": "Detroit",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/det.png",
+    "color": "0076b6",
+    "alt": "bbbbbb",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "DET to win, 58%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 2.7,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "DET"
+    },
+    "spread": {
+     "text": "NE +3.0, 51% to cover",
+     "short": "NE +3.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-ne-det.html"
+  },
+  {
+   "id": "401873054",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "CBS",
+   "venue": "MetLife Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "BUF",
+    "name": "Buffalo Bills",
+    "short": "Bills",
+    "location": "Buffalo",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png",
+    "color": "00338d",
+    "alt": "d50a0a",
+    "rank": null,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "NYJ",
+    "name": "New York Jets",
+    "short": "Jets",
+    "location": "New York",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png",
+    "color": "115740",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "2-7",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "BUF to win, 78%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -10.1,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "BUF"
+    },
+    "spread": {
+     "text": "BUF -8.5, 55% to cover",
+     "short": "BUF -8.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-buf-nyj.html"
+  },
+  {
+   "id": "401873055",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "Fox",
+   "venue": "Caesars Superdome",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "CAR",
+    "name": "Carolina Panthers",
+    "short": "Panthers",
+    "location": "Carolina",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+    "color": "0085ca",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "3-5",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "NO",
+    "name": "New Orleans Saints",
+    "short": "Saints",
+    "location": "New Orleans",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+    "color": "d3bc8d",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "3-5",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "NO to win, 54%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 1.3,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "NO"
+    },
+    "spread": {
+     "text": "CAR +2.5, 54% to cover",
+     "short": "CAR +2.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-car-no.html"
+  },
+  {
+   "id": "401873056",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "Fox",
+   "venue": "Huntington Bank Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "HOU",
+    "name": "Houston Texans",
+    "short": "Texans",
+    "location": "Houston",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
+    "color": "021018",
+    "alt": "eb0028",
+    "rank": null,
+    "score": 0,
+    "record": "3-5",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "CLE",
+    "name": "Cleveland Browns",
+    "short": "Browns",
+    "location": "Cleveland",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cle.png",
+    "color": "472a08",
+    "alt": "ff3c00",
+    "rank": null,
+    "score": 0,
+    "record": "5-4",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "HOU to win, 64%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -4.7,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "HOU"
+    },
+    "spread": {
+     "text": "HOU -4.5, 51% to cover",
+     "short": "HOU -4.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-hou-cle.html"
+  },
+  {
+   "id": "401873057",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "Fox",
+   "venue": "Nissan Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "JAX",
+    "name": "Jacksonville Jaguars",
+    "short": "Jaguars",
+    "location": "Jacksonville",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/jax.png",
+    "color": "007487",
+    "alt": "d7a22a",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "TEN",
+    "name": "Tennessee Titans",
+    "short": "Titans",
+    "location": "Tennessee",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png",
+    "color": "4495d2",
+    "alt": "001532",
+    "rank": null,
+    "score": 0,
+    "record": "1-7",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "JAX to win, 82%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -12.2,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "JAX"
+    },
+    "spread": {
+     "text": "JAX -10.5, 55% to cover",
+     "short": "JAX -10.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-jax-ten.html"
+  },
+  {
+   "id": "401873058",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "CBS",
+   "venue": "Mercedes-Benz Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "KC",
+    "name": "Kansas City Chiefs",
+    "short": "Chiefs",
+    "location": "Kansas City",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
+    "color": "e31837",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ATL",
+    "name": "Atlanta Falcons",
+    "short": "Falcons",
+    "location": "Atlanta",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+    "color": "a71930",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "3-6",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "KC to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -5.6,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "KC"
+    },
+    "spread": {
+     "text": "KC -3.0, 58% to cover",
+     "short": "KC -3.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-kc-atl.html"
+  },
+  {
+   "id": "401873059",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "CBS",
+   "venue": "Lucas Oil Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "MIA",
+    "name": "Miami Dolphins",
+    "short": "Dolphins",
+    "location": "Miami",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/mia.png",
+    "color": "008e97",
+    "alt": "fc4c02",
+    "rank": null,
+    "score": 0,
+    "record": "1-7",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "IND",
+    "name": "Indianapolis Colts",
+    "short": "Colts",
+    "location": "Indianapolis",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png",
+    "color": "003b75",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "2-7",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "IND to win, 53%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 0.9,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "IND"
+    },
+    "spread": {
+     "text": "MIA +3.5, 58% to cover",
+     "short": "MIA +3.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-mia-ind.html"
+  },
+  {
+   "id": "401873060",
+   "start": "2026-11-15T18:00Z",
+   "state": "pre",
+   "detail": "11/15 - 1:00 PM EST",
+   "tv": "Fox",
+   "venue": "Lambeau Field",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "MIN",
+    "name": "Minnesota Vikings",
+    "short": "Vikings",
+    "location": "Minnesota",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
+    "color": "4f2683",
+    "alt": "ffc62f",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "GB",
+    "name": "Green Bay Packers",
+    "short": "Packers",
+    "location": "Green Bay",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
+    "color": "204e32",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "6-3",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "GB to win, 70%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 6.9,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "GB"
+    },
+    "spread": {
+     "text": "GB -3.0, 62% to cover",
+     "short": "GB -3.0",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-min-gb.html"
+  },
+  {
+   "id": "401873061",
+   "start": "2026-11-15T21:05Z",
+   "state": "pre",
+   "detail": "11/15 - 4:05 PM EST",
+   "tv": "CBS",
+   "venue": "State Farm Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "LAR",
+    "name": "Los Angeles Rams",
+    "short": "Rams",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
+    "color": "003594",
+    "alt": "ffd100",
+    "rank": null,
+    "score": 0,
+    "record": "5-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "ARI",
+    "name": "Arizona Cardinals",
+    "short": "Cardinals",
+    "location": "Arizona",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
+    "color": "a40227",
+    "alt": "ffffff",
+    "rank": null,
+    "score": 0,
+    "record": "3-6",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "LA to win, 74%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -8.4,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "LAR"
+    },
+    "spread": {
+     "text": "ARI +9.5, 53% to cover",
+     "short": "ARI +9.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-la-ari.html"
+  },
+  {
+   "id": "401873062",
+   "start": "2026-11-15T21:05Z",
+   "state": "pre",
+   "detail": "11/15 - 4:05 PM EST",
+   "tv": "CBS",
+   "venue": "Allegiant Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "SEA",
+    "name": "Seattle Seahawks",
+    "short": "Seahawks",
+    "location": "Seattle",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
+    "color": "002a5c",
+    "alt": "69be28",
+    "rank": null,
+    "score": 0,
+    "record": "5-4",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "LV",
+    "name": "Las Vegas Raiders",
+    "short": "Raiders",
+    "location": "Las Vegas",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
+    "color": "000000",
+    "alt": "a5acaf",
+    "rank": null,
+    "score": 0,
+    "record": "4-5",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "SEA to win, 68%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -6.0,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "SEA"
+    },
+    "spread": {
+     "text": "LV +6.5, 52% to cover",
+     "short": "LV +6.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-sea-lv.html"
+  },
+  {
+   "id": "401873063",
+   "start": "2026-11-15T21:25Z",
+   "state": "pre",
+   "detail": "11/15 - 4:25 PM EST",
+   "tv": "Fox",
+   "venue": "AT&T Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "SF",
+    "name": "San Francisco 49ers",
+    "short": "49ers",
+    "location": "San Francisco",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
+    "color": "aa0000",
+    "alt": "b3995d",
+    "rank": null,
+    "score": 0,
+    "record": "7-1",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "DAL",
+    "name": "Dallas Cowboys",
+    "short": "Cowboys",
+    "location": "Dallas",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+    "color": "002a5c",
+    "alt": "b0b7bc",
+    "rank": null,
+    "score": 0,
+    "record": "4-5",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "SF to win, 57%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": -2.2,
+     "sd": 13.11,
+     "pick_home": false,
+     "team": "SF"
+    },
+    "spread": {
+     "text": "DAL +3.5, 54% to cover",
+     "short": "DAL +3.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-sf-dal.html"
+  },
+  {
+   "id": "401873064",
+   "start": "2026-11-16T01:20Z",
+   "state": "pre",
+   "detail": "11/15 - 8:20 PM EST",
+   "tv": "NBC",
+   "venue": "Paycor Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "PIT",
+    "name": "Pittsburgh Steelers",
+    "short": "Steelers",
+    "location": "Pittsburgh",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
+    "color": "000000",
+    "alt": "ffb612",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "CIN",
+    "name": "Cincinnati Bengals",
+    "short": "Bengals",
+    "location": "Cincinnati",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
+    "color": "fb4f14",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "6-2",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "CIN to win, 74%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 8.4,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "CIN"
+    },
+    "spread": {
+     "text": "CIN -3.5, 65% to cover",
+     "short": "CIN -3.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-pit-cin.html"
+  },
+  {
+   "id": "401873065",
+   "start": "2026-11-17T01:15Z",
+   "state": "pre",
+   "detail": "11/16 - 8:15 PM EST",
+   "tv": "ESPN",
+   "venue": "M&T Bank Stadium",
+   "neutral": false,
+   "series": "",
+   "away": {
+    "abbr": "LAC",
+    "name": "Los Angeles Chargers",
+    "short": "Chargers",
+    "location": "Los Angeles",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lac.png",
+    "color": "0080c6",
+    "alt": "ffc20e",
+    "rank": null,
+    "score": 0,
+    "record": "0-8",
+    "probable": null,
+    "winner": false
+   },
+   "home": {
+    "abbr": "BAL",
+    "name": "Baltimore Ravens",
+    "short": "Ravens",
+    "location": "Baltimore",
+    "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+    "color": "29126f",
+    "alt": "000000",
+    "rank": null,
+    "score": 0,
+    "record": "4-5",
+    "probable": null,
+    "winner": false
+   },
+   "pick": {
+    "text": "BAL to win, 66%",
+    "result": null,
+    "labels": [
+     "WON",
+     "LOST"
+    ],
+    "live": {
+     "margin": 5.3,
+     "sd": 13.11,
+     "pick_home": true,
+     "team": "BAL"
+    },
+    "spread": {
+     "text": "BAL -4.5, 52% to cover",
+     "short": "BAL -4.5",
+     "result": null,
+     "labels": [
+      "COVERED",
+      "MISSED"
+     ]
+    }
+   },
+   "url": "game-2026-10-lac-bal.html"
+  }
+ ]
+}

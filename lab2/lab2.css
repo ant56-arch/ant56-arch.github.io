@@ -1,0 +1,103 @@
+/* Lab 2: UI tweaks tested on a copy of the live site.
+   The type scale, tracking and fonts are applied to the site's own CSS by ds.py.
+   This file holds the rest of the design system and the tweaks. */
+
+/* ---------- design system tokens ---------- */
+:root {
+  --fs-11: 11px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
+  --fs-24: 24px; --fs-28: 28px; --fs-32: 32px; --fs-40: 40px; --fs-48: 48px; --fs-56: 56px;
+  --track-tight: -0.02em; --track-label: 0.06em;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px; --space-12: 48px;
+}
+body { font-variant-numeric: tabular-nums; }
+
+/* mono for one thing only: the small caps label style (set in ds.py), plus chart axes.
+   Numbers line up with Archivo's tabular figures, so they stay in Archivo. */
+:root { --font-data: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace; }
+
+/* ---------- no random italics ---------- */
+em, i, .it, em.it { font-style: normal; }
+h1 em, h2 em, h3 em, em.it, .it { font-family: inherit !important; font-style: normal !important; font-weight: inherit !important; letter-spacing: inherit !important; }
+
+.ds-hide { display: none !important; }
+
+/* ---------- redundant labels ---------- */
+.sec-label,                        /* "01 —— Week 9 games" over "Week 9 games." */
+.sec-head .num,                    /* "01 —— Today's slate" over "67 games today." */
+#lgSub,                            /* "Seven sites, one record" */
+#gOf,                              /* "Game 11 of 67 · Soccer" beside the big 11 */
+.lt > span:first-child { display: none !important; }  /* "NFL" over the NFL card title */
+.chooser-top > span:first-child { visibility: hidden; }  /* "Choose a game" */
+
+/* ---------- text contrast: faint text at 4.5:1 or better ---------- */
+:root { --ink-faint: #6B665C; --clay: #A4532B; }            /* home page: was 2.3:1 and 3.7:1 */
+:root[data-theme="dark"] { --ink-faint: #938E83; --text-faint: #938E83; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink-faint: #938E83; --text-faint: #938E83; } }
+:root[data-theme="dark"] { --clay: #D98B5F; }
+
+/* ---------- one accent: the rust, for our picks and what's live ---------- */
+:root { --accent: var(--ours, #A4532B); }
+
+/* ---------- headlines wrap in balanced lines, paragraphs without orphans ---------- */
+h1, h2, h3, .sec-h2 { text-wrap: balance; }
+p, .subtitle, .rb-since, .stat-sub { text-wrap: pretty; }
+
+/* ---------- align by eye: big type pulled left so its edge lines up with the text under it ---------- */
+h1, .edge-title { margin-left: -0.045em; }
+h2, .sec-h2, .rb-num, .stat-value { margin-left: -0.03em; }
+
+/* ---------- group with spacing ---------- */
+.slate-head { margin-bottom: var(--space-6); }
+.slate-head p { margin-top: var(--space-2); }
+.day-chips + .sp-mount, .sp-view { margin-top: var(--space-3); }
+.chooser-top + * { margin-top: var(--space-2); }
+.stat .stat-label { margin-top: var(--space-1); }
+
+/* ---------- inner radius = outer radius minus padding ---------- */
+.gc { overflow: hidden; }                                   /* header and footer follow the card's corners */
+section.tdg { overflow: hidden; }
+.sp-frame { border-radius: calc(var(--radius) - 0px); }
+.dayswitch button, .sp-view button { border-radius: 999px; }
+
+/* ---------- icons: one stroke style ---------- */
+.ds-icon { width: 1em; height: 1em; display: block; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- loading states ---------- */
+@keyframes ds-shimmer { from { background-position: -400px 0; } to { background-position: 400px 0; } }
+.ds-loading { position: relative; }
+.ds-loading::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius, 6px);
+  background: linear-gradient(90deg, rgba(127,120,105,.08) 0, rgba(127,120,105,.18) 50%, rgba(127,120,105,.08) 100%) 0 0 / 800px 100%;
+  animation: ds-shimmer 1.2s linear infinite; pointer-events: none; }
+.ds-loading-text { color: transparent !important; border-radius: 4px; display: inline-block; min-width: 12em;
+  background: linear-gradient(90deg, rgba(127,120,105,.10) 0, rgba(127,120,105,.22) 50%, rgba(127,120,105,.10) 100%) 0 0 / 800px 100%;
+  animation: ds-shimmer 1.2s linear infinite; }
+
+/* ---------- feedback that means something: presses, picks, hovers ---------- */
+button, a.gc, .tabs a, nav a, [aria-pressed], .pill, select { transition: background-color .15s, color .15s, border-color .15s, transform .12s, box-shadow .15s; }
+button:active, [aria-pressed]:active, .tabs a:active { transform: scale(.97); }
+a.gc:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27,27,25,.08); }
+a.gc:active { transform: translateY(0); }
+.ds-updated { animation: ds-flash 1s ease-out; }
+@keyframes ds-flash { from { background-color: rgba(164,83,43,.18); } to { background-color: transparent; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::after { animation: none !important; transition: none !important; }
+  a.gc:hover { transform: none; }
+}
+
+/* ── Ideas round 3 ───────────────────────────────────────────── */
+/* page tabs: one row you swipe on phones (the half-shown pill hints at more) */
+@media (max-width: 640px) {
+  .edge-jump, .jump { flex-wrap: nowrap !important; overflow-x: auto !important; scroll-padding-inline: 16px; padding-right: 32px; }
+}
+/* page tabs stay pinned under the top bar (lab2.js sets top) */
+.edge-jump, .jump { position: sticky; top: 0; z-index: 30; background: var(--bg, var(--paper)); padding-top: 10px !important; padding-bottom: 10px !important; box-shadow: 0 1px 0 var(--rule); }
+.edge-jump.is-stuck, .jump.is-stuck { box-shadow: 0 1px 0 var(--rule), -24px 0 0 var(--bg, var(--paper)), 24px 0 0 var(--bg, var(--paper)); }
+/* bigger tap areas on phones, without moving anything */
+@media (pointer: coarse) {
+  .edge-tabs a, .edge-brand, .ticker-gear, .edge-scroll { position: relative; }
+  .edge-tabs a::before, .edge-brand::before, .ticker-gear::before, .edge-scroll::before { content: ""; position: absolute; inset: -12px -6px; }
+  .edge-jump a, .jump a { min-height: 44px; display: inline-flex; align-items: center; }
+}
+/* other sticky things sit below the pinned tabs */
+.field-frame { top: calc(var(--ds-tabs, 120px) + 16px) !important; max-height: calc(100vh - var(--ds-tabs, 120px) - 32px) !important; }
+.tv-head { top: var(--ds-tabs, 48px) !important; }

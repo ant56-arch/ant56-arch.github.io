@@ -1,0 +1,399 @@
+{
+ "updated": "2026-11-14T08:22:40.394740-05:00",
+ "heading": "Latest: Sun, Nov 8",
+ "picks": [
+  {
+   "label": "VIL over GET",
+   "sub": "La Liga \u00b7 GET @ VIL \u00b7 12:30 PM ET",
+   "value": "58%",
+   "result": true
+  },
+  {
+   "label": "CEL over LEV",
+   "sub": "La Liga \u00b7 LEV @ CEL \u00b7 12:30 PM ET",
+   "value": "55%",
+   "result": false
+  },
+  {
+   "label": "BOU over IPS",
+   "sub": "Premier League \u00b7 BOU @ IPS \u00b7 9:00 AM ET",
+   "value": "55%",
+   "result": true
+  }
+ ],
+ "record": {
+  "value": "93-61",
+  "label": "our picks",
+  "sub": "60.4%",
+  "since": "Oct 9, 2026"
+ },
+ "empty": "No soccer picks yet. They start once the model is trained.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-11-02T11:15:17+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "93-61",
+  "sub": "60.4%",
+  "season": "2026-27"
+ },
+ "daily": [
+  [
+   "2026-10-09",
+   0,
+   1
+  ],
+  [
+   "2026-10-10",
+   6,
+   3
+  ],
+  [
+   "2026-10-11",
+   3,
+   4
+  ],
+  [
+   "2026-10-12",
+   0,
+   2
+  ],
+  [
+   "2026-10-13",
+   6,
+   3
+  ],
+  [
+   "2026-10-14",
+   6,
+   3
+  ],
+  [
+   "2026-10-16",
+   0,
+   1
+  ],
+  [
+   "2026-10-17",
+   5,
+   4
+  ],
+  [
+   "2026-10-18",
+   7,
+   1
+  ],
+  [
+   "2026-10-19",
+   1,
+   1
+  ],
+  [
+   "2026-10-20",
+   6,
+   3
+  ],
+  [
+   "2026-10-21",
+   4,
+   6
+  ],
+  [
+   "2026-10-23",
+   0,
+   2
+  ],
+  [
+   "2026-10-24",
+   5,
+   3
+  ],
+  [
+   "2026-10-25",
+   4,
+   5
+  ],
+  [
+   "2026-10-26",
+   1,
+   0
+  ],
+  [
+   "2026-10-30",
+   0,
+   1
+  ],
+  [
+   "2026-10-31",
+   9,
+   3
+  ],
+  [
+   "2026-11-01",
+   4,
+   1
+  ],
+  [
+   "2026-11-02",
+   1,
+   1
+  ],
+  [
+   "2026-11-03",
+   8,
+   1
+  ],
+  [
+   "2026-11-04",
+   6,
+   3
+  ],
+  [
+   "2026-11-06",
+   1,
+   1
+  ],
+  [
+   "2026-11-07",
+   3,
+   5
+  ],
+  [
+   "2026-11-08",
+   7,
+   3
+  ]
+ ],
+ "ml_streak": {
+  "kind": "W",
+  "n": 1,
+  "unit": "day"
+ },
+ "ml_record": {
+  "value": "93-61",
+  "label": "moneyline",
+  "sub": "154 picks graded"
+ },
+ "slate": [],
+ "units": {
+  "picks": 154,
+  "wins": 93,
+  "losses": 61,
+  "units": 13.34,
+  "roi": 0.0866,
+  "since": "2026-10-09",
+  "series": [
+   [
+    "2026-10-09",
+    -1.0
+   ],
+   [
+    "2026-10-10",
+    -0.24
+   ],
+   [
+    "2026-10-11",
+    -1.21
+   ],
+   [
+    "2026-10-12",
+    -3.21
+   ],
+   [
+    "2026-10-13",
+    -0.3
+   ],
+   [
+    "2026-10-14",
+    1.81
+   ],
+   [
+    "2026-10-16",
+    0.81
+   ],
+   [
+    "2026-10-17",
+    0.58
+   ],
+   [
+    "2026-10-18",
+    5.39
+   ],
+   [
+    "2026-10-19",
+    4.95
+   ],
+   [
+    "2026-10-20",
+    5.07
+   ],
+   [
+    "2026-10-21",
+    0.43
+   ],
+   [
+    "2026-10-23",
+    -1.57
+   ],
+   [
+    "2026-10-24",
+    -0.15
+   ],
+   [
+    "2026-10-25",
+    -1.46
+   ],
+   [
+    "2026-10-26",
+    -0.66
+   ],
+   [
+    "2026-10-30",
+    -1.66
+   ],
+   [
+    "2026-10-31",
+    4.07
+   ],
+   [
+    "2026-11-01",
+    8.22
+   ],
+   [
+    "2026-11-02",
+    8.32
+   ],
+   [
+    "2026-11-03",
+    13.86
+   ],
+   [
+    "2026-11-04",
+    13.99
+   ],
+   [
+    "2026-11-06",
+    13.68
+   ],
+   [
+    "2026-11-07",
+    10.82
+   ],
+   [
+    "2026-11-08",
+    13.34
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 81,
+    "wins": 61,
+    "losses": 20,
+    "units": 10.24,
+    "roi": 0.1264
+   },
+   "underdogs": {
+    "picks": 73,
+    "wins": 32,
+    "losses": 41,
+    "units": 3.1,
+    "roi": 0.0425
+   },
+   "value": {
+    "picks": 39,
+    "wins": 20,
+    "losses": 19,
+    "units": 6.59,
+    "roi": 0.169
+   }
+  }
+ },
+ "last": {
+  "date": "2026-11-08",
+  "games": [
+   {
+    "pick": "BET",
+    "other": "ELC",
+    "hit": true,
+    "text": "Real Betis 2-0",
+    "units": 0.952,
+    "url": "/soccer/game-401882814.html"
+   },
+   {
+    "pick": "BOU",
+    "other": "IPS",
+    "hit": true,
+    "text": "AFC Bournemouth 2-1",
+    "units": 1.0,
+    "url": "/soccer/game-401878759.html"
+   },
+   {
+    "pick": "CHE",
+    "other": "SUN",
+    "hit": false,
+    "text": "Chelsea lost 1-0",
+    "units": -1.0,
+    "url": "/soccer/game-401879239.html"
+   },
+   {
+    "pick": "LIV",
+    "other": "CRY",
+    "hit": true,
+    "text": "Liverpool 3-1",
+    "units": 0.541,
+    "url": "/soccer/game-401879243.html"
+   },
+   {
+    "pick": "BHA",
+    "other": "BRE",
+    "hit": true,
+    "text": "Brighton & Hove Albion 2-0",
+    "units": 0.87,
+    "url": "/soccer/game-401879244.html"
+   },
+   {
+    "pick": "RSO",
+    "other": "RAY",
+    "hit": true,
+    "text": "Real Sociedad 1-0",
+    "units": 0.769,
+    "url": "/soccer/game-401882810.html"
+   },
+   {
+    "pick": "MUN",
+    "other": "AVL",
+    "hit": false,
+    "text": "Manchester United drew 4-4",
+    "units": -1.0,
+    "url": "/soccer/game-401879240.html"
+   },
+   {
+    "pick": "VIL",
+    "other": "GET",
+    "hit": true,
+    "text": "Villarreal 2-0",
+    "units": 0.513,
+    "url": "/soccer/game-401882807.html"
+   },
+   {
+    "pick": "CEL",
+    "other": "LEV",
+    "hit": false,
+    "text": "Celta Vigo drew 0-0",
+    "units": -1.0,
+    "url": "/soccer/game-401882815.html"
+   },
+   {
+    "pick": "BAR",
+    "other": "ATM",
+    "hit": true,
+    "text": "Barcelona 2-1",
+    "units": 0.87,
+    "url": "/soccer/game-401882816.html"
+   }
+  ],
+  "hits": []
+ }
+}

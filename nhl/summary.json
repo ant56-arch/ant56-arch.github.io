@@ -1,0 +1,1191 @@
+{
+ "updated": "2026-11-14T08:22:37.232231-05:00",
+ "heading": "Today: Sat, Nov 14",
+ "picks": [
+  {
+   "label": "CAR over SEA",
+   "sub": "SEA vs CAR \u00b7 1:00 PM ET",
+   "value": "77%",
+   "result": null
+  },
+  {
+   "label": "TB over DET",
+   "sub": "DET @ TB \u00b7 7:00 PM ET",
+   "value": "66%",
+   "result": null
+  },
+  {
+   "label": "UTA over SJ",
+   "sub": "SJ @ UTA \u00b7 9:00 PM ET",
+   "value": "65%",
+   "result": null
+  }
+ ],
+ "record": {
+  "value": "189-114",
+  "label": "our picks to win",
+  "sub": "62.4%",
+  "since": "Oct 1, 2026"
+ },
+ "empty": "No NHL picks yet. They start on opening night.",
+ "result_labels": [
+  "WIN",
+  "LOSS"
+ ],
+ "retrained": "2026-11-10T11:14:08+00:00",
+ "model_url": "model.html",
+ "season_record": {
+  "value": "189-114",
+  "sub": "62.4%",
+  "season": "2026-27"
+ },
+ "daily": [
+  [
+   "2026-10-01",
+   4,
+   4
+  ],
+  [
+   "2026-10-02",
+   0,
+   5
+  ],
+  [
+   "2026-10-03",
+   9,
+   4
+  ],
+  [
+   "2026-10-04",
+   4,
+   1
+  ],
+  [
+   "2026-10-05",
+   3,
+   1
+  ],
+  [
+   "2026-10-06",
+   7,
+   2
+  ],
+  [
+   "2026-10-07",
+   2,
+   1
+  ],
+  [
+   "2026-10-08",
+   6,
+   4
+  ],
+  [
+   "2026-10-09",
+   2,
+   2
+  ],
+  [
+   "2026-10-10",
+   10,
+   4
+  ],
+  [
+   "2026-10-11",
+   2,
+   1
+  ],
+  [
+   "2026-10-12",
+   3,
+   0
+  ],
+  [
+   "2026-10-13",
+   9,
+   7
+  ],
+  [
+   "2026-10-14",
+   1,
+   1
+  ],
+  [
+   "2026-10-15",
+   7,
+   4
+  ],
+  [
+   "2026-10-16",
+   2,
+   0
+  ],
+  [
+   "2026-10-17",
+   9,
+   5
+  ],
+  [
+   "2026-10-18",
+   1,
+   1
+  ],
+  [
+   "2026-10-19",
+   3,
+   1
+  ],
+  [
+   "2026-10-20",
+   7,
+   4
+  ],
+  [
+   "2026-10-21",
+   1,
+   1
+  ],
+  [
+   "2026-10-22",
+   5,
+   7
+  ],
+  [
+   "2026-10-23",
+   2,
+   0
+  ],
+  [
+   "2026-10-24",
+   8,
+   4
+  ],
+  [
+   "2026-10-25",
+   4,
+   1
+  ],
+  [
+   "2026-10-26",
+   0,
+   3
+  ],
+  [
+   "2026-10-27",
+   6,
+   5
+  ],
+  [
+   "2026-10-28",
+   3,
+   1
+  ],
+  [
+   "2026-10-29",
+   8,
+   3
+  ],
+  [
+   "2026-10-30",
+   1,
+   2
+  ],
+  [
+   "2026-10-31",
+   8,
+   2
+  ],
+  [
+   "2026-11-01",
+   2,
+   3
+  ],
+  [
+   "2026-11-02",
+   1,
+   3
+  ],
+  [
+   "2026-11-03",
+   6,
+   5
+  ],
+  [
+   "2026-11-04",
+   3,
+   1
+  ],
+  [
+   "2026-11-05",
+   6,
+   5
+  ],
+  [
+   "2026-11-06",
+   2,
+   1
+  ],
+  [
+   "2026-11-07",
+   10,
+   2
+  ],
+  [
+   "2026-11-08",
+   4,
+   2
+  ],
+  [
+   "2026-11-09",
+   2,
+   1
+  ],
+  [
+   "2026-11-10",
+   4,
+   3
+  ],
+  [
+   "2026-11-11",
+   5,
+   1
+  ],
+  [
+   "2026-11-12",
+   6,
+   5
+  ],
+  [
+   "2026-11-13",
+   1,
+   1
+  ]
+ ],
+ "ml_streak": {
+  "kind": "W",
+  "n": 10,
+  "unit": "day"
+ },
+ "ml_record": {
+  "value": "189-114",
+  "label": "moneyline",
+  "sub": "303 picks graded"
+ },
+ "slate": [
+  {
+   "sport": "NHL",
+   "id": "401892690",
+   "url": "/nhl/game-401892690.html",
+   "start": "2026-11-11T19:00:00-05:00",
+   "date": "2026-11-11",
+   "away": "TB",
+   "home": "BUF",
+   "at": "@",
+   "pick": "TB",
+   "other": "BUF",
+   "prob": 53.7,
+   "price": -130,
+   "book": 54.3,
+   "value": false,
+   "final": true,
+   "score": [
+    8,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892691",
+   "url": "/nhl/game-401892691.html",
+   "start": "2026-11-11T19:30:00-05:00",
+   "date": "2026-11-11",
+   "away": "NYR",
+   "home": "CGY",
+   "at": "@",
+   "pick": "NYR",
+   "other": "CGY",
+   "prob": 55.0,
+   "price": -142,
+   "book": 56.3,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    1
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892692",
+   "url": "/nhl/game-401892692.html",
+   "start": "2026-11-11T21:00:00-05:00",
+   "date": "2026-11-11",
+   "away": "PHI",
+   "home": "EDM",
+   "at": "@",
+   "pick": "EDM",
+   "other": "PHI",
+   "prob": 63.6,
+   "price": -192,
+   "book": 63.1,
+   "value": false,
+   "final": true,
+   "score": [
+    2,
+    3
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892693",
+   "url": "/nhl/game-401892693.html",
+   "start": "2026-11-11T21:30:00-05:00",
+   "date": "2026-11-11",
+   "away": "UTA",
+   "home": "VGK",
+   "at": "@",
+   "pick": "VGK",
+   "other": "UTA",
+   "prob": 54.8,
+   "price": -130,
+   "book": 54.3,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    5
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892694",
+   "url": "/nhl/game-401892694.html",
+   "start": "2026-11-11T22:00:00-05:00",
+   "date": "2026-11-11",
+   "away": "NSH",
+   "home": "ANA",
+   "at": "@",
+   "pick": "ANA",
+   "other": "NSH",
+   "prob": 56.7,
+   "price": -148,
+   "book": 57.2,
+   "value": false,
+   "final": true,
+   "score": [
+    4,
+    2
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892695",
+   "url": "/nhl/game-401892695.html",
+   "start": "2026-11-11T22:00:00-05:00",
+   "date": "2026-11-11",
+   "away": "PIT",
+   "home": "SJ",
+   "at": "@",
+   "pick": "PIT",
+   "other": "SJ",
+   "prob": 56.5,
+   "price": -148,
+   "book": 57.2,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    2
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401891808",
+   "url": "/nhl/game-401891808.html",
+   "start": "2026-11-12T12:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "CAR",
+   "home": "SEA",
+   "at": "vs",
+   "pick": "CAR",
+   "other": "SEA",
+   "prob": 73.1,
+   "price": -305,
+   "book": 72.2,
+   "value": false,
+   "final": true,
+   "score": [
+    4,
+    1
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892696",
+   "url": "/nhl/game-401892696.html",
+   "start": "2026-11-12T19:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "MTL",
+   "home": "BOS",
+   "at": "@",
+   "pick": "BOS",
+   "other": "MTL",
+   "prob": 53.7,
+   "price": -125,
+   "book": 53.2,
+   "value": false,
+   "final": true,
+   "score": [
+    5,
+    2
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892697",
+   "url": "/nhl/game-401892697.html",
+   "start": "2026-11-12T19:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "MIN",
+   "home": "TOR",
+   "at": "@",
+   "pick": "MIN",
+   "other": "TOR",
+   "prob": 60.3,
+   "price": -170,
+   "book": 60.4,
+   "value": false,
+   "final": true,
+   "score": [
+    5,
+    2
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892698",
+   "url": "/nhl/game-401892698.html",
+   "start": "2026-11-12T19:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "COL",
+   "home": "OTT",
+   "at": "@",
+   "pick": "COL",
+   "other": "OTT",
+   "prob": 50.5,
+   "price": -108,
+   "book": 49.6,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    4
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892700",
+   "url": "/nhl/game-401892700.html",
+   "start": "2026-11-12T19:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "WSH",
+   "home": "NJ",
+   "at": "@",
+   "pick": "NJ",
+   "other": "WSH",
+   "prob": 59.4,
+   "price": -162,
+   "book": 59.3,
+   "value": false,
+   "final": true,
+   "score": [
+    2,
+    5
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892701",
+   "url": "/nhl/game-401892701.html",
+   "start": "2026-11-12T19:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "TB",
+   "home": "CBJ",
+   "at": "@",
+   "pick": "TB",
+   "other": "CBJ",
+   "prob": 52.6,
+   "price": -115,
+   "book": 51.1,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    1
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892699",
+   "url": "/nhl/game-401892699.html",
+   "start": "2026-11-12T19:30:00-05:00",
+   "date": "2026-11-12",
+   "away": "DET",
+   "home": "FLA",
+   "at": "@",
+   "pick": "FLA",
+   "other": "DET",
+   "prob": 60.0,
+   "price": -170,
+   "book": 60.4,
+   "value": false,
+   "final": true,
+   "score": [
+    4,
+    5
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892702",
+   "url": "/nhl/game-401892702.html",
+   "start": "2026-11-12T20:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "BUF",
+   "home": "CHI",
+   "at": "@",
+   "pick": "BUF",
+   "other": "CHI",
+   "prob": 60.6,
+   "price": -155,
+   "book": 58.3,
+   "value": false,
+   "final": true,
+   "score": [
+    2,
+    3
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892703",
+   "url": "/nhl/game-401892703.html",
+   "start": "2026-11-12T20:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "WPG",
+   "home": "DAL",
+   "at": "@",
+   "pick": "DAL",
+   "other": "WPG",
+   "prob": 59.6,
+   "price": -155,
+   "book": 58.3,
+   "value": false,
+   "final": true,
+   "score": [
+    8,
+    3
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892704",
+   "url": "/nhl/game-401892704.html",
+   "start": "2026-11-12T21:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "STL",
+   "home": "UTA",
+   "at": "@",
+   "pick": "STL",
+   "other": "UTA",
+   "prob": 51.0,
+   "price": -130,
+   "book": 54.3,
+   "value": false,
+   "final": true,
+   "score": [
+    1,
+    0
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892705",
+   "url": "/nhl/game-401892705.html",
+   "start": "2026-11-12T22:00:00-05:00",
+   "date": "2026-11-12",
+   "away": "NYI",
+   "home": "LA",
+   "at": "@",
+   "pick": "LA",
+   "other": "NYI",
+   "prob": 53.2,
+   "price": -125,
+   "book": 53.2,
+   "value": false,
+   "final": true,
+   "score": [
+    5,
+    2
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401892706",
+   "url": "/nhl/game-401892706.html",
+   "start": "2026-11-13T21:00:00-05:00",
+   "date": "2026-11-13",
+   "away": "NYR",
+   "home": "VAN",
+   "at": "@",
+   "pick": "NYR",
+   "other": "VAN",
+   "prob": 65.8,
+   "price": -225,
+   "book": 66.4,
+   "value": false,
+   "final": true,
+   "score": [
+    5,
+    1
+   ],
+   "hit": true
+  },
+  {
+   "sport": "NHL",
+   "id": "401892707",
+   "url": "/nhl/game-401892707.html",
+   "start": "2026-11-13T22:00:00-05:00",
+   "date": "2026-11-13",
+   "away": "NSH",
+   "home": "VGK",
+   "at": "@",
+   "pick": "VGK",
+   "other": "NSH",
+   "prob": 61.5,
+   "price": -170,
+   "book": 60.4,
+   "value": false,
+   "final": true,
+   "score": [
+    3,
+    2
+   ],
+   "hit": false
+  },
+  {
+   "sport": "NHL",
+   "id": "401891809",
+   "url": "/nhl/game-401891809.html",
+   "start": "2026-11-14T13:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "SEA",
+   "home": "CAR",
+   "at": "vs",
+   "pick": "CAR",
+   "other": "SEA",
+   "prob": 76.8,
+   "price": -395,
+   "book": 76.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892708",
+   "url": "/nhl/game-401892708.html",
+   "start": "2026-11-14T15:30:00-05:00",
+   "date": "2026-11-14",
+   "away": "WPG",
+   "home": "CHI",
+   "at": "@",
+   "pick": "WPG",
+   "other": "CHI",
+   "prob": 59.5,
+   "price": -162,
+   "book": 59.3,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892709",
+   "url": "/nhl/game-401892709.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "MIN",
+   "home": "BOS",
+   "at": "@",
+   "pick": "MIN",
+   "other": "BOS",
+   "prob": 52.5,
+   "price": -122,
+   "book": 52.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892710",
+   "url": "/nhl/game-401892710.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "EDM",
+   "home": "TOR",
+   "at": "@",
+   "pick": "EDM",
+   "other": "TOR",
+   "prob": 57.5,
+   "price": -155,
+   "book": 58.3,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892711",
+   "url": "/nhl/game-401892711.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "COL",
+   "home": "MTL",
+   "at": "@",
+   "pick": "MTL",
+   "other": "COL",
+   "prob": 51.7,
+   "price": -122,
+   "book": 52.6,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892712",
+   "url": "/nhl/game-401892712.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "DET",
+   "home": "TB",
+   "at": "@",
+   "pick": "TB",
+   "other": "DET",
+   "prob": 66.3,
+   "price": -225,
+   "book": 66.4,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892713",
+   "url": "/nhl/game-401892713.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "OTT",
+   "home": "PIT",
+   "at": "@",
+   "pick": "OTT",
+   "other": "PIT",
+   "prob": 52.8,
+   "price": -130,
+   "book": 54.3,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892714",
+   "url": "/nhl/game-401892714.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "NJ",
+   "home": "WSH",
+   "at": "@",
+   "pick": "NJ",
+   "other": "WSH",
+   "prob": 52.2,
+   "price": -120,
+   "book": 52.2,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892715",
+   "url": "/nhl/game-401892715.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "PHI",
+   "home": "CBJ",
+   "at": "@",
+   "pick": "CBJ",
+   "other": "PHI",
+   "prob": 56.3,
+   "price": -135,
+   "book": 55.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892716",
+   "url": "/nhl/game-401892716.html",
+   "start": "2026-11-14T19:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "FLA",
+   "home": "STL",
+   "at": "@",
+   "pick": "FLA",
+   "other": "STL",
+   "prob": 51.1,
+   "price": -115,
+   "book": 51.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892717",
+   "url": "/nhl/game-401892717.html",
+   "start": "2026-11-14T20:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "BUF",
+   "home": "DAL",
+   "at": "@",
+   "pick": "DAL",
+   "other": "BUF",
+   "prob": 56.2,
+   "price": -142,
+   "book": 56.3,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892718",
+   "url": "/nhl/game-401892718.html",
+   "start": "2026-11-14T21:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "SJ",
+   "home": "UTA",
+   "at": "@",
+   "pick": "UTA",
+   "other": "SJ",
+   "prob": 65.2,
+   "price": -205,
+   "book": 64.5,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892719",
+   "url": "/nhl/game-401892719.html",
+   "start": "2026-11-14T22:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "NYI",
+   "home": "ANA",
+   "at": "@",
+   "pick": "ANA",
+   "other": "NYI",
+   "prob": 52.2,
+   "price": -115,
+   "book": 51.1,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  },
+  {
+   "sport": "NHL",
+   "id": "401892720",
+   "url": "/nhl/game-401892720.html",
+   "start": "2026-11-14T22:00:00-05:00",
+   "date": "2026-11-14",
+   "away": "CGY",
+   "home": "LA",
+   "at": "@",
+   "pick": "LA",
+   "other": "CGY",
+   "prob": 59.8,
+   "price": -175,
+   "book": 60.9,
+   "value": false,
+   "final": false,
+   "score": null,
+   "hit": null
+  }
+ ],
+ "units": {
+  "picks": 303,
+  "wins": 189,
+  "losses": 114,
+  "units": 7.78,
+  "roi": 0.0257,
+  "since": "2026-10-01",
+  "series": [
+   [
+    "2026-10-01",
+    -1.82
+   ],
+   [
+    "2026-10-02",
+    -6.82
+   ],
+   [
+    "2026-10-03",
+    -4.32
+   ],
+   [
+    "2026-10-04",
+    -2.36
+   ],
+   [
+    "2026-10-05",
+    -1.57
+   ],
+   [
+    "2026-10-06",
+    1.89
+   ],
+   [
+    "2026-10-07",
+    2.25
+   ],
+   [
+    "2026-10-08",
+    1.35
+   ],
+   [
+    "2026-10-09",
+    0.9
+   ],
+   [
+    "2026-10-10",
+    2.94
+   ],
+   [
+    "2026-10-11",
+    2.77
+   ],
+   [
+    "2026-10-12",
+    5.56
+   ],
+   [
+    "2026-10-13",
+    5.36
+   ],
+   [
+    "2026-10-14",
+    5.19
+   ],
+   [
+    "2026-10-15",
+    5.19
+   ],
+   [
+    "2026-10-16",
+    6.57
+   ],
+   [
+    "2026-10-17",
+    7.19
+   ],
+   [
+    "2026-10-18",
+    6.71
+   ],
+   [
+    "2026-10-19",
+    7.6
+   ],
+   [
+    "2026-10-20",
+    8.39
+   ],
+   [
+    "2026-10-21",
+    8.3
+   ],
+   [
+    "2026-10-22",
+    4.41
+   ],
+   [
+    "2026-10-23",
+    5.82
+   ],
+   [
+    "2026-10-24",
+    7.18
+   ],
+   [
+    "2026-10-25",
+    8.57
+   ],
+   [
+    "2026-10-26",
+    5.57
+   ],
+   [
+    "2026-10-27",
+    4.85
+   ],
+   [
+    "2026-10-28",
+    5.52
+   ],
+   [
+    "2026-10-29",
+    7.68
+   ],
+   [
+    "2026-10-30",
+    6.12
+   ],
+   [
+    "2026-10-31",
+    8.95
+   ],
+   [
+    "2026-11-01",
+    7.21
+   ],
+   [
+    "2026-11-02",
+    4.64
+   ],
+   [
+    "2026-11-03",
+    3.19
+   ],
+   [
+    "2026-11-04",
+    3.95
+   ],
+   [
+    "2026-11-05",
+    1.97
+   ],
+   [
+    "2026-11-06",
+    1.88
+   ],
+   [
+    "2026-11-07",
+    5.87
+   ],
+   [
+    "2026-11-08",
+    6.94
+   ],
+   [
+    "2026-11-09",
+    7.26
+   ],
+   [
+    "2026-11-10",
+    7.14
+   ],
+   [
+    "2026-11-11",
+    9.58
+   ],
+   [
+    "2026-11-12",
+    8.34
+   ],
+   [
+    "2026-11-13",
+    7.78
+   ]
+  ],
+  "splits": {
+   "favorites": {
+    "picks": 292,
+    "wins": 183,
+    "losses": 109,
+    "units": 6.03,
+    "roi": 0.0207
+   },
+   "underdogs": {
+    "picks": 11,
+    "wins": 6,
+    "losses": 5,
+    "units": 1.75,
+    "roi": 0.1591
+   },
+   "value": {
+    "picks": 11,
+    "wins": 5,
+    "losses": 6,
+    "units": -0.3,
+    "roi": -0.0273
+   }
+  }
+ },
+ "last": {
+  "date": "2026-11-13",
+  "games": [
+   {
+    "pick": "NYR",
+    "other": "VAN",
+    "hit": true,
+    "text": "NYR 5-1",
+    "units": 0.444,
+    "url": "/nhl/game-401892706.html"
+   },
+   {
+    "pick": "VGK",
+    "other": "NSH",
+    "hit": false,
+    "text": "VGK lost 3-2",
+    "units": -1.0,
+    "url": "/nhl/game-401892707.html"
+   }
+  ],
+  "hits": []
+ }
+}
