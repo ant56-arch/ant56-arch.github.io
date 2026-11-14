@@ -8221,7 +8221,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-13T21:14:08Z",
    "ml": {
     "team": "NY",
@@ -8234,9 +8234,12 @@
     "home_ml": 271,
     "away_ml": -337,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 106,
+   "away_pts": 104,
+   "winner": "IND"
   },
   {
    "date": "2026-11-13",
@@ -8267,7 +8270,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-13T21:14:08Z",
    "ml": {
     "team": "ORL",
@@ -8280,9 +8283,12 @@
     "home_ml": -395,
     "away_ml": 312,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.253
+   },
+   "home_pts": 107,
+   "away_pts": 99,
+   "winner": "ORL"
   },
   {
    "date": "2026-11-13",
@@ -8316,7 +8322,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-14T00:49:26Z",
    "ml": {
     "team": "MIA",
@@ -8329,9 +8335,12 @@
     "home_ml": -142,
     "away_ml": 120,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.704
+   },
+   "home_pts": 133,
+   "away_pts": 121,
+   "winner": "MIA"
   },
   {
    "date": "2026-11-13",
@@ -8361,7 +8370,7 @@
     "away": 3
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-14T00:49:26Z",
    "ml": {
     "team": "ATL",
@@ -8374,9 +8383,12 @@
     "home_ml": 211,
     "away_ml": -257,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 125,
+   "away_pts": 117,
+   "winner": "CHI"
   },
   {
    "date": "2026-11-13",
@@ -8411,7 +8423,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-14T00:49:26Z",
    "ml": {
     "team": "MEM",
@@ -8424,9 +8436,12 @@
     "home_ml": 136,
     "away_ml": -162,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.617
+   },
+   "home_pts": 111,
+   "away_pts": 142,
+   "winner": "MEM"
   },
   {
    "date": "2026-11-13",
@@ -8459,7 +8474,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-14T00:49:26Z",
    "ml": {
     "team": "HOU",
@@ -8472,9 +8487,12 @@
     "home_ml": -1180,
     "away_ml": 740,
     "book": "Draft Kings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.085
+   },
+   "home_pts": 125,
+   "away_pts": 118,
+   "winner": "HOU"
   },
   {
    "date": "2026-11-13",
@@ -8505,7 +8523,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "SA",
@@ -8518,9 +8536,12 @@
     "home_ml": -700,
     "away_ml": 501,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.143
+   },
+   "home_pts": 123,
+   "away_pts": 85,
+   "winner": "SA"
   },
   {
    "date": "2026-11-13",
@@ -8552,7 +8573,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": true,
    "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "POR",
@@ -8565,9 +8586,12 @@
     "home_ml": 361,
     "away_ml": -468,
     "book": "DraftKings",
-    "won": null,
-    "units": null
-   }
+    "won": true,
+    "units": 0.214
+   },
+   "home_pts": 107,
+   "away_pts": 120,
+   "winner": "POR"
   },
   {
    "date": "2026-11-13",
@@ -8599,7 +8623,7 @@
     "away": 1
    },
    "model": "2026-11-11T10:58:29+00:00",
-   "correct": null,
+   "correct": false,
    "set_at": "2026-11-14T02:33:36Z",
    "ml": {
     "team": "OKC",
@@ -8611,6 +8635,244 @@
     "value": false,
     "home_ml": 231,
     "away_ml": -283,
+    "book": "DraftKings",
+    "won": false,
+    "units": -1.0
+   },
+   "home_pts": 113,
+   "away_pts": 112,
+   "winner": "LAC"
+  },
+  {
+   "date": "2026-11-14",
+   "game_id": "401909980",
+   "start": "2026-11-14T19:00:00-05:00",
+   "type": "regular",
+   "home": "NO",
+   "away": "DEN",
+   "home_name": "New Orleans Pelicans",
+   "away_name": "Denver Nuggets",
+   "home_record": "4-9",
+   "away_record": "6-4",
+   "neutral": false,
+   "pick": "DEN",
+   "prob": 82.4,
+   "home_prob": 17.6,
+   "model_home_prob": 17.6,
+   "model_weight": 0.4,
+   "blended": true,
+   "margin": 13.1,
+   "home_out": [
+    "Trey Murphy III",
+    "Dejounte Murray",
+    "Trendon Watford"
+   ],
+   "away_out": [],
+   "rest": {
+    "home": 0,
+    "away": 2
+   },
+   "model": "2026-11-11T10:58:29+00:00",
+   "correct": null,
+   "set_at": "2026-11-14T10:27:18Z",
+   "ml": {
+    "team": "DEN",
+    "side": "away",
+    "price": -597,
+    "prob": 82.4,
+    "book_prob": 82.3,
+    "edge": 0.1,
+    "value": false,
+    "home_ml": 443,
+    "away_ml": -597,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-14",
+   "game_id": "401909981",
+   "start": "2026-11-14T19:30:00-05:00",
+   "type": "regular",
+   "home": "CLE",
+   "away": "DAL",
+   "home_name": "Cleveland Cavaliers",
+   "away_name": "Dallas Mavericks",
+   "home_record": "6-7",
+   "away_record": "7-5",
+   "neutral": false,
+   "pick": "CLE",
+   "prob": 54.0,
+   "home_prob": 54.0,
+   "model_home_prob": 53.6,
+   "model_weight": 0.42,
+   "blended": true,
+   "margin": 1.4,
+   "home_out": [
+    "Evan Mobley",
+    "Sam Merrill"
+   ],
+   "away_out": [],
+   "rest": {
+    "home": 0,
+    "away": 1
+   },
+   "model": "2026-11-11T10:58:29+00:00",
+   "correct": null,
+   "set_at": "2026-11-14T10:27:18Z",
+   "ml": {
+    "team": "CLE",
+    "side": "home",
+    "price": -130,
+    "prob": 54.0,
+    "book_prob": 54.3,
+    "edge": -0.3,
+    "value": false,
+    "home_ml": -130,
+    "away_ml": 110,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-14",
+   "game_id": "401909982",
+   "start": "2026-11-14T20:00:00-05:00",
+   "type": "regular",
+   "home": "MIA",
+   "away": "DET",
+   "home_name": "Miami Heat",
+   "away_name": "Detroit Pistons",
+   "home_record": "6-6",
+   "away_record": "8-3",
+   "neutral": false,
+   "pick": "DET",
+   "prob": 65.5,
+   "home_prob": 34.5,
+   "model_home_prob": 30.9,
+   "model_weight": 0.41,
+   "blended": true,
+   "margin": 5.6,
+   "home_out": [
+    "Pelle Larsson",
+    "Klay Thompson"
+   ],
+   "away_out": [
+    "Jalen Duren",
+    "Isaiah Joe"
+   ],
+   "rest": {
+    "home": 0,
+    "away": 1
+   },
+   "model": "2026-11-11T10:58:29+00:00",
+   "correct": null,
+   "set_at": "2026-11-14T10:27:18Z",
+   "ml": {
+    "team": "DET",
+    "side": "away",
+    "price": -191,
+    "prob": 65.5,
+    "book_prob": 63.1,
+    "edge": 2.4,
+    "value": false,
+    "home_ml": 160,
+    "away_ml": -191,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-14",
+   "game_id": "401909983",
+   "start": "2026-11-14T20:00:00-05:00",
+   "type": "regular",
+   "home": "MEM",
+   "away": "BKN",
+   "home_name": "Memphis Grizzlies",
+   "away_name": "Brooklyn Nets",
+   "home_record": "8-4",
+   "away_record": "3-8",
+   "neutral": false,
+   "pick": "MEM",
+   "prob": 63.3,
+   "home_prob": 63.3,
+   "model_home_prob": 62.8,
+   "model_weight": 0.41,
+   "blended": true,
+   "margin": 4.8,
+   "home_out": [
+    "Zach Edey",
+    "Scotty Pippen Jr."
+   ],
+   "away_out": [],
+   "rest": {
+    "home": 0,
+    "away": 2
+   },
+   "model": "2026-11-11T10:58:29+00:00",
+   "correct": null,
+   "set_at": "2026-11-14T10:27:18Z",
+   "ml": {
+    "team": "MEM",
+    "side": "home",
+    "price": -197,
+    "prob": 63.3,
+    "book_prob": 63.7,
+    "edge": -0.4,
+    "value": false,
+    "home_ml": -197,
+    "away_ml": 164,
+    "book": "DraftKings",
+    "won": null,
+    "units": null
+   }
+  },
+  {
+   "date": "2026-11-14",
+   "game_id": "401909984",
+   "start": "2026-11-14T20:00:00-05:00",
+   "type": "regular",
+   "home": "MIN",
+   "away": "CHI",
+   "home_name": "Minnesota Timberwolves",
+   "away_name": "Chicago Bulls",
+   "home_record": "9-3",
+   "away_record": "2-9",
+   "neutral": false,
+   "pick": "MIN",
+   "prob": 87.1,
+   "home_prob": 87.1,
+   "model_home_prob": 88.4,
+   "model_weight": 0.41,
+   "blended": true,
+   "margin": 16.0,
+   "home_out": [
+    "Anthony Edwards"
+   ],
+   "away_out": [
+    "Caleb Wilson"
+   ],
+   "rest": {
+    "home": 1,
+    "away": 0
+   },
+   "model": "2026-11-11T10:58:29+00:00",
+   "correct": null,
+   "set_at": "2026-11-14T10:27:18Z",
+   "ml": {
+    "team": "MIN",
+    "side": "home",
+    "price": -880,
+    "prob": 87.1,
+    "book_prob": 86.3,
+    "edge": 0.8,
+    "value": false,
+    "home_ml": -880,
+    "away_ml": 599,
     "book": "DraftKings",
     "won": null,
     "units": null
