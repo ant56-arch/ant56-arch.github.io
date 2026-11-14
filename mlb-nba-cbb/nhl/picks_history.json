@@ -12539,7 +12539,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-13T21:14:25Z",
+   "set_at": "2026-11-14T00:49:42Z",
    "ml": {
     "team": "NYR",
     "side": "away",
@@ -12550,7 +12550,7 @@
     "value": false,
     "home_ml": 185,
     "away_ml": -225,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
@@ -12578,7 +12578,7 @@
    },
    "model": "2026-11-10T11:14:08+00:00",
    "correct": null,
-   "set_at": "2026-11-13T21:14:25Z",
+   "set_at": "2026-11-14T00:49:42Z",
    "ml": {
     "team": "VGK",
     "side": "home",
@@ -12589,7 +12589,7 @@
     "value": false,
     "home_ml": -162,
     "away_ml": 136,
-    "book": "DraftKings",
+    "book": "Draft Kings",
     "won": null,
     "units": null
    }
